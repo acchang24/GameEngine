@@ -7,5 +7,7 @@ int main()
 
 	engine.Hello();
 
+	std::cout << "test" << std::endl;
+
 	return 0;
 }
