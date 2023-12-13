@@ -24,6 +24,8 @@ public:
 
 	// Compiles both the vertex and fragment shaders and links them into
 	// a program object that can be referenced by mShaderID
+    // @param - const char* for the vertex code
+    // @param - const char* for the fragment code
 	void CompileShaders(const char* vertexCode, const char* fragmentCode);
 
 	// Sets this shader program as the active one with glUseProgram
