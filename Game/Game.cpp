@@ -79,27 +79,27 @@ void Game::Run()
 		Update(deltaTime);
 
 		Render();
-
-		if (glfwWindowShouldClose(mWindow))
-		{
-			mIsRunning = false;
-		}
 	}
 }
 
 void Game::ProcessInput(GLFWwindow* window)
 {
+	// Check if user clicks on window close
+	if (glfwWindowShouldClose(mWindow))
+	{
+		mIsRunning = false;
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		mIsRunning = false;
-		//glfwSetWindowShouldClose(window, true);
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_SPACE])
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
 		std::cout << "space" << std::endl;
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE && mPrevInputs[GLFW_KEY_SPACE])
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = false;
 	}
