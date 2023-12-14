@@ -28,7 +28,7 @@ Shader::~Shader()
     mShaderID = 0;
 }
 
-const std::string& Shader::ReadShaderFile(const std::string& shaderFileName)
+const std::string Shader::ReadShaderFile(const std::string& shaderFileName)
 {
 	std::string shaderCode;
 

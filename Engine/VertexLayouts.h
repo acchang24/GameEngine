@@ -7,9 +7,11 @@
 */
 
 // Enum class to store different vertex layouts types
+// Each value of this enum has a corresponding struct that
+// defines the vertex values.
 enum class VertexLayout
 {
-	VertexPos; // VertexPos contains a Vector3 representing position (3 float values)
+	VertexPos, // VertexPos contains a Vector3 representing position (3 float values)
 };
 
 struct VertexPos
@@ -19,7 +21,7 @@ struct VertexPos
 
 // Calculates the stride or spacing between consecutive vertex attributes.
 // @returns - std::vector of ints that represents the stride values between each attribute.
-static std::vector<int> GetVertexFormatStrides(VertexLayout layout)
+static std::vector<int> GetVertexLayoutStrides(VertexLayout layout)
 {
 	std::vector<int> strides;
 
@@ -29,4 +31,6 @@ static std::vector<int> GetVertexFormatStrides(VertexLayout layout)
 		strides.emplace_back(3);
 		break;
 	}
+
+	return strides;
 }

@@ -19,8 +19,8 @@ public:
 	~Shader();
 
 	// Reads a shader file's code line by line, saving it into a string.
-	// @return - const std::string& containing the shader code
-	const std::string& ReadShaderFile(const std::string& shaderFileName);
+	// @return - const std::string containing the shader code
+	const std::string ReadShaderFile(const std::string& shaderFileName);
 
 	// Compiles both the vertex and fragment shaders and links them into
 	// a program object that can be referenced by mShaderID
