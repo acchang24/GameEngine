@@ -3,6 +3,9 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+class Shader;
+class VertexBuffer;
+
 class Game
 {
 public:
@@ -45,6 +48,9 @@ private:
 
 	// Pointer to a GLFWwindow, serves as the main game window.
 	GLFWwindow* mWindow;
+
+	Shader* simpleShader;
+	VertexBuffer* vBuffer;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

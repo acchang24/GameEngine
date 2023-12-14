@@ -1,11 +1,17 @@
 #include "Game.h"
 #include <iostream>
+#include "glm/glm.hpp"
+#include "Shader.h"
+#include "VertexBuffer.h"
+#include "VertexLayouts.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
 
 Game::Game() : 
 	mWindow(nullptr),
+	simpleShader(nullptr),
+	vBuffer(nullptr),
 	mIsRunning(true)
 {
 	mPrevInputs[GLFW_KEY_ESCAPE] = false;
@@ -51,12 +57,25 @@ bool Game::Init()
 	// Enable v-sync by default
 	glfwSwapInterval(1);
 
+	glm::vec3 vertices[] = {
+		glm::vec3(-0.5f, -0.5f, 0.0f),
+		glm::vec3(0.5f, -0.5f, 0.0f),
+		glm::vec3(0.0f,  0.5f, 0.0f)
+	};
+
+	// Initialize a vertex buffer
+	vBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices)/sizeof(VertexPos), 0, VertexLayout::VertexPos);
+	// Compile shader
+	simpleShader = new Shader("Shaders/simpleVS.glsl", "Shaders/simpleFS.glsl");
+
 	return true;
 }
 
 void Game::Shutdown()
 {
 	glfwTerminate();
+	delete simpleShader;
+	delete vBuffer;
 }
 
 void Game::Run()
@@ -116,6 +135,9 @@ void Game::Render()
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	// Clear the color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	simpleShader->SetActive();
+	vBuffer->Draw();
 
 	glfwSwapBuffers(mWindow);
 }

@@ -6,8 +6,8 @@ VertexBuffer::VertexBuffer(const void* vertices, const void* indices, size_t ver
 	mVaoID(0),
 	mVertexBufferID(0),
 	mIndexBufferID(0),
-	mVertexCount(0),
-	mIndexCount(0),
+	mVertexCount(vertexCount),
+	mIndexCount(indexCount),
 	mDrawIndexed(false)
 {
 	// Create a vertex array object, store it in mVaoID for reference
