@@ -11,12 +11,19 @@
 // defines the vertex values.
 enum class VertexLayout
 {
-	VertexPos, // VertexPos contains a Vector3 representing position (3 float values)
+	VertexPos, // VertexPos contains just position
+	VertexColor, // VertexColor contains position and color
 };
 
 struct VertexPos
 {
 	glm::vec3 pos;
+};
+
+struct VertexColor
+{
+	glm::vec3 pos;
+	glm::vec4 color;
 };
 
 // Calculates the stride or spacing between consecutive vertex attributes.
@@ -30,6 +37,9 @@ static std::vector<int> GetVertexLayoutStrides(VertexLayout layout)
 	case VertexLayout::VertexPos:
 		strides.emplace_back(3);
 		break;
+	case VertexLayout::VertexColor:
+		strides.emplace_back(3);
+		strides.emplace_back(4);
 	}
 
 	return strides;

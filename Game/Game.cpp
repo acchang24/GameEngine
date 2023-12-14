@@ -57,16 +57,16 @@ bool Game::Init()
 	// Enable v-sync by default
 	glfwSwapInterval(1);
 
-	glm::vec3 vertices[] = {
-		glm::vec3(-0.5f, -0.5f, 0.0f),
-		glm::vec3(0.5f, -0.5f, 0.0f),
-		glm::vec3(0.0f,  0.5f, 0.0f)
+	VertexColor vertices[] = {
+		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f),
+		glm::vec3(0.0f,  0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
 	};
 
 	// Initialize a vertex buffer
-	vBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices)/sizeof(VertexPos), 0, VertexLayout::VertexPos);
+	vBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices)/sizeof(VertexColor), 0, VertexLayout::VertexColor);
 	// Compile shader
-	simpleShader = new Shader("Shaders/simpleVS.glsl", "Shaders/simpleFS.glsl");
+	simpleShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 
 	return true;
 }
@@ -137,6 +137,7 @@ void Game::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	simpleShader->SetActive();
+	simpleShader->SetVec4("newColor", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
 	vBuffer->Draw();
 
 	glfwSwapBuffers(mWindow);
