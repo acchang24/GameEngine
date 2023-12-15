@@ -1,6 +1,8 @@
 #include "Game.h"
 #include <iostream>
 #include "glm/glm.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "VertexLayouts.h"
@@ -60,18 +62,27 @@ bool Game::Init()
 	glfwSwapInterval(1);
 
 	VertexColorTexture vertices[] = {
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), // Bottom left
+		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), // Top right
 		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), // Bottom right
-		glm::vec3(0.0f,  0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec2(0.5f, 1.0f) // Top
+		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), // Bottom left
+		glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f) // Top left
+	};
+	unsigned int indices[] = {
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
 	};
 
 	// Initialize a vertex buffer
-	vBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices)/sizeof(VertexColorTexture), 0, VertexLayout::VertexColorTexture);
+	vBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(VertexColorTexture), sizeof(indices) / sizeof(unsigned int), VertexLayout::VertexColorTexture);
 	// Compile shader
 	simpleShader = new Shader("Shaders/colorTextureVS.glsl", "Shaders/colorTextureFS.glsl");
 
 	// Create a new texture
 	texture = new Texture("Assets/wall.jpg");
+
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
 
 	return true;
 }
@@ -98,6 +109,8 @@ void Game::Run()
 		float deltaTime = endTime - startTime;
 		// Set the new starting time stamp to the current end time stamp
 		startTime = endTime;
+
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		ProcessInput(mWindow);
 
