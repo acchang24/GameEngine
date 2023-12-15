@@ -5,6 +5,7 @@
 
 class Shader;
 class VertexBuffer;
+class Texture;
 
 class Game
 {
@@ -51,6 +52,7 @@ private:
 
 	Shader* simpleShader;
 	VertexBuffer* vBuffer;
+	Texture* texture;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

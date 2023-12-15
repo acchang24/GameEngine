@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "VertexLayouts.h"
+#include "Texture.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -12,6 +13,7 @@ Game::Game() :
 	mWindow(nullptr),
 	simpleShader(nullptr),
 	vBuffer(nullptr),
+	texture(nullptr),
 	mIsRunning(true)
 {
 	mPrevInputs[GLFW_KEY_ESCAPE] = false;
@@ -57,16 +59,19 @@ bool Game::Init()
 	// Enable v-sync by default
 	glfwSwapInterval(1);
 
-	VertexColor vertices[] = {
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		glm::vec3(0.0f,  0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+	VertexColorTexture vertices[] = {
+		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), // Bottom left
+		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), // Bottom right
+		glm::vec3(0.0f,  0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec2(0.5f, 1.0f) // Top
 	};
 
 	// Initialize a vertex buffer
-	vBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices)/sizeof(VertexColor), 0, VertexLayout::VertexColor);
+	vBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices)/sizeof(VertexColorTexture), 0, VertexLayout::VertexColorTexture);
 	// Compile shader
-	simpleShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
+	simpleShader = new Shader("Shaders/colorTextureVS.glsl", "Shaders/colorTextureFS.glsl");
+
+	// Create a new texture
+	texture = new Texture("Assets/wall.jpg");
 
 	return true;
 }
@@ -76,6 +81,7 @@ void Game::Shutdown()
 	glfwTerminate();
 	delete simpleShader;
 	delete vBuffer;
+	delete texture;
 }
 
 void Game::Run()
@@ -137,7 +143,8 @@ void Game::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	simpleShader->SetActive();
-	simpleShader->SetVec4("newColor", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+	texture->SetActive();
+	//simpleShader->SetVec4("newColor", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
 	vBuffer->Draw();
 
 	glfwSwapBuffers(mWindow);

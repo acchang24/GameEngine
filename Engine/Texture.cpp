@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include "stb_image.h"
 
-Texture::Texture(const char* textureFile) :
+Texture::Texture(const std::string& textureFile) :
 	mName(textureFile),
 	mTextureID(0),
 	mWidth(0),
@@ -11,6 +11,9 @@ Texture::Texture(const char* textureFile) :
 	mNumChannels(0),
 	mType(TextureType::Diffuse)
 {
+	// Get the path within the Game Project
+	std::string texturePath = "Game/" + textureFile;
+
 	// Create texture object
 	glGenTextures(1, &mTextureID);
 
@@ -20,8 +23,17 @@ Texture::Texture(const char* textureFile) :
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 
 	// Set the texture's wrapping parameters
+	// GL_REPEAT: The default behavior. Repeats the texture image.
+	// GL_MIRRORED_REPEAT: Same as GL_REPEAT but mirrors the image with each repeat
+	// GL_CLAMP_TO_EDGE: Clamps coordinates between 0 and 1. Higher coordinates become
+	// clamped to the edge, resulting in a stretched edge pattern.
+	// GL_CLAMP_TO_BORDER: Coordinates outside the range are now given a user specifed vorder color
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Load/Generate a texture
 	// Tell stb_image.h to flip loaded textures on the y axis
@@ -30,7 +42,7 @@ Texture::Texture(const char* textureFile) :
 	// Load in texture file with stbi_load:
 	// - Takes the location of the image file
 	// - width, height, and number of color channels as ints
-	unsigned char* data = stbi_load(textureFile, &mWidth, &mHeight, &mNumChannels, 0);
+	unsigned char* data = stbi_load(texturePath.c_str(), &mWidth, &mHeight, &mNumChannels, 0);
 
 	if (data)
 	{

@@ -13,6 +13,8 @@ enum class VertexLayout
 {
 	VertexPos, // VertexPos contains just position
 	VertexColor, // VertexColor contains position and color
+	VertexTexture, // VertexTexture contains position and texture(uv) coordinates
+	VertexColorTexture, // VertexColorTexture contains position, color, and texture(uv) coordinates
 };
 
 struct VertexPos
@@ -24,6 +26,19 @@ struct VertexColor
 {
 	glm::vec3 pos;
 	glm::vec4 color;
+};
+
+struct VertexTexture
+{
+	glm::vec3 pos;
+	glm::vec2 uv;
+};
+
+struct VertexColorTexture
+{
+	glm::vec3 pos;
+	glm::vec4 color;
+	glm::vec2 uv;
 };
 
 // Calculates the stride or spacing between consecutive vertex attributes.
@@ -40,6 +55,16 @@ static std::vector<int> GetVertexLayoutStrides(VertexLayout layout)
 	case VertexLayout::VertexColor:
 		strides.emplace_back(3);
 		strides.emplace_back(4);
+		break;
+	case VertexLayout::VertexTexture:
+		strides.emplace_back(3);
+		strides.emplace_back(2);
+		break;
+	case VertexLayout::VertexColorTexture:
+		strides.emplace_back(3);
+		strides.emplace_back(4);
+		strides.emplace_back(2);
+		break;
 	}
 
 	return strides;
