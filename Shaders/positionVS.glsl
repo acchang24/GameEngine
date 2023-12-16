@@ -7,9 +7,14 @@ layout (location = 0) in vec3 position;
 // Specify a vec4 color output to the fragment shader
 out vec4 vertexColor;
 
+// Model matrix uniform
+uniform mat4 model;
+// ViewProjection matrix uniform
+uniform mat4 viewProjection;
+
 void main()
 {
-	gl_Position = vec4(position, 1.0);
+	gl_Position = viewProjection * model * vec4(position, 1.0);
 	// Set output variable color
 	vertexColor = vec4(0.1, 0.6, 0.9, 1.0);
 }

@@ -1,13 +1,11 @@
 #pragma once
 #include "glad/glad.h"
+#include "VertexLayouts.h"
 
 // VertexBuffer class takes in all the vertex and index information
 // of an object and creates an OpenGL Vertex Array Object. This class
 // will save the VAO and the vertex/index buffers with an unsigned int
 // that can be referenced later with its ID.
-#pragma once
-#include "VertexLayouts.h"
-
 class VertexBuffer
 {
 public:

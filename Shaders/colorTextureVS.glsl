@@ -8,6 +8,11 @@ layout (location = 1) in vec4 color;
 // texture variable has attribute position 2
 layout (location = 2) in vec2 uv;
 
+// Model matrix uniform
+uniform mat4 model;
+// ViewProjection matrix uniform
+uniform mat4 viewProjection;
+
 // Vec4 output for color
 out vec4 vertexColor;
 // Specify a vec2 texture coordinates output to the fragment shader
@@ -15,7 +20,7 @@ out vec2 textureCoord;
 
 void main()
 {
-	gl_Position = vec4(position, 1.0);
+	gl_Position = viewProjection * model * vec4(position, 1.0);
 
 	// Set output color
 	vertexColor = color;

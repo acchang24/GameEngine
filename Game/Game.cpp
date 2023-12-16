@@ -7,15 +7,22 @@
 #include "VertexBuffer.h"
 #include "VertexLayouts.h"
 #include "Texture.h"
+#include "Entity3D.h"
+#include "TimerComponent.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
 
+// view matrix
+glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+// projection matrix
+glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
+
 Game::Game() : 
 	mWindow(nullptr),
 	simpleShader(nullptr),
-	vBuffer(nullptr),
 	texture(nullptr),
+	mEntity(nullptr),
 	mIsRunning(true)
 {
 	mPrevInputs[GLFW_KEY_ESCAPE] = false;
@@ -61,28 +68,45 @@ bool Game::Init()
 	// Enable v-sync by default
 	glfwSwapInterval(1);
 
-	VertexColorTexture vertices[] = {
-		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), // Top right
-		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), // Bottom right
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), // Bottom left
-		glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f) // Top left
+	VertexTexture vertices[] = {
+		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec2(1.0f, 1.0f), // Top right
+		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f), // Bottom right
+		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f), // Bottom left
+		glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec2(0.0f, 1.0f) // Top left
 	};
+
+	//VertexColorTexture vertices[] = {
+	//	glm::vec3(0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), // Top right
+	//	glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), // Bottom right
+	//	glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), // Bottom left
+	//	glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f) // Top left
+	//};
 	unsigned int indices[] = {
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};
 
 	// Initialize a vertex buffer
-	vBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(VertexColorTexture), sizeof(indices) / sizeof(unsigned int), VertexLayout::VertexColorTexture);
+	VertexBuffer* vBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(VertexTexture), sizeof(indices) / sizeof(unsigned int), VertexLayout::VertexTexture);
 	// Compile shader
-	simpleShader = new Shader("Shaders/colorTextureVS.glsl", "Shaders/colorTextureFS.glsl");
+	simpleShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 
 	// Create a new texture
-	texture = new Texture("Assets/wall.jpg");
+	texture = new Texture("Assets/companioncube.png");
 
-	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+	// Create a new entity
+	mEntity = new Entity3D();
+	mEntity->SetVertexBuffer(vBuffer);
+	mEntity->SetShader(simpleShader);
+	mEntity->SetTexture(texture);
+	mEntity->SetPitch(-50.0f);
+
+	glm::mat4 viewProj = projection * view;
+
+	simpleShader->SetActive();
+	simpleShader->SetMat4("viewProjection", viewProj);
+
+	TimerComponent* timer = new TimerComponent(mEntity);
 
 	return true;
 }
@@ -91,8 +115,8 @@ void Game::Shutdown()
 {
 	glfwTerminate();
 	delete simpleShader;
-	delete vBuffer;
 	delete texture;
+	delete mEntity;
 }
 
 void Game::Run()
@@ -145,7 +169,7 @@ void Game::ProcessInput(GLFWwindow* window)
 
 void Game::Update(float deltaTime)
 {
-
+	mEntity->Update(deltaTime);
 }
 
 void Game::Render()
@@ -156,9 +180,10 @@ void Game::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	simpleShader->SetActive();
-	texture->SetActive();
-	//simpleShader->SetVec4("newColor", glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-	vBuffer->Draw();
+	simpleShader->SetMat4("viewProjection", projection * view);
+	
+	// DRAW
+	mEntity->Draw();
 
 	glfwSwapBuffers(mWindow);
 }
@@ -167,4 +192,7 @@ void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 {
 	// Set the viewport to new width and height
 	glViewport(0, 0, width, height);
+
+	// Set new width/height ratio for perspective projection matrix, and update the projection matrix
+	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
 }

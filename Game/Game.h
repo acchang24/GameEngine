@@ -4,8 +4,8 @@
 #include "GLFW/glfw3.h"
 
 class Shader;
-class VertexBuffer;
 class Texture;
+class Entity3D;
 
 class Game
 {
@@ -35,8 +35,8 @@ public:
 	// Sets all the buffers, swap chain, textures, vertex array objects, and renders to screen
 	void Render();
 
-	// Resizes and adjusts the viewport when the user changes the window size.
-	// Registers on every window resize.
+	// Resizes and adjusts the viewport as well as updates the perspective matrix
+	// when the user changes the window size. Registers on every window resize.
 	// @param - GLFWwindow* for the window being resized
 	// @param - int for the window's width
 	// @param - int for the window's height
@@ -51,8 +51,8 @@ private:
 	GLFWwindow* mWindow;
 
 	Shader* simpleShader;
-	VertexBuffer* vBuffer;
 	Texture* texture;
+	Entity3D* mEntity;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;
