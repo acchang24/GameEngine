@@ -11,9 +11,6 @@ Texture::Texture(const std::string& textureFile) :
 	mNumChannels(0),
 	mType(TextureType::Diffuse)
 {
-	// Get the path within the Game Project
-	std::string texturePath = "Game/" + textureFile;
-
 	// Create texture object
 	glGenTextures(1, &mTextureID);
 
@@ -42,7 +39,7 @@ Texture::Texture(const std::string& textureFile) :
 	// Load in texture file with stbi_load:
 	// - Takes the location of the image file
 	// - width, height, and number of color channels as ints
-	unsigned char* data = stbi_load(texturePath.c_str(), &mWidth, &mHeight, &mNumChannels, 0);
+	unsigned char* data = stbi_load(textureFile.c_str(), &mWidth, &mHeight, &mNumChannels, 0);
 
 	if (data)
 	{
