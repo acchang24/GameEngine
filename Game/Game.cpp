@@ -19,11 +19,18 @@ glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 // projection matrix
 glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
-Game::Game() : 
+Game::Game() :
 	mWindow(nullptr),
 	simpleShader(nullptr),
 	texture(nullptr),
-	mIsRunning(true)
+	mMousePosX(static_cast<double>(WIDTH / 2)),
+	mMousePosY(static_cast<double>(HEIGHT / 2)),
+	mouseYaw(-90.0f),
+	mousePitch(0.0f),
+	mousePrevX(static_cast<double>(WIDTH / 2)),
+	mousePrevY(static_cast<double>(HEIGHT / 2)),
+	mIsRunning(true),
+	mFirstMouse(true)
 {
 	mPrevInputs[GLFW_KEY_ESCAPE] = false;
 	mPrevInputs[GLFW_KEY_SPACE] = false;
@@ -70,6 +77,9 @@ bool Game::Init()
 
 	// Enable z-buffering
 	glEnable(GL_DEPTH_TEST);
+
+
+	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
 	// Compile shader
 	simpleShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
@@ -142,8 +152,6 @@ void Game::Run()
 		// Set the new starting time stamp to the current end time stamp
 		startTime = endTime;
 
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 		ProcessInput(mWindow);
 
 		Update(deltaTime);
@@ -154,6 +162,48 @@ void Game::Run()
 
 void Game::ProcessInput(GLFWwindow* window)
 {
+	glfwGetCursorPos(mWindow, &mMousePosX, &mMousePosY);
+
+	if (mFirstMouse)
+	{
+		mousePrevX = mMousePosX;
+		mousePrevY = mMousePosY;
+		mFirstMouse = false;
+	}
+
+	// Calculate mouse offset
+	double xOffset = mMousePosX - mousePrevX;
+	double yOffset = mousePrevY - mMousePosY; // reverse since y coordinates range bottom to top
+
+	mousePrevX = mMousePosX;
+	mousePrevY = mMousePosY;
+
+	double sensitivity = 0.05;
+	xOffset *= sensitivity;
+	yOffset *= sensitivity;
+
+	mouseYaw += xOffset;
+	mousePitch += yOffset;
+
+	if (mousePitch > 89.9)
+	{
+		mousePitch = 89.9;
+	}
+	if (mousePitch < -89.9)
+	{
+		mousePitch = -89.9;
+	}
+
+	glm::vec3 forward = glm::vec3();
+
+	forward.x = cosf(glm::radians(mouseYaw)) * cosf(glm::radians(mousePitch));
+	forward.y = sinf(glm::radians(mousePitch));
+	forward.z = sinf(glm::radians(mouseYaw)) * cosf(glm::radians(mousePitch));
+	// Normalize vector
+	forward = glm::normalize(forward);
+
+	view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 3.0f) + forward, glm::vec3(0.0f, 1.0f, 0.0f));
+
 	// Check if user clicks on window close
 	if (glfwWindowShouldClose(mWindow))
 	{

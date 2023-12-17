@@ -59,6 +59,17 @@ private:
 	Shader* simpleShader;
 	Texture* texture;
 
+	double mMousePosX;
+	double mMousePosY;
+
+	double mouseYaw;
+	double mousePitch;
+
+	double mousePrevX;
+	double mousePrevY;
+
+	bool mFirstMouse;
+
 	// Bool to check if the game is running.
 	bool mIsRunning;
 };
