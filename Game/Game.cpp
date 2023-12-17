@@ -9,7 +9,7 @@
 #include "Texture.h"
 #include "Entity3D.h"
 #include "TimerComponent.h"
-#include "Plane.h"
+#include "Cube.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -68,6 +68,9 @@ bool Game::Init()
 
 	// Enable v-sync by default
 	glfwSwapInterval(1);
+
+	// Enable z-buffering
+	glEnable(GL_DEPTH_TEST);
 	
 	// Compile shader
 	simpleShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
@@ -76,7 +79,7 @@ bool Game::Init()
 	texture = new Texture("Assets/companioncube.png");
 
 	// Create a new plane entity
-	mEntity = new Plane();
+	mEntity = new Cube();
 	mEntity->SetShader(simpleShader);
 	mEntity->SetTexture(texture);
 	mEntity->SetPitch(-50.0f);
@@ -156,8 +159,8 @@ void Game::Render()
 {
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	// Clear the color buffer
-	glClear(GL_COLOR_BUFFER_BIT);
+	// Clear the color buffer, depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	simpleShader->SetActive();
 	simpleShader->SetMat4("viewProjection", projection * view);

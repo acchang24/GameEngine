@@ -5,7 +5,7 @@
 
 class Shader;
 class Texture;
-class Plane;
+class Cube;
 
 class Game
 {
@@ -52,7 +52,7 @@ private:
 
 	Shader* simpleShader;
 	Texture* texture;
-	Plane* mEntity;
+	Cube* mEntity;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

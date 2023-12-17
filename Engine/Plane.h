@@ -12,7 +12,5 @@ public:
 	void OnUpdate(float deltaTime) override;
 	// Plane specific Draw
 	void OnDraw() override;
-
 private:
-
 };
