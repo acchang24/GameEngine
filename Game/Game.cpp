@@ -9,6 +9,7 @@
 #include "Texture.h"
 #include "Entity3D.h"
 #include "TimerComponent.h"
+#include "Plane.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -67,46 +68,25 @@ bool Game::Init()
 
 	// Enable v-sync by default
 	glfwSwapInterval(1);
-
-	VertexTexture vertices[] = {
-		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec2(1.0f, 1.0f), // Top right
-		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f), // Bottom right
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f), // Bottom left
-		glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec2(0.0f, 1.0f) // Top left
-	};
-
-	//VertexColorTexture vertices[] = {
-	//	glm::vec3(0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), // Top right
-	//	glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), // Bottom right
-	//	glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f), // Bottom left
-	//	glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f) // Top left
-	//};
-	unsigned int indices[] = {
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};
-
-	// Initialize a vertex buffer
-	VertexBuffer* vBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(VertexTexture), sizeof(indices) / sizeof(unsigned int), VertexLayout::VertexTexture);
+	
 	// Compile shader
 	simpleShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 
 	// Create a new texture
 	texture = new Texture("Assets/companioncube.png");
 
-	// Create a new entity
-	mEntity = new Entity3D();
-	mEntity->SetVertexBuffer(vBuffer);
+	// Create a new plane entity
+	mEntity = new Plane();
 	mEntity->SetShader(simpleShader);
 	mEntity->SetTexture(texture);
 	mEntity->SetPitch(-50.0f);
+	// Add a timer component
+	TimerComponent* timer = new TimerComponent(mEntity);
 
+	// Initialize view proj and send to shader
 	glm::mat4 viewProj = projection * view;
-
 	simpleShader->SetActive();
 	simpleShader->SetMat4("viewProjection", viewProj);
-
-	TimerComponent* timer = new TimerComponent(mEntity);
 
 	return true;
 }

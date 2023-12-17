@@ -21,6 +21,11 @@ public:
 	// Override draw function for 3D entities
 	void Draw() override;
 
+	// Entity specific update code (overridable)
+	virtual void OnUpdate(float deltaTime);
+	// Entity specific draw code (overrideable)
+	virtual void OnDraw();
+
 	// Set the entity's vertex buffer
 	// @param - VertexBuffer* for the new vertex buffer
 	void SetVertexBuffer(VertexBuffer* vBuffer) { mVertexBuffer = vBuffer; }
@@ -52,7 +57,7 @@ public:
 	// @param - float for the new roll rotation
 	void SetRoll(float roll) { mRoll = roll; }
 
-private:
+protected:
 	// Entity's vertex buffer
 	VertexBuffer* mVertexBuffer;
 

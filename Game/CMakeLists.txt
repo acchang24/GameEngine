@@ -13,7 +13,7 @@ file(GLOB source_files CONFIGURE_DEPENDS "*.cpp" "*.h" "*.hpp" "*.c")
 include_directories(../Engine)
 
 # Create an executable target called game and compiles the ${source_files}.
-add_executable (game ${source_files})
+add_executable (game ${source_files} )
 
 # Link game target with engine library
 target_link_libraries(game engine)

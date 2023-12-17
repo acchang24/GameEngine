@@ -5,7 +5,7 @@
 
 class Shader;
 class Texture;
-class Entity3D;
+class Plane;
 
 class Game
 {
@@ -52,7 +52,7 @@ private:
 
 	Shader* simpleShader;
 	Texture* texture;
-	Entity3D* mEntity;
+	Plane* mEntity;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

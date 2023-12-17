@@ -31,6 +31,8 @@ void Entity3D::Update(float deltaTime)
 {
 	Entity::Update(deltaTime);
 
+	OnUpdate(deltaTime);
+
 	// Update model matrix
 	mModel = glm::mat4(1.0f);
 
@@ -56,4 +58,14 @@ void Entity3D::Draw()
 	mTexture->SetActive();
 
 	mVertexBuffer->Draw();
+}
+
+void Entity3D::OnUpdate(float deltaTime)
+{
+
+}
+
+void Entity3D::OnDraw()
+{
+
 }
