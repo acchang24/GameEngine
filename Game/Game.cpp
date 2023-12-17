@@ -23,7 +23,6 @@ Game::Game() :
 	mWindow(nullptr),
 	simpleShader(nullptr),
 	texture(nullptr),
-	mEntity(nullptr),
 	mIsRunning(true)
 {
 	mPrevInputs[GLFW_KEY_ESCAPE] = false;
@@ -78,13 +77,33 @@ bool Game::Init()
 	// Create a new texture
 	texture = new Texture("Assets/companioncube.png");
 
-	// Create a new plane entity
-	mEntity = new Cube();
-	mEntity->SetShader(simpleShader);
-	mEntity->SetTexture(texture);
-	mEntity->SetPitch(-50.0f);
-	// Add a timer component
-	TimerComponent* timer = new TimerComponent(mEntity);
+	// Cube positions
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
+	// Create new cubes
+	for (int i = 0; i < 10; ++i)
+	{
+		Cube* cube = new Cube();
+		cube->SetPosition(cubePositions[i]);
+		cube->SetShader(simpleShader);
+		cube->SetTexture(texture);
+		cube->SetYaw(20.0f * i);
+
+		// Add a timer component to the cube
+		TimerComponent* timer = new TimerComponent(cube);
+		mEntities.emplace_back(cube);
+	}
 
 	// Initialize view proj and send to shader
 	glm::mat4 viewProj = projection * view;
@@ -97,9 +116,15 @@ bool Game::Init()
 void Game::Shutdown()
 {
 	glfwTerminate();
+
+	for (auto e : mEntities)
+	{
+		delete e;
+	}
+	mEntities.clear();
+
 	delete simpleShader;
 	delete texture;
-	delete mEntity;
 }
 
 void Game::Run()
@@ -152,7 +177,10 @@ void Game::ProcessInput(GLFWwindow* window)
 
 void Game::Update(float deltaTime)
 {
-	mEntity->Update(deltaTime);
+	for (auto e : mEntities)
+	{
+		e->Update(deltaTime);
+	}
 }
 
 void Game::Render()
@@ -166,7 +194,10 @@ void Game::Render()
 	simpleShader->SetMat4("viewProjection", projection * view);
 	
 	// DRAW
-	mEntity->Draw();
+	for (auto e : mEntities)
+	{
+		e->Draw();
+	}
 
 	glfwSwapBuffers(mWindow);
 }

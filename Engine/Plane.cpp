@@ -29,7 +29,7 @@ Plane::~Plane()
 
 void Plane::OnUpdate(float deltaTime)
 {
-
+	Entity3D::OnUpdate(deltaTime);
 }
 
 void Plane::OnDraw()

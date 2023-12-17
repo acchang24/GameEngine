@@ -1,11 +1,12 @@
 #pragma once
 #include <unordered_map>
+#include <vector>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
 class Shader;
 class Texture;
-class Cube;
+class Entity;
 
 class Game
 {
@@ -42,17 +43,21 @@ public:
 	// @param - int for the window's height
 	static void FrameBufferSizeCallBack(GLFWwindow* window, int width, int height);
 
+	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
+
 private:
-	// Unordered map of keyboard inputs on the previous frame/loop.
+	// std::unordered_map of keyboard inputs on the previous frame/loop.
 	// Takes key press as an int and stores the key's state as a bool.
 	std::unordered_map<int, bool> mPrevInputs;
+
+	// std::vector of game entities
+	std::vector<Entity*> mEntities;
 
 	// Pointer to a GLFWwindow, serves as the main game window.
 	GLFWwindow* mWindow;
 
 	Shader* simpleShader;
 	Texture* texture;
-	Cube* mEntity;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;
