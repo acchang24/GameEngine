@@ -190,14 +190,51 @@ void Game::ProcessInput(GLFWwindow* window)
 	mCamera->mYaw = mCamera->mYaw + xOffset;
 	mCamera->mPitch = mCamera->mPitch + yOffset;
 	
-	if (mCamera->mPitch > 89.9)
+	if (mCamera->mPitch > 89.0)
 	{
-		mCamera->mPitch = 89.9;
+		mCamera->mPitch = 89.0;
 	}
-	if (mCamera->mPitch < -89.9)
+	if (mCamera->mPitch < -89.0)
 	{
-		mCamera->mPitch = -89.9;
+		mCamera->mPitch = -89.0;
 	}
+
+	if (mCamera->GetCameraMode() == CameraMode::Orbit)
+	{
+		// Update camera position if orbit
+
+		// Don't have a mouse y offset if the pitch angle is at max
+		double camPitchAngle = mCamera->mPitch;
+		if (camPitchAngle >= 89.0f || camPitchAngle <= -89.0f)
+		{
+			yOffset = 0.0f;
+		}
+		
+		glm::vec3 camPos = mCamera->GetPosition();
+		glm::vec3 camUp = mCamera->GetUp();
+		glm::vec3 camTarget = mCamera->GetTarget();
+
+		// Temp vec4 for camera position
+		glm::vec4 pos(camPos, 1.0f);
+		// Temp vec4 for the camera's pivot point
+		glm::vec4 pivot(camTarget, 1.0f);
+
+		// Calculate rotation matrix along y axis (yaw)
+		glm::mat4x4 rotationX(1.0f);
+		// Rotate based on xOffset
+		rotationX = glm::rotate(rotationX, glm::radians(static_cast<float>(-xOffset)), camUp);
+		pos = (rotationX * (pos - pivot)) + pivot;
+
+		// Calculate rotation matrix along x axis (pitch)
+		glm::mat4x4 rotationY(1.0f);
+		// Rotate based on yOffset
+		glm::vec3 right = glm::normalize(glm::cross(camUp, glm::normalize(camTarget - glm::vec3(pos.x, pos.y, pos.z))));
+		rotationY = glm::rotate(rotationY, glm::radians(static_cast<float>(-yOffset)), right);
+		pos = (rotationY * (pos - pivot)) + pivot;
+
+		mCamera->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
+	}
+
 
 	// Check if user clicks on window close
 	if (glfwWindowShouldClose(mWindow))
