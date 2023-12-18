@@ -11,6 +11,7 @@
 #include "TimerComponent.h"
 #include "Cube.h"
 #include "Camera.h"
+#include "AssetManager.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -20,8 +21,6 @@ glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(
 
 Game::Game() :
 	mWindow(nullptr),
-	simpleShader(nullptr),
-	texture(nullptr),
 	mCamera(nullptr),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
@@ -36,7 +35,6 @@ Game::Game() :
 
 Game::~Game()
 {
-	Shutdown();
 }
 
 bool Game::Init()
@@ -78,11 +76,18 @@ bool Game::Init()
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
+	// Get the asset manager
+	AssetManager* am = AssetManager::Get();
+
 	// Compile shader
-	simpleShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
+	Shader* simpleShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 
 	// Create a new texture
-	texture = new Texture("Assets/companioncube.png");
+	Texture* texture = new Texture("Assets/companioncube.png");
+
+	// Save the shader and texture into the asset manager
+	am->SaveShader("texture", simpleShader);
+	am->SaveTexture("Assets/companioncube.png", texture);
 
 	// Create a camera
 	mCamera = new Camera();
@@ -134,8 +139,6 @@ void Game::Shutdown()
 	}
 	mEntities.clear();
 
-	delete simpleShader;
-	delete texture;
 	delete mCamera;
 }
 
@@ -164,67 +167,7 @@ void Game::Run()
 
 void Game::ProcessInput(GLFWwindow* window)
 {
-	glfwGetCursorPos(mWindow, &mMousePosX, &mMousePosY);
-
-	if (mFirstMouse)
-	{
-		mMousePrevX = mMousePosX;
-		mMousePrevY = mMousePosY;
-		mFirstMouse = false;
-	}
-
-	// Calculate mouse offset
-	double xOffset = mMousePosX - mMousePrevX;
-	double yOffset = mMousePrevY - mMousePosY; // reverse since y coordinates range bottom to top
-
-	mMousePrevX = mMousePosX;
-	mMousePrevY = mMousePosY;
-
-	double sensitivity = 0.05;
-	xOffset *= sensitivity;
-	yOffset *= sensitivity;
-
-	// Update camera angles
-	mCamera->mYaw = mCamera->mYaw + xOffset;
-	mCamera->mPitch = mCamera->mPitch + yOffset;
-	
-	if (mCamera->mPitch >= 89.0)
-	{
-		mCamera->mPitch = 89.0;
-		yOffset = 0.0f;
-	}
-	if (mCamera->mPitch <= -89.0)
-	{
-		mCamera->mPitch = -89.0;
-		yOffset = 0.0f;
-	}
-
-	if (mCamera->GetCameraMode() == CameraMode::Orbit)
-	{
-		glm::vec3 camPos = mCamera->GetPosition();
-		glm::vec3 camUp = mCamera->GetUp();
-		glm::vec3 camTarget = mCamera->GetTarget();
-
-		// Temp vec4 for camera position
-		glm::vec4 pos(camPos, 1.0f);
-		// Temp vec4 for the camera's pivot point
-		glm::vec4 pivot(camTarget, 1.0f);
-
-		// Calculate rotation matrix along y axis (yaw)
-		glm::mat4x4 rotationX(1.0f);
-		// Rotate based on xOffset
-		rotationX = glm::rotate(rotationX, glm::radians(static_cast<float>(-xOffset)), camUp);
-		pos = (rotationX * (pos - pivot)) + pivot;
-
-		// Calculate rotation matrix along x axis (pitch)
-		glm::mat4x4 rotationY(1.0f);
-		// Rotate based on yOffset
-		glm::vec3 right = glm::normalize(glm::cross(camUp, glm::normalize(camTarget - glm::vec3(pos.x, pos.y, pos.z))));
-		rotationY = glm::rotate(rotationY, glm::radians(static_cast<float>(-yOffset)), right);
-		pos = (rotationY * (pos - pivot)) + pivot;
-
-		mCamera->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
-	}
+	ProcessMouseInput(window);
 
 	// Check if user clicks on window close
 	if (glfwWindowShouldClose(mWindow))
@@ -264,8 +207,12 @@ void Game::Render()
 
 	mCamera->SetActive();
 
-	simpleShader->SetActive();
-	simpleShader->SetMat4("viewProjection", projection * mCamera->GetViewMatrix());
+	Shader* shader = AssetManager::Get()->LoadShader("texture");
+
+	shader->SetActive();
+
+	shader->SetActive();
+	shader->SetMat4("viewProjection", projection * mCamera->GetViewMatrix());
 	
 	for (auto e : mEntities)
 	{
@@ -273,6 +220,71 @@ void Game::Render()
 	}
 
 	glfwSwapBuffers(mWindow);
+}
+
+void Game::ProcessMouseInput(GLFWwindow* window)
+{
+	glfwGetCursorPos(mWindow, &mMousePosX, &mMousePosY);
+
+	if (mFirstMouse)
+	{
+		mMousePrevX = mMousePosX;
+		mMousePrevY = mMousePosY;
+		mFirstMouse = false;
+	}
+
+	// Calculate mouse offset
+	double xOffset = mMousePosX - mMousePrevX;
+	double yOffset = mMousePrevY - mMousePosY; // reverse since y coordinates range bottom to top
+
+	mMousePrevX = mMousePosX;
+	mMousePrevY = mMousePosY;
+
+	double sensitivity = 0.05;
+	xOffset *= sensitivity;
+	yOffset *= sensitivity;
+
+	// Update camera angles
+	mCamera->mYaw = mCamera->mYaw + xOffset;
+	mCamera->mPitch = mCamera->mPitch + yOffset;
+
+	if (mCamera->mPitch >= 89.0)
+	{
+		mCamera->mPitch = 89.0;
+		yOffset = 0.0f;
+	}
+	if (mCamera->mPitch <= -89.0)
+	{
+		mCamera->mPitch = -89.0;
+		yOffset = 0.0f;
+	}
+
+	if (mCamera->GetCameraMode() == CameraMode::Orbit)
+	{
+		glm::vec3 camPos = mCamera->GetPosition();
+		glm::vec3 camUp = mCamera->GetUp();
+		glm::vec3 camTarget = mCamera->GetTarget();
+
+		// Temp vec4 for camera position
+		glm::vec4 pos(camPos, 1.0f);
+		// Temp vec4 for the camera's pivot point
+		glm::vec4 pivot(camTarget, 1.0f);
+
+		// Calculate rotation matrix along y axis (yaw)
+		glm::mat4x4 rotationX(1.0f);
+		// Rotate based on xOffset
+		rotationX = glm::rotate(rotationX, glm::radians(static_cast<float>(-xOffset)), camUp);
+		pos = (rotationX * (pos - pivot)) + pivot;
+
+		// Calculate rotation matrix along x axis (pitch)
+		glm::mat4x4 rotationY(1.0f);
+		// Rotate based on yOffset
+		glm::vec3 right = glm::normalize(glm::cross(camUp, glm::normalize(camTarget - glm::vec3(pos.x, pos.y, pos.z))));
+		rotationY = glm::rotate(rotationY, glm::radians(static_cast<float>(-yOffset)), right);
+		pos = (rotationY * (pos - pivot)) + pivot;
+
+		mCamera->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
+	}
 }
 
 void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)

@@ -8,6 +8,7 @@ int main()
 	{
 		game.Run();
 	}
+	game.Shutdown();
 
 	return 0;
 }

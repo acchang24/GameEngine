@@ -37,6 +37,8 @@ public:
 	// Sets all the buffers, swap chain, textures, vertex array objects, and renders to screen
 	void Render();
 
+	void ProcessMouseInput(GLFWwindow* window);
+
 	// Resizes and adjusts the viewport as well as updates the perspective matrix
 	// when the user changes the window size. Registers on every window resize.
 	// @param - GLFWwindow* for the window being resized
@@ -57,9 +59,7 @@ private:
 	// Pointer to a GLFWwindow, serves as the main game window.
 	GLFWwindow* mWindow;
 
-	Shader* simpleShader;
-	Texture* texture;
-
+	// The game's camera
 	Camera* mCamera;
 
 	double mMousePosX;
