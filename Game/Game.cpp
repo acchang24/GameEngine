@@ -10,6 +10,7 @@
 #include "Entity3D.h"
 #include "TimerComponent.h"
 #include "Cube.h"
+#include "Camera.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -25,8 +26,7 @@ Game::Game() :
 	texture(nullptr),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
-	mouseYaw(-90.0f),
-	mousePitch(0.0f),
+	mCamera(nullptr),
 	mousePrevX(static_cast<double>(WIDTH / 2)),
 	mousePrevY(static_cast<double>(HEIGHT / 2)),
 	mIsRunning(true),
@@ -78,7 +78,6 @@ bool Game::Init()
 	// Enable z-buffering
 	glEnable(GL_DEPTH_TEST);
 
-
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
 	// Compile shader
@@ -86,6 +85,10 @@ bool Game::Init()
 
 	// Create a new texture
 	texture = new Texture("Assets/companioncube.png");
+
+	// Create a camera
+	mCamera = new Camera();
+	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	// Cube positions
 	glm::vec3 cubePositions[] = {
@@ -135,6 +138,7 @@ void Game::Shutdown()
 
 	delete simpleShader;
 	delete texture;
+	delete mCamera;
 }
 
 void Game::Run()
@@ -182,27 +186,18 @@ void Game::ProcessInput(GLFWwindow* window)
 	xOffset *= sensitivity;
 	yOffset *= sensitivity;
 
-	mouseYaw += xOffset;
-	mousePitch += yOffset;
-
-	if (mousePitch > 89.9)
+	// Update camera angles
+	mCamera->mYaw = mCamera->mYaw + xOffset;
+	mCamera->mPitch = mCamera->mPitch + yOffset;
+	
+	if (mCamera->mPitch > 89.9)
 	{
-		mousePitch = 89.9;
+		mCamera->mPitch = 89.9;
 	}
-	if (mousePitch < -89.9)
+	if (mCamera->mPitch < -89.9)
 	{
-		mousePitch = -89.9;
+		mCamera->mPitch = -89.9;
 	}
-
-	glm::vec3 forward = glm::vec3();
-
-	forward.x = cosf(glm::radians(mouseYaw)) * cosf(glm::radians(mousePitch));
-	forward.y = sinf(glm::radians(mousePitch));
-	forward.z = sinf(glm::radians(mouseYaw)) * cosf(glm::radians(mousePitch));
-	// Normalize vector
-	forward = glm::normalize(forward);
-
-	view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 3.0f) + forward, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Check if user clicks on window close
 	if (glfwWindowShouldClose(mWindow))
@@ -239,6 +234,8 @@ void Game::Render()
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	// Clear the color buffer, depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	view = mCamera->SetActive();
 
 	simpleShader->SetActive();
 	simpleShader->SetMat4("viewProjection", projection * view);

@@ -7,6 +7,7 @@
 class Shader;
 class Texture;
 class Entity;
+class Camera;
 
 class Game
 {
@@ -59,11 +60,10 @@ private:
 	Shader* simpleShader;
 	Texture* texture;
 
+	Camera* mCamera;
+
 	double mMousePosX;
 	double mMousePosY;
-
-	double mouseYaw;
-	double mousePitch;
 
 	double mousePrevX;
 	double mousePrevY;
