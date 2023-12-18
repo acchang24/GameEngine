@@ -157,7 +157,7 @@ void Game::Run()
 		// Set the new starting time stamp to the current end time stamp
 		startTime = endTime;
 
-		ProcessInput(mWindow);
+		ProcessInput(mWindow, deltaTime);
 
 		Update(deltaTime);
 
@@ -165,7 +165,7 @@ void Game::Run()
 	}
 }
 
-void Game::ProcessInput(GLFWwindow* window)
+void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 {
 	ProcessMouseInput(window);
 
@@ -173,6 +173,33 @@ void Game::ProcessInput(GLFWwindow* window)
 	if (glfwWindowShouldClose(mWindow))
 	{
 		mIsRunning = false;
+	}
+
+	// Camera
+	glm::vec3 right = mCamera->GetRight();
+	glm::vec3 up = mCamera->GetUp();
+	float speed = 5.0f;
+	// W/S moves forward/backwards
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		// Cross product between up and right vector to get the forward/backward dir
+		glm::vec3 dir = glm::normalize(glm::cross(up, right));
+		mCamera->SetPosition(mCamera->GetPosition() + dir * speed * deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		// Cross product between up and right vector to get the forward/backward dir
+		glm::vec3 dir = glm::normalize(glm::cross(up, right));
+		mCamera->SetPosition(mCamera->GetPosition() - dir * speed * deltaTime);
+	}
+	// A/D moves left/right in the direction of the right vector
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		mCamera->SetPosition(mCamera->GetPosition() - right * speed * deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		mCamera->SetPosition(mCamera->GetPosition() + right * speed * deltaTime);
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

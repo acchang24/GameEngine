@@ -31,6 +31,9 @@ public:
 	// Gets the camera's up vector
 	// @return - const glm::vec3& for the camera's up vector
 	const glm::vec3& GetUp() const { return mUp; }
+	// Gets the camera's right vector
+	// @return - const glm::vec3& for the camera's right vector
+	const glm::vec3& GetRight() const { return mRight; }
 	// Gets the camera's view matrix
 	// @return - const mat4& for the camera's view matrix
 	const glm::mat4& GetViewMatrix() const { return mView; }

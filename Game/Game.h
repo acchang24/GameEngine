@@ -28,7 +28,8 @@ public:
 	// Processes any keyboard, mouse, or controller inputs.
 	// Typically called near the beginning of the render loop.
 	// @param - pointer to a GLFWwindow
-	void ProcessInput(GLFWwindow* window);
+	// @param - float for delta time
+	void ProcessInput(GLFWwindow* window, float deltaTime);
 
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames
