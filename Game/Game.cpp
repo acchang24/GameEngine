@@ -15,8 +15,6 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
-// view matrix
-glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 // projection matrix
 glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
 
@@ -24,13 +22,13 @@ Game::Game() :
 	mWindow(nullptr),
 	simpleShader(nullptr),
 	texture(nullptr),
+	mCamera(nullptr),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
-	mCamera(nullptr),
-	mousePrevX(static_cast<double>(WIDTH / 2)),
-	mousePrevY(static_cast<double>(HEIGHT / 2)),
-	mIsRunning(true),
-	mFirstMouse(true)
+	mMousePrevX(static_cast<double>(WIDTH / 2)),
+	mMousePrevY(static_cast<double>(HEIGHT / 2)),
+	mFirstMouse(true),
+	mIsRunning(true)
 {
 	mPrevInputs[GLFW_KEY_ESCAPE] = false;
 	mPrevInputs[GLFW_KEY_SPACE] = false;
@@ -119,7 +117,7 @@ bool Game::Init()
 	}
 
 	// Initialize view proj and send to shader
-	glm::mat4 viewProj = projection * view;
+	glm::mat4 viewProj = projection * mCamera->GetViewMatrix();
 	simpleShader->SetActive();
 	simpleShader->SetMat4("viewProjection", viewProj);
 
@@ -170,17 +168,17 @@ void Game::ProcessInput(GLFWwindow* window)
 
 	if (mFirstMouse)
 	{
-		mousePrevX = mMousePosX;
-		mousePrevY = mMousePosY;
+		mMousePrevX = mMousePosX;
+		mMousePrevY = mMousePosY;
 		mFirstMouse = false;
 	}
 
 	// Calculate mouse offset
-	double xOffset = mMousePosX - mousePrevX;
-	double yOffset = mousePrevY - mMousePosY; // reverse since y coordinates range bottom to top
+	double xOffset = mMousePosX - mMousePrevX;
+	double yOffset = mMousePrevY - mMousePosY; // reverse since y coordinates range bottom to top
 
-	mousePrevX = mMousePosX;
-	mousePrevY = mMousePosY;
+	mMousePrevX = mMousePosX;
+	mMousePrevY = mMousePosY;
 
 	double sensitivity = 0.05;
 	xOffset *= sensitivity;
@@ -190,26 +188,19 @@ void Game::ProcessInput(GLFWwindow* window)
 	mCamera->mYaw = mCamera->mYaw + xOffset;
 	mCamera->mPitch = mCamera->mPitch + yOffset;
 	
-	if (mCamera->mPitch > 89.0)
+	if (mCamera->mPitch >= 89.0)
 	{
 		mCamera->mPitch = 89.0;
+		yOffset = 0.0f;
 	}
-	if (mCamera->mPitch < -89.0)
+	if (mCamera->mPitch <= -89.0)
 	{
 		mCamera->mPitch = -89.0;
+		yOffset = 0.0f;
 	}
 
 	if (mCamera->GetCameraMode() == CameraMode::Orbit)
 	{
-		// Update camera position if orbit
-
-		// Don't have a mouse y offset if the pitch angle is at max
-		double camPitchAngle = mCamera->mPitch;
-		if (camPitchAngle >= 89.0f || camPitchAngle <= -89.0f)
-		{
-			yOffset = 0.0f;
-		}
-		
 		glm::vec3 camPos = mCamera->GetPosition();
 		glm::vec3 camUp = mCamera->GetUp();
 		glm::vec3 camTarget = mCamera->GetTarget();
@@ -234,7 +225,6 @@ void Game::ProcessInput(GLFWwindow* window)
 
 		mCamera->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
 	}
-
 
 	// Check if user clicks on window close
 	if (glfwWindowShouldClose(mWindow))
@@ -272,12 +262,11 @@ void Game::Render()
 	// Clear the color buffer, depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	view = mCamera->SetActive();
+	mCamera->SetActive();
 
 	simpleShader->SetActive();
-	simpleShader->SetMat4("viewProjection", projection * view);
+	simpleShader->SetMat4("viewProjection", projection * mCamera->GetViewMatrix());
 	
-	// DRAW
 	for (auto e : mEntities)
 	{
 		e->Draw();

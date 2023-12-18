@@ -65,8 +65,8 @@ private:
 	double mMousePosX;
 	double mMousePosY;
 
-	double mousePrevX;
-	double mousePrevY;
+	double mMousePrevX;
+	double mMousePrevY;
 
 	bool mFirstMouse;
 
