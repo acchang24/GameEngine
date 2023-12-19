@@ -10,7 +10,7 @@ Camera::Camera() :
 	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
 	mRight(glm::normalize(glm::cross(mUp, mForward))),
 	mView(glm::translate(glm::mat4(1.0f), mPosition)),
-	mMode(CameraMode::First),
+	mMode(CameraMode::Orbit),
 	mYaw(-90.0f),
 	mPitch(0.0f),
 	mRoll(0.0f),
@@ -31,6 +31,17 @@ void Camera::SetActive()
 	switch (mMode)
 	{
 	case CameraMode::First:
+		// Calculate the camera's forward based on yaw and pitch angles
+		mForward.x = cosf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
+		mForward.y = sinf(glm::radians(static_cast<float>(mPitch)));
+		mForward.z = sinf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
+		// Normalize vector
+		mForward = glm::normalize(mForward);
+
+		// Create view
+		mView = glm::lookAt(mPosition, mPosition + mForward, mUp);
+		break;
+	case CameraMode::Fly:
 		// Calculate the camera's forward based on yaw and pitch angles
 		mForward.x = cosf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
 		mForward.y = sinf(glm::radians(static_cast<float>(mPitch)));

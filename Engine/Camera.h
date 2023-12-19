@@ -4,8 +4,9 @@
 // Enum class for different types of camera modes
 enum class CameraMode
 {
-	First, // Used for first person
-	Orbit  // Used to orbit around a target object
+	First,  // Used for first person
+	Orbit,  // Used to orbit around a target object
+	Fly     // Used for flying around the scene freely
 };
 
 // Camera class is mainly responsible for using the view matrix
@@ -28,6 +29,9 @@ public:
 	// Gets the camera's target position
 	// @return - const glm::vec3& for the camera's target
 	const glm::vec3& GetTarget() const { return mTarget; }
+	// Gets the camera's forward vector
+	// @returns - const glm::vec3& for the camera's forward
+	const glm::vec3& GetForward() const { return mForward; }
 	// Gets the camera's up vector
 	// @return - const glm::vec3& for the camera's up vector
 	const glm::vec3& GetUp() const { return mUp; }

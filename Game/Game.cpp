@@ -176,30 +176,53 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	}
 
 	// Camera
+	CameraMode mode = mCamera->GetCameraMode();
 	glm::vec3 right = mCamera->GetRight();
 	glm::vec3 up = mCamera->GetUp();
 	float speed = 5.0f;
 	// W/S moves forward/backwards
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		// Cross product between up and right vector to get the forward/backward dir
-		glm::vec3 dir = glm::normalize(glm::cross(up, right));
-		mCamera->SetPosition(mCamera->GetPosition() + dir * speed * deltaTime);
+		switch (mode)
+		{
+		case CameraMode::First:
+			// Cross product between up and right vector to get the forward/backward dir
+			mCamera->SetPosition(mCamera->GetPosition() + glm::normalize(glm::cross(up, right)) * speed * deltaTime);
+			break;
+		case CameraMode::Fly:
+			// Use the camera's forward
+			mCamera->SetPosition(mCamera->GetPosition() + mCamera->GetForward() * speed * deltaTime);
+			break;
+		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		// Cross product between up and right vector to get the forward/backward dir
-		glm::vec3 dir = glm::normalize(glm::cross(up, right));
-		mCamera->SetPosition(mCamera->GetPosition() - dir * speed * deltaTime);
+		switch (mode)
+		{
+		case CameraMode::First:
+			// Cross product between up and right vector to get the forward/backward dir
+			mCamera->SetPosition(mCamera->GetPosition() - glm::normalize(glm::cross(up, right)) * speed * deltaTime);
+			break;
+		case CameraMode::Fly:
+			// Use the camera's forward
+			mCamera->SetPosition(mCamera->GetPosition() - mCamera->GetForward() * speed * deltaTime);
+			break;
+		}
 	}
 	// A/D moves left/right in the direction of the right vector
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		mCamera->SetPosition(mCamera->GetPosition() - right * speed * deltaTime);
+		if (mode == CameraMode::First || mode == CameraMode::Fly)
+		{
+			mCamera->SetPosition(mCamera->GetPosition() - right * speed * deltaTime);
+		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		mCamera->SetPosition(mCamera->GetPosition() + right * speed * deltaTime);
+		if (mode == CameraMode::First || mode == CameraMode::Fly)
+		{
+			mCamera->SetPosition(mCamera->GetPosition() + right * speed * deltaTime);
+		}
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
