@@ -42,7 +42,10 @@ void Entity3D::Draw()
 
 	OnDraw();
 
-	mTexture->SetActive();
+	if (mTexture)
+	{
+		mTexture->SetActive();
+	}
 
 	mVertexBuffer->Draw();
 }
@@ -66,5 +69,5 @@ void Entity3D::OnUpdate(float deltaTime)
 
 void Entity3D::OnDraw()
 {
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

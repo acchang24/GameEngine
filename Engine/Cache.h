@@ -48,7 +48,7 @@ public:
 		return nullptr;
 	}
 
-	// Loops through and calls delete on each element in the asset map
+	// Loops through and calls delete on each element in the asset map, then clears the map
 	void Clear()
 	{
 		for (auto a : mAssetMap)
@@ -57,6 +57,10 @@ public:
 		}
 		mAssetMap.clear();
 	}
+
+	// Gets the asset map as a reference (data can change)
+	// @returns - std::unordered_map<std::string, T*>& for the reference of the asset map
+	std::unordered_map<std::string, T*>& GetAssetMap() { return mAssetMap; }
 
 private:
 	// Pointer to a static AssetManager

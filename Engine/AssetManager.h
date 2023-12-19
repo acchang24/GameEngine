@@ -14,9 +14,12 @@ public:
 	AssetManager(AssetManager&&) = delete; // No move constructor
 	AssetManager& operator=(const AssetManager&) = delete; // Makes sure the class is not assignable
 	AssetManager& operator=(AssetManager&&) = delete; // No move assignment
-	
-	// Goes to each of the caches and deletes all of their elements
+
+	// Goes to each of the caches calls the cache's Clear()
 	void Clear();
+
+	// Deletes the shader caches
+	void Shutdown();
 
 	// Returns the instance of an AssetManager
 	// @return - AssetManager* for the instance of an AssetManager
@@ -32,6 +35,9 @@ public:
 	Shader* LoadShader(const std::string& shaderName) { return mShaderCache->Get(shaderName); }
 	// Clears each element from the shader cache's map
 	void ClearShaders() { mShaderCache->Clear(); }
+	// Gets the asset manager's shader cache
+	// @returns - Cache<Shader>* for the pointer to the shader cache
+	Cache<Shader>* GetShaderCache() { return mShaderCache; }
 
 	// Saves a texture into the texture cache's map
 	// @param - const std::string& for the texture's name.

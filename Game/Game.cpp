@@ -10,8 +10,10 @@
 #include "Entity3D.h"
 #include "TimerComponent.h"
 #include "Cube.h"
+#include "Sphere.h"
 #include "Camera.h"
 #include "AssetManager.h"
+#include "Cache.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -75,26 +77,22 @@ bool Game::Init()
 	glEnable(GL_DEPTH_TEST);
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	
-	// Get the asset manager
+
 	AssetManager* am = AssetManager::Get();
 
-	// Compile shader
-	Shader* simpleShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
+	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
+	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 
-	// Create a new texture
 	Texture* texture = new Texture("Assets/companioncube.png");
 
-	// Save the shader and texture into the asset manager
-	am->SaveShader("texture", simpleShader);
+	am->SaveShader("texture", textureShader);
+	am->SaveShader("color", colorShader);
 	am->SaveTexture("Assets/companioncube.png", texture);
 
-	// Create a camera
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	// Cube positions
-	glm::vec3 cubePositions[] = {
+	glm::vec3 objectPositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
 		glm::vec3(2.0f,  5.0f, -15.0f),
 		glm::vec3(-1.5f, -2.2f, -2.5f),
@@ -107,24 +105,27 @@ bool Game::Init()
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	// Create new cubes
+	// Create new objects
 	for (int i = 0; i < 10; ++i)
 	{
-		Cube* cube = new Cube();
-		cube->SetPosition(cubePositions[i]);
-		cube->SetShader(simpleShader);
-		cube->SetTexture(texture);
-		cube->SetYaw(20.0f * i);
-
-		// Add a timer component to the cube
-		TimerComponent* timer = new TimerComponent(cube);
-		mEntities.emplace_back(cube);
+		Entity3D* object = nullptr;
+		if (i % 2 != 0)
+		{
+			object = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			object->SetPosition(objectPositions[i]);
+			object->SetShader(colorShader);
+		}
+		else
+		{
+			object = new Cube();
+			object->SetPosition(objectPositions[i]);
+			object->SetShader(textureShader);
+			object->SetTexture(texture);
+			object->SetYaw(20.0f * i);
+			TimerComponent* timer = new TimerComponent(object);
+		}
+		mEntities.emplace_back(object);
 	}
-
-	// Initialize view proj and send to shader
-	glm::mat4 viewProj = projection * mCamera->GetViewMatrix();
-	simpleShader->SetActive();
-	simpleShader->SetMat4("viewProjection", viewProj);
 
 	return true;
 }
@@ -146,7 +147,6 @@ void Game::Run()
 {
 	float startTime = glfwGetTime();
 
-	// Run the main game loop
 	while (mIsRunning)
 	{
 		glfwPollEvents();
@@ -180,7 +180,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	glm::vec3 right = mCamera->GetRight();
 	glm::vec3 up = mCamera->GetUp();
 	float speed = 5.0f;
-	// W/S moves forward/backwards
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		switch (mode)
@@ -209,7 +209,6 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 			break;
 		}
 	}
-	// A/D moves left/right in the direction of the right vector
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
@@ -257,13 +256,13 @@ void Game::Render()
 
 	mCamera->SetActive();
 
-	Shader* shader = AssetManager::Get()->LoadShader("texture");
+	std::unordered_map<std::string, Shader*>& shaders = AssetManager::Get()->GetShaderCache()->GetAssetMap();
+	for (auto& s : shaders)
+	{
+		s.second->SetActive();
+		s.second->SetMat4("viewProjection", projection * mCamera->GetViewMatrix());
+	}
 
-	shader->SetActive();
-
-	shader->SetActive();
-	shader->SetMat4("viewProjection", projection * mCamera->GetViewMatrix());
-	
 	for (auto e : mEntities)
 	{
 		e->Draw();

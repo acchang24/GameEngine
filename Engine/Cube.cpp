@@ -74,8 +74,15 @@ void Cube::OnUpdate(float deltaTime)
     // Translation
     mModel = glm::translate(mModel, mPosition);
 
+    TimerComponent* tc = GetComponent<TimerComponent>();
+    float speed = 0.0f;
+    if (tc)
+    {
+        speed = GetComponent<TimerComponent>()->GetTimeElapsed();
+    }
+
     // Rotation over time
-    mModel = glm::rotate(mModel, GetComponent<TimerComponent>()->GetTimeElapsed() * glm::radians(mYaw), glm::vec3(0.5f, 1.0f, 0.0f));
+    mModel = glm::rotate(mModel, speed * glm::radians(mYaw), glm::vec3(0.5f, 1.0f, 0.0f));
 
     // Scale
     mModel = glm::scale(mModel, mScale);
@@ -83,5 +90,5 @@ void Cube::OnUpdate(float deltaTime)
 
 void Cube::OnDraw()
 {
-
+    Entity3D::OnDraw();
 }

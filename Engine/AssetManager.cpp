@@ -11,6 +11,11 @@ AssetManager::AssetManager():
 
 AssetManager::~AssetManager()
 {
+	std::cout << "Delete asset manager" << std::endl;
+}
+
+void AssetManager::Shutdown()
+{
 	delete mShaderCache;
 	delete mTextureCache;
 
