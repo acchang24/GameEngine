@@ -82,11 +82,15 @@ bool Game::Init()
 
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
+	Shader* lightShader = new Shader("Shaders/simpleLightVS.glsl", "Shaders/simpleLightFS.glsl");
+	lightShader->SetActive();
+	lightShader->SetVec4("lightColor", glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
 
 	Texture* texture = new Texture("Assets/companioncube.png");
 
 	am->SaveShader("texture", textureShader);
 	am->SaveShader("color", colorShader);
+	am->SaveShader("lightShader", lightShader);
 	am->SaveTexture("Assets/companioncube.png", texture);
 
 	mCamera = new Camera();
@@ -108,22 +112,13 @@ bool Game::Init()
 	// Create new objects
 	for (int i = 0; i < 10; ++i)
 	{
-		Entity3D* object = nullptr;
-		if (i % 2 != 0)
-		{
-			object = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-			object->SetPosition(objectPositions[i]);
-			object->SetShader(colorShader);
-		}
-		else
-		{
-			object = new Cube();
-			object->SetPosition(objectPositions[i]);
-			object->SetShader(textureShader);
-			object->SetTexture(texture);
-			object->SetYaw(20.0f * i);
-			TimerComponent* timer = new TimerComponent(object);
-		}
+		Cube* object = new Cube();
+		object->SetPosition(objectPositions[i]);
+		object->SetScale(0.5f);
+		object->SetShader(lightShader);
+		object->SetTexture(texture);
+		object->SetYaw(20.0f * i);
+		TimerComponent* timer = new TimerComponent(object);
 		mEntities.emplace_back(object);
 	}
 
