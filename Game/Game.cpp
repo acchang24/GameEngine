@@ -97,7 +97,7 @@ bool Game::Init()
 	am->SaveTexture("Assets/companioncube.png", texture);
 
 	mCamera = new Camera();
-	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	glm::vec3 objectPositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -120,7 +120,7 @@ bool Game::Init()
 		object->SetScale(0.5f);
 		object->SetShader(lightShader);
 		object->SetTexture(texture);
-		object->SetYaw((20.0f * i) + 25.0f);
+		object->SetYaw(25.0f);
 		TimerComponent* timer = new TimerComponent(object);
 		mEntities.emplace_back(object);
 	}
@@ -265,6 +265,7 @@ void Game::Render()
 	{
 		s.second->SetActive();
 		s.second->SetMat4("viewProjection", projection * mCamera->GetViewMatrix());
+		s.second->SetVec3("viewPos", mCamera->GetPosition());
 	}
 
 	for (auto e : mEntities)

@@ -13,6 +13,8 @@ uniform sampler2D textureSampler;
 uniform vec4 lightColor;
 // uniform for light position
 uniform vec3 lightPos;
+// uniform for view position (camera position)
+uniform vec3 viewPos;
 
 // Final vector4 fragment color output
 out vec4 fragColor;
@@ -37,11 +39,27 @@ void main()
     // Use the max function to return highest between the dot result earlier and 0.0f 
     // to make sure the dot doesn't go negative when the angle between 
     // the two vectors is greater than 90 degrees
-    diff = max(diff, 0.0f);
-
+    diff = max(diff, 0.0);
 	// Apply diffuse impact with the light's color to get diffuse light
     vec4 diffuseLight = diff * lightColor;
 
+	// Specular light
+	float specularStrength = 0.5;
+	// Get the view direction (fragment's position to camera's position)
+	vec3 viewDir = normalize(viewPos - fragPos);
+	// Get the reflect direction
+	vec3 reflectDir = reflect(-lightDir, norm);
+
+	// Calculate specular component
+    // Calculate dot between view and reflect directions
+    float spec = dot(viewDir, reflectDir);
+    // Make sure it's not negative
+    spec = max(spec, 0.0);
+    // Raise to power of the material's specular intensity value (higher power = smaller more focused highlight)
+    spec = pow(spec, 32);
+	// Apply specular strength and spec component with light color to get specular light
+	vec4 specularLight = specularStrength * spec * lightColor;
+
 	// Sampler colors of a texture with texture function, passing in sampler and coordinates
-	fragColor = (ambientLight + diffuseLight) * texture(textureSampler, textureCoord);
+	fragColor = (ambientLight + diffuseLight + specularLight) * texture(textureSampler, textureCoord);
 }
