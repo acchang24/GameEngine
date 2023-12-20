@@ -78,6 +78,8 @@ bool Game::Init()
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	glm::vec3 lightPosition(1.0f, 0.0f, 1.0f);
+
 	AssetManager* am = AssetManager::Get();
 
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
@@ -85,6 +87,7 @@ bool Game::Init()
 	Shader* lightShader = new Shader("Shaders/simpleLightVS.glsl", "Shaders/simpleLightFS.glsl");
 	lightShader->SetActive();
 	lightShader->SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightShader->SetVec3("lightPos", lightPosition);
 
 	Texture* texture = new Texture("Assets/companioncube.png");
 
@@ -123,7 +126,7 @@ bool Game::Init()
 	}
 
 	Sphere* lightSphere = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere->SetPosition(glm::vec3(1.0f, 0.0f, 1.0f));
+	lightSphere->SetPosition(lightPosition);
 	lightSphere->SetScale(0.1f);
 	lightSphere->SetShader(colorShader);
 	mEntities.emplace_back(lightSphere);

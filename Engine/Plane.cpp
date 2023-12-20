@@ -7,10 +7,10 @@ Plane::Plane() :
 	Entity3D()
 {
 	VertexTexture vertices[] = {
-		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec2(1.0f, 1.0f), // Top right
-		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f), // Bottom right
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f), // Bottom left
-		glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec2(0.0f, 1.0f) // Top left
+		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f),   // top right
+		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f),  // bottom right
+		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), // bottom left
+		glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f)   // top left
 	};
 
 	unsigned int indices[] = {

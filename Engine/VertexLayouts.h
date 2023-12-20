@@ -12,8 +12,10 @@
 enum class VertexLayout
 {
 	VertexPos, // VertexPos contains just position
+	VertexPosPhong, // VertexPosPhong contains position and normal
 	VertexColor, // VertexColor contains position and color
-	VertexTexture, // VertexTexture contains position and texture(uv) coordinates
+	VertexColorPhong, // VertexColorPhong contains position, normal, and color
+	VertexTexture, // VertexTexture contains position, normal, and texture(uv) coordinates
 	VertexColorTexture, // VertexColorTexture contains position, color, and texture(uv) coordinates
 };
 
@@ -22,15 +24,29 @@ struct VertexPos
 	glm::vec3 pos;
 };
 
+struct VertexPosPhong
+{
+	glm::vec3 pos;
+	glm::vec3 normal;
+};
+
 struct VertexColor
 {
 	glm::vec3 pos;
 	glm::vec4 color;
 };
 
+struct VertexColorPhong
+{
+	glm::vec3 pos;
+	glm::vec3 normal;
+	glm::vec4 color;
+};
+
 struct VertexTexture
 {
 	glm::vec3 pos;
+	glm::vec3 normal;
 	glm::vec2 uv;
 };
 
@@ -50,20 +66,22 @@ static std::vector<int> GetVertexLayoutStrides(VertexLayout layout)
 	switch (layout)
 	{
 	case VertexLayout::VertexPos:
-		strides.emplace_back(3);
+		strides = {3};
+		break;
+	case VertexLayout::VertexPosPhong:
+		strides = { 3, 3 };
 		break;
 	case VertexLayout::VertexColor:
-		strides.emplace_back(3);
-		strides.emplace_back(4);
+		strides = { 3, 4 };
+		break;
+	case VertexLayout::VertexColorPhong:
+		strides = { 3, 3, 4 };
 		break;
 	case VertexLayout::VertexTexture:
-		strides.emplace_back(3);
-		strides.emplace_back(2);
+		strides = { 3, 3, 2 };
 		break;
 	case VertexLayout::VertexColorTexture:
-		strides.emplace_back(3);
-		strides.emplace_back(4);
-		strides.emplace_back(2);
+		strides = { 3, 4, 2 };
 		break;
 	}
 
