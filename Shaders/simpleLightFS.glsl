@@ -15,6 +15,9 @@ out vec4 fragColor;
 
 void main() 
 {
+	float ambientStrength = 0.1;
+	vec4 ambientLight = ambientStrength * lightColor;
+
 	// Sampler colors of a texture with texture function, passing in sampler and coordinates
-	fragColor = lightColor * texture(textureSampler, textureCoord);
+	fragColor = ambientLight * texture(textureSampler, textureCoord);
 }

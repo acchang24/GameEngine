@@ -84,7 +84,7 @@ bool Game::Init()
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	Shader* lightShader = new Shader("Shaders/simpleLightVS.glsl", "Shaders/simpleLightFS.glsl");
 	lightShader->SetActive();
-	lightShader->SetVec4("lightColor", glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
+	lightShader->SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	Texture* texture = new Texture("Assets/companioncube.png");
 
@@ -94,7 +94,7 @@ bool Game::Init()
 	am->SaveTexture("Assets/companioncube.png", texture);
 
 	mCamera = new Camera();
-	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
 
 	glm::vec3 objectPositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -117,10 +117,16 @@ bool Game::Init()
 		object->SetScale(0.5f);
 		object->SetShader(lightShader);
 		object->SetTexture(texture);
-		object->SetYaw(20.0f * i);
+		object->SetYaw((20.0f * i) + 25.0f);
 		TimerComponent* timer = new TimerComponent(object);
 		mEntities.emplace_back(object);
 	}
+
+	Sphere* lightSphere = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere->SetPosition(glm::vec3(1.0f, 0.0f, 1.0f));
+	lightSphere->SetScale(0.1f);
+	lightSphere->SetShader(colorShader);
+	mEntities.emplace_back(lightSphere);
 
 	return true;
 }

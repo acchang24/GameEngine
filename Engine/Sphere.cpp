@@ -75,5 +75,6 @@ void Sphere::OnUpdate(float deltaTime)
 
 void Sphere::OnDraw()
 {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    Entity3D::OnDraw();
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
