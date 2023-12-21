@@ -3,8 +3,7 @@
 #include "glm/glm.hpp"
 
 class VertexBuffer;
-class Shader;
-class Texture;
+class Material;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -22,6 +21,7 @@ public:
 	void Draw() override;
 
 	// Entity specific update code (overridable)
+	// This OnUpdate updates the view matrix
 	virtual void OnUpdate(float deltaTime);
 	// Entity specific draw code (overrideable)
 	virtual void OnDraw();
@@ -29,12 +29,9 @@ public:
 	// Set the entity's vertex buffer
 	// @param - VertexBuffer* for the new vertex buffer
 	void SetVertexBuffer(VertexBuffer* vBuffer) { mVertexBuffer = vBuffer; }
-	// Set the entity's shader
-	// @param - Shader* for the new shader
-	void SetShader(Shader* shader) { mShader = shader; }
-	// Set the entity's texture
-	// @param - Texture* for the new texture
-	void SetTexture(Texture* texture) { mTexture = texture; }
+	// Set the entity's material
+	// @param - Material* for the new material
+	void SetMaterial(Material* m) { mMaterial = m; }
 	// Set the entity's model matrix
 	// @param - const glm::mat4& for the new model matrix
 	void SetModelMatrix(const glm::mat4& m) { mModel = m; }
@@ -61,11 +58,8 @@ protected:
 	// Entity's vertex buffer
 	VertexBuffer* mVertexBuffer;
 
-	// Entity's shader
-	Shader* mShader;
-
-	// Entity's texture
-	Texture* mTexture;
+	// Entity's material
+	Material* mMaterial;
 
 	// Entity's model matrix
 	glm::mat4 mModel;

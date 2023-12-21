@@ -14,6 +14,7 @@
 #include "Camera.h"
 #include "AssetManager.h"
 #include "Cache.h"
+#include "Material.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -90,14 +91,27 @@ bool Game::Init()
 	lightShader->SetVec3("lightPos", lightPosition);
 
 	Texture* texture = new Texture("Assets/companioncube.png");
+	Texture* texture2 = new Texture("Assets/wall.jpg");
 
 	am->SaveShader("texture", textureShader);
 	am->SaveShader("color", colorShader);
 	am->SaveShader("lightShader", lightShader);
 	am->SaveTexture("Assets/companioncube.png", texture);
+	am->SaveTexture("Assets/wall.jpg", texture2);
 
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+
+	MaterialColors cubeMat = {glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.5f, 32.0f, true, false};
+	Material* cubeMaterial = new Material();
+	cubeMaterial->SetMaterialColors(cubeMat);
+	cubeMaterial->SetShader(lightShader);
+	cubeMaterial->AddTexture(texture);
+
+	MaterialColors lightMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false };
+	Material* lightMaterial = new Material();
+	lightMaterial->SetMaterialColors(lightMat);
+	lightMaterial->SetShader(colorShader);
 
 	glm::vec3 objectPositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -118,8 +132,12 @@ bool Game::Init()
 		Cube* object = new Cube();
 		object->SetPosition(objectPositions[i]);
 		object->SetScale(0.5f);
-		object->SetShader(lightShader);
-		object->SetTexture(texture);
+		Material* mat = new Material(*cubeMaterial);
+		if (i == 3 || i == 7)
+		{
+			mat->ChangeTexture(0, texture2);
+		}
+		object->SetMaterial(mat);
 		object->SetYaw(25.0f);
 		TimerComponent* timer = new TimerComponent(object);
 		mEntities.emplace_back(object);
@@ -128,8 +146,11 @@ bool Game::Init()
 	Sphere* lightSphere = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere->SetPosition(lightPosition);
 	lightSphere->SetScale(0.1f);
-	lightSphere->SetShader(colorShader);
+	lightSphere->SetMaterial(new Material(*lightMaterial));
 	mEntities.emplace_back(lightSphere);
+
+	delete cubeMaterial;
+	delete lightMaterial;
 
 	return true;
 }

@@ -23,8 +23,12 @@ class Material
 {
 public:
 	Material();
+	~Material();
+	Material(const Material& rhs);
+	Material& operator=(const Material& rhs);
 
-	// Sets the material's shader. It also binds any textures
+	// Sets the material's shader as active. It also loops
+	// through the texture vector and binds any textures
 	// onto its texture units and sends the MaterialColors
 	// struct to the shader.
 	void SetActive();
@@ -66,6 +70,9 @@ public:
 	// Set the material's shader
 	// @param - Shader* for the new shader
 	void SetShader(Shader* shader) { mShader = shader; }
+
+	// Changes texture based on its index
+	void ChangeTexture(size_t index, Texture* texture) { mTextures[index] = texture; }
 
 private:
 	// Material's color

@@ -32,6 +32,8 @@ in vec3 fragPos;
 // Set a uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
 
+// Uniform for Material
+uniform Material material;
 // Uniform for light color
 uniform vec4 lightColor;
 // uniform for light position
@@ -65,9 +67,11 @@ void main()
     diff = max(diff, 0.0);
 	// Apply diffuse impact with the light's color to get diffuse light
     vec4 diffuseLight = diff * lightColor;
+	// Apply the material's diffuse color
+	diffuseLight *= material.diffuseColor;
 
 	// Specular light
-	float specularStrength = 0.5;
+	float specularStrength = material.specularIntensity;
 	// Get the view direction (fragment's position to camera's position)
 	vec3 viewDir = normalize(viewPos - fragPos);
 	// Get the reflect direction
@@ -79,9 +83,11 @@ void main()
     // Make sure it's not negative
     spec = max(spec, 0.0);
     // Raise to power of the material's specular intensity value (higher power = smaller more focused highlight)
-    spec = pow(spec, 32);
+    spec = pow(spec, material.shininess);
 	// Apply specular strength and spec component with light color to get specular light
 	vec4 specularLight = specularStrength * spec * lightColor;
+	// Apply the material's specular color
+	specularLight *= material.specularColor;
 
 	// Sampler colors of a texture with texture function, passing in sampler and coordinates
 	fragColor = (ambientLight + diffuseLight + specularLight) * texture(textureSamplers.diffuse0, textureCoord);

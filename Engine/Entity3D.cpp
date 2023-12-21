@@ -4,13 +4,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "VertexBuffer.h"
 #include "Shader.h"
-#include "Texture.h"
+#include "Material.h"
 
 Entity3D::Entity3D() :
 	Entity(),
 	mVertexBuffer(nullptr),
-	mShader(nullptr),
-	mTexture(nullptr),
+	mMaterial(nullptr),
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
@@ -24,6 +23,7 @@ Entity3D::~Entity3D()
 {
 	std::cout << "Delete entity 3D" << std::endl;
 	delete mVertexBuffer;
+	delete mMaterial;
 }
 
 void Entity3D::Update(float deltaTime)
@@ -35,24 +35,16 @@ void Entity3D::Update(float deltaTime)
 
 void Entity3D::Draw()
 {
-	mShader->SetActive();
-
-	// Send model matrix to shader
-	mShader->SetMat4("model", mModel);
+	mMaterial->SetActive();
+	mMaterial->GetShader()->SetMat4("model", mModel);
 
 	OnDraw();
-
-	if (mTexture)
-	{
-		mTexture->SetActive();
-	}
 
 	mVertexBuffer->Draw();
 }
 
 void Entity3D::OnUpdate(float deltaTime)
 {
-	// Update model matrix (generic)
 	mModel = glm::mat4(1.0f);
 
 	// Translate
