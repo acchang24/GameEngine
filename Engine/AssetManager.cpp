@@ -1,12 +1,14 @@
 #include "AssetManager.h"
 #include <iostream>
 
-AssetManager::AssetManager():
+AssetManager::AssetManager() :
 	mShaderCache(nullptr),
-	mTextureCache(nullptr)
+	mTextureCache(nullptr),
+	mMaterialCache(nullptr)
 {
 	mShaderCache = new Cache<Shader>(this);
 	mTextureCache = new Cache<Texture>(this);
+	mMaterialCache = new Cache<Material>(this);
 }
 
 AssetManager::~AssetManager()
@@ -18,15 +20,18 @@ void AssetManager::Shutdown()
 {
 	delete mShaderCache;
 	delete mTextureCache;
+	delete mMaterialCache;
 
 	mShaderCache = nullptr;
 	mTextureCache = nullptr;
+	mMaterialCache = nullptr;
 }
 
 void AssetManager::Clear()
 {
 	mShaderCache->Clear();
 	mTextureCache->Clear();
+	mMaterialCache->Clear();
 }
 
 AssetManager* AssetManager::Get()

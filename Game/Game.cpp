@@ -113,6 +113,9 @@ bool Game::Init()
 	lightMaterial->SetMaterialColors(lightMat);
 	lightMaterial->SetShader(colorShader);
 
+	am->SaveMaterial("cube", cubeMaterial);
+	am->SaveMaterial("light", lightMaterial);
+
 	glm::vec3 objectPositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
 		glm::vec3(2.0f,  5.0f, -15.0f),
@@ -148,9 +151,6 @@ bool Game::Init()
 	lightSphere->SetScale(0.1f);
 	lightSphere->SetMaterial(new Material(*lightMaterial));
 	mEntities.emplace_back(lightSphere);
-
-	delete cubeMaterial;
-	delete lightMaterial;
 
 	return true;
 }
