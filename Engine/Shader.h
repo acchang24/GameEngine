@@ -2,6 +2,7 @@
 #include <string>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "Material.h"
 
 // Shader class contains a OpenGL shader program that consists of
 // a vertex shader and a fragment shader. This shader class manages
@@ -78,6 +79,18 @@ public:
     void SetMat4(const std::string& name, const glm::mat4& mat) const
     {
         glUniformMatrix4fv(glGetUniformLocation(mShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    }
+
+    // Setter for materials uniform
+    void SetMaterial(Material* material) const
+    {
+        const MaterialColors& mats = material->GetMats();
+        SetVec4("material.diffuseColor", mats.diffuseColor);
+        SetVec4("material.specularColor", mats.specularColor);
+        SetFloat("material.specularIntensity", mats.specularIntensity);
+        SetFloat("material.shininess", mats.shininess);
+        SetBool("material.hasDiffuseTexture", mats.hasDiffuseTexture);
+        SetBool("material.hasSpecularTexture", mats.hasSpecularTexture);
     }
 
 private:

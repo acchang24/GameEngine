@@ -1,13 +1,36 @@
 // Specify OpenGL 4.2 with core functionality
 #version 420 core
 
+// Struct to define material colors and properties of the surface
+struct Material
+{
+    vec4 diffuseColor;
+    vec4 specularColor;
+	float specularIntensity;
+    float shininess;
+    bool hasDiffuseTexture;
+    bool hasSpecularTexture;
+};
+
+// Struct to define a differnet number of texture units
+// Add more samplers to this struct when needed
+struct TextureSamplers
+{
+    sampler2D diffuse0;
+    //sampler2D diffuse1;
+    //sampler2D diffuse2;
+    sampler2D specular0;
+    //sampler2D specular1;
+	//sampler2D specular2;
+};
+
 // Input variables from vertex shader call (same name and same type in vertex shader)
 in vec3 normal;
 in vec2 textureCoord;
 in vec3 fragPos;
 
-// Set a uniform for the 2D texture sampler
-uniform sampler2D textureSampler;
+// Set a uniform for the 2D texture samplers
+uniform TextureSamplers textureSamplers;
 
 // Uniform for light color
 uniform vec4 lightColor;
@@ -61,5 +84,5 @@ void main()
 	vec4 specularLight = specularStrength * spec * lightColor;
 
 	// Sampler colors of a texture with texture function, passing in sampler and coordinates
-	fragColor = (ambientLight + diffuseLight + specularLight) * texture(textureSampler, textureCoord);
+	fragColor = (ambientLight + diffuseLight + specularLight) * texture(textureSamplers.diffuse0, textureCoord);
 }
