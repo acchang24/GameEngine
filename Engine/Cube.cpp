@@ -69,7 +69,6 @@ void Cube::OnUpdate(float deltaTime)
     // UNCOMMENT THIS IF JUST REGULAR CUBE (this currently makes cubes to rotate infinitely on their own for now)
     // Entity3D::OnUpdate(deltaTime);
 
-    // Update model matrix
     mModel = glm::mat4(1.0f);
 
     // Translation

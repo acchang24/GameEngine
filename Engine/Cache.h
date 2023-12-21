@@ -37,8 +37,9 @@ public:
 		}
 	}
 
-	// Retrieves an asset from the asset map by name, returns nullptr if it doesn't exist
+	// Retrieves an asset of type T* from the asset map by name, returns nullptr if it doesn't exist
 	// @param - const std::string& for the asset's name
+	// @return - T* for the templated data
 	T* Get(const std::string& name)
 	{
 		if (mAssetMap.find(name) != mAssetMap.end())

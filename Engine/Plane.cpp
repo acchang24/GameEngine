@@ -18,7 +18,6 @@ Plane::Plane() :
 		1, 2, 3    // second triangle
 	};
 
-	// Create a vertex buffer with the vertices
 	mVertexBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(VertexTexture), sizeof(indices) / sizeof(unsigned int), VertexLayout::VertexTexture);
 }
 

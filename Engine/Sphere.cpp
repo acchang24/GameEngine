@@ -44,7 +44,7 @@ Sphere::Sphere(const glm::vec4& color) :
         }
     }
 
-    // Calc The Index Positions
+    // Calculate the indices
     for (unsigned int i = 0; i < slices * stacks + slices; ++i)
     {
         indices.emplace_back(i);
@@ -58,8 +58,7 @@ Sphere::Sphere(const glm::vec4& color) :
 
     size_t vertexSize = sizeof(VertexColor) * vertices.size();
     size_t indexSize = sizeof(unsigned int) * indices.size();
-
-    // Create vertex buffer 
+ 
     mVertexBuffer = new VertexBuffer(vertices.data(), indices.data(), vertexSize, indexSize, vertices.size(), indices.size(), VertexLayout::VertexColor);
 }
 
@@ -76,5 +75,4 @@ void Sphere::OnUpdate(float deltaTime)
 void Sphere::OnDraw()
 {
     Entity3D::OnDraw();
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }

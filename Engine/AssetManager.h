@@ -4,7 +4,7 @@
 #include "Texture.h"
 #include "Material.h"
 
-// The AssetManger is a singleton class that helps load assets on demand
+// The AssetManager is a singleton class that helps load assets on demand
 // and cache them so that subsequent loads will return the cached asset
 // instead of having to load them again. This manager provides fucntions
 // to help save/load assets when needed.

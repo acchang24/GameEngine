@@ -31,36 +31,27 @@ void Camera::SetActive()
 	switch (mMode)
 	{
 	case CameraMode::First:
-		// Calculate the camera's forward based on yaw and pitch angles
 		mForward.x = cosf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
 		mForward.y = sinf(glm::radians(static_cast<float>(mPitch)));
 		mForward.z = sinf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
-		// Normalize vector
 		mForward = glm::normalize(mForward);
 
-		// Create view
 		mView = glm::lookAt(mPosition, mPosition + mForward, mUp);
 		break;
 	case CameraMode::Fly:
-		// Calculate the camera's forward based on yaw and pitch angles
 		mForward.x = cosf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
 		mForward.y = sinf(glm::radians(static_cast<float>(mPitch)));
 		mForward.z = sinf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
-		// Normalize vector
 		mForward = glm::normalize(mForward);
 
-		// Create view
 		mView = glm::lookAt(mPosition, mPosition + mForward, mUp);
 		break;
 	case CameraMode::Orbit:
-		// Calculate the camera's forward with the new position
 		mForward = glm::normalize(mTarget - mPosition);
 
-		// Create view
 		mView = glm::lookAt(mPosition, mTarget, mUp);
 		break;
 	}
 
-	// Re-calculate right vector
 	mRight = glm::normalize(glm::cross(mForward, mUp));
 }

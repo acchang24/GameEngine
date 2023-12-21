@@ -14,7 +14,8 @@ public:
 	Entity();
 	virtual ~Entity();
 
-	// Virtual Update function that updates and handles the entity's own unique attributes
+	// Virtual Update function that updates and handles the entity's own unique attributes.
+	// This Update function loops through the vector of components updates them.
 	// @param - float representing delta time
 	virtual void Update(float deltaTime);
 

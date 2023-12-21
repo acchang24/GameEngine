@@ -20,7 +20,6 @@ Entity::~Entity()
 
 void Entity::Update(float deltaTime)
 {
-	// Update all components
 	for (auto c : mComponents)
 	{
 		c->Update(deltaTime);

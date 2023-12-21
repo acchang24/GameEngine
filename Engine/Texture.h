@@ -24,12 +24,12 @@ public:
 	// Binds the texture as the current one
 	void SetActive();
 
-	// Getterf for the texture's ID
-	// @returns - unsinged int mTextureID;
+	// Getter for the texture's ID
+	// @return - unsinged int mTextureID;
 	unsigned int GetID() const { return mTextureID; }
 
 	// Getter for the texture type
-	// @returns - TextureType mType
+	// @return - TextureType mType
 	TextureType GetType() const { return mType; }
 
 	// Setter for the texture type
