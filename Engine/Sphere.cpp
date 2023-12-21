@@ -12,8 +12,8 @@ Sphere::Sphere(const glm::vec4& color) :
 
     float pi = 3.1415926535f;
 
-    int stacks = 15;
-    int slices = 15;
+    int stacks = 20;
+    int slices = 20;
 
     std::vector<unsigned int> indices;
     std::vector<VertexColor> vertices;

@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include "Material.h"
+#include "Light.h"
 
 // Shader class contains a OpenGL shader program that consists of
 // a vertex shader and a fragment shader. This shader class manages
@@ -120,6 +121,16 @@ public:
         SetBool("material.hasDiffuseTexture", mats.hasDiffuseTexture);
         SetBool("material.hasSpecularTexture", mats.hasSpecularTexture);
     }
+
+    void SetLight(const LightData& light) const
+    {
+        SetVec4("lightData.color", light.color);
+        SetFloat("lightData.ambientIntensity", light.ambientIntensity);
+        SetFloat("lightData.diffuseIntensity", light.diffuseIntensity);
+        SetFloat("lightData.specularIntensity", light.specularIntensity);
+        SetBool("lightData.isEnabled", light.isEnabled);
+    }
+
 
 private:
 	// The shader program object's reference ID

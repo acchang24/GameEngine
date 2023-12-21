@@ -24,18 +24,27 @@ struct TextureSamplers
 	//sampler2D specular2;
 };
 
+// Struct to define light data
+struct LightData
+{
+	vec4 color;
+	float ambientIntensity;
+	float diffuseIntensity;
+	float specularIntensity;
+	bool isEnabled;
+};
+
 // Input variables from vertex shader call (same name and same type in vertex shader)
 in vec3 normal;
 in vec2 textureCoord;
 in vec3 fragPos;
 
-// Set a uniform for the 2D texture samplers
+// Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
-
+// Uniform for LightData
+uniform LightData lightData;
 // Uniform for Material
 uniform Material material;
-// Uniform for light color
-uniform vec4 lightColor;
 // uniform for light position
 uniform vec3 lightPos;
 // uniform for view position (camera position)
@@ -53,9 +62,10 @@ void main()
 	vec3 lightDir = normalize(lightPos - fragPos);
 
 	// Ambient light
-	float ambientStrength = 0.1;
+	// Use light's ambient intensity
+	float ambientStrength = lightData.ambientIntensity;
 	// Apply ambient strength to the light's color to get ambient light
-	vec4 ambientLight = ambientStrength * lightColor;
+	vec4 ambientLight = ambientStrength * lightData.color;
 
 	// Diffuse light
 	// Calculate diffuse impact of light on current fragment
@@ -66,9 +76,11 @@ void main()
     // the two vectors is greater than 90 degrees
     diff = max(diff, 0.0);
 	// Apply diffuse impact with the light's color to get diffuse light
-    vec4 diffuseLight = diff * lightColor;
+	vec4 diffuseLight = diff * lightData.color;
 	// Apply the material's diffuse color
 	diffuseLight *= material.diffuseColor;
+	// Apply light's diffuse intensity
+	diffuseLight *= lightData.diffuseIntensity;
 
 	// Specular light
 	float specularStrength = material.specularIntensity;
@@ -85,9 +97,17 @@ void main()
     // Raise to power of the material's specular intensity value (higher power = smaller more focused highlight)
     spec = pow(spec, material.shininess);
 	// Apply specular strength and spec component with light color to get specular light
-	vec4 specularLight = specularStrength * spec * lightColor;
+	vec4 specularLight = specularStrength * spec * lightData.color;
 	// Apply the material's specular color
 	specularLight *= material.specularColor;
+	// Apply light's specular intensity
+	specularLight *= lightData.specularIntensity;
+
+	// Add specular maps
+	if(material.hasSpecularTexture)
+	{
+		specularLight *= texture(textureSamplers.specular0, textureCoord);
+	}
 
 	// Sampler colors of a texture with texture function, passing in sampler and coordinates
 	fragColor = (ambientLight + diffuseLight + specularLight) * texture(textureSamplers.diffuse0, textureCoord);

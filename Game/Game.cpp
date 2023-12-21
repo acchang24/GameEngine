@@ -15,6 +15,7 @@
 #include "AssetManager.h"
 #include "Cache.h"
 #include "Material.h"
+#include "Light.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -83,30 +84,37 @@ bool Game::Init()
 
 	AssetManager* am = AssetManager::Get();
 
+	LightData ld = { glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.1f, 1.0f, 1.0f, true };
+
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
-	Shader* lightShader = new Shader("Shaders/simpleLightVS.glsl", "Shaders/simpleLightFS.glsl");
+	Shader* lightShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 	lightShader->SetActive();
 	lightShader->SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightShader->SetVec3("lightPos", lightPosition);
+	lightShader->SetLight(ld);
 
 	Texture* texture = new Texture("Assets/companioncube.png");
 	Texture* texture2 = new Texture("Assets/wall.jpg");
+	Texture* texture3 = new Texture("Assets/container2.png");
+	Texture* texture4 = new Texture("Assets/container2_specular.png");
+	texture4->SetType(TextureType::Specular);
 
 	am->SaveShader("texture", textureShader);
 	am->SaveShader("color", colorShader);
 	am->SaveShader("lightShader", lightShader);
 	am->SaveTexture("Assets/companioncube.png", texture);
 	am->SaveTexture("Assets/wall.jpg", texture2);
+	am->SaveTexture("Assets/container2.png", texture3);
+	am->SaveTexture("Assets/container2_specular.png", texture4);
 
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	MaterialColors cubeMat = {glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.5f, 32.0f, true, false};
+	MaterialColors cubeMat = {glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, true, false};
 	Material* cubeMaterial = new Material();
 	cubeMaterial->SetMaterialColors(cubeMat);
 	cubeMaterial->SetShader(lightShader);
-	cubeMaterial->AddTexture(texture);
 
 	MaterialColors lightMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false };
 	Material* lightMaterial = new Material();
@@ -138,7 +146,12 @@ bool Game::Init()
 		Material* mat = new Material(*cubeMaterial);
 		if (i == 3 || i == 7)
 		{
-			mat->ChangeTexture(0, texture2);
+			mat->AddTexture(texture);
+		}
+		else
+		{
+			mat->AddTexture(texture3);
+			mat->AddTexture(texture4);
 		}
 		object->SetMaterial(mat);
 		object->SetYaw(25.0f);
