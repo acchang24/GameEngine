@@ -135,7 +135,7 @@ public:
 
     void SetPointLight(const PointLight* pointLight) const
     {
-        SetVec4("pointLight.data.color", pointLight->mData.color);
+  /*      SetVec4("pointLight.data.color", pointLight->mData.color);
         SetFloat("pointLight.data.ambientIntensity", pointLight->mData.ambientIntensity);
         SetFloat("pointLight.data.diffuseIntensity", pointLight->mData.diffuseIntensity);
         SetFloat("pointLight.data.specularIntensity", pointLight->mData.specularIntensity);
@@ -143,12 +143,44 @@ public:
         SetVec3("pointLight.position", pointLight->mPointLightData.position);
         SetFloat("pointLight.constant", pointLight->mPointLightData.constant);
         SetFloat("pointLight.linear", pointLight->mPointLightData.linear);
-        SetFloat("pointLight.quadratic", pointLight->mPointLightData.quadratic);
+        SetFloat("pointLight.quadratic", pointLight->mPointLightData.quadratic);*/
+
+        std::string index = std::to_string(pointLight->mIndex);
+        std::string name = "pointLights[" + index + "].data.color";
+        SetVec4(name, pointLight->mData.color);
+        name = "pointLights[" + index + "].data.ambientIntensity";
+        SetFloat(name, pointLight->mData.ambientIntensity);
+        name = "pointLights[" + index + "].data.diffuseIntensity";
+        SetFloat(name, pointLight->mData.diffuseIntensity);
+        name = "pointLights[" + index + "].data.specularIntensity";
+        SetFloat(name, pointLight->mData.specularIntensity);
+        name = "pointLights[" + index + "].data.isEnabled";
+        SetBool(name, pointLight->mData.isEnabled);
+        name = "pointLights[" + index + "].position";
+        SetVec3(name, pointLight->mPointLightData.position);
+        name = "pointLights[" + index + "].constant";
+        SetFloat(name, pointLight->mPointLightData.constant);
+        name = "pointLights[" + index + "].linear";
+        SetFloat(name, pointLight->mPointLightData.linear);
+        name = "pointLights[" + index + "].quadratic";
+        SetFloat(name, pointLight->mPointLightData.quadratic);
     }
 
     void SetDirectionalLight(const DirectionalLight* directionalLight) const
     {
-
+        std::string index = std::to_string(directionalLight->mIndex);
+        std::string name = "directionalLights[" + index + "].data.color";
+        SetVec4(name, directionalLight->mData.color);
+        name = "directionalLights[" + index + "].data.ambientIntensity";
+        SetFloat(name, directionalLight->mData.ambientIntensity);
+        name = "directionalLights[" + index + "].data.diffuseIntensity";
+        SetFloat(name, directionalLight->mData.diffuseIntensity);
+        name = "directionalLights[" + index + "].data.specularIntensity";
+        SetFloat(name, directionalLight->mData.specularIntensity);
+        name = "directionalLights[" + index + "].data.isEnabled";
+        SetBool(name, directionalLight->mData.isEnabled);
+        name = "directionalLights[" + index + "].direction";
+        SetVec3(name, directionalLight->mDirection);
     }
 
 private:

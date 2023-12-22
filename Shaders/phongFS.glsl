@@ -1,6 +1,8 @@
 // Specify OpenGL 4.2 with core functionality
 #version 420 core
 
+#define MAX_LIGHTS 10
+
 // Struct to define material colors and properties of the surface
 struct Material
 {
@@ -55,9 +57,9 @@ in vec3 fragPos;
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
 // Uniform for point light
-uniform PointLight pointLight;
+uniform PointLight pointLights[MAX_LIGHTS];
 // Uniform for directional light
-uniform DirectionalLight directionalLight;
+uniform DirectionalLight directionalLights[MAX_LIGHTS];
 // Uniform for Material
 uniform Material material;
 // uniform for view position (camera position)
@@ -68,6 +70,7 @@ out vec4 fragColor;
 
 vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 viewDir);
 vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragPos);
+vec3 CalculateDirLight(DirectionalLight light, vec3 normal, vec3 viewDir);
 
 void main() 
 {
@@ -78,14 +81,31 @@ void main()
 	// Get the view direction from the fragment's position to the view(camera) position
 	vec3 viewDir = normalize(viewPos - fragPos);
 
-	if(pointLight.data.isEnabled)
+	// Calculate lighting from point lights
+	for(int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		lightResult += CalculatePointLight(pointLight, norm, viewDir, fragPos);
+		if(pointLights[i].data.isEnabled)
+		{
+			lightResult += CalculatePointLight(pointLights[i], norm, viewDir, fragPos);
+		}
+		else
+		{
+			lightResult += pointLights[i].data.color.xyz * pointLights[i].data.ambientIntensity;
+		}
 	}
-	else
+
+	for(int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		lightResult = pointLight.data.color.xyz * pointLight.data.ambientIntensity;
+		if(directionalLights[i].data.isEnabled)
+		{
+			lightResult += CalculateDirLight(directionalLights[i], norm, viewDir);
+		}
+		else
+		{
+			lightResult += directionalLights[i].data.color.xyz * directionalLights[i].data.ambientIntensity;
+		}
 	}
+
 
 	fragColor = vec4(lightResult, 1.0);
 
@@ -154,7 +174,7 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragP
 {
 	// Attenuation
 	// Get the distance from fragment position to the point light's position
-	float dist = length(pointLight.position - fragPos);
+	float dist = length(light.position - fragPos);
 	// Calculate attentuation
 	float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
 	
@@ -168,4 +188,15 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragP
 	phong *= attenuation;
 
 	return phong;
+}
+
+vec3 CalculateDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)
+{
+    // Calculate the direction from the fragment's position to the light source
+    vec3 lightDir = normalize(-light.direction);
+
+    // Calculate phong lighting
+    vec3 phong = CalculatePhongLighting(light.data, lightDir, normal, viewDir);
+
+    return phong;
 }

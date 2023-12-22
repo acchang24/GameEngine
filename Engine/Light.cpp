@@ -4,18 +4,21 @@
 #include "Shader.h"
 
 Light::Light() : 
-	mData({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.1f, 1.0f, 1.0f, true})
+	mData({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.1f, 1.0f, 1.0f, true}),
+	mIndex(0)
 {
 }
 
 Light::Light(const glm::vec4& color) :
-	mData({ color, 0.1f, 1.0f, 1.0f, true})
+	mData({ color, 0.1f, 1.0f, 1.0f, true}),
+	mIndex(0)
 {
 
 }
 
 Light::Light(const glm::vec4& color, float ambient, float diffuse, float specular) :
-	mData({color, ambient, diffuse, specular, true})
+	mData({color, ambient, diffuse, specular, true}),
+	mIndex(0)
 {
 
 }

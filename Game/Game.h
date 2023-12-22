@@ -3,6 +3,7 @@
 #include <vector>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "LightConstants.h"
 
 class Shader;
 class Texture;
@@ -50,6 +51,23 @@ public:
 
 	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
 
+	// Allocator for point lights
+	// @param - const glm::vec4& for the point light's color
+	// @param - const glm::vec3& for the light's position
+	// @param - float for attenuation constant term
+	// @param - float for attenuation linear term
+	// @param - float for attenuation quadratic term
+	// @return - pointer to a newly allocated PointLight
+	PointLight* AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic);
+
+	// Allocator for directional lights
+	// @param - const glm::vec3& for the light's direction
+	// @return - pointer to a newly allocated DirectionalLight
+	DirectionalLight* AllocateDirectionalLight(const glm::vec3& direction);
+
+	// Loops through each light and deletes them
+	void DeAllocateLights();
+
 private:
 	// std::unordered_map of keyboard inputs on the previous frame/loop.
 	// Takes key press as an int and stores the key's state as a bool.
@@ -64,7 +82,8 @@ private:
 	// The game's camera
 	Camera* mCamera;
 
-	PointLight* mPointLight;
+	// Array of different lights
+	LightArrays mLightArrays;
 
 	double mMousePosX;
 	double mMousePosY;

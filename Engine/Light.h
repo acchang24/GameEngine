@@ -42,5 +42,8 @@ public:
 	// This light's data
 	LightData mData;
 
+	// The light's index in the array of lights
+	unsigned int mIndex;
+
 protected:
 };

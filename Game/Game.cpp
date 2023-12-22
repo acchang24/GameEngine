@@ -16,6 +16,7 @@
 #include "Cache.h"
 #include "Material.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -26,7 +27,7 @@ glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(
 Game::Game() :
 	mWindow(nullptr),
 	mCamera(nullptr),
-	mPointLight(nullptr),
+	mLightArrays({}),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
 	mMousePrevX(static_cast<double>(WIDTH / 2)),
@@ -115,9 +116,21 @@ bool Game::Init()
 	am->SaveMaterial("cube", cubeMaterial);
 	am->SaveMaterial("lightSphere", lightMaterial);
 
-	mPointLight = new PointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
-	mPointLight->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
-	AddGameEntity(mPointLight->GetLightSphere());
+	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
+	pointLight->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
+	AddGameEntity(pointLight->GetLightSphere());
+
+	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec3(-0.2f, -1.0f, -0.3f));
+	dirLight->mData.diffuseIntensity = 0.5f;
+	dirLight->mData.specularIntensity = 0.5f;
+
+	//PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 0.3f, 0.3f, 1.0f), glm::vec3(1.0f, -3.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	//pointLight2->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
+	//AddGameEntity(pointLight2->GetLightSphere());
+
+	//PointLight* pointLight3 = AllocatePointLight(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 10.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+	//pointLight3->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
+	//AddGameEntity(pointLight3->GetLightSphere());
 
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -174,7 +187,7 @@ void Game::Shutdown()
 
 	delete mCamera;
 
-	delete mPointLight;
+	DeAllocateLights();
 }
 
 void Game::Run()
@@ -265,7 +278,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_SPACE])
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
-		mPointLight->SetIsEnabled(!mPointLight->IsEnabled());
+		mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{
@@ -275,7 +288,13 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 void Game::Update(float deltaTime)
 {
-	mPointLight->SetLight();
+	for (size_t i = 0; i < MAX_LIGHTS; ++i)
+	{
+		if(mLightArrays.mPointLights[i])
+			mLightArrays.mPointLights[i]->SetLight();
+		if (mLightArrays.mDirectionalLights[i])
+			mLightArrays.mDirectionalLights[i]->SetLight();
+	}
 
 	for (auto e : mEntities)
 	{
@@ -380,4 +399,52 @@ void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 
 	// Set new width/height ratio for perspective projection matrix, and update the projection matrix
 	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
+}
+
+PointLight* Game::AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic)
+{
+	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
+	{
+		if (mLightArrays.mPointLights[i] == nullptr)
+		{
+			PointLight* pointLight = new PointLight(color, position, constant, linear, quadratic);
+			pointLight->SetIsEnabled(true);
+			pointLight->mIndex = i;
+			mLightArrays.mPointLights[i] = pointLight;
+
+			return pointLight;
+		}
+	}
+
+	return nullptr;
+}
+
+DirectionalLight* Game::AllocateDirectionalLight(const glm::vec3& direction)
+{
+	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
+	{
+		if (mLightArrays.mDirectionalLights[i] == nullptr)
+		{
+			DirectionalLight* directionalLight = new DirectionalLight(direction);
+			directionalLight->SetIsEnabled(true);
+			directionalLight->mIndex = i;
+			mLightArrays.mDirectionalLights[i] = directionalLight;
+
+			return directionalLight;
+		}
+	}
+
+	return nullptr;
+}
+
+void Game::DeAllocateLights()
+{
+	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
+	{
+		delete mLightArrays.mPointLights[i];
+		mLightArrays.mPointLights[i] = nullptr;
+
+		delete mLightArrays.mDirectionalLights[i];
+		mLightArrays.mDirectionalLights[i] = nullptr;
+	}
 }
