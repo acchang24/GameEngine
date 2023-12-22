@@ -32,7 +32,7 @@ struct LightData
 	bool isEnabled;
 };
 
-// Struct for point light position and attenuation terms
+// Struct for point light
 struct PointLight
 {
     LightData data;
@@ -49,6 +49,19 @@ struct DirectionalLight
 	vec3 direction;
 };
 
+// Struct for spotlight
+struct SpotLight
+{
+    LightData data;
+    vec3 position;
+    vec3 direction;
+    float cutoff;
+    float outerCutoff;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
 // Input variables from vertex shader call (same name and same type in vertex shader)
 in vec3 normal;
 in vec2 textureCoord;
@@ -60,6 +73,8 @@ uniform TextureSamplers textureSamplers;
 uniform PointLight pointLights[MAX_LIGHTS];
 // Uniform for directional light
 uniform DirectionalLight directionalLights[MAX_LIGHTS];
+// Uniform for spot lights
+uniform SpotLight spotlights[MAX_LIGHTS];
 // Uniform for Material
 uniform Material material;
 // uniform for view position (camera position)
@@ -71,6 +86,7 @@ out vec4 fragColor;
 vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 viewDir);
 vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragPos);
 vec3 CalculateDirLight(DirectionalLight light, vec3 normal, vec3 viewDir);
+vec3 CalculateSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 fragPos);
 
 void main() 
 {
@@ -93,7 +109,7 @@ void main()
 			lightResult += pointLights[i].data.color.xyz * pointLights[i].data.ambientIntensity;
 		}
 	}
-
+	// Calculate lighting from directional lights
 	for(int i = 0; i < MAX_LIGHTS; ++i)
 	{
 		if(directionalLights[i].data.isEnabled)
@@ -103,6 +119,18 @@ void main()
 		else
 		{
 			lightResult += directionalLights[i].data.color.xyz * directionalLights[i].data.ambientIntensity;
+		}
+	}
+	// Calculate lighting from spot lights
+	for(int i = 0; i < MAX_LIGHTS; ++i)
+	{
+		if(spotlights[i].data.isEnabled)
+		{
+			lightResult += CalculateSpotLight(spotlights[i], norm, viewDir, fragPos);
+		}
+		else
+		{
+			lightResult += spotlights[i].data.color.xyz * spotlights[i].data.ambientIntensity;
 		}
 	}
 
@@ -197,6 +225,33 @@ vec3 CalculateDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 
     // Calculate phong lighting
     vec3 phong = CalculatePhongLighting(light.data, lightDir, normal, viewDir);
+
+    return phong;
+}
+
+vec3 CalculateSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 fragPos)
+{
+    // Calculate the direction from the fragment's position to the light source
+    vec3 lightDir = normalize(light.position - fragPos);
+
+    // Calculate theta, the angle between the vector from lightDir and the pointing direction of spotlight
+    float theta = dot(lightDir, normalize(-light.direction));
+
+    // Calculate epsilon, the cosine difference between the inner and outer cones
+    float epsilon = light.cutoff - light.outerCutoff;
+
+    // Calculate intensity for cone falloff
+    float intensity = clamp((theta - light.outerCutoff) / epsilon, 0.0, 1.0);
+
+    // Attenuation
+    // Distance from fragment position to the point light's position
+    float dist = length(light.position - fragPos);
+    // Calculate attenuation
+    float attenuation = 1.0f / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
+
+    vec3 phong = CalculatePhongLighting(light.data, lightDir, normal, viewDir);
+
+    phong *= attenuation * intensity;
 
     return phong;
 }

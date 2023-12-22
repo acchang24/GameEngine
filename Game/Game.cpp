@@ -17,6 +17,8 @@
 #include "Material.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "SpotLight.h"
+#include "Plane.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -124,6 +126,11 @@ bool Game::Init()
 	dirLight->mData.diffuseIntensity = 0.5f;
 	dirLight->mData.specularIntensity = 0.5f;
 
+	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
+		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
+	spotLight->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
+	AddGameEntity(spotLight->GetLightSphere());
+
 	//PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 0.3f, 0.3f, 1.0f), glm::vec3(1.0f, -3.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	//pointLight2->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
 	//AddGameEntity(pointLight2->GetLightSphere());
@@ -131,6 +138,15 @@ bool Game::Init()
 	//PointLight* pointLight3 = AllocatePointLight(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 10.0f, 0.0f), 1.0f, 0.09f, 0.032f);
 	//pointLight3->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
 	//AddGameEntity(pointLight3->GetLightSphere());
+
+	Material* planeMat = new Material(*cubeMaterial);
+	planeMat->SetSpecularIntensity(0.1f);
+	Plane* plane = new Plane();
+	plane->SetMaterial(planeMat);
+	plane->SetPosition(glm::vec3(0.0f, -5.0f, 1.0f));
+	plane->SetScale(50.0f);
+	plane->SetPitch(-90.0f);
+	AddGameEntity(plane);
 
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -290,10 +306,18 @@ void Game::Update(float deltaTime)
 {
 	for (size_t i = 0; i < MAX_LIGHTS; ++i)
 	{
-		if(mLightArrays.mPointLights[i])
+		if (mLightArrays.mPointLights[i])
+		{
 			mLightArrays.mPointLights[i]->SetLight();
-		if (mLightArrays.mDirectionalLights[i])
+		}
+		if (mLightArrays.mDirectionalLights[i]) 
+		{
 			mLightArrays.mDirectionalLights[i]->SetLight();
+		}
+		if (mLightArrays.mSpotLights[i])
+		{
+			mLightArrays.mSpotLights[i]->SetLight();
+		}
 	}
 
 	for (auto e : mEntities)
@@ -437,6 +461,24 @@ DirectionalLight* Game::AllocateDirectionalLight(const glm::vec3& direction)
 	return nullptr;
 }
 
+SpotLight* Game::AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic)
+{
+	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
+	{
+		if (mLightArrays.mSpotLights[i] == nullptr)
+		{
+			SpotLight* spotLight = new SpotLight(color, pos, dir, cutoff, outerCutoff, constant, linear, quadratic);
+			spotLight->SetIsEnabled(true);
+			spotLight->mIndex = i;
+			mLightArrays.mSpotLights[i] = spotLight;
+
+			return spotLight;
+		}
+	}
+
+	return nullptr;
+}
+
 void Game::DeAllocateLights()
 {
 	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
@@ -446,5 +488,8 @@ void Game::DeAllocateLights()
 
 		delete mLightArrays.mDirectionalLights[i];
 		mLightArrays.mDirectionalLights[i] = nullptr;
+
+		delete mLightArrays.mSpotLights[i];
+		mLightArrays.mSpotLights[i] = nullptr;
 	}
 }

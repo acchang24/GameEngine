@@ -6,6 +6,7 @@
 #include "Light.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "SpotLight.h"
 
 // Shader class contains a OpenGL shader program that consists of
 // a vertex shader and a fragment shader. This shader class manages
@@ -135,16 +136,6 @@ public:
 
     void SetPointLight(const PointLight* pointLight) const
     {
-  /*      SetVec4("pointLight.data.color", pointLight->mData.color);
-        SetFloat("pointLight.data.ambientIntensity", pointLight->mData.ambientIntensity);
-        SetFloat("pointLight.data.diffuseIntensity", pointLight->mData.diffuseIntensity);
-        SetFloat("pointLight.data.specularIntensity", pointLight->mData.specularIntensity);
-        SetBool("pointLight.data.isEnabled", pointLight->mData.isEnabled);
-        SetVec3("pointLight.position", pointLight->mPointLightData.position);
-        SetFloat("pointLight.constant", pointLight->mPointLightData.constant);
-        SetFloat("pointLight.linear", pointLight->mPointLightData.linear);
-        SetFloat("pointLight.quadratic", pointLight->mPointLightData.quadratic);*/
-
         std::string index = std::to_string(pointLight->mIndex);
         std::string name = "pointLights[" + index + "].data.color";
         SetVec4(name, pointLight->mData.color);
@@ -181,6 +172,35 @@ public:
         SetBool(name, directionalLight->mData.isEnabled);
         name = "directionalLights[" + index + "].direction";
         SetVec3(name, directionalLight->mDirection);
+    }
+
+    void SetSpotLight(const SpotLight* spotlight) const
+    {
+        std::string index = std::to_string(spotlight->mIndex);
+        std::string name = "spotlights[" + index + "].data.color";
+        SetVec4(name, spotlight->mData.color);
+        name = "spotlights[" + index + "].data.ambientIntensity";
+        SetFloat(name, spotlight->mData.ambientIntensity);
+        name = "spotlights[" + index + "].data.diffuseIntensity";
+        SetFloat(name, spotlight->mData.diffuseIntensity);
+        name = "spotlights[" + index + "].data.specularIntensity";
+        SetFloat(name, spotlight->mData.specularIntensity);
+        name = "spotlights[" + index + "].data.isEnabled";
+        SetBool(name, spotlight->mData.isEnabled);
+        name = "spotlights[" + index + "].position";
+        SetVec3(name, spotlight->mSpotLightData.position);
+        name = "spotlights[" + index + "].direction";
+        SetVec3(name, spotlight->mSpotLightData.direction);
+        name = "spotlights[" + index + "].cutoff";
+        SetFloat(name, spotlight->mSpotLightData.cutoff);
+        name = "spotlights[" + index + "].outerCutoff";
+        SetFloat(name, spotlight->mSpotLightData.outerCutoff);
+        name = "spotlights[" + index + "].constant";
+        SetFloat(name, spotlight->mSpotLightData.constant);
+        name = "spotlights[" + index + "].linear";
+        SetFloat(name, spotlight->mSpotLightData.linear);
+        name = "spotlights[" + index + "].quadratic";
+        SetFloat(name, spotlight->mSpotLightData.quadratic);
     }
 
 private:

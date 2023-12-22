@@ -2,6 +2,7 @@
 #include "glm/glm.hpp"
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 
 const int MAX_LIGHTS = 10;
 
@@ -15,4 +16,6 @@ struct LightArrays
     DirectionalLight* mDirectionalLights[MAX_LIGHTS];
     // Array of point lights
     PointLight* mPointLights[MAX_LIGHTS];
+    // Array of spot lights
+    SpotLight* mSpotLights[MAX_LIGHTS];
 };

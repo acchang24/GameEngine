@@ -9,7 +9,6 @@ class Shader;
 class Texture;
 class Entity;
 class Camera;
-class PointLight;
 
 class Game
 {
@@ -57,13 +56,25 @@ public:
 	// @param - float for attenuation constant term
 	// @param - float for attenuation linear term
 	// @param - float for attenuation quadratic term
-	// @return - pointer to a newly allocated PointLight
+	// @return - PointLight* for a newly allocated PointLight
 	PointLight* AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic);
 
 	// Allocator for directional lights
 	// @param - const glm::vec3& for the light's direction
-	// @return - pointer to a newly allocated DirectionalLight
+	// @return - DirectionalLight* a newly allocated DirectionalLight
 	DirectionalLight* AllocateDirectionalLight(const glm::vec3& direction);
+
+	// Allocator for spot lights
+	// @param - const glm::vec4& for the light's color
+	// @param - const glm::vec3& for the light's position
+	// @param - const glm::vec3& for the light's direction
+	// @param - float for the spotlight's inner circle cutoff
+	// @param - float for the spotlight's outer circle cutoff
+	// @param - float for attenuation constant term
+	// @param - float for attenuation linear term
+	// @param - float for attenuation quadratic term
+	// @return - SpotLight* for a newly allocated SpotLight
+	SpotLight* AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic);
 
 	// Loops through each light and deletes them
 	void DeAllocateLights();
