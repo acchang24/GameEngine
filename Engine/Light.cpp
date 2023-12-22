@@ -3,6 +3,11 @@
 #include "AssetManager.h"
 #include "Shader.h"
 
+Light::Light() : 
+	mData({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.1f, 1.0f, 1.0f, true})
+{
+}
+
 Light::Light(const glm::vec4& color) :
 	mData({ color, 0.1f, 1.0f, 1.0f, true})
 {

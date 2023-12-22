@@ -41,5 +41,4 @@ public:
 private:
 	// Sphere representing a point light's source
 	Sphere* mLightSphere;
-
 };

@@ -1,7 +1,6 @@
 #include "PointLight.h"
 #include <iostream>
 #include "AssetManager.h"
-#include "Shader.h"
 #include "Sphere.h"
 
 PointLight::PointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic) :

@@ -19,6 +19,8 @@ struct LightData
 class Light
 {
 public:
+	// Light constructor
+	Light();
 	// Light constructor with color
 	// @param - const glm::vec4 for the light's color
 	Light(const glm::vec4& color);

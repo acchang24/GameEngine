@@ -5,6 +5,7 @@
 #include "Material.h"
 #include "Light.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 
 // Shader class contains a OpenGL shader program that consists of
 // a vertex shader and a fragment shader. This shader class manages
@@ -143,6 +144,11 @@ public:
         SetFloat("pointLight.constant", pointLight->mPointLightData.constant);
         SetFloat("pointLight.linear", pointLight->mPointLightData.linear);
         SetFloat("pointLight.quadratic", pointLight->mPointLightData.quadratic);
+    }
+
+    void SetDirectionalLight(const DirectionalLight* directionalLight) const
+    {
+
     }
 
 private:

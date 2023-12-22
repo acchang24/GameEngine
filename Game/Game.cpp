@@ -88,8 +88,6 @@ bool Game::Init()
 	//Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	Shader* lightShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
-	lightShader->SetActive();
-	lightShader->SetVec3("lightPos", lightPosition);
 
 	Texture* texture = new Texture("Assets/companioncube.png");
 	Texture* texture2 = new Texture("Assets/wall.jpg");

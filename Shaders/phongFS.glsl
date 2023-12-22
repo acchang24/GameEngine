@@ -40,6 +40,13 @@ struct PointLight
     float quadratic;
 };
 
+// Struct for directional light
+struct DirectionalLight
+{
+	LightData data;
+	vec3 direction;
+};
+
 // Input variables from vertex shader call (same name and same type in vertex shader)
 in vec3 normal;
 in vec2 textureCoord;
@@ -49,10 +56,10 @@ in vec3 fragPos;
 uniform TextureSamplers textureSamplers;
 // Uniform for point light
 uniform PointLight pointLight;
+// Uniform for directional light
+uniform DirectionalLight directionalLight;
 // Uniform for Material
 uniform Material material;
-// uniform for light position
-uniform vec3 lightPos;
 // uniform for view position (camera position)
 uniform vec3 viewPos;
 
@@ -65,7 +72,7 @@ void main()
 	vec3 norm = normalize(normal);
 
 	// Get the light direction from fragment's position to the light source
-	vec3 lightDir = normalize(lightPos - fragPos);
+	vec3 lightDir = normalize(pointLight.position - fragPos);
 
 	// Ambient light
 	// Use light's ambient intensity
