@@ -97,7 +97,7 @@ bool Game::Init()
 	Texture* texture4 = new Texture("Assets/container2_specular.png");
 	texture4->SetType(TextureType::Specular);
 
-	MaterialColors cubeMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, true, false };
+	MaterialColors cubeMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, false, false };
 	Material* cubeMaterial = new Material();
 	cubeMaterial->SetMaterialColors(cubeMat);
 	cubeMaterial->SetShader(lightShader);

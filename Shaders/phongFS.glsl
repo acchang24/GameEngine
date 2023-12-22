@@ -112,6 +112,7 @@ void main()
 	// Add specular maps
 	if(material.hasSpecularTexture)
 	{
+		// Sampler colors of a specular map, passing in sampler and coordinates
 		specularLight *= texture(textureSamplers.specular0, textureCoord);
 	}
 
@@ -125,10 +126,16 @@ void main()
 		float dist = length(pointLight.position - fragPos);
 		// Calculate attentuation
 		float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * (dist * dist));
-
+		// Add attenuation to phong
 		phong *= attenuation;
 	}
 
-	// Sampler colors of a texture with texture function, passing in sampler and coordinates
-	fragColor = phong * texture(textureSamplers.diffuse0, textureCoord);
+	// Add diffuse maps
+	if(material.hasDiffuseTexture)
+	{
+		// Sampler colors of a texture with texture function, passing in sampler and coordinates
+		phong *= texture(textureSamplers.diffuse0, textureCoord);
+	}
+
+	fragColor = phong;
 }
