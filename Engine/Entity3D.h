@@ -26,6 +26,25 @@ public:
 	// Entity specific draw code (overrideable)
 	virtual void OnDraw();
 
+	// Gets the entity's model matrix
+	// @return - const glm::mat4& for the entity's model matrix
+	const glm::mat4& GetModelMatrix() const { return mModel; }
+	// Gets the entity's position
+	// @return - const glm::vec3& for the entity's position
+	const glm::vec3& GetPosition() const { return mPosition; }
+	// Gets the entity's scale
+	// @return - const glm::vec3& for the entity's scale
+	const glm::vec3& GetScale() const { return mScale; }
+	// Gets the entity's yaw rotation
+	// @return - float for the entity's yaw rotation
+	float GetYaw() const { return mYaw; }
+	// Gets the entity's pitch rotation
+	// @return - float for the entity's pitch rotation
+	float GetPitch() const { return mPitch; }
+	// Gets the entity's roll rotation
+	// @return - float for the entity's roll rotation
+	float GetRoll() const { return mRoll; }
+
 	// Set the entity's vertex buffer
 	// @param - VertexBuffer* for the new vertex buffer
 	void SetVertexBuffer(VertexBuffer* vBuffer) { mVertexBuffer = vBuffer; }

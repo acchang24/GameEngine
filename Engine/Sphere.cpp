@@ -64,7 +64,7 @@ Sphere::Sphere(const glm::vec4& color) :
 
 Sphere::~Sphere()
 {
-
+    std::cout << "Delete sphere" << std::endl;
 }
 
 void Sphere::OnUpdate(float deltaTime)

@@ -19,15 +19,22 @@ struct LightData
 class Light
 {
 public:
-	Light();
+	// Light constructor with color
+	// @param - const glm::vec4 for the light's color
+	Light(const glm::vec4& color);
+	// Light constructor with all light attributes
+	// @param - const glm::vec4 for the light's color
+	// @param - float for ambient intensity
+	// @param - float for diffuse intensity
+	// @param - float for specular intensity
+	Light(const glm::vec4& color, float ambient, float diffuse, float specular);
 	virtual ~Light();
 
-	// Sends light data to the shader
-	virtual void SetLight() const;
+	// Sends light data to the shader (overridable)
+	virtual void SetLight();
 
 	// This light's data
 	LightData mData;
 
 protected:
-
 };

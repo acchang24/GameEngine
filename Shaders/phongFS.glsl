@@ -17,11 +17,7 @@ struct Material
 struct TextureSamplers
 {
     sampler2D diffuse0;
-    //sampler2D diffuse1;
-    //sampler2D diffuse2;
     sampler2D specular0;
-    //sampler2D specular1;
-	//sampler2D specular2;
 };
 
 // Struct to define light data
@@ -34,6 +30,16 @@ struct LightData
 	bool isEnabled;
 };
 
+// Struct for point light position and attenuation terms
+struct PointLight
+{
+    LightData data;
+    vec3 position;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
 // Input variables from vertex shader call (same name and same type in vertex shader)
 in vec3 normal;
 in vec2 textureCoord;
@@ -41,8 +47,8 @@ in vec3 fragPos;
 
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
-// Uniform for LightData
-uniform LightData lightData;
+// Uniform for point light
+uniform PointLight pointLight;
 // Uniform for Material
 uniform Material material;
 // uniform for light position
@@ -63,9 +69,9 @@ void main()
 
 	// Ambient light
 	// Use light's ambient intensity
-	float ambientStrength = lightData.ambientIntensity;
+	float ambientStrength = pointLight.data.ambientIntensity;
 	// Apply ambient strength to the light's color to get ambient light
-	vec4 ambientLight = ambientStrength * lightData.color;
+	vec4 ambientLight = ambientStrength * pointLight.data.color;
 
 	// Diffuse light
 	// Calculate diffuse impact of light on current fragment
@@ -76,11 +82,11 @@ void main()
     // the two vectors is greater than 90 degrees
     diff = max(diff, 0.0);
 	// Apply diffuse impact with the light's color to get diffuse light
-	vec4 diffuseLight = diff * lightData.color;
+	vec4 diffuseLight = diff * pointLight.data.color;
 	// Apply the material's diffuse color
 	diffuseLight *= material.diffuseColor;
 	// Apply light's diffuse intensity
-	diffuseLight *= lightData.diffuseIntensity;
+	diffuseLight *= pointLight.data.diffuseIntensity;
 
 	// Specular light
 	float specularStrength = material.specularIntensity;
@@ -97,11 +103,11 @@ void main()
     // Raise to power of the material's specular intensity value (higher power = smaller more focused highlight)
     spec = pow(spec, material.shininess);
 	// Apply specular strength and spec component with light color to get specular light
-	vec4 specularLight = specularStrength * spec * lightData.color;
+	vec4 specularLight = specularStrength * spec * pointLight.data.color;
 	// Apply the material's specular color
 	specularLight *= material.specularColor;
 	// Apply light's specular intensity
-	specularLight *= lightData.specularIntensity;
+	specularLight *= pointLight.data.specularIntensity;
 
 	// Add specular maps
 	if(material.hasSpecularTexture)
@@ -109,6 +115,20 @@ void main()
 		specularLight *= texture(textureSamplers.specular0, textureCoord);
 	}
 
+	// Combine to get phong light
+	vec4 phong = ambientLight + diffuseLight + specularLight;
+
+	// Attenuation
+	if(pointLight.data.isEnabled)
+	{
+		// Get the distance from fragment position to the point light's position
+		float dist = length(pointLight.position - fragPos);
+		// Calculate attentuation
+		float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * (dist * dist));
+
+		phong *= attenuation;
+	}
+
 	// Sampler colors of a texture with texture function, passing in sampler and coordinates
-	fragColor = (ambientLight + diffuseLight + specularLight) * texture(textureSamplers.diffuse0, textureCoord);
+	fragColor = phong * texture(textureSamplers.diffuse0, textureCoord);
 }

@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "Material.h"
 #include "Light.h"
+#include "PointLight.h"
 
 // Shader class contains a OpenGL shader program that consists of
 // a vertex shader and a fragment shader. This shader class manages
@@ -131,6 +132,18 @@ public:
         SetBool("lightData.isEnabled", light.isEnabled);
     }
 
+    void SetPointLight(const PointLight* pointLight) const
+    {
+        SetVec4("pointLight.data.color", pointLight->mData.color);
+        SetFloat("pointLight.data.ambientIntensity", pointLight->mData.ambientIntensity);
+        SetFloat("pointLight.data.diffuseIntensity", pointLight->mData.diffuseIntensity);
+        SetFloat("pointLight.data.specularIntensity", pointLight->mData.specularIntensity);
+        SetBool("pointLight.data.isEnabled", pointLight->mData.isEnabled);
+        SetVec3("pointLight.position", pointLight->mPointLightData.position);
+        SetFloat("pointLight.constant", pointLight->mPointLightData.constant);
+        SetFloat("pointLight.linear", pointLight->mPointLightData.linear);
+        SetFloat("pointLight.quadratic", pointLight->mPointLightData.quadratic);
+    }
 
 private:
 	// The shader program object's reference ID

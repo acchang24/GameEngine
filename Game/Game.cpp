@@ -15,7 +15,7 @@
 #include "AssetManager.h"
 #include "Cache.h"
 #include "Material.h"
-#include "Light.h"
+#include "PointLight.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -26,7 +26,7 @@ glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(
 Game::Game() :
 	mWindow(nullptr),
 	mCamera(nullptr),
-	mLight(nullptr),
+	mPointLight(nullptr),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
 	mMousePrevX(static_cast<double>(WIDTH / 2)),
@@ -85,9 +85,7 @@ bool Game::Init()
 
 	AssetManager* am = AssetManager::Get();
 
-	mLight = new Light();
-
-	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
+	//Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	Shader* lightShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 	lightShader->SetActive();
@@ -99,18 +97,7 @@ bool Game::Init()
 	Texture* texture4 = new Texture("Assets/container2_specular.png");
 	texture4->SetType(TextureType::Specular);
 
-	am->SaveShader("texture", textureShader);
-	am->SaveShader("color", colorShader);
-	am->SaveShader("phong", lightShader);
-	am->SaveTexture("Assets/companioncube.png", texture);
-	am->SaveTexture("Assets/wall.jpg", texture2);
-	am->SaveTexture("Assets/container2.png", texture3);
-	am->SaveTexture("Assets/container2_specular.png", texture4);
-
-	mCamera = new Camera();
-	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-
-	MaterialColors cubeMat = {glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, true, false};
+	MaterialColors cubeMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, true, false };
 	Material* cubeMaterial = new Material();
 	cubeMaterial->SetMaterialColors(cubeMat);
 	cubeMaterial->SetShader(lightShader);
@@ -120,8 +107,22 @@ bool Game::Init()
 	lightMaterial->SetMaterialColors(lightMat);
 	lightMaterial->SetShader(colorShader);
 
+	//am->SaveShader("texture", textureShader);
+	am->SaveShader("color", colorShader);
+	am->SaveShader("phong", lightShader);
+	am->SaveTexture("Assets/companioncube.png", texture);
+	am->SaveTexture("Assets/wall.jpg", texture2);
+	am->SaveTexture("Assets/container2.png", texture3);
+	am->SaveTexture("Assets/container2_specular.png", texture4);
 	am->SaveMaterial("cube", cubeMaterial);
-	am->SaveMaterial("light", lightMaterial);
+	am->SaveMaterial("lightSphere", lightMaterial);
+
+	mPointLight = new PointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
+	mPointLight->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
+	AddGameEntity(mPointLight->GetLightSphere());
+
+	mCamera = new Camera();
+	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	glm::vec3 objectPositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -145,24 +146,20 @@ bool Game::Init()
 		Material* mat = new Material(*cubeMaterial);
 		if (i == 3 || i == 7)
 		{
+			mat->SetSpecularIntensity(0.5f);
 			mat->AddTexture(texture);
 		}
 		else
 		{
+			mat->SetSpecularIntensity(5.0f);
 			mat->AddTexture(texture3);
 			mat->AddTexture(texture4);
 		}
 		object->SetMaterial(mat);
 		object->SetYaw(25.0f);
 		TimerComponent* timer = new TimerComponent(object);
-		mEntities.emplace_back(object);
+		AddGameEntity(object);
 	}
-
-	Sphere* lightSphere = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere->SetPosition(lightPosition);
-	lightSphere->SetScale(0.1f);
-	lightSphere->SetMaterial(new Material(*lightMaterial));
-	mEntities.emplace_back(lightSphere);
 
 	return true;
 }
@@ -179,7 +176,7 @@ void Game::Shutdown()
 
 	delete mCamera;
 
-	delete mLight;
+	delete mPointLight;
 }
 
 void Game::Run()
@@ -280,7 +277,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 void Game::Update(float deltaTime)
 {
-	mLight->SetLight();
+	mPointLight->SetLight();
 
 	for (auto e : mEntities)
 	{
