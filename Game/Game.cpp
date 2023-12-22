@@ -26,6 +26,7 @@ glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(
 Game::Game() :
 	mWindow(nullptr),
 	mCamera(nullptr),
+	mLight(nullptr),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
 	mMousePrevX(static_cast<double>(WIDTH / 2)),
@@ -84,15 +85,13 @@ bool Game::Init()
 
 	AssetManager* am = AssetManager::Get();
 
-	LightData ld = { glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.1f, 1.0f, 1.0f, true };
+	mLight = new Light();
 
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	Shader* lightShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 	lightShader->SetActive();
-	lightShader->SetVec4("lightColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightShader->SetVec3("lightPos", lightPosition);
-	lightShader->SetLight(ld);
 
 	Texture* texture = new Texture("Assets/companioncube.png");
 	Texture* texture2 = new Texture("Assets/wall.jpg");
@@ -102,7 +101,7 @@ bool Game::Init()
 
 	am->SaveShader("texture", textureShader);
 	am->SaveShader("color", colorShader);
-	am->SaveShader("lightShader", lightShader);
+	am->SaveShader("phong", lightShader);
 	am->SaveTexture("Assets/companioncube.png", texture);
 	am->SaveTexture("Assets/wall.jpg", texture2);
 	am->SaveTexture("Assets/container2.png", texture3);
@@ -179,6 +178,8 @@ void Game::Shutdown()
 	mEntities.clear();
 
 	delete mCamera;
+
+	delete mLight;
 }
 
 void Game::Run()
@@ -279,6 +280,8 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 void Game::Update(float deltaTime)
 {
+	mLight->SetLight();
+
 	for (auto e : mEntities)
 	{
 		e->Update(deltaTime);

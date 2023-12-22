@@ -8,6 +8,7 @@ class Shader;
 class Texture;
 class Entity;
 class Camera;
+class Light;
 
 class Game
 {
@@ -62,6 +63,8 @@ private:
 
 	// The game's camera
 	Camera* mCamera;
+
+	Light* mLight;
 
 	double mMousePosX;
 	double mMousePosY;

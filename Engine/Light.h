@@ -13,11 +13,20 @@ struct LightData
 	bool isEnabled;
 };
 
+// Light class represents anything that can light a scene
+// or objects. Any lighting data is held in the LightData
+// struct, which gets sent to the shaders
 class Light
 {
 public:
 	Light();
 	virtual ~Light();
+
+	// Sends light data to the shader
+	virtual void SetLight() const;
+
+	// This light's data
+	LightData mData;
 
 protected:
 
