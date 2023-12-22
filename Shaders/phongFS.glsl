@@ -66,83 +66,106 @@ uniform vec3 viewPos;
 // Final vector4 fragment color output
 out vec4 fragColor;
 
+vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 viewDir);
+vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragPos);
+
 void main() 
 {
+	vec3 lightResult = vec3(0.0, 0.0, 0.0);
+	
 	// Re-normalize the normal for dot product
 	vec3 norm = normalize(normal);
+	// Get the view direction from the fragment's position to the view(camera) position
+	vec3 viewDir = normalize(viewPos - fragPos);
 
-	// Get the light direction from fragment's position to the light source
-	vec3 lightDir = normalize(pointLight.position - fragPos);
+	if(pointLight.data.isEnabled)
+	{
+		lightResult += CalculatePointLight(pointLight, norm, viewDir, fragPos);
+	}
+	else
+	{
+		lightResult = pointLight.data.color.xyz * pointLight.data.ambientIntensity;
+	}
 
+	fragColor = vec4(lightResult, 1.0);
+
+	// Add diffuse maps (textures)
+    if(material.hasDiffuseTexture)
+    {
+		// Sampler colors of a texture with texture function, passing in sampler and coordinates
+        vec4 textureColor = texture(textureSamplers.diffuse0, textureCoord);
+
+        fragColor *= textureColor;
+    }
+}
+
+vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 viewDir)
+{
 	// Ambient light
-	// Use light's ambient intensity
-	float ambientStrength = pointLight.data.ambientIntensity;
-	// Apply ambient strength to the light's color to get ambient light
-	vec4 ambientLight = ambientStrength * pointLight.data.color;
+	// Apply ambient intensity to the light's color to get ambient light
+	vec3 ambientLight = light.color.xyz * light.ambientIntensity;
 
 	// Diffuse light
 	// Calculate diffuse impact of light on current fragment
-    // with the dot product between the normal direction and light direction vectors
-	float diff = dot(norm, lightDir);
-    // Use the max function to return highest between the dot result earlier and 0.0f 
-    // to make sure the dot doesn't go negative when the angle between 
-    // the two vectors is greater than 90 degrees
-    diff = max(diff, 0.0);
+	// with the dot product between the normal direction and the light direction vectors
+	float diff = dot(normal, lightDir);
+	// Use the max function to return highest value between the dot result earlier and 0.0f
+	// to make sure the dot doesn't go negative when the angle between the two vectors
+	// is greater than 90 degrees.
+	diff = max(diff, 0.0);
 	// Apply diffuse impact with the light's color to get diffuse light
-	vec4 diffuseLight = diff * pointLight.data.color;
+	vec3 diffuseLight = diff * light.color.xyz;
 	// Apply the material's diffuse color
-	diffuseLight *= material.diffuseColor;
+	diffuseLight *= material.diffuseColor.xyz;
 	// Apply light's diffuse intensity
-	diffuseLight *= pointLight.data.diffuseIntensity;
+	diffuseLight *= light.diffuseIntensity;
 
 	// Specular light
-	float specularStrength = material.specularIntensity;
-	// Get the view direction (fragment's position to camera's position)
-	vec3 viewDir = normalize(viewPos - fragPos);
-	// Get the reflect direction
-	vec3 reflectDir = reflect(-lightDir, norm);
-
+	// Calculate reflect direction
+	vec3 reflectDir = reflect(-lightDir, normal);
 	// Calculate specular component
     // Calculate dot between view and reflect directions
     float spec = dot(viewDir, reflectDir);
     // Make sure it's not negative
     spec = max(spec, 0.0);
-    // Raise to power of the material's specular intensity value (higher power = smaller more focused highlight)
+	// Raise to power of the material's specular intensity value (higher power = smaller, more focused highlight)
     spec = pow(spec, material.shininess);
-	// Apply specular strength and spec component with light color to get specular light
-	vec4 specularLight = specularStrength * spec * pointLight.data.color;
+	// Apply the material's specular intensity and spec component with light color to get specular light
+	vec3 specularLight = material.specularIntensity * spec * light.color.xyz;
 	// Apply the material's specular color
-	specularLight *= material.specularColor;
+	specularLight *= material.specularColor.xyz;
 	// Apply light's specular intensity
-	specularLight *= pointLight.data.specularIntensity;
+	specularLight *= light.specularIntensity;
 
 	// Add specular maps
 	if(material.hasSpecularTexture)
 	{
 		// Sampler colors of a specular map, passing in sampler and coordinates
-		specularLight *= texture(textureSamplers.specular0, textureCoord);
+		specularLight *= texture(textureSamplers.specular0, textureCoord).xyz;
 	}
 
-	// Combine to get phong light
-	vec4 phong = ambientLight + diffuseLight + specularLight;
+	// Combine three lights to get phong lighting
+	vec3 phong = ambientLight + diffuseLight + specularLight;
 
+	return phong;
+}
+
+vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragPos)
+{
 	// Attenuation
-	if(pointLight.data.isEnabled)
-	{
-		// Get the distance from fragment position to the point light's position
-		float dist = length(pointLight.position - fragPos);
-		// Calculate attentuation
-		float attenuation = 1.0 / (pointLight.constant + pointLight.linear * dist + pointLight.quadratic * (dist * dist));
-		// Add attenuation to phong
-		phong *= attenuation;
-	}
+	// Get the distance from fragment position to the point light's position
+	float dist = length(pointLight.position - fragPos);
+	// Calculate attentuation
+	float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
+	
+	// Calculate the direction from fragment's position to the light source's position
+	vec3 lightDir = normalize(light.position - fragPos);
 
-	// Add diffuse maps
-	if(material.hasDiffuseTexture)
-	{
-		// Sampler colors of a texture with texture function, passing in sampler and coordinates
-		phong *= texture(textureSamplers.diffuse0, textureCoord);
-	}
+	// Calculate phong lighting
+	vec3 phong = CalculatePhongLighting(light.data, lightDir, normal, viewDir);
 
-	fragColor = phong;
+	// Add attenuation
+	phong *= attenuation;
+
+	return phong;
 }

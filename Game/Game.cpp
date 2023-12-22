@@ -265,7 +265,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_SPACE])
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
-		std::cout << "space" << std::endl;
+		mPointLight->SetIsEnabled(!mPointLight->IsEnabled());
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{

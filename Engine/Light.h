@@ -35,6 +35,10 @@ public:
 	// Sends light data to the shader (overridable)
 	virtual void SetLight();
 
+	void SetIsEnabled(bool enabled) { mData.isEnabled = enabled; }
+
+	bool IsEnabled() const { return mData.isEnabled; }
+
 	// This light's data
 	LightData mData;
 
