@@ -10,10 +10,25 @@ class Entity3D;
 class Mesh
 {
 public:
-	Mesh();
+	// Mesh constructor 
+	Mesh(VertexBuffer* vb, Material* material);
 	~Mesh();
 
 	void Draw();
+
+	// Gets the mesh's material
+	// @return - Material* for the mesh's material
+	Material* GetMaterial() { return mMaterial; }
+	// Gets the mesh's owner
+	// @return - Entity3D* for the mesh's owner
+	Entity3D* GetOwner() { return mOwner; }
+
+	// Sets the mesh's material
+	// @param - Material* for the new material
+	void SetMaterial(Material* material) { mMaterial = material; }
+	// Sets the mesh's owner
+	// @param - Entity3D* for the new owner
+	void SetOwner(Entity3D* owner) { mOwner = owner; }
 
 private:
 	// The mesh's vertex buffer

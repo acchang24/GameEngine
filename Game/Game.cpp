@@ -109,9 +109,7 @@ bool Game::Init()
 
 	AssetManager* am = AssetManager::Get();
 
-	//Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
-	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
-	Shader* lightShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
+	LoadStartingShadersMaterials(am);
 
 	Texture* texture = new Texture("Assets/companioncube.png");
 	Texture* texture2 = new Texture("Assets/wall.jpg");
@@ -119,28 +117,13 @@ bool Game::Init()
 	Texture* texture4 = new Texture("Assets/container2_specular.png");
 	texture4->SetType(TextureType::Specular);
 
-	MaterialColors cubeMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, false, false };
-	Material* cubeMaterial = new Material();
-	cubeMaterial->SetMaterialColors(cubeMat);
-	cubeMaterial->SetShader(lightShader);
-
-	MaterialColors lightMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false };
-	Material* lightMaterial = new Material();
-	lightMaterial->SetMaterialColors(lightMat);
-	lightMaterial->SetShader(colorShader);
-
-	//am->SaveShader("texture", textureShader);
-	am->SaveShader("color", colorShader);
-	am->SaveShader("phong", lightShader);
 	am->SaveTexture("Assets/companioncube.png", texture);
 	am->SaveTexture("Assets/wall.jpg", texture2);
 	am->SaveTexture("Assets/container2.png", texture3);
 	am->SaveTexture("Assets/container2_specular.png", texture4);
-	am->SaveMaterial("cube", cubeMaterial);
-	am->SaveMaterial("lightSphere", lightMaterial);
 
 	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
-	pointLight->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
+	pointLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));
 	AddGameEntity(pointLight->GetLightSphere());
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -149,18 +132,10 @@ bool Game::Init()
 
 	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
-	spotLight->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
+	spotLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));
 	AddGameEntity(spotLight->GetLightSphere());
 
-	//PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 0.3f, 0.3f, 1.0f), glm::vec3(1.0f, -3.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	//pointLight2->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
-	//AddGameEntity(pointLight2->GetLightSphere());
-
-	//PointLight* pointLight3 = AllocatePointLight(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 10.0f, 0.0f), 1.0f, 0.09f, 0.032f);
-	//pointLight3->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
-	//AddGameEntity(pointLight3->GetLightSphere());
-
-	Material* planeMat = new Material(*cubeMaterial);
+	Material* planeMat = new Material(*am->LoadMaterial("textured"));
 	planeMat->SetSpecularIntensity(0.1f);
 	Plane* plane = new Plane();
 	plane->SetMaterial(planeMat);
@@ -191,7 +166,7 @@ bool Game::Init()
 		Cube* object = new Cube();
 		object->SetPosition(objectPositions[i]);
 		object->SetScale(0.5f);
-		Material* mat = new Material(*cubeMaterial);
+		Material* mat = new Material(*am->LoadMaterial("textured"));
 		if (i == 3 || i == 7)
 		{
 			mat->SetSpecularIntensity(0.5f);
@@ -210,6 +185,28 @@ bool Game::Init()
 	}
 
 	return true;
+}
+
+void Game::LoadStartingShadersMaterials(AssetManager* am)
+{
+	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
+	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
+
+	// General purpose material for textured objects
+	MaterialColors texturedMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, false, false };
+	Material* texturedMaterial = new Material();
+	texturedMaterial->SetMaterialColors(texturedMat);
+	texturedMaterial->SetShader(phongShader);
+	// General purpose material for objects colored with their vertices
+	MaterialColors colorMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false };
+	Material* colorMaterial = new Material();
+	colorMaterial->SetMaterialColors(colorMat);
+	colorMaterial->SetShader(colorShader);
+
+	am->SaveShader("color", colorShader);
+	am->SaveShader("phong", phongShader);
+	am->SaveMaterial("textured", texturedMaterial);
+	am->SaveMaterial("color", colorMaterial);
 }
 
 void Game::Shutdown()
