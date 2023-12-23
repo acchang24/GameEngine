@@ -4,6 +4,8 @@
 #include <iostream>
 #include "VertexLayouts.h"
 #include "VertexBuffer.h"
+#include "Material.h"
+#include "Shader.h"
 
 Sphere::Sphere(const glm::vec4& color) :
 	Entity3D()
@@ -74,5 +76,10 @@ void Sphere::OnUpdate(float deltaTime)
 
 void Sphere::OnDraw()
 {
-    Entity3D::OnDraw();
+    mMaterial->SetActive();
+    mMaterial->GetShader()->SetMat4("model", mModel);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    mVertexBuffer->Draw();
 }

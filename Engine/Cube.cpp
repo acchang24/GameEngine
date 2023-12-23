@@ -5,6 +5,8 @@
 #include "VertexLayouts.h"
 #include "VertexBuffer.h"
 #include "TimerComponent.h"
+#include "Material.h"
+#include "Shader.h"
 
 Cube::Cube() :
 	Entity3D()
@@ -90,5 +92,10 @@ void Cube::OnUpdate(float deltaTime)
 
 void Cube::OnDraw()
 {
-    Entity3D::OnDraw();
+    mMaterial->SetActive();
+    mMaterial->GetShader()->SetMat4("model", mModel);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    mVertexBuffer->Draw();
 }

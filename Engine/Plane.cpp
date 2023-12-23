@@ -2,6 +2,8 @@
 #include <iostream>
 #include "VertexLayouts.h"
 #include "VertexBuffer.h"
+#include "Material.h"
+#include "Shader.h"
 
 Plane::Plane() :
 	Entity3D()
@@ -33,5 +35,10 @@ void Plane::OnUpdate(float deltaTime)
 
 void Plane::OnDraw()
 {
+	mMaterial->SetActive();
+	mMaterial->GetShader()->SetMat4("model", mModel);
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	mVertexBuffer->Draw();
 }

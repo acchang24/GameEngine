@@ -35,12 +35,7 @@ void Entity3D::Update(float deltaTime)
 
 void Entity3D::Draw()
 {
-	mMaterial->SetActive();
-	mMaterial->GetShader()->SetMat4("model", mModel);
-
 	OnDraw();
-
-	mVertexBuffer->Draw();
 }
 
 void Entity3D::OnUpdate(float deltaTime)
@@ -61,5 +56,10 @@ void Entity3D::OnUpdate(float deltaTime)
 
 void Entity3D::OnDraw()
 {
+	mMaterial->SetActive();
+	mMaterial->GetShader()->SetMat4("model", mModel);
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	mVertexBuffer->Draw();
 }
