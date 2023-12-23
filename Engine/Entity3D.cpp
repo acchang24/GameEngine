@@ -193,11 +193,19 @@ std::vector<Texture*> Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureT
 		{
 			std::string path = mDirectory + (str.data);
 
-			if (!AssetManager::Get()->LoadTexture(path))
+			// See if texture is already loaded
+			Texture* t = AssetManager::Get()->LoadTexture(path);
+			if (!t)
 			{
+				// Create the new texture
 				Texture* texture = new Texture(path.c_str());
 				textures.emplace_back(texture);
 				AssetManager::Get()->SaveTexture(path, texture);
+			}
+			else
+			{
+				// use the cached texture from AssetManager
+				textures.emplace_back(t);
 			}
 		}
 	}

@@ -102,9 +102,14 @@ bool Game::Init()
 	am->SaveTexture("Assets/container2_specular.png", texture4);
 
 	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
-	squidward->SetPosition(glm::vec3(-8.75f, -4.0, 0.0f));
+	squidward->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
 	squidward->SetScale(0.15);
 	AddGameEntity(squidward);
+
+	Entity3D* squidward2 = new Entity3D("Assets/models/Squidward/squidward.obj");
+	squidward2->SetPosition(glm::vec3(-18.75f, -5.0, 0.0f));
+	squidward2->SetScale(0.15);
+	AddGameEntity(squidward2);
 
 	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
 	pointLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));
