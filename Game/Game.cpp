@@ -24,7 +24,7 @@
 #define HEIGHT 720
 
 // projection matrix
-glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 100.0f);
+glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 1000.0f);
 
 Game::Game() :
 	mWindow(nullptr),
@@ -101,77 +101,17 @@ bool Game::Init()
 	am->SaveTexture("Assets/container2.png", texture3);
 	am->SaveTexture("Assets/container2_specular.png", texture4);
 
-	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
-	squidward->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
-	squidward->SetScale(0.15);
-	AddGameEntity(squidward);
-
-	Entity3D* squidward2 = new Entity3D("Assets/models/Squidward/squidward.obj");
-	squidward2->SetPosition(glm::vec3(-18.75f, -5.0, 0.0f));
-	squidward2->SetScale(0.15);
-	AddGameEntity(squidward2);
-
-	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
-	pointLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));
-	AddGameEntity(pointLight->GetLightSphere());
+	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	sponza->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
+	sponza->SetScale(0.15);
+	AddGameEntity(sponza);
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
-	dirLight->mData.diffuseIntensity = 0.5f;
+	dirLight->mData.diffuseIntensity = 1.0f;
 	dirLight->mData.specularIntensity = 0.5f;
-
-	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
-		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
-	spotLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));
-	AddGameEntity(spotLight->GetLightSphere());
-
-	Material* planeMat = new Material(*am->LoadMaterial("textured"));
-	planeMat->SetSpecularIntensity(0.1f);
-	Plane* plane = new Plane();
-	plane->SetMaterial(planeMat);
-	plane->SetPosition(glm::vec3(0.0f, -5.0f, 1.0f));
-	plane->SetScale(50.0f);
-	plane->SetPitch(-90.0f);
-	AddGameEntity(plane);
 
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-
-	glm::vec3 objectPositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-
-	// Create new objects
-	for (int i = 0; i < 10; ++i)
-	{
-		Cube* object = new Cube();
-		object->SetPosition(objectPositions[i]);
-		object->SetScale(0.5f);
-		Material* mat = new Material(*am->LoadMaterial("textured"));
-		if (i == 3 || i == 7)
-		{
-			mat->SetSpecularIntensity(0.5f);
-			mat->AddTexture(texture);
-		}
-		else
-		{
-			mat->SetSpecularIntensity(5.0f);
-			mat->AddTexture(texture3);
-			mat->AddTexture(texture4);
-		}
-		object->SetMaterial(mat);
-		object->SetYaw(25.0f);
-		TimerComponent* timer = new TimerComponent(object);
-		AddGameEntity(object);
-	}
 
 	return true;
 }
@@ -249,7 +189,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	CameraMode mode = mCamera->GetCameraMode();
 	glm::vec3 right = mCamera->GetRight();
 	glm::vec3 up = mCamera->GetUp();
-	float speed = 5.0f;
+	float speed = 50.0f;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{

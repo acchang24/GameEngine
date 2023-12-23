@@ -64,7 +64,7 @@ Texture::Texture(const std::string& textureFile) :
 		glTexImage2D(GL_TEXTURE_2D, 0, format, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data);
 
 		// Automatically generate all the required mipmaps for the currently bound texture
-		glGenerateMipmap(GL_TEXTURE_2D);
+		//glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
 	{
