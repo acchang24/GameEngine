@@ -2,14 +2,10 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "VertexBuffer.h"
-#include "Shader.h"
-#include "Material.h"
+#include "Mesh.h"
 
 Entity3D::Entity3D() :
 	Entity(),
-	mVertexBuffer(nullptr),
-	mMaterial(nullptr),
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
@@ -22,8 +18,12 @@ Entity3D::Entity3D() :
 Entity3D::~Entity3D()
 {
 	std::cout << "Delete entity 3D" << std::endl;
-	delete mVertexBuffer;
-	delete mMaterial;
+
+	for (auto m : mMeshes)
+	{
+		delete m;
+	}
+	mMeshes.clear();
 }
 
 void Entity3D::Update(float deltaTime)
@@ -56,10 +56,8 @@ void Entity3D::OnUpdate(float deltaTime)
 
 void Entity3D::OnDraw()
 {
-	mMaterial->SetActive();
-	mMaterial->GetShader()->SetMat4("model", mModel);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	mVertexBuffer->Draw();
+	for (auto m : mMeshes)
+	{
+		m->Draw();
+	}
 }

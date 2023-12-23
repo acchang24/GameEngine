@@ -8,7 +8,9 @@
 #include "Shader.h"
 
 Sphere::Sphere(const glm::vec4& color) :
-	Entity3D()
+	Entity3D(),
+    mVertexBuffer(nullptr),
+    mMaterial(nullptr)
 {
     // Create sphere vertices
 
@@ -67,6 +69,8 @@ Sphere::Sphere(const glm::vec4& color) :
 Sphere::~Sphere()
 {
     std::cout << "Delete sphere" << std::endl;
+    delete mVertexBuffer;
+    delete mMaterial;
 }
 
 void Sphere::OnUpdate(float deltaTime)

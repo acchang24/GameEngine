@@ -1,9 +1,7 @@
 #pragma once
 #include "Entity.h"
-#include "glm/glm.hpp"
 
-class VertexBuffer;
-class Material;
+class Mesh;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -26,6 +24,16 @@ public:
 	// Entity specific draw code (overrideable)
 	virtual void OnDraw();
 
+	// Adds a mesh to the entity's vector of meshes
+	// @param - Mesh* for the new mesh
+	void AddMesh(Mesh* m) { mMeshes.emplace_back(m); }
+	// Gets the enitity's vector of meshes (can change data)
+	// @return - std::vector<Mesh*>& for the vector of meshes
+	std::vector<Mesh*>& GetMeshes() { return mMeshes; }
+	// Gets the entity's number of meshes
+	// @return - size_t for the number of meshes
+	size_t GetNumMeshes() const { return mMeshes.size(); }
+
 	// Gets the entity's model matrix
 	// @return - const glm::mat4& for the entity's model matrix
 	const glm::mat4& GetModelMatrix() const { return mModel; }
@@ -44,13 +52,7 @@ public:
 	// Gets the entity's roll rotation
 	// @return - float for the entity's roll rotation
 	float GetRoll() const { return mRoll; }
-
-	// Set the entity's vertex buffer
-	// @param - VertexBuffer* for the new vertex buffer
-	void SetVertexBuffer(VertexBuffer* vBuffer) { mVertexBuffer = vBuffer; }
-	// Set the entity's material
-	// @param - Material* for the new material
-	void SetMaterial(Material* m) { mMaterial = m; }
+	
 	// Set the entity's model matrix
 	// @param - const glm::mat4& for the new model matrix
 	void SetModelMatrix(const glm::mat4& m) { mModel = m; }
@@ -74,11 +76,8 @@ public:
 	void SetRoll(float roll) { mRoll = roll; }
 
 protected:
-	// Entity's vertex buffer
-	VertexBuffer* mVertexBuffer;
-
-	// Entity's material
-	Material* mMaterial;
+	// Entity's vector of meshes
+	std::vector<Mesh*> mMeshes;
 
 	// Entity's model matrix
 	glm::mat4 mModel;

@@ -1,8 +1,8 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "LightConstants.h"
 
 class Shader;

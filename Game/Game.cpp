@@ -1,8 +1,12 @@
 #include "Game.h"
 #include <iostream>
+#include <fstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "VertexLayouts.h"
@@ -13,16 +17,11 @@
 #include "Sphere.h"
 #include "Camera.h"
 #include "AssetManager.h"
-#include "Cache.h"
 #include "Material.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
 #include "SpotLight.h"
 #include "Plane.h"
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <fstream>
 
 #define WIDTH 1280
 #define HEIGHT 720

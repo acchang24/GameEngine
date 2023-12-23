@@ -9,7 +9,9 @@
 #include "Shader.h"
 
 Cube::Cube() :
-	Entity3D()
+	Entity3D(),
+    mVertexBuffer(nullptr),
+    mMaterial(nullptr)
 {
     Vertex vertices[] =
     {
@@ -64,6 +66,8 @@ Cube::Cube() :
 Cube::~Cube()
 {
 	std::cout << "Delete cube" << std::endl;
+    delete mVertexBuffer;
+    delete mMaterial;
 }
 
 void Cube::OnUpdate(float deltaTime)

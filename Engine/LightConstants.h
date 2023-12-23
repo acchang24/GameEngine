@@ -1,5 +1,4 @@
 #pragma once
-#include "glm/glm.hpp"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"

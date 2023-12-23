@@ -1,5 +1,5 @@
 #pragma once
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "VertexLayouts.h"
 
 // VertexBuffer class takes in all the vertex and index information

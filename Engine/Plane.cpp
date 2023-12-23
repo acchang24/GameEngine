@@ -6,7 +6,9 @@
 #include "Shader.h"
 
 Plane::Plane() :
-	Entity3D()
+	Entity3D(),
+	mVertexBuffer(nullptr),
+	mMaterial(nullptr)
 {
 	Vertex vertices[] = {
 		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f),   // top right
@@ -26,6 +28,8 @@ Plane::Plane() :
 Plane::~Plane()
 {
 	std::cout << "Delete plane" << std::endl;
+	delete mVertexBuffer;
+	delete mMaterial;
 }
 
 void Plane::OnUpdate(float deltaTime)

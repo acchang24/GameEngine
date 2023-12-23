@@ -1,5 +1,5 @@
 #pragma once
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 // Struct that defines lighting data
 // such as color, ambient, diffuse, and
