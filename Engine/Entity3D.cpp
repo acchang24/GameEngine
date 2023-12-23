@@ -159,8 +159,8 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture*> diffuseTextures = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::Diffuse);
 		textures.insert(textures.end(), diffuseTextures.begin(), diffuseTextures.end());
 		// Specular textures
-		//std::vector<Texture*> specularTextures = LoadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::Specular);
-		//textures.insert(textures.end(), specularTextures.begin(), specularTextures.end());
+		std::vector<Texture*> specularTextures = LoadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::Specular);
+		textures.insert(textures.end(), specularTextures.begin(), specularTextures.end());
 		// Normal maps
 
 		// Height maps
@@ -199,6 +199,14 @@ std::vector<Texture*> Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureT
 			{
 				// Create the new texture
 				Texture* texture = new Texture(path.c_str());
+				
+				switch (aiTextureType)
+				{
+				case aiTextureType_SPECULAR:
+					texture->SetType(TextureType::Specular);
+					break;
+				}
+
 				textures.emplace_back(texture);
 				AssetManager::Get()->SaveTexture(path, texture);
 			}

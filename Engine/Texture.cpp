@@ -39,17 +39,10 @@ Texture::Texture(const std::string& textureFile) :
 	// Load in texture file with stbi_load:
 	// - Takes the location of the image file
 	// - width, height, and number of color channels as ints
-	unsigned char* data = stbi_load(textureFile.c_str(), &mWidth, &mHeight, &mNumChannels, 0);
+	unsigned char* data = stbi_load(textureFile.c_str(), &mWidth, &mHeight, &mNumChannels, 4);
 
 	if (data)
 	{
-		// Get the format based on the number of color channels
-		GLenum format = GL_RGB;
-		if (mNumChannels == 4)
-		{
-			format = GL_RGBA;
-		}
-
 		//   Start generating a texture using the loaded image data
 		//   Textures are generated with glTexImage2D:
 		// - 1st argument specifies the texture target. Setting to GL_TEXTURE_2D
@@ -61,10 +54,10 @@ Texture::Texture(const std::string& textureFile) :
 		// - 7th/8th arguments specifies the format and datatype of the source image
 		//   Loaded the image with RGB values, and stored them as chars(bytes)
 		// - Last argument is the actual image data
-		glTexImage2D(GL_TEXTURE_2D, 0, format, mWidth, mHeight, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 		// Automatically generate all the required mipmaps for the currently bound texture
-		//glGenerateMipmap(GL_TEXTURE_2D);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
 	{

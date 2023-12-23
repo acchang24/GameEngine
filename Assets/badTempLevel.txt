@@ -13,7 +13,7 @@
 	am->SaveTexture("Assets/container2.png", texture3);
 	am->SaveTexture("Assets/container2_specular.png", texture4);
 
-	Entity3D* squidward = new Entity3D("Assets/models/Sponza/sponza.obj");
+	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	squidward->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
 	squidward->SetScale(0.15);
 	AddGameEntity(squidward);
@@ -23,7 +23,7 @@
 	AddGameEntity(pointLight->GetLightSphere());
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
-	dirLight->mData.diffuseIntensity = 1.0f;
+	dirLight->mData.diffuseIntensity = 0.5f;
 	dirLight->mData.specularIntensity = 0.5f;
 
 	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
@@ -79,3 +79,23 @@
 		TimerComponent* timer = new TimerComponent(object);
 		AddGameEntity(object);
 	}
+
+
+	// SPONZA
+
+
+	AssetManager* am = AssetManager::Get();
+
+	LoadStartingShadersMaterials(am);
+
+	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	sponza->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
+	sponza->SetScale(0.15);
+	AddGameEntity(sponza);
+
+	mCamera = new Camera();
+	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+
+	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
+	dirLight->mData.diffuseIntensity = 1.0f;
+	dirLight->mData.specularIntensity = 0.5f;

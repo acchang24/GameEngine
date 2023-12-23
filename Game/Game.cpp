@@ -54,7 +54,12 @@ bool Game::Init()
 	// Use core-profile
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	//mWindow = glfwCreateWindow(mode->width, mode->height, "Game", monitor, NULL);
+
 	mWindow = glfwCreateWindow(WIDTH, HEIGHT, "Game", NULL, NULL);
+
 	if (!mWindow)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -71,7 +76,7 @@ bool Game::Init()
 	}
 
 	// Set viewport
-	glViewport(0, 0, WIDTH, HEIGHT);
+	//glViewport(0, 0, WIDTH, HEIGHT);
 
 	// Register the callback function for when window gets resized
 	glfwSetFramebufferSizeCallback(mWindow, FrameBufferSizeCallBack);
@@ -90,28 +95,17 @@ bool Game::Init()
 
 	LoadStartingShadersMaterials(am);
 
-	Texture* texture = new Texture("Assets/companioncube.png");
-	Texture* texture2 = new Texture("Assets/wall.jpg");
-	Texture* texture3 = new Texture("Assets/container2.png");
-	Texture* texture4 = new Texture("Assets/container2_specular.png");
-	texture4->SetType(TextureType::Specular);
-
-	am->SaveTexture("Assets/companioncube.png", texture);
-	am->SaveTexture("Assets/wall.jpg", texture2);
-	am->SaveTexture("Assets/container2.png", texture3);
-	am->SaveTexture("Assets/container2_specular.png", texture4);
-
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
 	sponza->SetScale(0.15);
 	AddGameEntity(sponza);
 
+	mCamera = new Camera();
+	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->mData.diffuseIntensity = 1.0f;
 	dirLight->mData.specularIntensity = 0.5f;
-
-	mCamera = new Camera();
-	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	return true;
 }
@@ -369,7 +363,7 @@ void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 
 	// Set new width/height ratio for perspective projection matrix, and update the projection matrix
-	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
+	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 1000.0f);
 }
 
 PointLight* Game::AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic)
