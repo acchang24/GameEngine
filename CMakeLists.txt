@@ -14,7 +14,10 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 # Include headers from include directory
-include_directories(include)
+include_directories(Libraries/GLAD/include)
+include_directories(Libraries/GLM/include)
+include_directories(Libraries/KHR/include)
+include_directories(Libraries/Assimp/include)
 
 # Include sub-projects.
 add_subdirectory(Engine)
