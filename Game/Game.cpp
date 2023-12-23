@@ -4,9 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "VertexLayouts.h"
@@ -50,23 +47,6 @@ Game::~Game()
 
 bool Game::Init()
 {
-	Assimp::Importer imp;
-
-	std::ifstream inFile("Assets/models/Squidward/squidward.obj");
-	if (inFile.is_open())
-	{
-		// Read file and create aiScene
-		const aiScene* scene = imp.ReadFile("Assets/models/Squidward/squidward.obj",
-			aiProcess_Triangulate |
-			aiProcess_JoinIdenticalVertices);
-
-		// Return if there is an error parsing the object's file
-		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-		{
-			std::cout << "Error parsing the object's file:: " << imp.GetErrorString() << std::endl;
-		}
-	}
-
 	// Initialize GLFW
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -120,6 +100,11 @@ bool Game::Init()
 	am->SaveTexture("Assets/wall.jpg", texture2);
 	am->SaveTexture("Assets/container2.png", texture3);
 	am->SaveTexture("Assets/container2_specular.png", texture4);
+
+	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	squidward->SetPosition(glm::vec3(-8.75f, -4.0, 0.0f));
+	squidward->SetScale(0.15);
+	AddGameEntity(squidward);
 
 	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
 	pointLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));

@@ -1,5 +1,8 @@
 #pragma once
 #include "Entity.h"
+#include <string>
+#include <assimp/scene.h>
+#include "Texture.h"
 
 class Mesh;
 
@@ -9,7 +12,26 @@ class Entity3D : public Entity
 {
 public:
 	Entity3D();
+	// Entity3D constructor using a model's file.
+	// This will load the model using Assimp and create
+	// the entity's meshes
+	// @param - const std::string& for the model's file name
+	Entity3D(const std::string& fileName);
 	~Entity3D();
+
+	// Loads the model's file using Assimp
+	// @param - const std::string& for the file name
+	bool LoadModel(const std::string& fileName);
+	// Recursivelly goes through the scene's nodes and loads any meshes
+	// @param - aiNode*
+	// @param - const aiScene*
+	void ProcessNodes(aiNode* node, const aiScene* scene);
+	// Takes an assimp mesh and store it in our own Mesh object.
+	// It then appends that mesh to the entity's vector of meshes.
+	// @param - aiMesh*
+	// @param - const aiScene*
+	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, TextureType type);
 
 	// Override update function for 3D entities
 	// @param - float for delta time
@@ -78,6 +100,8 @@ public:
 protected:
 	// Entity's vector of meshes
 	std::vector<Mesh*> mMeshes;
+
+	std::string mDirectory;
 
 	// Entity's model matrix
 	glm::mat4 mModel;
