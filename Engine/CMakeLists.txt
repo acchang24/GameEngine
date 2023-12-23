@@ -8,3 +8,11 @@ file(GLOB source_files CONFIGURE_DEPENDS "*.cpp" "*.h" "*.hpp" "*.c")
 
 # Create a library called engine that compiles the ${source_files}
 add_library (engine ${source_files})
+
+# Link assimp library to engine
+if(WIN32)
+	target_link_libraries(engine assimp-vc142-mtd)
+else()
+	target_link_libraries(engine libassimp)
+endif()
+

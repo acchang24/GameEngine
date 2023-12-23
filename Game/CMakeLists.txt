@@ -7,8 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB source_files CONFIGURE_DEPENDS "*.cpp" "*.h" "*.hpp" "*.c")
 
 
-### LINK GAME PROJECT TO ENGINE LIBRARY
-
+### LINK ENGINE LIBRARY TO GAME PROJECT
 # Include headers from Engine directory
 include_directories(../Engine)
 

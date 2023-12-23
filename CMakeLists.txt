@@ -13,11 +13,17 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-# Include headers from include directory
+# Include headers from libraries
 include_directories(Libraries/GLAD/include)
 include_directories(Libraries/GLM/include)
 include_directories(Libraries/KHR/include)
 include_directories(Libraries/Assimp/include)
+
+if(WIN32)
+	link_directories(Libraries/Assimp/lib/win)
+else()
+	link_directories(Libraries/Assimp/lib/linux)
+endif()
 
 # Include sub-projects.
 add_subdirectory(Engine)

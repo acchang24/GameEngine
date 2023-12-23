@@ -51,22 +51,22 @@ Game::~Game()
 
 bool Game::Init()
 {
-	//Assimp::Importer imp;
+	Assimp::Importer imp;
 
-	//std::ifstream inFile("Assets/models/Squidward/squidward.obj");
-	//if (inFile.is_open())
-	//{
-	//	// Read file and create aiScene
-	//	const aiScene* scene = imp.ReadFile("Assets/models/Squidward/squidward.obj",
-	//		aiProcess_Triangulate |
-	//		aiProcess_JoinIdenticalVertices);
+	std::ifstream inFile("Assets/models/Squidward/squidward.obj");
+	if (inFile.is_open())
+	{
+		// Read file and create aiScene
+		const aiScene* scene = imp.ReadFile("Assets/models/Squidward/squidward.obj",
+			aiProcess_Triangulate |
+			aiProcess_JoinIdenticalVertices);
 
-	//	// Return if there is an error parsing the object's file
-	//	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-	//	{
-	//		std::cout << "Error parsing the object's file:: " << imp.GetErrorString() << std::endl;
-	//	}
-	//}
+		// Return if there is an error parsing the object's file
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			std::cout << "Error parsing the object's file:: " << imp.GetErrorString() << std::endl;
+		}
+	}
 
 	// Initialize GLFW
 	glfwInit();
