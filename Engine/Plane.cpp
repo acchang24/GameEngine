@@ -6,7 +6,7 @@
 Plane::Plane() :
 	Entity3D()
 {
-	VertexTexture vertices[] = {
+	Vertex vertices[] = {
 		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f),   // top right
 		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f),  // bottom right
 		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), // bottom left
@@ -18,7 +18,7 @@ Plane::Plane() :
 		1, 2, 3    // second triangle
 	};
 
-	mVertexBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(VertexTexture), sizeof(indices) / sizeof(unsigned int), VertexLayout::VertexTexture);
+	mVertexBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(Vertex), sizeof(indices) / sizeof(unsigned int), VertexLayout::Vertex);
 }
 
 Plane::~Plane()

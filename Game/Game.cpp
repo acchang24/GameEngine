@@ -143,7 +143,7 @@ bool Game::Init()
 	pointLight->GetLightSphere()->SetMaterial(new Material(*lightMaterial));
 	AddGameEntity(pointLight->GetLightSphere());
 
-	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec3(-0.2f, -1.0f, -0.3f));
+	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->mData.diffuseIntensity = 0.5f;
 	dirLight->mData.specularIntensity = 0.5f;
 
@@ -464,7 +464,7 @@ PointLight* Game::AllocatePointLight(const glm::vec4& color, const glm::vec3& po
 	return nullptr;
 }
 
-DirectionalLight* Game::AllocateDirectionalLight(const glm::vec3& direction)
+DirectionalLight* Game::AllocateDirectionalLight(const glm::vec4& color, const glm::vec3& direction)
 {
 	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
 	{

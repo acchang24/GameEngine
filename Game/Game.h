@@ -60,9 +60,10 @@ public:
 	PointLight* AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic);
 
 	// Allocator for directional lights
+	// @param - const glm::vec4& for the light's color
 	// @param - const glm::vec3& for the light's direction
 	// @return - DirectionalLight* a newly allocated DirectionalLight
-	DirectionalLight* AllocateDirectionalLight(const glm::vec3& direction);
+	DirectionalLight* AllocateDirectionalLight(const glm::vec4& color, const glm::vec3& direction);
 
 	// Allocator for spot lights
 	// @param - const glm::vec4& for the light's color
