@@ -19,6 +19,10 @@
 #include "DirectionalLight.h"
 #include "SpotLight.h"
 #include "Plane.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <fstream>
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -47,6 +51,23 @@ Game::~Game()
 
 bool Game::Init()
 {
+	//Assimp::Importer imp;
+
+	//std::ifstream inFile("Assets/models/Squidward/squidward.obj");
+	//if (inFile.is_open())
+	//{
+	//	// Read file and create aiScene
+	//	const aiScene* scene = imp.ReadFile("Assets/models/Squidward/squidward.obj",
+	//		aiProcess_Triangulate |
+	//		aiProcess_JoinIdenticalVertices);
+
+	//	// Return if there is an error parsing the object's file
+	//	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	//	{
+	//		std::cout << "Error parsing the object's file:: " << imp.GetErrorString() << std::endl;
+	//	}
+	//}
+
 	// Initialize GLFW
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
