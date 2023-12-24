@@ -124,6 +124,21 @@ bool Game::Init()
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
 	am->SaveShader("screen", screenShader);
 
+	Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
+	am->SaveShader("invertedColor", invertedColorShader);
+
+	Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
+	am->SaveShader("grayScale", grayScaleShader);
+
+	Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
+	am->SaveShader("sharpenKernel", sharpenKernelShader);
+
+	Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
+	am->SaveShader("blurKernel", blurKernelShader);
+
+	Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
+	am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
+
 	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
 	mFrameBuffer->SetShader(screenShader);
 
