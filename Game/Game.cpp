@@ -19,6 +19,7 @@
 #include "DirectionalLight.h"
 #include "SpotLight.h"
 #include "Plane.h"
+#include "FrameBuffer.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -32,6 +33,7 @@ glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(
 Game::Game() :
 	mWindow(nullptr),
 	mCamera(nullptr),
+	mFrameBuffer(nullptr),
 	mLightArrays({}),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
@@ -102,6 +104,8 @@ bool Game::Init()
 
 	glm::vec3 lightPosition(1.0f, 0.0f, 1.0f);
 
+	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
+
 	AssetManager* am = AssetManager::Get();
 
 	LoadStartingShadersMaterials(am);
@@ -155,6 +159,8 @@ void Game::Shutdown()
 	mEntities.clear();
 
 	delete mCamera;
+
+	delete mFrameBuffer;
 
 	DeAllocateLights();
 }
@@ -281,11 +287,6 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
-	// Specify color to clear the screen
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	// Clear the color buffer, depth buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	mCamera->SetActive();
 
 	std::unordered_map<std::string, Shader*>& shaders = AssetManager::Get()->GetShaderCache()->GetAssetMap();
@@ -295,6 +296,14 @@ void Game::Render()
 		s.second->SetMat4("viewProjection", projection * mCamera->GetViewMatrix());
 		s.second->SetVec3("viewPos", mCamera->GetPosition());
 	}
+
+	// Bind to frame buffer instead
+	//mFrameBuffer->SetActive();
+
+	// Specify color to clear the screen
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	// Clear the color buffer, depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (auto e : mEntities)
 	{

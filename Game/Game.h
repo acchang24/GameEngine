@@ -10,6 +10,7 @@ class Texture;
 class Entity;
 class Camera;
 class AssetManager;
+class FrameBuffer;
 
 class Game
 {
@@ -100,6 +101,9 @@ private:
 
 	// The game's camera
 	Camera* mCamera;
+
+	// Frame buffer
+	FrameBuffer* mFrameBuffer;
 
 	// Array of different lights
 	LightArrays mLightArrays;
