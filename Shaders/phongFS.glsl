@@ -143,6 +143,11 @@ void main()
 		// Sampler colors of a texture with texture function, passing in sampler and coordinates
         vec4 textureColor = texture(textureSamplers.diffuse0, textureCoord);
 
+		if(textureColor.a < 0.5) 
+		{
+			discard;
+		}
+
         fragColor *= textureColor;
     }
 }

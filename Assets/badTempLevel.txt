@@ -37,7 +37,7 @@
 	plane->SetMaterial(planeMat);
 	plane->SetPosition(glm::vec3(0.0f, -5.0f, 1.0f));
 	plane->SetScale(50.0f);
-	plane->SetPitch(-90.0f);
+	plane->SetPitch(90.0f);
 	AddGameEntity(plane);
 
 	mCamera = new Camera();

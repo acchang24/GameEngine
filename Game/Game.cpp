@@ -76,7 +76,7 @@ bool Game::Init()
 	}
 
 	// Set viewport
-	//glViewport(0, 0, WIDTH, HEIGHT);
+	glViewport(0, 0, WIDTH, HEIGHT);
 
 	// Register the callback function for when window gets resized
 	glfwSetFramebufferSizeCallback(mWindow, FrameBufferSizeCallBack);
@@ -84,8 +84,11 @@ bool Game::Init()
 	// Enable v-sync by default
 	glfwSwapInterval(1);
 
-	// Enable z-buffering
+	// Enable z-buffering (depth testing)
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
+	glEnable(GL_CULL_FACE);
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
