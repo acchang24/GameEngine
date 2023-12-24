@@ -19,19 +19,6 @@ Texture::Texture(const std::string& textureFile) :
 	// There is a minimum of 16 texture units to use (GL_TEXTURE0 to GL_TEXTURE15)
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 
-	// Set the texture's wrapping parameters
-	// GL_REPEAT: The default behavior. Repeats the texture image.
-	// GL_MIRRORED_REPEAT: Same as GL_REPEAT but mirrors the image with each repeat
-	// GL_CLAMP_TO_EDGE: Clamps coordinates between 0 and 1. Higher coordinates become
-	// clamped to the edge, resulting in a stretched edge pattern.
-	// GL_CLAMP_TO_BORDER: Coordinates outside the range are now given a user specifed vorder color
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	// Load/Generate a texture
 	// Tell stb_image.h to flip loaded textures on the y axis
 	stbi_set_flip_vertically_on_load(true);
@@ -43,6 +30,30 @@ Texture::Texture(const std::string& textureFile) :
 
 	if (data)
 	{
+		// Get the format based on the number of color channels
+		GLenum wrap = 0;
+		if (mNumChannels == 4)
+		{
+			wrap = GL_CLAMP_TO_EDGE;
+		}
+		else
+		{
+			wrap = GL_REPEAT;
+		}
+
+		// Set the texture's wrapping parameters
+		// GL_REPEAT: The default behavior. Repeats the texture image.
+		// GL_MIRRORED_REPEAT: Same as GL_REPEAT but mirrors the image with each repeat
+		// GL_CLAMP_TO_EDGE: Clamps coordinates between 0 and 1. Higher coordinates become
+		// clamped to the edge, resulting in a stretched edge pattern.
+		// GL_CLAMP_TO_BORDER: Coordinates outside the range are now given a user specifed vorder color
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+
+		// Set texture filtering parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 		//   Start generating a texture using the loaded image data
 		//   Textures are generated with glTexImage2D:
 		// - 1st argument specifies the texture target. Setting to GL_TEXTURE_2D

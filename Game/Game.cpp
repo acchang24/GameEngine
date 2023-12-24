@@ -23,8 +23,11 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
+float nearPlane = 0.1f;
+float farPlane = 1000.0f;
+
 // projection matrix
-glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), 0.1f, 1000.0f);
+glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), nearPlane, farPlane);
 
 Game::Game() :
 	mWindow(nullptr),
@@ -88,6 +91,7 @@ bool Game::Init()
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
+	// Enable face culling
 	glEnable(GL_CULL_FACE);
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -99,8 +103,9 @@ bool Game::Init()
 	LoadStartingShadersMaterials(am);
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	sponza->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
+	sponza->SetPosition(glm::vec3(0, -5.0, 0.0f));
 	sponza->SetScale(0.15);
+	sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
 
 	mCamera = new Camera();
@@ -366,7 +371,7 @@ void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 
 	// Set new width/height ratio for perspective projection matrix, and update the projection matrix
-	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 1000.0f);
+	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), nearPlane, farPlane);
 }
 
 PointLight* Game::AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic)
