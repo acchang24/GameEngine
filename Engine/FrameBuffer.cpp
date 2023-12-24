@@ -99,6 +99,9 @@ void FrameBuffer::End(int width, int height)
 void FrameBuffer::Draw(int width, int height)
 {
 	mShader->SetActive();
+
+	// Activate texture unit
+	glActiveTexture(GL_TEXTURE0);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);

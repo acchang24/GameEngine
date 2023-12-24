@@ -104,8 +104,6 @@ bool Game::Init()
 
 	glm::vec3 lightPosition(1.0f, 0.0f, 1.0f);
 
-	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
-
 	AssetManager* am = AssetManager::Get();
 
 	LoadStartingShadersMaterials(am);
@@ -122,6 +120,12 @@ bool Game::Init()
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->mData.diffuseIntensity = 1.0f;
 	dirLight->mData.specularIntensity = 0.5f;
+
+	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
+	am->SaveShader("screen", screenShader);
+
+	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
+	mFrameBuffer->SetShader(screenShader);
 
 	return true;
 }
@@ -297,8 +301,8 @@ void Game::Render()
 		s.second->SetVec3("viewPos", mCamera->GetPosition());
 	}
 
-	// Bind to frame buffer instead
-	//mFrameBuffer->SetActive();
+	// Draw to offscreen frame buffer instead
+	mFrameBuffer->SetActive();
 
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -309,6 +313,8 @@ void Game::Render()
 	{
 		e->Draw();
 	}
+
+	mFrameBuffer->End(WIDTH, HEIGHT);
 
 	glfwSwapBuffers(mWindow);
 }

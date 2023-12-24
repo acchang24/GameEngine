@@ -1,3 +1,5 @@
+	glm::vec3 lightPosition(1.0f, 0.0f, 1.0f);
+
 	AssetManager* am = AssetManager::Get();
 
 	LoadStartingShadersMaterials(am);
@@ -37,7 +39,7 @@
 	plane->SetMaterial(planeMat);
 	plane->SetPosition(glm::vec3(0.0f, -5.0f, 1.0f));
 	plane->SetScale(50.0f);
-	plane->SetPitch(-90.0f);
+	plane->SetPitch(90.0f);
 	AddGameEntity(plane);
 
 	mCamera = new Camera();
@@ -107,9 +109,17 @@
 	windowPlane2->SetMaterial(windowMat2);
 	AddGameEntity(windowPlane2);
 
+	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
+	am->SaveShader("screen", screenShader);
+
+	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
+	mFrameBuffer->SetShader(screenShader);
+
 
 	// SPONZA
 
+
+	glm::vec3 lightPosition(1.0f, 0.0f, 1.0f);
 
 	AssetManager* am = AssetManager::Get();
 
@@ -127,3 +137,9 @@
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->mData.diffuseIntensity = 1.0f;
 	dirLight->mData.specularIntensity = 0.5f;
+
+	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
+	am->SaveShader("screen", screenShader);
+
+	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
+	mFrameBuffer->SetShader(screenShader);
