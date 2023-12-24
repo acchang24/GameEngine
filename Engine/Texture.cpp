@@ -47,8 +47,8 @@ Texture::Texture(const std::string& textureFile) :
 		// GL_CLAMP_TO_EDGE: Clamps coordinates between 0 and 1. Higher coordinates become
 		// clamped to the edge, resulting in a stretched edge pattern.
 		// GL_CLAMP_TO_BORDER: Coordinates outside the range are now given a user specifed vorder color
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		// Set texture filtering parameters
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

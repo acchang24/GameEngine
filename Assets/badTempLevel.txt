@@ -37,7 +37,7 @@
 	plane->SetMaterial(planeMat);
 	plane->SetPosition(glm::vec3(0.0f, -5.0f, 1.0f));
 	plane->SetScale(50.0f);
-	plane->SetPitch(90.0f);
+	plane->SetPitch(-90.0f);
 	AddGameEntity(plane);
 
 	mCamera = new Camera();
@@ -79,6 +79,33 @@
 		TimerComponent* timer = new TimerComponent(object);
 		AddGameEntity(object);
 	}
+
+	Texture* window = new Texture("Assets/transparent_window.png");
+	am->SaveTexture("window", window);
+
+	Texture* grass = new Texture("Assets/grass.png");
+	am->SaveTexture("grass", grass);
+
+	Plane* grassPlane = new Plane();
+	grassPlane->SetPosition(glm::vec3(-5.0f, -4.5f, 0.0f));
+	Material* grassMat = new Material(*am->LoadMaterial("textured"));
+	grassMat->AddTexture(grass);
+	grassPlane->SetMaterial(grassMat);
+	AddGameEntity(grassPlane);
+
+	Plane* windowPlane = new Plane();
+	windowPlane->SetPosition(glm::vec3(-5.0f, -4.5f, 1.8f));
+	Material* windowMat = new Material(*am->LoadMaterial("textured"));
+	windowMat->AddTexture(window);
+	windowPlane->SetMaterial(windowMat);
+	AddGameEntity(windowPlane);
+
+	Plane* windowPlane2 = new Plane();
+	windowPlane2->SetPosition(glm::vec3(-5.3f, -4.5f, 1.6f));
+	Material* windowMat2 = new Material(*am->LoadMaterial("textured"));
+	windowMat2->AddTexture(window);
+	windowPlane2->SetMaterial(windowMat2);
+	AddGameEntity(windowPlane2);
 
 
 	// SPONZA

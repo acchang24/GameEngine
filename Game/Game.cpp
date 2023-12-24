@@ -94,6 +94,10 @@ bool Game::Init()
 	// Enable face culling
 	glEnable(GL_CULL_FACE);
 
+	//// Enable blending
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glm::vec3 lightPosition(1.0f, 0.0f, 1.0f);
@@ -103,7 +107,7 @@ bool Game::Init()
 	LoadStartingShadersMaterials(am);
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	sponza->SetPosition(glm::vec3(0, -5.0, 0.0f));
+	sponza->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
 	sponza->SetScale(0.15);
 	sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
