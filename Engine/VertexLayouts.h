@@ -11,9 +11,15 @@
 // defines the vertex values.
 enum class VertexLayout
 {
+	VertexPos, // VertexPos just contains vec3 position
 	VertexColor, // VertexColor contains position and color
 	Vertex, // Vertex contains position, normal, and texture(uv) coordinates
 	VertexScreenQuad // VertexScreenQuad contains position and texutre coordinates (used for frame buffers)
+};
+
+struct VertexPos
+{
+	glm::vec3 pos;
 };
 
 struct VertexColor
@@ -43,6 +49,9 @@ static std::vector<int> GetVertexLayoutStrides(VertexLayout layout)
 
 	switch (layout)
 	{
+	case VertexLayout::VertexPos:
+		strides = { 3 };
+		break;
 	case VertexLayout::VertexColor:
 		strides = { 3, 4 };
 		break;

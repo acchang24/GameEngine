@@ -48,3 +48,9 @@ CubeMap::~CubeMap()
 	glDeleteTextures(1, &mTextureID);
 }
 
+void CubeMap::SetActive()
+{
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mTextureID);
+}
+

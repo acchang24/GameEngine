@@ -20,6 +20,7 @@
 #include "SpotLight.h"
 #include "Plane.h"
 #include "FrameBuffer.h"
+#include "Skybox.h"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -34,6 +35,7 @@ Game::Game() :
 	mWindow(nullptr),
 	mCamera(nullptr),
 	mFrameBuffer(nullptr),
+	mSkybox(nullptr),
 	mLightArrays({}),
 	mMousePosX(static_cast<double>(WIDTH / 2)),
 	mMousePosY(static_cast<double>(HEIGHT / 2)),
@@ -142,6 +144,18 @@ bool Game::Init()
 	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
 	mFrameBuffer->SetShader(screenShader);
 
+	// Skybox
+	std::vector<std::string> faceNames
+	{
+		"Assets/skyboxes/skybox1/right.jpg",
+		"Assets/skyboxes/skybox1/left.jpg",
+		"Assets/skyboxes/skybox1/top.jpg",
+		"Assets/skyboxes/skybox1/bottom.jpg",
+		"Assets/skyboxes/skybox1/front.jpg",
+		"Assets/skyboxes/skybox1/back.jpg"
+	};
+	mSkybox = new Skybox(faceNames);
+
 	return true;
 }
 
@@ -180,6 +194,8 @@ void Game::Shutdown()
 	delete mCamera;
 
 	delete mFrameBuffer;
+
+	delete mSkybox;
 
 	DeAllocateLights();
 }
@@ -316,8 +332,8 @@ void Game::Render()
 		s.second->SetVec3("viewPos", mCamera->GetPosition());
 	}
 
-	// Draw to offscreen frame buffer instead
-	//mFrameBuffer->SetActive();
+	// Uncomment this to draw to offscreen frame buffer instead
+	mFrameBuffer->SetActive();
 
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -329,7 +345,11 @@ void Game::Render()
 		e->Draw();
 	}
 
-	//mFrameBuffer->End(WIDTH, HEIGHT);
+	// Draw sky box last
+	mSkybox->Draw(mCamera->GetViewMatrix(), projection);
+
+	// Uncomment this if using off screen frame buffer
+	mFrameBuffer->End(WIDTH, HEIGHT);
 
 	glfwSwapBuffers(mWindow);
 }

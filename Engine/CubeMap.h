@@ -14,6 +14,9 @@ public:
 	CubeMap(const std::vector<std::string>& textureFaces);
 	~CubeMap();
 
+	// Binds the cube map's texture as active and sets its texture unit
+	void SetActive();
+
 	// Gets the texture id
 	// @return - unsigned int for the texture's id
 	unsigned int GetTextureID() const { return mTextureID; }

@@ -11,6 +11,7 @@ class Entity;
 class Camera;
 class AssetManager;
 class FrameBuffer;
+class Skybox;
 
 class Game
 {
@@ -104,6 +105,9 @@ private:
 
 	// Frame buffer
 	FrameBuffer* mFrameBuffer;
+
+	// Skybox
+	Skybox* mSkybox;
 
 	// Array of different lights
 	LightArrays mLightArrays;
