@@ -317,7 +317,7 @@ void Game::Render()
 	}
 
 	// Draw to offscreen frame buffer instead
-	mFrameBuffer->SetActive();
+	//mFrameBuffer->SetActive();
 
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -329,7 +329,7 @@ void Game::Render()
 		e->Draw();
 	}
 
-	mFrameBuffer->End(WIDTH, HEIGHT);
+	//mFrameBuffer->End(WIDTH, HEIGHT);
 
 	glfwSwapBuffers(mWindow);
 }

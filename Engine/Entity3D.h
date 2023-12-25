@@ -5,6 +5,7 @@
 #include "Texture.h"
 
 class Mesh;
+class Material;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -31,7 +32,11 @@ public:
 	// @param - aiMesh*
 	// @param - const aiScene*
 	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
-	std::vector<Texture*> LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, TextureType type);
+	// Loads the textures of the material
+	// @param - aiMaterial*
+	// @param - aiTextureType
+	// @param - Material* for the material
+	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material);
 
 	// Override update function for 3D entities
 	// @param - float for delta time

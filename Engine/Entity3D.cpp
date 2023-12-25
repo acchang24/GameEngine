@@ -48,28 +48,20 @@ Entity3D::~Entity3D()
 
 bool Entity3D::LoadModel(const std::string& fileName)
 {
-	std::ifstream inFile(fileName);
-	if (inFile.is_open())
+	Assimp::Importer import;
+	const aiScene * scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		Assimp::Importer import;
-		const aiScene * scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
-
-		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-		{
-			std::cout << "ERROR ASSIMP parsing the object's file:: " << import.GetErrorString() << std::endl;
-			return false;
-		}
-
-		mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
-
-		ProcessNodes(scene->mRootNode, scene);
-	}
-	else
-	{
-		std::cout << "Error reading file: \"" << fileName << "\"" << std::endl;
+		std::cout << "ERROR ASSIMP parsing the object's file:: " << import.GetErrorString() << std::endl;
+		return false;
 	}
 
-	return false;
+	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
+
+	ProcessNodes(scene->mRootNode, scene);
+
+	return true;
 }
 
 void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene)
@@ -93,7 +85,6 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<Texture*> textures;
 	vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
 	indices.reserve(static_cast<size_t>(mesh->mNumFaces * 3));
 
@@ -107,18 +98,13 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
 		vertex.pos = vector;
+
 		// Normals
-		if (mesh->HasNormals())
-		{
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.normal = vector;
-		}
-		else
-		{
-			vertex.normal = glm::vec3(0.0f, 0.0f, 0.0f);
-		}
+		vector.x = mesh->mNormals[i].x;
+		vector.y = mesh->mNormals[i].y;
+		vector.z = mesh->mNormals[i].z;
+		vertex.normal = vector;
+	
 		// Textures
 		if (mesh->mTextureCoords[0])
 		{
@@ -137,6 +123,7 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		}
 		vertices.emplace_back(vertex);
 	}
+
 	// Loop through the mesh's faces to get indices
 	for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
 	{
@@ -147,17 +134,17 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			indices.emplace_back(face.mIndices[j]);
 		}
 	}
+
 	// Load materials
+	Material* mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 		// Diffuse textures
-		std::vector<Texture*> diffuseTextures = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::Diffuse);
-		textures.insert(textures.end(), diffuseTextures.begin(), diffuseTextures.end());
+		LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
 		// Specular textures
-		std::vector<Texture*> specularTextures = LoadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::Specular);
-		textures.insert(textures.end(), specularTextures.begin(), specularTextures.end());
+		LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
 		// Normal maps
 
 		// Height maps
@@ -167,22 +154,13 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	size_t vertexSize = sizeof(Vertex) * vertices.size();
 	size_t indexSize = sizeof(unsigned int) * indices.size();
 
-	Material* mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
-
-	for (auto t : textures)
-	{
-		mat->AddTexture(t);
-	}
-
 	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), vertexSize, indexSize, vertices.size(), indices.size(), VertexLayout::Vertex);
 
 	return new Mesh(vb, mat);
 }
 
-std::vector<Texture*> Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, TextureType type)
+void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material)
 {
-	std::vector<Texture*> textures;
-
 	for (unsigned int i = 0; i < mat->GetTextureCount(aiTextureType); ++i)
 	{
 		aiString str;
@@ -195,7 +173,7 @@ std::vector<Texture*> Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureT
 			if (!t)
 			{
 				// Create the new texture
-				Texture* texture = new Texture(path.c_str());
+				Texture* texture = new Texture(path);
 				
 				switch (aiTextureType)
 				{
@@ -203,19 +181,16 @@ std::vector<Texture*> Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureT
 					texture->SetType(TextureType::Specular);
 					break;
 				}
-
-				textures.emplace_back(texture);
+				material->AddTexture(texture);
 				AssetManager::Get()->SaveTexture(path, texture);
 			}
 			else
 			{
 				// use the cached texture from AssetManager
-				textures.emplace_back(t);
+				material->AddTexture(t);
 			}
 		}
 	}
-
-	return textures;
 }
 
 
