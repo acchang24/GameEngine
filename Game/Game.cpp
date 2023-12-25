@@ -109,7 +109,7 @@ bool Game::Init()
 	LoadStartingShadersMaterials(am);
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	sponza->SetPosition(glm::vec3(-8.75f, -5.0, 0.0f));
+	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.15);
 	sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
