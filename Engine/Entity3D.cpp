@@ -88,12 +88,13 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
 	indices.reserve(static_cast<size_t>(mesh->mNumFaces * 3));
 
+	Vertex vertex = {};
+	glm::vec3 vector(0.0f);
+
 	// Loop through vertices and add to our vector of vertices
 	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 	{
 		// Vertices
-		Vertex vertex = {};
-		glm::vec3 vector(0.0f);
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
