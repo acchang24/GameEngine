@@ -45,6 +45,7 @@ public:
 	// Gets the material's shader
 	// @returns - Shader* for the material's shader
 	Shader* GetShader() const { return mShader; }
+	std::vector<Texture*>& GetTextures() { return mTextures; }
 
 	// Sets the material's colors
 	// @param - const MaterialColors& for the new material colors

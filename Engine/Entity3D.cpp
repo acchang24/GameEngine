@@ -63,11 +63,6 @@ bool Entity3D::LoadModel(const std::string& fileName)
 		mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
 
 		ProcessNodes(scene->mRootNode, scene);
-
-		for (auto m : mMeshes)
-		{
-			m->SetOwner(this);
-		}
 	}
 	else
 	{
@@ -83,7 +78,9 @@ void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene)
 	for (unsigned int i = 0; i < node->mNumMeshes; ++i)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		AddMesh(ProcessMesh(mesh, scene));
+		Mesh* newMesh = ProcessMesh(mesh, scene);
+		newMesh->SetOwner(this);
+		AddMesh(newMesh);
 	}
 	// Process any children nodes
 	for (unsigned int i = 0; i < node->mNumChildren; ++i)
