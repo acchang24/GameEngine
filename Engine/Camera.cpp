@@ -10,7 +10,7 @@ Camera::Camera() :
 	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
 	mRight(glm::normalize(glm::cross(mUp, mForward))),
 	mView(glm::translate(glm::mat4(1.0f), mPosition)),
-	mMode(CameraMode::Fly),
+	mMode(CameraMode::Orbit),
 	mYaw(-90.0f),
 	mPitch(0.0f),
 	mRoll(0.0f),

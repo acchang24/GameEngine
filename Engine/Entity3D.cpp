@@ -137,7 +137,7 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	}
 
 	// Load materials
-	Material* mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
+	Material* mat = new Material(*AssetManager::Get()->LoadMaterial("reflection"));
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];

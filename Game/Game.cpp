@@ -63,9 +63,9 @@ bool Game::Init()
 
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	mWindow = glfwCreateWindow(mode->width, mode->height, "Game", monitor, NULL);
+	//mWindow = glfwCreateWindow(mode->width, mode->height, "Game", monitor, NULL);
 
-	//mWindow = glfwCreateWindow(windowWidth, windowHeight, "Game", NULL, NULL);
+	mWindow = glfwCreateWindow(windowWidth, windowHeight, "Game", NULL, NULL);
 
 	if (!mWindow)
 	{
@@ -83,11 +83,11 @@ bool Game::Init()
 	}
 
 	// Set viewport
-	//glViewport(0, 0, windowWidth, windowHeight);
+	glViewport(0, 0, windowWidth, windowHeight);
 	// Full screen viewport
-	glViewport(0, 0, mode->width, mode->height);
-	windowWidth = mode->width;
-	windowHeight = mode->height;
+	//glViewport(0, 0, mode->width, mode->height);
+	//windowWidth = mode->width;
+	//windowHeight = mode->height;
 
 	// Register the callback function for when window gets resized
 	glfwSetFramebufferSizeCallback(mWindow, FrameBufferSizeCallBack);
@@ -114,36 +114,34 @@ bool Game::Init()
 
 	LoadStartingShadersMaterials(am);
 
-	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	sponza->SetScale(0.15);
-	sponza->SetYaw(-90.0f);
-	AddGameEntity(sponza);
-
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
+	dirLight->mData.ambientIntensity = 0.075f;
 	dirLight->mData.diffuseIntensity = 1.0f;
 	dirLight->mData.specularIntensity = 0.5f;
 
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
 	am->SaveShader("screen", screenShader);
 
-	Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
-	am->SaveShader("invertedColor", invertedColorShader);
+	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
+	//am->SaveShader("invertedColor", invertedColorShader);
 
-	Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
-	am->SaveShader("grayScale", grayScaleShader);
+	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
+	//am->SaveShader("grayScale", grayScaleShader);
 
-	Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
-	am->SaveShader("sharpenKernel", sharpenKernelShader);
+	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
+	//am->SaveShader("sharpenKernel", sharpenKernelShader);
 
-	Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
-	am->SaveShader("blurKernel", blurKernelShader);
+	//Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
+	//am->SaveShader("blurKernel", blurKernelShader);
 
-	Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
-	am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
+	//Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
+	//am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
+
+	Shader* reflectiveShader = new Shader("Shaders/reflectionVS.glsl", "Shaders/reflectionFS.glsl");
+	am->SaveShader("reflectiveShader", reflectiveShader);
 
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight);
 	mFrameBuffer->SetShader(screenShader);
@@ -160,6 +158,26 @@ bool Game::Init()
 	};
 	mSkybox = new Skybox(faceNames);
 
+	Material* reflectiveMat = new Material();
+	reflectiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false });
+	reflectiveMat->SetShader(reflectiveShader);
+	am->SaveMaterial("reflection", reflectiveMat);
+
+	//Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	//sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
+	//sponza->SetScale(0.15);
+	//sponza->SetYaw(-90.0f);
+	//AddGameEntity(sponza);
+
+	//Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	//squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
+	//AddGameEntity(squidward);
+
+	Cube* mCube = new Cube();
+	mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	mCube->SetMaterial(new Material(*reflectiveMat));
+	AddGameEntity(mCube);
+
 	return true;
 }
 
@@ -169,7 +187,7 @@ void Game::LoadStartingShadersMaterials(AssetManager* am)
 	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 
 	// General purpose material for textured objects
-	MaterialColors texturedMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 1.0f, 32.0f, false, false };
+	MaterialColors texturedMat = { glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false };
 	Material* texturedMaterial = new Material();
 	texturedMaterial->SetMaterialColors(texturedMat);
 	texturedMaterial->SetShader(phongShader);
