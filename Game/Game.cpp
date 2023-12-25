@@ -22,14 +22,14 @@
 #include "FrameBuffer.h"
 #include "Skybox.h"
 
-#define WIDTH 1280
-#define HEIGHT 720
+int windowWidth = 1280;
+int windowHeight = 720;
 
 float nearPlane = 0.1f;
-float farPlane = 1000.0f;
+float farPlane = 10000.0f;
 
 // projection matrix
-glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(WIDTH) / static_cast<float>(HEIGHT), nearPlane, farPlane);
+glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowWidth) / static_cast<float>(windowHeight), nearPlane, farPlane);
 
 Game::Game() :
 	mWindow(nullptr),
@@ -37,10 +37,10 @@ Game::Game() :
 	mFrameBuffer(nullptr),
 	mSkybox(nullptr),
 	mLightArrays({}),
-	mMousePosX(static_cast<double>(WIDTH / 2)),
-	mMousePosY(static_cast<double>(HEIGHT / 2)),
-	mMousePrevX(static_cast<double>(WIDTH / 2)),
-	mMousePrevY(static_cast<double>(HEIGHT / 2)),
+	mMousePosX(static_cast<double>(windowWidth / 2)),
+	mMousePosY(static_cast<double>(windowHeight / 2)),
+	mMousePrevX(static_cast<double>(windowHeight / 2)),
+	mMousePrevY(static_cast<double>(windowHeight / 2)),
 	mFirstMouse(true),
 	mIsRunning(true)
 {
@@ -63,9 +63,9 @@ bool Game::Init()
 
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	//mWindow = glfwCreateWindow(mode->width, mode->height, "Game", monitor, NULL);
+	mWindow = glfwCreateWindow(mode->width, mode->height, "Game", monitor, NULL);
 
-	mWindow = glfwCreateWindow(WIDTH, HEIGHT, "Game", NULL, NULL);
+	//mWindow = glfwCreateWindow(windowWidth, windowHeight, "Game", NULL, NULL);
 
 	if (!mWindow)
 	{
@@ -83,7 +83,11 @@ bool Game::Init()
 	}
 
 	// Set viewport
-	glViewport(0, 0, WIDTH, HEIGHT);
+	//glViewport(0, 0, windowWidth, windowHeight);
+	// Full screen viewport
+	glViewport(0, 0, mode->width, mode->height);
+	windowWidth = mode->width;
+	windowHeight = mode->height;
 
 	// Register the callback function for when window gets resized
 	glfwSetFramebufferSizeCallback(mWindow, FrameBufferSizeCallBack);
@@ -141,7 +145,7 @@ bool Game::Init()
 	Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
 	am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
-	mFrameBuffer = new FrameBuffer(WIDTH, HEIGHT);
+	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight);
 	mFrameBuffer->SetShader(screenShader);
 
 	// Skybox
@@ -349,7 +353,7 @@ void Game::Render()
 	mSkybox->Draw(mCamera->GetViewMatrix(), projection);
 
 	// Uncomment this if using off screen frame buffer
-	mFrameBuffer->End(WIDTH, HEIGHT);
+	mFrameBuffer->End(windowWidth, windowHeight);
 
 	glfwSwapBuffers(mWindow);
 }
@@ -426,6 +430,9 @@ void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 
 	// Set new width/height ratio for perspective projection matrix, and update the projection matrix
 	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), nearPlane, farPlane);
+
+	windowWidth = width;
+	windowHeight = height;
 }
 
 PointLight* Game::AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic)
