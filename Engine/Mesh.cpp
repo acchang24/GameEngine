@@ -19,7 +19,7 @@ Mesh::~Mesh()
 
 	delete mVertexBuffer;
 
-	delete mMaterial;
+	//delete mMaterial;
 }
 
 void Mesh::Draw()

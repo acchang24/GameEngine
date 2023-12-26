@@ -20,6 +20,9 @@ Entity3D::Entity3D() :
 	mPitch(0.0f),
 	mRoll(0.0f)
 {
+	numMesh = 0;
+	numMats = 0;
+	numTextures = 0;
 }
 
 Entity3D::Entity3D(const std::string& fileName):
@@ -32,7 +35,22 @@ Entity3D::Entity3D(const std::string& fileName):
 	mPitch(0.0f),
 	mRoll(0.0f)
 {
+	numMesh = 0;
+	numMats = 0;
+	numTextures = 0;
 	LoadModel(fileName);
+	if (numMesh != mMeshes.size())
+	{
+		std::cout << "Fucked" << std::endl;
+	}
+	if (numMats != mMaterialMap.size())
+	{
+		std::cout << "Fucked2" << std::endl;
+	}
+	if (numTextures != AssetManager::Get()->GetTextureCache()->GetAssetMap().size())
+	{
+		std::cout << "Fucked3" << std::endl;
+	}
 }
 
 Entity3D::~Entity3D()
@@ -44,12 +62,18 @@ Entity3D::~Entity3D()
 		delete m;
 	}
 	mMeshes.clear();
+
+	for (auto& m : mMaterialMap)
+	{
+		delete m.second;
+	}
+	mMaterialMap.clear();
 }
 
 bool Entity3D::LoadModel(const std::string& fileName)
 {
 	Assimp::Importer import;
-	const aiScene * scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+	const aiScene* scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -60,7 +84,7 @@ bool Entity3D::LoadModel(const std::string& fileName)
 	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
 
 	ProcessNodes(scene->mRootNode, scene);
-
+	std::cout << numMesh << std::endl;
 	return true;
 }
 
@@ -137,37 +161,48 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	}
 
 	// Load materials
-	Material* mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
+	Material* mat = nullptr;
+	++numMesh;
 	if (mesh->mMaterialIndex >= 0)
 	{
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		// If the material index is not in the entity's material map, create a new material
+		if (mMaterialMap.find(mesh->mMaterialIndex) == mMaterialMap.end())
+		{
+			++numMats;
+			mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
+			mMaterialMap[mesh->mMaterialIndex] = mat;
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			std::cout << material->GetName().C_Str() << std::endl;
+			// Diffuse textures
+			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
+			// Specular textures
+			LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
+			// Normal maps
 
-		// Diffuse textures
-		LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
-		// Specular textures
-		LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
-		// Normal maps
-
-		// Height maps
-
+			// Height maps
+		}
+		else
+		{
+			// use the material from the material map instead
+			mat = mMaterialMap[mesh->mMaterialIndex];
+		}
 	}
 
-	size_t vertexSize = sizeof(Vertex) * vertices.size();
-	size_t indexSize = sizeof(unsigned int) * indices.size();
-
-	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), vertexSize, indexSize, vertices.size(), indices.size(), VertexLayout::Vertex);
+	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
+		vertices.size(), indices.size(), VertexLayout::Vertex);
 
 	return new Mesh(vb, mat);
 }
 
 void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material)
 {
+	aiString str;
+	std::string path = mDirectory;
 	for (unsigned int i = 0; i < mat->GetTextureCount(aiTextureType); ++i)
 	{
-		aiString str;
 		if (AI_SUCCESS == mat->GetTexture(aiTextureType, i, &str))
 		{
-			std::string path = mDirectory + (str.C_Str());
+			path += (str.C_Str());
 
 			// See if texture is already loaded
 			Texture* t = AssetManager::Get()->LoadTexture(path);
@@ -184,6 +219,7 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 				}
 				material->AddTexture(texture);
 				AssetManager::Get()->SaveTexture(path, texture);
+				++numTextures;
 			}
 			else
 			{

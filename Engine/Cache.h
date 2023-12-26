@@ -52,7 +52,7 @@ public:
 	// Loops through and calls delete on each element in the asset map, then clears the map
 	void Clear()
 	{
-		for (auto a : mAssetMap)
+		for (auto& a : mAssetMap)
 		{
 			delete a.second;
 		}

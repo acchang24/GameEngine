@@ -1,11 +1,13 @@
 #pragma once
 #include "Entity.h"
 #include <string>
+#include <unordered_map>
 #include <assimp/scene.h>
 #include "Texture.h"
+#include "Material.h"
 
 class Mesh;
-class Material;
+class Shader;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -50,6 +52,8 @@ public:
 	virtual void OnUpdate(float deltaTime);
 	// Entity specific draw code (overrideable)
 	virtual void OnDraw();
+
+	//void SetMaterialShader(unsigned int index, Shader* s) { mMaterialMap[index]->SetShader(s); }
 
 	// Adds a mesh to the entity's vector of meshes
 	// @param - Mesh* for the new mesh
@@ -105,6 +109,12 @@ public:
 protected:
 	// Entity's vector of meshes
 	std::vector<Mesh*> mMeshes;
+
+	std::unordered_map<unsigned int, Material*> mMaterialMap;
+
+	int numMesh;
+	int numMats;
+	int numTextures;
 
 	std::string mDirectory;
 

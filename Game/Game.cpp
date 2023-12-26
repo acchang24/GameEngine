@@ -118,7 +118,6 @@ bool Game::Init()
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
-	dirLight->mData.ambientIntensity = 0.075f;
 	dirLight->mData.diffuseIntensity = 1.0f;
 	dirLight->mData.specularIntensity = 0.5f;
 
@@ -310,7 +309,8 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_SPACE])
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
-		mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
+
+		//mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{
