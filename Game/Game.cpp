@@ -21,6 +21,7 @@
 #include "Plane.h"
 #include "FrameBuffer.h"
 #include "Skybox.h"
+#include "Mesh.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -118,8 +119,6 @@ bool Game::Init()
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
-	dirLight->mData.diffuseIntensity = 1.0f;
-	dirLight->mData.specularIntensity = 0.5f;
 
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
 	am->SaveShader("screen", screenShader);
@@ -140,7 +139,7 @@ bool Game::Init()
 	//am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
 	Shader* reflectiveShader = new Shader("Shaders/reflectionVS.glsl", "Shaders/reflectionFS.glsl");
-	am->SaveShader("reflectiveShader", reflectiveShader);
+	am->SaveShader("reflection", reflectiveShader);
 
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight);
 	mFrameBuffer->SetShader(screenShader);
@@ -166,10 +165,15 @@ bool Game::Init()
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.15);
 	sponza->SetYaw(-90.0f);
+	sponza->SetMaterialShader("roof", am->LoadShader("reflection"));
 	AddGameEntity(sponza);
 
 	//Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	//squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
+	//squidward->SetScale(0.5f);
+	//squidward->SetMaterialShader("tt", reflectiveShader);
+	//Material* m = squidward->GetMaterial("tt");
+	//m->SetSpecularIntensity(0.0f);
 	//AddGameEntity(squidward);
 
 	//Cube* mCube = new Cube();
@@ -309,6 +313,16 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_SPACE])
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
+
+		//Entity3D* e = static_cast<Entity3D*>(mEntities[1]);
+		//if (e->GetMeshes()[0]->GetMaterial()->GetShader() == AssetManager::Get()->LoadShader("phong"))
+		//{
+		//	e->SetMaterialShader("tt", AssetManager::Get()->LoadShader("reflection"));
+		//}
+		//else
+		//{
+		//	e->SetMaterialShader("tt", AssetManager::Get()->LoadShader("phong"));
+		//}
 
 		//mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
 	}

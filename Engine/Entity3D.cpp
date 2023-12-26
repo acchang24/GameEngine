@@ -1,6 +1,6 @@
 #include "Entity3D.h"
 #include <iostream>
-#include <fstream>
+#include <queue>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <assimp/Importer.hpp>
@@ -41,15 +41,11 @@ Entity3D::Entity3D(const std::string& fileName):
 	LoadModel(fileName);
 	if (numMesh != mMeshes.size())
 	{
-		std::cout << "Fucked" << std::endl;
+		std::cout << "different mesh numbers" << std::endl;
 	}
 	if (numMats != mMaterialMap.size())
 	{
-		std::cout << "Fucked2" << std::endl;
-	}
-	if (numTextures != AssetManager::Get()->GetTextureCache()->GetAssetMap().size())
-	{
-		std::cout << "Fucked3" << std::endl;
+		std::cout << "different material numbers" << std::endl;
 	}
 }
 
@@ -73,7 +69,7 @@ Entity3D::~Entity3D()
 bool Entity3D::LoadModel(const std::string& fileName)
 {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+	const aiScene* scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -84,24 +80,48 @@ bool Entity3D::LoadModel(const std::string& fileName)
 	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
 
 	ProcessNodes(scene->mRootNode, scene);
-	std::cout << numMesh << std::endl;
+
 	return true;
 }
 
 void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene)
 {
-	// Process the node's mesh
-	for (unsigned int i = 0; i < node->mNumMeshes; ++i)
+	//// Process the node's mesh
+	//for (unsigned int i = 0; i < node->mNumMeshes; ++i)
+	//{
+	//	aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+	//	Mesh* newMesh = ProcessMesh(mesh, scene);
+	//	newMesh->SetOwner(this);
+	//	AddMesh(newMesh);
+	//}
+	//// Process any children nodes
+	//for (unsigned int i = 0; i < node->mNumChildren; ++i)
+	//{
+	//	ProcessNodes(node->mChildren[i], scene);
+	//}
+
+
+	std::queue<aiNode*> nodeQ;
+	nodeQ.push(node);
+	aiNode* currNode = nullptr;
+	while (!nodeQ.empty())
 	{
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		Mesh* newMesh = ProcessMesh(mesh, scene);
-		newMesh->SetOwner(this);
-		AddMesh(newMesh);
-	}
-	// Process any children nodes
-	for (unsigned int i = 0; i < node->mNumChildren; ++i)
-	{
-		ProcessNodes(node->mChildren[i], scene);
+		currNode = nodeQ.front();
+		for (unsigned int i = 0; i < currNode->mNumMeshes; ++i)
+		{
+			aiMesh* mesh = scene->mMeshes[currNode->mMeshes[i]];
+			Mesh* newMesh = ProcessMesh(mesh, scene);
+			newMesh->SetOwner(this);
+			AddMesh(newMesh);
+		}
+		nodeQ.pop();
+		for (unsigned int i = 0; i < currNode->mNumChildren; ++i)
+		{
+			if (currNode->mChildren[i])
+			{
+				nodeQ.push(currNode->mChildren[i]);
+			}
+		}
 	}
 }
 
@@ -165,14 +185,16 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	++numMesh;
 	if (mesh->mMaterialIndex >= 0)
 	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		std::string name = material->GetName().C_Str();
+		
 		// If the material index is not in the entity's material map, create a new material
-		if (mMaterialMap.find(mesh->mMaterialIndex) == mMaterialMap.end())
+		if (mMaterialMap.find(name) == mMaterialMap.end())
 		{
+			std::cout << name << " " << mesh->mMaterialIndex << std::endl;
 			++numMats;
 			mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
-			mMaterialMap[mesh->mMaterialIndex] = mat;
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			std::cout << material->GetName().C_Str() << std::endl;
+			mMaterialMap[name] = mat;
 			// Diffuse textures
 			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
 			// Specular textures
@@ -184,8 +206,12 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		else
 		{
 			// use the material from the material map instead
-			mat = mMaterialMap[mesh->mMaterialIndex];
+			mat = mMaterialMap[name];
 		}
+	}
+	else
+	{
+		mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
 	}
 
 	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
@@ -202,7 +228,7 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 	{
 		if (AI_SUCCESS == mat->GetTexture(aiTextureType, i, &str))
 		{
-			path += (str.C_Str());
+			path = mDirectory + (str.C_Str());
 
 			// See if texture is already loaded
 			Texture* t = AssetManager::Get()->LoadTexture(path);

@@ -53,7 +53,15 @@ public:
 	// Entity specific draw code (overrideable)
 	virtual void OnDraw();
 
-	//void SetMaterialShader(unsigned int index, Shader* s) { mMaterialMap[index]->SetShader(s); }
+	// Gets a material by name through the entity's material map
+	// @param - const std::string& for the name of the material
+	// @return - Material* for the desired material
+	Material* GetMaterial(const std::string& name) { return mMaterialMap[name]; }
+	// Uses the material map to help sets a particular material's shader. This will
+	// affect any mesh using that particular material.
+	// @param - const std::string& for the name of the material
+	// @param - Shader* for the new shader
+	void SetMaterialShader(const std::string& name, Shader* s) { mMaterialMap[name]->SetShader(s); }
 
 	// Adds a mesh to the entity's vector of meshes
 	// @param - Mesh* for the new mesh
@@ -110,12 +118,11 @@ protected:
 	// Entity's vector of meshes
 	std::vector<Mesh*> mMeshes;
 
-	std::unordered_map<unsigned int, Material*> mMaterialMap;
+	// Map of the entity's materials. Each mesh of this entity
+	// is indexed to one of these materials.
+	std::unordered_map<std::string, Material*> mMaterialMap;
 
-	int numMesh;
-	int numMats;
-	int numTextures;
-
+	// The entity's model directory
 	std::string mDirectory;
 
 	// Entity's model matrix
@@ -133,4 +140,10 @@ protected:
 	float mPitch;
 	// Roll rotation
 	float mRoll;
+
+
+
+	int numMesh;
+	int numMats;
+	int numTextures;
 };
