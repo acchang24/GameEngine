@@ -8,11 +8,13 @@ layout (location = 0) in vec3 pos;
 layout (location = 1) in vec3 inNormal;
 
 
+// Model matrix uniform
+uniform mat4 model;
+// ViewProjection matrix uniform
+uniform mat4 viewProjection;
+
 out vec3 position;
 out vec3 normal;
-
-uniform mat4 model;
-uniform mat4 viewProjection;
 
 void main()
 {

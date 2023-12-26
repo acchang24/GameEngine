@@ -163,20 +163,20 @@ bool Game::Init()
 	reflectiveMat->SetShader(reflectiveShader);
 	am->SaveMaterial("reflection", reflectiveMat);
 
-	//Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	//sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	//sponza->SetScale(0.15);
-	//sponza->SetYaw(-90.0f);
-	//AddGameEntity(sponza);
+	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
+	sponza->SetScale(0.15);
+	sponza->SetYaw(-90.0f);
+	AddGameEntity(sponza);
 
 	//Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	//squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
 	//AddGameEntity(squidward);
 
-	Cube* mCube = new Cube();
-	mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	mCube->SetMaterial(new Material(*reflectiveMat));
-	AddGameEntity(mCube);
+	//Cube* mCube = new Cube();
+	//mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	//mCube->SetMaterial(new Material(*reflectiveMat));
+	//AddGameEntity(mCube);
 
 	return true;
 }

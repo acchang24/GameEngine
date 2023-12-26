@@ -63,6 +63,8 @@ void Material::SetActive()
         mShader->SetInt(("textureSamplers." + name + number), i);
         mTextures[i]->SetActive();
     }
+    glActiveTexture(GL_TEXTURE0);
+
 }
 
 void Material::AddTexture(Texture* t)
