@@ -141,6 +141,9 @@ bool Game::Init()
 	Shader* reflectiveShader = new Shader("Shaders/reflectionVS.glsl", "Shaders/reflectionFS.glsl");
 	am->SaveShader("reflection", reflectiveShader);
 
+	Shader* refractiveShader = new Shader("Shaders/refractionVS.glsl", "Shaders/refractionFS.glsl");
+	am->SaveShader("refraction", refractiveShader);
+
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight);
 	mFrameBuffer->SetShader(screenShader);
 
@@ -161,6 +164,11 @@ bool Game::Init()
 	reflectiveMat->SetShader(reflectiveShader);
 	am->SaveMaterial("reflection", reflectiveMat);
 
+	Material* refractiveMat = new Material();
+	refractiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false });
+	refractiveMat->SetShader(refractiveShader);
+	am->SaveMaterial("refraction", refractiveMat);
+
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.15);
@@ -168,13 +176,13 @@ bool Game::Init()
 	sponza->SetMaterialShader("roof", am->LoadShader("reflection"));
 	AddGameEntity(sponza);
 
-	//Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
-	//squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
-	//squidward->SetScale(0.5f);
-	//squidward->SetMaterialShader("tt", reflectiveShader);
-	//Material* m = squidward->GetMaterial("tt");
-	//m->SetSpecularIntensity(0.0f);
-	//AddGameEntity(squidward);
+	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
+	squidward->SetScale(0.5f);
+	squidward->SetMaterialShader("tt", refractiveShader);
+	Material* m = squidward->GetMaterial("tt");
+	m->SetSpecularIntensity(0.0f);
+	AddGameEntity(squidward);
 
 	//Cube* mCube = new Cube();
 	//mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));

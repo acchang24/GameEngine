@@ -51,6 +51,6 @@ CubeMap::~CubeMap()
 void CubeMap::SetActive()
 {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mTextureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureID);
 }
 
