@@ -36,8 +36,9 @@ void Material::SetActive()
 	mShader->SetActive();
 	mShader->SetMaterial(this);
 
-    unsigned int diffuseNum = 0;
-    unsigned int specularNum = 0;
+    unsigned int diffuseNum = 1;
+    unsigned int specularNum = 1;
+    unsigned int emissionNum = 1;
 
     std::string number;
     std::string name;
@@ -55,6 +56,11 @@ void Material::SetActive()
             name = "specular";
             number = std::to_string(specularNum);
             ++specularNum;
+            break;
+        case TextureType::Emission:
+            name = "emission";
+            number = std::to_string(emissionNum);
+            ++emissionNum;
             break;
         };
 
@@ -79,5 +85,8 @@ void Material::AddTexture(Texture* t)
 	case TextureType::Specular:
 		SetHasSpecularTexture(true);
 		break;
+    case TextureType::Emission:
+        SetHasEmissionTexture(true);
+        break;
 	}
 }

@@ -199,6 +199,9 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
 			// Specular textures
 			LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
+			// Emissive textures
+			LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
+
 			// Normal maps
 
 			// Height maps
@@ -241,6 +244,9 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 				{
 				case aiTextureType_SPECULAR:
 					texture->SetType(TextureType::Specular);
+					break;
+				case aiTextureType_EMISSIVE:
+					texture->SetType(TextureType::Emission);
 					break;
 				}
 				material->AddTexture(texture);

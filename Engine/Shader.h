@@ -123,6 +123,7 @@ public:
         SetFloat("material.shininess", mats.shininess);
         SetBool("material.hasDiffuseTexture", mats.hasDiffuseTexture);
         SetBool("material.hasSpecularTexture", mats.hasSpecularTexture);
+        SetBool("material.hasEmissionTexture", mats.hasEmissionTexture);
     }
 
     void SetLight(const LightData& light) const

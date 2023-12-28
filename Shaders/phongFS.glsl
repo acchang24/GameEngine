@@ -12,14 +12,16 @@ struct Material
     float shininess;
     bool hasDiffuseTexture;
     bool hasSpecularTexture;
+	bool hasEmissionTexture;
 };
 
-// Struct to define a differnet number of texture units
+// Struct to define a different number of texture units
 // Add more samplers to this struct when needed
 struct TextureSamplers
 {
-    sampler2D diffuse0;
-    sampler2D specular0;
+    sampler2D diffuse1;
+    sampler2D specular1;
+	sampler2D emission1;
 };
 
 // Struct to define light data
@@ -134,6 +136,11 @@ void main()
 		}
 	}
 
+	if(material.hasEmissionTexture)
+	{
+		vec3 emission = texture(textureSamplers.emission1, textureCoord).rgb;
+		lightResult += emission;
+	}
 
 	fragColor = vec4(lightResult, 1.0);
 
@@ -141,7 +148,7 @@ void main()
     if(material.hasDiffuseTexture)
     {
 		// Sampler colors of a texture with texture function, passing in sampler and coordinates
-        vec4 textureColor = texture(textureSamplers.diffuse0, textureCoord);
+        vec4 textureColor = texture(textureSamplers.diffuse1, textureCoord);
 
 		if(textureColor.a < 0.1) 
 		{
@@ -194,7 +201,7 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 	if(material.hasSpecularTexture)
 	{
 		// Sampler colors of a specular map, passing in sampler and coordinates
-		specularLight *= texture(textureSamplers.specular0, textureCoord).xyz;
+		specularLight *= texture(textureSamplers.specular1, textureCoord).xyz;
 	}
 
 	// Combine three lights to get phong lighting

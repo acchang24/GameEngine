@@ -118,6 +118,16 @@ bool Game::Init()
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
+	Texture* texture = new Texture("Assets/matrix.jpg");
+	texture->SetType(TextureType::Emission);
+	Texture* texture3 = new Texture("Assets/container2.png");
+	Texture* texture4 = new Texture("Assets/container2_specular.png");
+	texture4->SetType(TextureType::Specular);
+
+	am->SaveTexture("Assets/matrix.jpg", texture);
+	am->SaveTexture("Assets/container2.png", texture3);
+	am->SaveTexture("Assets/container2_specular.png", texture4);
+
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
@@ -160,12 +170,12 @@ bool Game::Init()
 	mSkybox = new Skybox(faceNames);
 
 	Material* reflectiveMat = new Material();
-	reflectiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false });
+	reflectiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false });
 	reflectiveMat->SetShader(reflectiveShader);
 	am->SaveMaterial("reflection", reflectiveMat);
 
 	Material* refractiveMat = new Material();
-	refractiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false });
+	refractiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false });
 	refractiveMat->SetShader(refractiveShader);
 	am->SaveMaterial("refraction", refractiveMat);
 
@@ -176,18 +186,34 @@ bool Game::Init()
 	sponza->SetMaterialShader("roof", am->LoadShader("reflection"));
 	AddGameEntity(sponza);
 
-	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
-	squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
-	squidward->SetScale(0.5f);
-	squidward->SetMaterialShader("tt", refractiveShader);
-	Material* m = squidward->GetMaterial("tt");
-	m->SetSpecularIntensity(0.0f);
-	AddGameEntity(squidward);
+
 
 	//Cube* mCube = new Cube();
 	//mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	//mCube->SetMaterial(new Material(*reflectiveMat));
 	//AddGameEntity(mCube);
+
+	//Cube* object = new Cube();
+	//object->SetPosition(glm::vec3(0.0f));
+	//object->SetScale(0.5f);
+	//Material* mat = new Material(*am->LoadMaterial("textured"));
+	//mat->SetSpecularIntensity(5.0f);
+	//mat->AddTexture(texture3);
+	//mat->AddTexture(texture4);
+	//mat->AddTexture(texture);
+	//object->SetMaterial(mat);
+	//object->SetYaw(25.0f);
+	//TimerComponent* timer = new TimerComponent(object);
+	//AddGameEntity(object);
+
+	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
+	squidward->SetScale(0.5f);
+	//squidward->SetMaterialShader("tt", refractiveShader);
+	Material* m = squidward->GetMaterial("tt");
+	m->AddTexture(texture);
+	m->SetSpecularIntensity(0.0f);
+	AddGameEntity(squidward);
 
 	return true;
 }
@@ -198,12 +224,12 @@ void Game::LoadStartingShadersMaterials(AssetManager* am)
 	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 
 	// General purpose material for textured objects
-	MaterialColors texturedMat = { glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false };
+	MaterialColors texturedMat = { glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false };
 	Material* texturedMaterial = new Material();
 	texturedMaterial->SetMaterialColors(texturedMat);
 	texturedMaterial->SetShader(phongShader);
 	// General purpose material for objects colored with their vertices
-	MaterialColors colorMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false };
+	MaterialColors colorMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false };
 	Material* colorMaterial = new Material();
 	colorMaterial->SetMaterialColors(colorMat);
 	colorMaterial->SetShader(colorShader);
@@ -323,6 +349,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		mPrevInputs[GLFW_KEY_SPACE] = true;
 
 		//Entity3D* e = static_cast<Entity3D*>(mEntities[1]);
+		//e->GetMaterial("tt")->SetHasEmissionTexture(!e->GetMaterial("tt")->GetMats().hasEmissionTexture);
 		//if (e->GetMeshes()[0]->GetMaterial()->GetShader() == AssetManager::Get()->LoadShader("phong"))
 		//{
 		//	e->SetMaterialShader("tt", AssetManager::Get()->LoadShader("reflection"));
@@ -332,7 +359,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		//	e->SetMaterialShader("tt", AssetManager::Get()->LoadShader("phong"));
 		//}
 
-		//mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
+		mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{

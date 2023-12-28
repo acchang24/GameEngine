@@ -14,6 +14,7 @@ struct MaterialColors
 	float shininess;			// How concentrated the specular light is
 	bool hasDiffuseTexture;		// If the material has a diffuse texture (this is just normal textures)
 	bool hasSpecularTexture;	// If the material has a specular texture (used for specular maps)
+	bool hasEmissionTexture;	// If the material has an emission texture (used for emission maps)
 };
 
 // The Material class helps create the object's material's colors and properties it surface. It defines
@@ -68,6 +69,9 @@ public:
 	// Sets whether or not a material has specular texture
 	// @param - bool for if the material has a specular texture
 	void SetHasSpecularTexture(bool specular) { mMats.hasSpecularTexture = specular; }
+	// Sets whether or not a material has emission texture
+	// @param - bool for if the material has a emission texture
+	void SetHasEmissionTexture(bool emission) { mMats.hasEmissionTexture = emission; }
 	// Set the material's shader
 	// @param - Shader* for the new shader
 	void SetShader(Shader* shader) { mShader = shader; }

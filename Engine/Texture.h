@@ -5,7 +5,8 @@
 enum class TextureType
 {
 	Diffuse, // Normal texture
-	Specular // Specular maps
+	Specular, // Specular maps
+	Emission // Emission maps
 };
 
 // The Texture class helps load image files with the
