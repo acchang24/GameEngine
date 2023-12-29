@@ -2,8 +2,12 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "stb_image.h"
+#include "Texture.h"
+#include "Shader.h"
 
-CubeMap::CubeMap(const std::vector<std::string>& textureFaces)
+CubeMap::CubeMap(const std::vector<std::string>& textureFaces) :
+	mTextureID(0),
+	mTextureUnit(static_cast<int>(TextureUnit::CubeMap))
 {
 	// Generate textures and save that id
 	glGenTextures(1, &mTextureID);
@@ -48,9 +52,10 @@ CubeMap::~CubeMap()
 	glDeleteTextures(1, &mTextureID);
 }
 
-void CubeMap::SetActive()
+void CubeMap::SetActive(Shader* s)
 {
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
+	s->SetInt("cubeMap", mTextureUnit);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureID);
+	glActiveTexture(GL_TEXTURE0);
 }
-

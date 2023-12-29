@@ -17,6 +17,10 @@ public:
 	// @param - const glm::mat4& for the view and proj matrix
 	void Draw(const glm::mat4& view, const glm::mat4& proj);
 
+	// Gets the skybox's cube map
+	// @return - CubeMap* for the skybox's cubemap
+	CubeMap* GetCubeMap() { return mCubeMap; }
+
 private:
 	// The skybox's vertex buffer
 	VertexBuffer* mVertexBuffer;

@@ -11,8 +11,8 @@ Skybox::Skybox(const std::vector<std::string>& faceNames) :
     mShader(nullptr),
     mCubeMap(new CubeMap(faceNames))
 {
+    // Skybox vertices
     VertexPos vertices[] = {
-        // positions          
         glm::vec3(-1.0f,  1.0f, -1.0f),
         glm::vec3(-1.0f, -1.0f, -1.0f),
         glm::vec3(1.0f, -1.0f, -1.0f),
@@ -70,6 +70,8 @@ Skybox::Skybox(const std::vector<std::string>& faceNames) :
     {
         mShader = am->LoadShader("skybox");
     }
+
+    mShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
 }
 
 Skybox::~Skybox()
@@ -94,7 +96,7 @@ void Skybox::Draw(const glm::mat4& view, const glm::mat4& proj)
     // Set the new view * proj matrix
     mShader->SetMat4("viewProjection", viewProj);
 
-    mCubeMap->SetActive();
+    mCubeMap->SetActive(mShader);
 
     mVertexBuffer->Draw();
 

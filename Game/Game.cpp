@@ -133,27 +133,6 @@ bool Game::Init()
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
 	am->SaveShader("screen", screenShader);
 
-	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
-	//am->SaveShader("invertedColor", invertedColorShader);
-
-	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
-	//am->SaveShader("grayScale", grayScaleShader);
-
-	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
-	//am->SaveShader("sharpenKernel", sharpenKernelShader);
-
-	//Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
-	//am->SaveShader("blurKernel", blurKernelShader);
-
-	//Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
-	//am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
-
-	Shader* reflectiveShader = new Shader("Shaders/reflectionVS.glsl", "Shaders/reflectionFS.glsl");
-	am->SaveShader("reflection", reflectiveShader);
-
-	Shader* refractiveShader = new Shader("Shaders/refractionVS.glsl", "Shaders/refractionFS.glsl");
-	am->SaveShader("refraction", refractiveShader);
-
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight);
 	mFrameBuffer->SetShader(screenShader);
 
@@ -169,15 +148,31 @@ bool Game::Init()
 	};
 	mSkybox = new Skybox(faceNames);
 
+	CubeMap* sky = mSkybox->GetCubeMap();
+
+	Shader* reflectiveShader = new Shader("Shaders/EnvironmentMapping/environmentMapVS.glsl", "Shaders/EnvironmentMapping/reflectionFS.glsl");
+	reflectiveShader->SetActive();
+	reflectiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
+	am->SaveShader("reflection", reflectiveShader);
+
 	Material* reflectiveMat = new Material();
 	reflectiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false });
 	reflectiveMat->SetShader(reflectiveShader);
+	sky->SetActive(reflectiveShader);
 	am->SaveMaterial("reflection", reflectiveMat);
+
+	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMapVS.glsl", "Shaders/EnvironmentMapping/refractionFS.glsl");
+	refractiveShader->SetActive();
+	refractiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
+	am->SaveShader("refraction", refractiveShader);
 
 	Material* refractiveMat = new Material();
 	refractiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false });
 	refractiveMat->SetShader(refractiveShader);
+	sky->SetActive(refractiveShader);
 	am->SaveMaterial("refraction", refractiveMat);
+
+	glUseProgram(0);
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
@@ -186,12 +181,10 @@ bool Game::Init()
 	sponza->SetMaterialShader("roof", am->LoadShader("reflection"));
 	AddGameEntity(sponza);
 
-
-
-	//Cube* mCube = new Cube();
-	//mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	//mCube->SetMaterial(new Material(*reflectiveMat));
-	//AddGameEntity(mCube);
+	Cube* mCube = new Cube();
+	mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	mCube->SetMaterial(new Material(*reflectiveMat));
+	AddGameEntity(mCube);
 
 	//Cube* object = new Cube();
 	//object->SetPosition(glm::vec3(0.0f));
@@ -209,11 +202,14 @@ bool Game::Init()
 	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
 	squidward->SetScale(0.5f);
-	//squidward->SetMaterialShader("tt", refractiveShader);
+	squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
 	m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
+
+
+
 
 	return true;
 }
@@ -238,6 +234,21 @@ void Game::LoadStartingShadersMaterials(AssetManager* am)
 	am->SaveShader("phong", phongShader);
 	am->SaveMaterial("textured", texturedMaterial);
 	am->SaveMaterial("color", colorMaterial);
+
+	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
+	//am->SaveShader("invertedColor", invertedColorShader);
+
+	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
+	//am->SaveShader("grayScale", grayScaleShader);
+
+	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
+	//am->SaveShader("sharpenKernel", sharpenKernelShader);
+
+	//Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
+	//am->SaveShader("blurKernel", blurKernelShader);
+
+	//Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
+	//am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 }
 
 void Game::Shutdown()

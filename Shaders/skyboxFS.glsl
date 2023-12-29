@@ -5,9 +5,11 @@ in vec3 texCoord;
 
 out vec4 fragColor;
 
-uniform samplerCube skybox;
+// Uniform for the cube map sampler
+uniform samplerCube cubeMap;
 
 void main()
 {
-    fragColor = texture(skybox, texCoord);
+    // Sample from cube map
+    fragColor = texture(cubeMap, texCoord);
 }  
