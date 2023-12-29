@@ -65,8 +65,8 @@ void Material::SetActive()
         };
 
         // Activate proper texture unit before binding
-        glActiveTexture(GL_TEXTURE0 + i);
-        mShader->SetInt(("textureSamplers." + name + number), i);
+        glActiveTexture(GL_TEXTURE0 + i + 1);
+        mShader->SetInt(("textureSamplers." + name + number), i + 1);
         mTextures[i]->SetActive();
     }
     glActiveTexture(GL_TEXTURE0);
