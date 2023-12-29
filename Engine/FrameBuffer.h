@@ -1,4 +1,5 @@
 #pragma once
+#include "Texture.h"
 
 class Shader;
 class VertexBuffer;
@@ -32,6 +33,9 @@ public:
 	// Draws the frame buffer's off screen quad
 	void Draw(int width, int height);
 
+	// Gets the frame buffer's shader
+	// @return - Shader* for the frame buffer's shader
+	Shader* GetShader() { return mShader; }
 	// Gets the frame buffer object's id
 	// @return - unsigned int for the frame buffer object's id
 	unsigned int GetFrameBufferID() const { return mFrameBufferID; }
@@ -64,6 +68,9 @@ private:
 
 	// Render buffer for depth and stencil attatchments as a reference
 	unsigned int mRenderBufferID;
+
+	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
+	int mTextureUnit;
 
 	// Bool for if this frame buffer is active
 	bool mIsActive;

@@ -202,7 +202,7 @@ bool Game::Init()
 	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
 	squidward->SetScale(0.5f);
-	squidward->SetMaterialShader("tt", refractiveShader);
+	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
 	m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
@@ -238,8 +238,8 @@ void Game::LoadStartingShadersMaterials(AssetManager* am)
 	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
 	//am->SaveShader("invertedColor", invertedColorShader);
 
-	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
-	//am->SaveShader("grayScale", grayScaleShader);
+	Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
+	am->SaveShader("grayScale", grayScaleShader);
 
 	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
 	//am->SaveShader("sharpenKernel", sharpenKernelShader);

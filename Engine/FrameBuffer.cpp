@@ -7,6 +7,11 @@
 
 FrameBuffer::FrameBuffer(int width, int height) :
 	mShader(nullptr),
+	mVertexBuffer(nullptr),
+	mFrameBufferID(0),
+	mTextureID(0),
+	mRenderBufferID(0),
+	mTextureUnit(static_cast<int>(TextureUnit::FrameBuffer)),
 	mIsActive(false)
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
@@ -101,10 +106,11 @@ void FrameBuffer::Draw(int width, int height)
 	mShader->SetActive();
 
 	// Activate texture unit
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
+	mShader->SetInt("screenTexture", mTextureUnit);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
+	glActiveTexture(GL_TEXTURE0);
 	mVertexBuffer->Draw();
 }
