@@ -4,6 +4,13 @@
 // position variable has attribute position 0
 layout (location = 0) in vec3 position;
 
+// Uniform buffer for camera's view * proj matrix and position
+//layout (std140, binding = 1) uniform CameraBuffer
+//{
+//    mat4 viewProjection;
+//    vec3 viewPos;
+//};
+
 // ouput a vec3 texture coordinate
 out vec3 texCoord;
 

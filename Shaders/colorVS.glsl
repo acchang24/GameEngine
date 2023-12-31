@@ -6,10 +6,15 @@ layout (location = 0) in vec3 position;
 // color variable has attribute position 1
 layout (location = 1) in vec4 color;
 
+// Uniform buffer for camera's view * proj matrix and position
+layout (std140, binding = 1) uniform CameraBuffer
+{
+    mat4 viewProjection;
+    vec3 viewPos;
+};
+
 // Model matrix uniform
 uniform mat4 model;
-// ViewProjection matrix uniform
-uniform mat4 viewProjection;
 
 // Specify a vec4 color output to the fragment shader
 out vec4 vertexColor;

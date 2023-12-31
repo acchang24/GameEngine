@@ -112,6 +112,8 @@ private:
 	// Array of different lights
 	LightArrays mLightArrays;
 
+	unsigned int uboCamera;
+
 	double mMousePosX;
 	double mMousePosY;
 

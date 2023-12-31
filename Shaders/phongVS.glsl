@@ -8,10 +8,15 @@ layout (location = 1) in vec3 inNormal;
 // texture variable has attribute position 2
 layout (location = 2) in vec2 uv;
 
+// Uniform buffer for camera's view * proj matrix and position
+layout (std140, binding = 1) uniform CameraBuffer
+{
+    mat4 viewProjection;
+    vec3 viewPos;
+};
+
 // Model matrix uniform
 uniform mat4 model;
-// ViewProjection matrix uniform
-uniform mat4 viewProjection;
 
 // Specify a vec3 normal output to fragment shader
 out vec3 normal;
@@ -19,6 +24,8 @@ out vec3 normal;
 out vec2 textureCoord;
 // Specify vec3 for the fragment's position
 out vec3 fragPos;
+// Pass the CameraBuffer's viewPos to fragment shader
+out vec3 viewPosition;
 
 void main()
 {
@@ -35,4 +42,6 @@ void main()
 	// Multiply the vertex's position attribute with the model matrix 
     // to transform to world space coordinates and use it for the fragment's position
 	fragPos = vec3(model * vec4(position, 1.0));
+
+	viewPosition = viewPos;
 }

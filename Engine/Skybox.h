@@ -17,6 +17,10 @@ public:
 	// @param - const glm::mat4& for the view and proj matrix
 	void Draw(const glm::mat4& view, const glm::mat4& proj);
 
+	// Gets the skybox's shader
+	// @return - Shader* for the skybox's shader
+	Shader* GetShader() { return mShader; }
+
 	// Gets the skybox's cube map
 	// @return - CubeMap* for the skybox's cubemap
 	CubeMap* GetCubeMap() { return mCubeMap; }

@@ -68,6 +68,7 @@ struct SpotLight
 in vec3 normal;
 in vec2 textureCoord;
 in vec3 fragPos;
+in vec3 viewPosition;
 
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
@@ -79,8 +80,6 @@ uniform DirectionalLight directionalLights[MAX_LIGHTS];
 uniform SpotLight spotlights[MAX_LIGHTS];
 // Uniform for Material
 uniform Material material;
-// uniform for view position (camera position)
-uniform vec3 viewPos;
 
 // Final vector4 fragment color output
 out vec4 fragColor;
@@ -97,7 +96,7 @@ void main()
 	// Re-normalize the normal for dot product
 	vec3 norm = normalize(normal);
 	// Get the view direction from the fragment's position to the view(camera) position
-	vec3 viewDir = normalize(viewPos - fragPos);
+	vec3 viewDir = normalize(viewPosition - fragPos);
 
 	// Calculate lighting from point lights
 	for(int i = 0; i < MAX_LIGHTS; ++i)
