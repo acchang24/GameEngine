@@ -24,6 +24,7 @@ class Material
 {
 public:
 	Material();
+	Material(const MaterialColors& mats);
 	~Material();
 	Material(const Material& rhs);
 	Material& operator=(const Material& rhs);

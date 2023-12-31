@@ -16,8 +16,8 @@ public:
 	CubeMap(const std::vector<std::string>& textureFaces);
 	~CubeMap();
 
-	// Activates the texture unit used for cube maps, then locates 
-	// the appropriate sampler and binds the cube map's texture.
+	// Activates the texture unit used for cube maps, then locates
+	// the appropriate sampler in the shader and binds the cube map's texture.
 	// @param - Shader* to locate the shader's sampler
 	void SetActive(Shader* s);
 

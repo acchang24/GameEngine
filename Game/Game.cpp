@@ -156,7 +156,6 @@ bool Game::Init()
 	am->SaveShader("reflection", reflectiveShader);
 
 	Material* reflectiveMat = new Material();
-	reflectiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false });
 	reflectiveMat->SetShader(reflectiveShader);
 	sky->SetActive(reflectiveShader);
 	am->SaveMaterial("reflection", reflectiveMat);
@@ -167,7 +166,6 @@ bool Game::Init()
 	am->SaveShader("refraction", refractiveShader);
 
 	Material* refractiveMat = new Material();
-	refractiveMat->SetMaterialColors({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false });
 	refractiveMat->SetShader(refractiveShader);
 	sky->SetActive(refractiveShader);
 	am->SaveMaterial("refraction", refractiveMat);
@@ -178,7 +176,6 @@ bool Game::Init()
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.15);
 	sponza->SetYaw(-90.0f);
-	sponza->SetMaterialShader("roof", am->LoadShader("reflection"));
 	AddGameEntity(sponza);
 
 	Cube* mCube = new Cube();
@@ -219,27 +216,19 @@ void Game::LoadStartingShadersMaterials(AssetManager* am)
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 
-	// General purpose material for textured objects
-	MaterialColors texturedMat = { glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1.0f, 32.0f, false, false, false };
-	Material* texturedMaterial = new Material();
-	texturedMaterial->SetMaterialColors(texturedMat);
-	texturedMaterial->SetShader(phongShader);
 	// General purpose material for objects colored with their vertices
-	MaterialColors colorMat = { glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false };
-	Material* colorMaterial = new Material();
-	colorMaterial->SetMaterialColors(colorMat);
+	Material* colorMaterial = new Material({ glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false });
 	colorMaterial->SetShader(colorShader);
 
 	am->SaveShader("color", colorShader);
 	am->SaveShader("phong", phongShader);
-	am->SaveMaterial("textured", texturedMaterial);
 	am->SaveMaterial("color", colorMaterial);
 
 	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
 	//am->SaveShader("invertedColor", invertedColorShader);
 
-	Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
-	am->SaveShader("grayScale", grayScaleShader);
+	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
+	//am->SaveShader("grayScale", grayScaleShader);
 
 	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
 	//am->SaveShader("sharpenKernel", sharpenKernelShader);
@@ -359,18 +348,23 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
 
-		//Entity3D* e = static_cast<Entity3D*>(mEntities[1]);
-		//e->GetMaterial("tt")->SetHasEmissionTexture(!e->GetMaterial("tt")->GetMats().hasEmissionTexture);
-		//if (e->GetMeshes()[0]->GetMaterial()->GetShader() == AssetManager::Get()->LoadShader("phong"))
-		//{
-		//	e->SetMaterialShader("tt", AssetManager::Get()->LoadShader("reflection"));
-		//}
-		//else
-		//{
-		//	e->SetMaterialShader("tt", AssetManager::Get()->LoadShader("phong"));
-		//}
+		AssetManager* am = AssetManager::Get();
 
-		mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
+		Entity3D* e = static_cast<Entity3D*>(mEntities[0]);
+		Material* mat = e->GetMaterial("roof");
+		Shader* reflect = am->LoadShader("reflection");
+		Shader* phong = am->LoadShader("phong");
+
+		if (mat->GetShader() == phong)
+		{
+			e->SetMaterialShader("roof", reflect);
+		}
+		else
+		{
+			e->SetMaterialShader("roof", phong);
+		}
+
+		//mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{

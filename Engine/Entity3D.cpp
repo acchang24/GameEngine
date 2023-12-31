@@ -59,10 +59,6 @@ Entity3D::~Entity3D()
 	}
 	mMeshes.clear();
 
-	for (auto& m : mMaterialMap)
-	{
-		delete m.second;
-	}
 	mMaterialMap.clear();
 }
 
@@ -99,7 +95,6 @@ void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene)
 	//{
 	//	ProcessNodes(node->mChildren[i], scene);
 	//}
-
 
 	std::queue<aiNode*> nodeQ;
 	nodeQ.push(node);
@@ -193,7 +188,8 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		{
 			std::cout << name << " " << mesh->mMaterialIndex << std::endl;
 			++numMats;
-			mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
+			mat = new Material();
+			mat->SetShader(AssetManager::Get()->LoadShader("phong"));
 			mMaterialMap[name] = mat;
 			// Diffuse textures
 			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
@@ -205,16 +201,14 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			// Normal maps
 
 			// Height maps
+
+			AssetManager::Get()->SaveMaterial(name, mat);
 		}
 		else
 		{
 			// use the material from the material map instead
 			mat = mMaterialMap[name];
 		}
-	}
-	else
-	{
-		mat = new Material(*AssetManager::Get()->LoadMaterial("textured"));
 	}
 
 	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),

@@ -4,8 +4,15 @@
 #include "Texture.h"
 
 Material::Material() : 
-	mMats({}),
+	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 32.0f, false, false, false }),
 	mShader(nullptr)
+{
+
+}
+
+Material::Material(const MaterialColors& mats) :
+    mMats(mats),
+    mShader(nullptr)
 {
 
 }
