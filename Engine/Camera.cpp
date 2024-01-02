@@ -4,19 +4,19 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Camera::Camera() :
-	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
+	mCamBuffer({glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f}),
+	mView(glm::translate(glm::mat4(1.0f), mCamBuffer.position)),
 	mTarget(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mForward(glm::normalize(mTarget - mPosition)),
+	mForward(glm::normalize(mTarget - mCamBuffer.position)),
 	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
 	mRight(glm::normalize(glm::cross(mUp, mForward))),
-	mView(glm::translate(glm::mat4(1.0f), mPosition)),
 	mMode(CameraMode::Fly),
 	mYaw(-90.0f),
 	mPitch(0.0f),
 	mRoll(0.0f),
 	mFOV(45.0f),
 	mNearPlane(0.1f),
-	mFarPlane(100.0f)
+	mFarPlane(10000.0f)
 {
 
 }
@@ -26,7 +26,7 @@ Camera::~Camera()
 	std::cout << "Delete camera" << std::endl;
 }
 
-void Camera::SetActive()
+void Camera::SetActive(const glm::mat4& proj)
 {
 	switch (mMode)
 	{
@@ -36,7 +36,7 @@ void Camera::SetActive()
 		mForward.z = sinf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
 		mForward = glm::normalize(mForward);
 
-		mView = glm::lookAt(mPosition, mPosition + mForward, mUp);
+		mView = glm::lookAt(mCamBuffer.position, mCamBuffer.position + mForward, mUp);
 		break;
 	case CameraMode::Fly:
 		mForward.x = cosf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
@@ -44,14 +44,16 @@ void Camera::SetActive()
 		mForward.z = sinf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
 		mForward = glm::normalize(mForward);
 
-		mView = glm::lookAt(mPosition, mPosition + mForward, mUp);
+		mView = glm::lookAt(mCamBuffer.position, mCamBuffer.position + mForward, mUp);
 		break;
 	case CameraMode::Orbit:
-		mForward = glm::normalize(mTarget - mPosition);
+		mForward = glm::normalize(mTarget - mCamBuffer.position);
 
-		mView = glm::lookAt(mPosition, mTarget, mUp);
+		mView = glm::lookAt(mCamBuffer.position, mTarget, mUp);
 		break;
 	}
 
 	mRight = glm::normalize(glm::cross(mForward, mUp));
+
+	mCamBuffer.viewProjection = proj * mView;
 }

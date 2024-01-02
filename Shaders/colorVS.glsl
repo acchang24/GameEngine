@@ -7,7 +7,7 @@ layout (location = 0) in vec3 position;
 layout (location = 1) in vec4 color;
 
 // Uniform buffer for camera's view * proj matrix and position
-layout (std140, binding = 1) uniform CameraBuffer
+layout (std140, binding = 0) uniform CameraBuffer
 {
     mat4 viewProjection;
     vec3 viewPos;

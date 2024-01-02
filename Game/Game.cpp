@@ -114,8 +114,6 @@ bool Game::Init()
 
 	AssetManager* am = AssetManager::Get();
 
-	//LoadStartingShadersMaterials(am);
-
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -130,7 +128,6 @@ bool Game::Init()
 	am->SaveTexture("Assets/container2_specular.png", texture4);
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
-
 
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	am->SaveShader("color", colorShader);
@@ -176,7 +173,7 @@ bool Game::Init()
 	};
 	mSkybox = new Skybox(faceNames);
 
-	Shader* skyboxShader = mSkybox->GetShader();
+	//Shader* skyboxShader = mSkybox->GetShader();
 
 
 	CubeMap* sky = mSkybox->GetCubeMap();
@@ -237,63 +234,33 @@ bool Game::Init()
 	AddGameEntity(squidward);
 
 	// Configure uniform buffer object
-	// Get the relevant block indices
-	unsigned int uniformBlockIndexPhong = glGetUniformBlockIndex(phongShader->GetID(), "CameraBuffer");
-	unsigned int uniformBlockIndexColor = glGetUniformBlockIndex(colorShader->GetID(), "CameraBuffer");
-	unsigned int uniformBlockIndexReflect = glGetUniformBlockIndex(reflectiveShader->GetID(), "CamerBuffer");
-	unsigned int uniformBlockIndexRefract = glGetUniformBlockIndex(refractiveShader->GetID(), "CameraBuffer");
-	// Link shader's uniform block to this uniform binding point 1
-	glUniformBlockBinding(phongShader->GetID(), uniformBlockIndexPhong, 1);
-	glUniformBlockBinding(colorShader->GetID(), uniformBlockIndexColor, 1);
-	glUniformBlockBinding(reflectiveShader->GetID(), uniformBlockIndexReflect, 1);
-	glUniformBlockBinding(refractiveShader->GetID(), uniformBlockIndexRefract, 1);
-
 	// Get buffer size
-	size_t camBufferSize = sizeof(glm::mat4) + sizeof(glm::vec3);
+	size_t camBufferSize = sizeof(CameraBuffer);
 	// Create the uniform buffer
 	glGenBuffers(1, &uboCamera);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboCamera);
 	glBufferData(GL_UNIFORM_BUFFER, camBufferSize, NULL, GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	// Define the range of the buffer that links to a uniform binding point
-	glBindBufferRange(GL_UNIFORM_BUFFER, 1, uboCamera, 0, camBufferSize);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboCamera, 0, camBufferSize);
+
+	// Get the relevant block indices
+	unsigned int uniformBlockIndexPhong = glGetUniformBlockIndex(phongShader->GetID(), "CameraBuffer");
+	unsigned int uniformBlockIndexColor = glGetUniformBlockIndex(colorShader->GetID(), "CameraBuffer");
+	unsigned int uniformBlockIndexReflect = glGetUniformBlockIndex(reflectiveShader->GetID(), "CamerBuffer");
+	unsigned int uniformBlockIndexRefract = glGetUniformBlockIndex(refractiveShader->GetID(), "CameraBuffer");
+	// Link shader's uniform block to this uniform binding point 1
+	glUniformBlockBinding(phongShader->GetID(), uniformBlockIndexPhong, 0);
+	glUniformBlockBinding(colorShader->GetID(), uniformBlockIndexColor, 0);
+	glUniformBlockBinding(reflectiveShader->GetID(), uniformBlockIndexReflect, 0);
+	glUniformBlockBinding(refractiveShader->GetID(), uniformBlockIndexRefract, 0);
 
 	// Store the view * projection matrix and camera position
 	glBindBuffer(GL_UNIFORM_BUFFER, uboCamera);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection* mCamera->GetViewMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(mCamera->GetPosition()));
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraBuffer), &mCamera->GetCameraConsts());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	return true;
-}
-
-void Game::LoadStartingShadersMaterials(AssetManager* am)
-{
-	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
-	am->SaveShader("color", colorShader);
-
-	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
-	am->SaveShader("phong", phongShader);
-
-	// General purpose material for objects colored with their vertices
-	Material* colorMaterial = new Material({ glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false });
-	colorMaterial->SetShader(colorShader);
-	am->SaveMaterial("color", colorMaterial);
-
-	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
-	//am->SaveShader("invertedColor", invertedColorShader);
-
-	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
-	//am->SaveShader("grayScale", grayScaleShader);
-
-	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
-	//am->SaveShader("sharpenKernel", sharpenKernelShader);
-
-	//Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
-	//am->SaveShader("blurKernel", blurKernelShader);
-
-	//Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
-	//am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 }
 
 void Game::Shutdown()
@@ -454,12 +421,11 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
-	mCamera->SetActive();
+	mCamera->SetActive(projection);
 
 	// Store the view * projection matrix and camera position in uniform buffer
 	glBindBuffer(GL_UNIFORM_BUFFER, uboCamera);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection * mCamera->GetViewMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(mCamera->GetPosition()));
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraBuffer), &mCamera->GetCameraConsts());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// Uncomment this to draw to offscreen frame buffer instead

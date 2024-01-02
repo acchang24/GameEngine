@@ -9,6 +9,14 @@ enum class CameraMode
 	Fly     // Used for flying around the scene freely
 };
 
+// Struct for camera constants that are going to be sent to a buffer in the shaders
+struct CameraBuffer
+{
+	glm::mat4 viewProjection; // view * projection matrix
+	glm::vec3 position;		  // camera position (view pos)
+	float padding;			  // padding for allignment
+};
+
 // Camera class is mainly responsible for using the view matrix
 // to simulate a camera. Contains an enum class CameraMode to 
 // define what type of camera is being used. 
@@ -19,13 +27,21 @@ public:
 	~Camera();
 
 	// SetActive is responsible for updating the camera's forward vector
-	// as well as recalculating its right vector. It finally calculates the 
-	// new view matrix.
-	void SetActive();
+	// as well as recalculating its right vector. It then calculates the 
+	// new view matrix. It combines with the projection matrix and updates
+	// the CameraConsts struct to send to the shader's buffers
+	// @param - const glm::mat4& for the projection matrix
+	void SetActive(const glm::mat4& proj);
 
+	// Gets the camera's constants
+	// @return - const CameraConst& for the camera's constants
+	const CameraBuffer& GetCameraConsts() const { return mCamBuffer; }
 	// Gets the camera's position
 	// @return - const glm::vec3& for the camera's position
-	const glm::vec3& GetPosition() const { return mPosition; }
+	const glm::vec3& GetPosition() const { return mCamBuffer.position; }
+	// Gets the camera's view matrix
+	// @return - const mat4& for the camera's view matrix
+	const glm::mat4& GetViewMatrix() const { return mView; }
 	// Gets the camera's target position
 	// @return - const glm::vec3& for the camera's target
 	const glm::vec3& GetTarget() const { return mTarget; }
@@ -38,16 +54,13 @@ public:
 	// Gets the camera's right vector
 	// @return - const glm::vec3& for the camera's right vector
 	const glm::vec3& GetRight() const { return mRight; }
-	// Gets the camera's view matrix
-	// @return - const mat4& for the camera's view matrix
-	const glm::mat4& GetViewMatrix() const { return mView; }
 	// Gets the camera's mode
 	// @return - CameraMode for the camera's mode
 	CameraMode GetCameraMode() const { return mMode; }
 
 	// Sets the camera's position
 	// @param - const glm::vec3& for the new position
-	void SetPosition(const glm::vec3& pos) { mPosition = pos; }
+	void SetPosition(const glm::vec3& pos) { mCamBuffer.position = pos; }
 	// Sets the camera's target position
 	// @param - const glm::vec3& for the new target position
 	void SetTarget(const glm::vec3& target) { mTarget = target; }
@@ -57,8 +70,11 @@ public:
 	double mRoll;
 
 private:
-	// Camera's position
-	glm::vec3 mPosition;
+	// Camera's constants
+	CameraBuffer mCamBuffer;
+
+	// View matrix
+	glm::mat4 mView;
 
 	// Camera's target position
 	glm::vec3 mTarget;
@@ -71,9 +87,6 @@ private:
 
 	// Camera's right vector (normalized vector pointing the camera's right)
 	glm::vec3 mRight;
-
-	// View matrix
-	glm::mat4 mView;
 
 	// Camera's current mode
 	CameraMode mMode;

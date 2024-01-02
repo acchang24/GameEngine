@@ -23,12 +23,6 @@ public:
 	// @return - Returns true if successfully initialized, false if not.
 	bool Init();
 
-	// Loads and saves starting, or general purpose, shaders and materials that are needed to get a simple scene started.
-	// These shaders are intended to be used to get basic lighting and textured objects rendered, and should not
-	// include any user created shaders and materials. Any new shaders or materials should be loaded separatly in Game::Init().
-	// @param - AssetManager* to help save the new shaders and materialss
-	void LoadStartingShadersMaterials(AssetManager* am);
-
 	// De-allocates any resources and end the game.
 	void Shutdown();
 
