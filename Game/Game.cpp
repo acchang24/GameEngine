@@ -249,7 +249,7 @@ bool Game::Init()
 	unsigned int uniformBlockIndexColor = glGetUniformBlockIndex(colorShader->GetID(), "CameraBuffer");
 	unsigned int uniformBlockIndexReflect = glGetUniformBlockIndex(reflectiveShader->GetID(), "CamerBuffer");
 	unsigned int uniformBlockIndexRefract = glGetUniformBlockIndex(refractiveShader->GetID(), "CameraBuffer");
-	// Link shader's uniform block to this uniform binding point 1
+	// Link shader's uniform block to this uniform binding point 0
 	glUniformBlockBinding(phongShader->GetID(), uniformBlockIndexPhong, 0);
 	glUniformBlockBinding(colorShader->GetID(), uniformBlockIndexColor, 0);
 	glUniformBlockBinding(reflectiveShader->GetID(), uniformBlockIndexReflect, 0);

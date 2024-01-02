@@ -38,7 +38,8 @@ public:
 	void SetActive() { glUseProgram(mShaderID); }
 
 	// Getter for the shader program's id
-	int GetID() const { return mShaderID; }
+    // @return - unsigned int for the shader's id
+	unsigned int GetID() const { return mShaderID; }
 
     // Sets bool uniform in a shader
     // @param - const std::string& for the uniform name
