@@ -22,6 +22,7 @@
 #include "FrameBuffer.h"
 #include "Skybox.h"
 #include "Mesh.h"
+#include "UniformBuffer.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -233,32 +234,13 @@ bool Game::Init()
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
 
-	// Configure uniform buffer object
-	// Get buffer size
-	size_t camBufferSize = sizeof(CameraBuffer);
-	// Create the uniform buffer
-	glGenBuffers(1, &uboCamera);
-	glBindBuffer(GL_UNIFORM_BUFFER, uboCamera);
-	glBufferData(GL_UNIFORM_BUFFER, camBufferSize, NULL, GL_STATIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	// Define the range of the buffer that links to a uniform binding point
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboCamera, 0, camBufferSize);
-
-	// Get the relevant block indices
-	unsigned int uniformBlockIndexPhong = glGetUniformBlockIndex(phongShader->GetID(), "CameraBuffer");
-	unsigned int uniformBlockIndexColor = glGetUniformBlockIndex(colorShader->GetID(), "CameraBuffer");
-	unsigned int uniformBlockIndexReflect = glGetUniformBlockIndex(reflectiveShader->GetID(), "CamerBuffer");
-	unsigned int uniformBlockIndexRefract = glGetUniformBlockIndex(refractiveShader->GetID(), "CameraBuffer");
-	// Link shader's uniform block to this uniform binding point 0
-	glUniformBlockBinding(phongShader->GetID(), uniformBlockIndexPhong, 0);
-	glUniformBlockBinding(colorShader->GetID(), uniformBlockIndexColor, 0);
-	glUniformBlockBinding(reflectiveShader->GetID(), uniformBlockIndexReflect, 0);
-	glUniformBlockBinding(refractiveShader->GetID(), uniformBlockIndexRefract, 0);
-
-	// Store the view * projection matrix and camera position
-	glBindBuffer(GL_UNIFORM_BUFFER, uboCamera);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraBuffer), &mCamera->GetCameraConsts());
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	// Link shaders to camera's uniform buffer
+	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
+	camBuffer->LinkShader(phongShader);
+	camBuffer->LinkShader(colorShader);
+	camBuffer->LinkShader(reflectiveShader);
+	camBuffer->LinkShader(refractiveShader);
+	camBuffer->UpdateBufferData(&mCamera->GetCameraConsts());
 
 	return true;
 }
@@ -422,11 +404,6 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	mCamera->SetActive(projection);
-
-	// Store the view * projection matrix and camera position in uniform buffer
-	glBindBuffer(GL_UNIFORM_BUFFER, uboCamera);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraBuffer), &mCamera->GetCameraConsts());
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	// Uncomment this to draw to offscreen frame buffer instead
 	mFrameBuffer->SetActive();

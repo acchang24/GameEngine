@@ -2,14 +2,16 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "UniformBuffer.h"
 
 Camera::Camera() :
-	mCamBuffer({glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f}),
-	mView(glm::translate(glm::mat4(1.0f), mCamBuffer.position)),
+	mCamConsts({glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f}),
+	mView(glm::translate(glm::mat4(1.0f), mCamConsts.position)),
 	mTarget(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mForward(glm::normalize(mTarget - mCamBuffer.position)),
+	mForward(glm::normalize(mTarget - mCamConsts.position)),
 	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
 	mRight(glm::normalize(glm::cross(mUp, mForward))),
+	mCameraBuffer(new UniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer")),
 	mMode(CameraMode::Fly),
 	mYaw(-90.0f),
 	mPitch(0.0f),
@@ -24,6 +26,8 @@ Camera::Camera() :
 Camera::~Camera()
 {
 	std::cout << "Delete camera" << std::endl;
+
+	delete mCameraBuffer;
 }
 
 void Camera::SetActive(const glm::mat4& proj)
@@ -36,7 +40,7 @@ void Camera::SetActive(const glm::mat4& proj)
 		mForward.z = sinf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
 		mForward = glm::normalize(mForward);
 
-		mView = glm::lookAt(mCamBuffer.position, mCamBuffer.position + mForward, mUp);
+		mView = glm::lookAt(mCamConsts.position, mCamConsts.position + mForward, mUp);
 		break;
 	case CameraMode::Fly:
 		mForward.x = cosf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
@@ -44,16 +48,18 @@ void Camera::SetActive(const glm::mat4& proj)
 		mForward.z = sinf(glm::radians(static_cast<float>(mYaw))) * cosf(glm::radians(static_cast<float>(mPitch)));
 		mForward = glm::normalize(mForward);
 
-		mView = glm::lookAt(mCamBuffer.position, mCamBuffer.position + mForward, mUp);
+		mView = glm::lookAt(mCamConsts.position, mCamConsts.position + mForward, mUp);
 		break;
 	case CameraMode::Orbit:
-		mForward = glm::normalize(mTarget - mCamBuffer.position);
+		mForward = glm::normalize(mTarget - mCamConsts.position);
 
-		mView = glm::lookAt(mCamBuffer.position, mTarget, mUp);
+		mView = glm::lookAt(mCamConsts.position, mTarget, mUp);
 		break;
 	}
 
 	mRight = glm::normalize(glm::cross(mForward, mUp));
 
-	mCamBuffer.viewProjection = proj * mView;
+	mCamConsts.viewProjection = proj * mView;
+
+	mCameraBuffer->UpdateBufferData(&mCamConsts);
 }

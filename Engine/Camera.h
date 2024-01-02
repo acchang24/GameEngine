@@ -10,12 +10,14 @@ enum class CameraMode
 };
 
 // Struct for camera constants that are going to be sent to a buffer in the shaders
-struct CameraBuffer
+struct CameraConsts
 {
 	glm::mat4 viewProjection; // view * projection matrix
 	glm::vec3 position;		  // camera position (view pos)
 	float padding;			  // padding for allignment
 };
+
+class UniformBuffer;
 
 // Camera class is mainly responsible for using the view matrix
 // to simulate a camera. Contains an enum class CameraMode to 
@@ -35,10 +37,10 @@ public:
 
 	// Gets the camera's constants
 	// @return - const CameraConst& for the camera's constants
-	const CameraBuffer& GetCameraConsts() const { return mCamBuffer; }
+	const CameraConsts& GetCameraConsts() const { return mCamConsts; }
 	// Gets the camera's position
 	// @return - const glm::vec3& for the camera's position
-	const glm::vec3& GetPosition() const { return mCamBuffer.position; }
+	const glm::vec3& GetPosition() const { return mCamConsts.position; }
 	// Gets the camera's view matrix
 	// @return - const mat4& for the camera's view matrix
 	const glm::mat4& GetViewMatrix() const { return mView; }
@@ -54,13 +56,15 @@ public:
 	// Gets the camera's right vector
 	// @return - const glm::vec3& for the camera's right vector
 	const glm::vec3& GetRight() const { return mRight; }
+	// Gets the camera's buffer
+	UniformBuffer* GetCameraBuffer() { return mCameraBuffer; }
 	// Gets the camera's mode
 	// @return - CameraMode for the camera's mode
 	CameraMode GetCameraMode() const { return mMode; }
 
 	// Sets the camera's position
 	// @param - const glm::vec3& for the new position
-	void SetPosition(const glm::vec3& pos) { mCamBuffer.position = pos; }
+	void SetPosition(const glm::vec3& pos) { mCamConsts.position = pos; }
 	// Sets the camera's target position
 	// @param - const glm::vec3& for the new target position
 	void SetTarget(const glm::vec3& target) { mTarget = target; }
@@ -71,7 +75,7 @@ public:
 
 private:
 	// Camera's constants
-	CameraBuffer mCamBuffer;
+	CameraConsts mCamConsts;
 
 	// View matrix
 	glm::mat4 mView;
@@ -87,6 +91,9 @@ private:
 
 	// Camera's right vector (normalized vector pointing the camera's right)
 	glm::vec3 mRight;
+
+	// Uniform buffer for camera
+	UniformBuffer* mCameraBuffer;
 
 	// Camera's current mode
 	CameraMode mMode;
