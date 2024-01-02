@@ -2,6 +2,7 @@
 #version 420 core
 
 #define MAX_LIGHTS 10
+#define MAX_DIR_LIGHTS 1
 
 // Struct to define material colors and properties of the surface
 struct Material
@@ -56,8 +57,8 @@ struct SpotLight
 {
     LightData data;
     vec3 position;
+	float cutoff;
     vec3 direction;
-    float cutoff;
     float outerCutoff;
     float constant;
     float linear;
@@ -70,14 +71,16 @@ in vec2 textureCoord;
 in vec3 fragPos;
 in vec3 viewPosition;
 
+// Uniform buffer for lights
+layout (std140, binding = 1) uniform LightBuffer
+{
+	SpotLight spotlights[MAX_LIGHTS];
+	PointLight pointLights[MAX_LIGHTS];
+	DirectionalLight directionalLight[MAX_DIR_LIGHTS];
+};
+
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
-// Uniform for point light
-uniform PointLight pointLights[MAX_LIGHTS];
-// Uniform for directional light
-uniform DirectionalLight directionalLights[MAX_LIGHTS];
-// Uniform for spot lights
-uniform SpotLight spotlights[MAX_LIGHTS];
 // Uniform for Material
 uniform Material material;
 
@@ -98,40 +101,26 @@ void main()
 	// Get the view direction from the fragment's position to the view(camera) position
 	vec3 viewDir = normalize(viewPosition - fragPos);
 
-	// Calculate lighting from point lights
+	// Calculate directional light
+	for(int i = 0; i < MAX_DIR_LIGHTS; ++i)
+	{
+		if(directionalLight[i].data.isEnabled)
+		{
+			lightResult += CalculateDirLight(directionalLight[i], norm, viewDir);
+		}
+	}
+	
 	for(int i = 0; i < MAX_LIGHTS; ++i)
 	{
+		// Calculate lighting from point lights
 		if(pointLights[i].data.isEnabled)
 		{
 			lightResult += CalculatePointLight(pointLights[i], norm, viewDir, fragPos);
 		}
-		else
-		{
-			lightResult += pointLights[i].data.color.xyz * pointLights[i].data.ambientIntensity;
-		}
-	}
-	// Calculate lighting from directional lights
-	for(int i = 0; i < MAX_LIGHTS; ++i)
-	{
-		if(directionalLights[i].data.isEnabled)
-		{
-			lightResult += CalculateDirLight(directionalLights[i], norm, viewDir);
-		}
-		else
-		{
-			lightResult += directionalLights[i].data.color.xyz * directionalLights[i].data.ambientIntensity;
-		}
-	}
-	// Calculate lighting from spot lights
-	for(int i = 0; i < MAX_LIGHTS; ++i)
-	{
+		// Calculate lighting from spot lights
 		if(spotlights[i].data.isEnabled)
 		{
 			lightResult += CalculateSpotLight(spotlights[i], norm, viewDir, fragPos);
-		}
-		else
-		{
-			lightResult += spotlights[i].data.color.xyz * spotlights[i].data.ambientIntensity;
 		}
 	}
 

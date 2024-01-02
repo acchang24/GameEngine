@@ -7,6 +7,7 @@ class Shader;
 enum class BufferBindingPoint
 {
 	Camera,
+	Lights
 };
 
 // UniformBuffer class helps abstract an OpenGL uniform buffer object. Use
@@ -21,7 +22,7 @@ public:
 	UniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName);
 	~UniformBuffer();
 
-	// Gets the shader's uniform block index and links to this uniform buffer's binding point
+	// Gets the shader's uniform block index and links to the uniform buffer's binding point
 	// @param - Shader* for the shader to link to
 	void LinkShader(Shader* shader);
 

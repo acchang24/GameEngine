@@ -12,6 +12,7 @@ class Camera;
 class AssetManager;
 class FrameBuffer;
 class Skybox;
+class UniformBuffer;
 
 class Game
 {
@@ -51,7 +52,21 @@ public:
 	// @param - int for the window's height
 	static void FrameBufferSizeCallBack(GLFWwindow* window, int width, int height);
 
+	// Adds an entity to the game's vector of entities
+	// @param - Entity* for the new entity
 	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
+
+	// Allocator for spot lights
+	// @param - const glm::vec4& for the light's color
+	// @param - const glm::vec3& for the light's position
+	// @param - const glm::vec3& for the light's direction
+	// @param - float for the spotlight's inner circle cutoff
+	// @param - float for the spotlight's outer circle cutoff
+	// @param - float for attenuation constant term
+	// @param - float for attenuation linear term
+	// @param - float for attenuation quadratic term
+	// @return - SpotLight* for a newly allocated SpotLight
+	SpotLight* AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic);
 
 	// Allocator for point lights
 	// @param - const glm::vec4& for the point light's color
@@ -68,19 +83,7 @@ public:
 	// @return - DirectionalLight* a newly allocated DirectionalLight
 	DirectionalLight* AllocateDirectionalLight(const glm::vec4& color, const glm::vec3& direction);
 
-	// Allocator for spot lights
-	// @param - const glm::vec4& for the light's color
-	// @param - const glm::vec3& for the light's position
-	// @param - const glm::vec3& for the light's direction
-	// @param - float for the spotlight's inner circle cutoff
-	// @param - float for the spotlight's outer circle cutoff
-	// @param - float for attenuation constant term
-	// @param - float for attenuation linear term
-	// @param - float for attenuation quadratic term
-	// @return - SpotLight* for a newly allocated SpotLight
-	SpotLight* AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic);
-
-	// Loops through each light and deletes them
+	// Loops through each light and sets them to disabled
 	void DeAllocateLights();
 
 private:
@@ -103,10 +106,13 @@ private:
 	// Skybox
 	Skybox* mSkybox;
 
+	// Buffer for lighting data
+	UniformBuffer* mLightBuffer;
+
 	// Array of different lights
 	LightArrays mLightArrays;
 
-	unsigned int uboCamera;
+	//unsigned int uboCamera;
 
 	double mMousePosX;
 	double mMousePosY;

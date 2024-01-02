@@ -15,9 +15,6 @@
 #include "Camera.h"
 #include "AssetManager.h"
 #include "Material.h"
-#include "PointLight.h"
-#include "DirectionalLight.h"
-#include "SpotLight.h"
 #include "Plane.h"
 #include "FrameBuffer.h"
 #include "Skybox.h"
@@ -38,8 +35,8 @@ Game::Game() :
 	mCamera(nullptr),
 	mFrameBuffer(nullptr),
 	mSkybox(nullptr),
+	mLightBuffer(nullptr),
 	mLightArrays({}),
-	uboCamera(0),
 	mMousePosX(static_cast<double>(windowWidth / 2)),
 	mMousePosY(static_cast<double>(windowHeight / 2)),
 	mMousePrevX(static_cast<double>(windowHeight / 2)),
@@ -111,7 +108,7 @@ bool Game::Init()
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glm::vec3 lightPosition(1.0f, 0.0f, 3.0f);
+	glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 
 	AssetManager* am = AssetManager::Get();
 
@@ -138,8 +135,6 @@ bool Game::Init()
 	Material* colorMaterial = new Material({ glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false });
 	colorMaterial->SetShader(colorShader);
 	am->SaveMaterial("color", colorMaterial);
-
-	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 
 	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
 	//am->SaveShader("invertedColor", invertedColorShader);
@@ -173,9 +168,6 @@ bool Game::Init()
 		"Assets/skyboxes/skybox1/back.jpg"
 	};
 	mSkybox = new Skybox(faceNames);
-
-	//Shader* skyboxShader = mSkybox->GetShader();
-
 
 	CubeMap* sky = mSkybox->GetCubeMap();
 
@@ -230,13 +222,37 @@ bool Game::Init()
 	squidward->SetScale(0.5f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
-	//m->AddTexture(texture);
+	m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
 
-	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
-	pointLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));
-	AddGameEntity(pointLight->GetLightSphere());
+	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
+
+	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
+	Sphere* lightSphere = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere->SetMaterial(new Material(*colorMaterial));
+	lightSphere->SetPosition(lightPosition);
+	AddGameEntity(lightSphere);
+
+	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
+		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
+	Sphere* lightSphere2 = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere2->SetMaterial(new Material(*colorMaterial));
+	lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
+	AddGameEntity(lightSphere2);
+
+	PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
+	pointLight2->data.specularIntensity = 5.0f;
+	Sphere* lightSphere3 = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere3->SetMaterial(new Material(*colorMaterial));
+	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
+	AddGameEntity(lightSphere3);
+
+	mLightBuffer = new UniformBuffer(sizeof(LightArrays), BufferBindingPoint::Lights, "LightBuffer");
+	// Link shaders to light buffer
+	mLightBuffer->LinkShader(phongShader);
+	mLightBuffer->UpdateBufferData(&mLightArrays);
+
 
 	// Link shaders to camera's uniform buffer
 	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
@@ -264,6 +280,8 @@ void Game::Shutdown()
 	delete mFrameBuffer;
 
 	delete mSkybox;
+
+	delete mLightBuffer;
 
 	DeAllocateLights();
 }
@@ -372,8 +390,10 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		{
 			e->SetMaterialShader("roof", phong);
 		}
-
-		mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
+		//mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
+		mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;
+		//mLightArrays.pointLights[1].data.isEnabled = !mLightArrays.pointLights[1].data.isEnabled;
+		mLightArrays.directionalLight[0].data.isEnabled = !mLightArrays.directionalLight[0].data.isEnabled;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{
@@ -383,22 +403,6 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 void Game::Update(float deltaTime)
 {
-	for (size_t i = 0; i < MAX_LIGHTS; ++i)
-	{
-		if (mLightArrays.mPointLights[i])
-		{
-			mLightArrays.mPointLights[i]->SetLight();
-		}
-		if (mLightArrays.mDirectionalLights[i]) 
-		{
-			mLightArrays.mDirectionalLights[i]->SetLight();
-		}
-		if (mLightArrays.mSpotLights[i])
-		{
-			mLightArrays.mSpotLights[i]->SetLight();
-		}
-	}
-
 	for (auto e : mEntities)
 	{
 		e->Update(deltaTime);
@@ -408,6 +412,8 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	mCamera->SetActive(projection);
+
+	mLightBuffer->UpdateBufferData(&mLightArrays);
 
 	// Uncomment this to draw to offscreen frame buffer instead
 	mFrameBuffer->SetActive();
@@ -508,71 +514,82 @@ void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 	windowHeight = height;
 }
 
+SpotLight* Game::AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic)
+{
+	SpotLight* spotlight = nullptr;
+
+	for (int i = 0; i < MAX_LIGHTS; ++i)
+	{
+		if (!mLightArrays.spotLights[i].data.isEnabled)
+		{
+			spotlight = &mLightArrays.spotLights[i];
+			spotlight->data.color = color;
+			spotlight->data.isEnabled = true;
+			spotlight->position = pos;
+			spotlight->cutoff = cutoff;
+			spotlight->direction = dir;
+			spotlight->outerCutoff = outerCutoff;
+			spotlight->constant = constant;
+			spotlight->linear = linear;
+			spotlight->quadratic = quadratic;
+			return spotlight;
+		}
+	}
+
+	return spotlight;
+}
+
 PointLight* Game::AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic)
 {
-	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
-	{
-		if (mLightArrays.mPointLights[i] == nullptr)
-		{
-			PointLight* pointLight = new PointLight(color, position, constant, linear, quadratic);
-			pointLight->SetIsEnabled(true);
-			pointLight->mIndex = i;
-			mLightArrays.mPointLights[i] = pointLight;
+	PointLight* pointLight = nullptr;
 
+	for (int i = 0; i < MAX_LIGHTS; ++i)
+	{
+		if (!mLightArrays.pointLights[i].data.isEnabled)
+		{
+			pointLight = &mLightArrays.pointLights[i];
+			pointLight->data.color = color;
+			pointLight->data.isEnabled = true;
+			pointLight->position = position;
+			pointLight->constant = constant;
+			pointLight->linear = linear;
+			pointLight->quadratic = quadratic;
 			return pointLight;
 		}
 	}
 
-	return nullptr;
+	return pointLight;
 }
 
 DirectionalLight* Game::AllocateDirectionalLight(const glm::vec4& color, const glm::vec3& direction)
 {
-	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
+	DirectionalLight* dirLight = nullptr;
+	for (int i = 0; i < MAX_DIR_LIGHT; ++i)
 	{
-		if (mLightArrays.mDirectionalLights[i] == nullptr)
+		if (!mLightArrays.directionalLight[i].data.isEnabled)
 		{
-			DirectionalLight* directionalLight = new DirectionalLight(direction);
-			directionalLight->SetIsEnabled(true);
-			directionalLight->mIndex = i;
-			mLightArrays.mDirectionalLights[i] = directionalLight;
-
-			return directionalLight;
+			dirLight = &mLightArrays.directionalLight[i];
+			dirLight->data.color = color;
+			dirLight->data.isEnabled = true;
+			dirLight->direction = direction;
+			return dirLight;
 		}
 	}
-
-	return nullptr;
-}
-
-SpotLight* Game::AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic)
-{
-	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
-	{
-		if (mLightArrays.mSpotLights[i] == nullptr)
-		{
-			SpotLight* spotLight = new SpotLight(color, pos, dir, cutoff, outerCutoff, constant, linear, quadratic);
-			spotLight->SetIsEnabled(true);
-			spotLight->mIndex = i;
-			mLightArrays.mSpotLights[i] = spotLight;
-
-			return spotLight;
-		}
-	}
-
-	return nullptr;
+	
+	return dirLight;
 }
 
 void Game::DeAllocateLights()
 {
 	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		delete mLightArrays.mPointLights[i];
-		mLightArrays.mPointLights[i] = nullptr;
+		mLightArrays.pointLights[i].data.isEnabled = false;
 
-		delete mLightArrays.mDirectionalLights[i];
-		mLightArrays.mDirectionalLights[i] = nullptr;
+		mLightArrays.spotLights[i].data.isEnabled = false;
+	}
 
-		delete mLightArrays.mSpotLights[i];
-		mLightArrays.mSpotLights[i] = nullptr;
+	for (unsigned int i = 0; i < MAX_DIR_LIGHT; ++i)
+	{
+		mLightArrays.directionalLight[i].data.isEnabled = false;
 	}
 }
