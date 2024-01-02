@@ -111,7 +111,7 @@ bool Game::Init()
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glm::vec3 lightPosition(1.0f, 0.0f, 1.0f);
+	glm::vec3 lightPosition(1.0f, 0.0f, 3.0f);
 
 	AssetManager* am = AssetManager::Get();
 
@@ -128,8 +128,6 @@ bool Game::Init()
 	am->SaveTexture("Assets/container2.png", texture3);
 	am->SaveTexture("Assets/container2_specular.png", texture4);
 
-	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
-
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	am->SaveShader("color", colorShader);
 
@@ -140,6 +138,8 @@ bool Game::Init()
 	Material* colorMaterial = new Material({ glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false });
 	colorMaterial->SetShader(colorShader);
 	am->SaveMaterial("color", colorMaterial);
+
+	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 
 	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
 	//am->SaveShader("invertedColor", invertedColorShader);
@@ -230,9 +230,13 @@ bool Game::Init()
 	squidward->SetScale(0.5f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
-	m->AddTexture(texture);
+	//m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
+
+	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.09f, 0.032f);
+	pointLight->GetLightSphere()->SetMaterial(new Material(*am->LoadMaterial("color")));
+	AddGameEntity(pointLight->GetLightSphere());
 
 	// Link shaders to camera's uniform buffer
 	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
@@ -369,7 +373,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 			e->SetMaterialShader("roof", phong);
 		}
 
-		//mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
+		mLightArrays.mDirectionalLights[0]->SetIsEnabled(!mLightArrays.mDirectionalLights[0]->IsEnabled());
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{
