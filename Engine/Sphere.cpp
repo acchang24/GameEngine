@@ -70,7 +70,6 @@ Sphere::~Sphere()
 {
     std::cout << "Delete sphere" << std::endl;
     delete mVertexBuffer;
-    delete mMaterial;
 }
 
 void Sphere::OnUpdate(float deltaTime)

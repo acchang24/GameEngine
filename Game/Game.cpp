@@ -201,13 +201,13 @@ bool Game::Init()
 
 	Cube* mCube = new Cube();
 	mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	mCube->SetMaterial(new Material(*reflectiveMat));
+	mCube->SetMaterial(reflectiveMat);
 	AddGameEntity(mCube);
 
 	//Cube* object = new Cube();
 	//object->SetPosition(glm::vec3(0.0f));
 	//object->SetScale(0.5f);
-	//Material* mat = new Material(*am->LoadMaterial("textured"));
+	//Material* mat = new Material(am->LoadMaterial("textured"));
 	//mat->SetSpecularIntensity(5.0f);
 	//mat->AddTexture(texture3);
 	//mat->AddTexture(texture4);
@@ -230,21 +230,21 @@ bool Game::Init()
 
 	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
 	Sphere* lightSphere = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere->SetMaterial(new Material(*colorMaterial));
+	lightSphere->SetMaterial(colorMaterial);
 	lightSphere->SetPosition(lightPosition);
 	AddGameEntity(lightSphere);
 
 	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
 	Sphere* lightSphere2 = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere2->SetMaterial(new Material(*colorMaterial));
+	lightSphere2->SetMaterial(colorMaterial);
 	lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
 	AddGameEntity(lightSphere2);
 
 	PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
 	pointLight2->data.specularIntensity = 5.0f;
 	Sphere* lightSphere3 = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere3->SetMaterial(new Material(*colorMaterial));
+	lightSphere3->SetMaterial(colorMaterial);
 	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
 	AddGameEntity(lightSphere3);
 

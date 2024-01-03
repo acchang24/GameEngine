@@ -22,22 +22,6 @@ Material::~Material()
     std::cout << "Delete material" << std::endl;
 }
 
-Material::Material(const Material& rhs) : mShader(rhs.mShader), mMats(rhs.mMats)
-{
-    mTextures = rhs.mTextures;
-}
-
-Material& Material::operator=(const Material& rhs)
-{
-    if (this != &rhs)
-    {
-        mShader = rhs.mShader;
-        mMats = rhs.mMats;
-        mTextures = rhs.mTextures;
-    }
-    return *this;
-}
-
 void Material::SetActive()
 {
 	mShader->SetActive();

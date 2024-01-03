@@ -26,8 +26,6 @@ public:
 	Material();
 	Material(const MaterialColors& mats);
 	~Material();
-	Material(const Material& rhs);
-	Material& operator=(const Material& rhs);
 
 	// Sets the material's shader as active. It also loops
 	// through the texture vector and binds any textures

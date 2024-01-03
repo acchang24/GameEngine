@@ -29,7 +29,6 @@ Plane::~Plane()
 {
 	std::cout << "Delete plane" << std::endl;
 	delete mVertexBuffer;
-	delete mMaterial;
 }
 
 void Plane::OnUpdate(float deltaTime)

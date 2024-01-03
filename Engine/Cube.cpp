@@ -67,7 +67,6 @@ Cube::~Cube()
 {
 	std::cout << "Delete cube" << std::endl;
     delete mVertexBuffer;
-    delete mMaterial;
 }
 
 void Cube::OnUpdate(float deltaTime)
