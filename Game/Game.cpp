@@ -206,6 +206,8 @@ bool Game::Init()
 	Cube* mCube = new Cube();
 	mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	mCube->SetMaterial(reflectiveMat);
+	mCube->SetYaw(25.0f);
+	TimerComponent* timer = new TimerComponent(mCube);
 	AddGameEntity(mCube);
 
 	//Cube* object = new Cube();
@@ -226,7 +228,7 @@ bool Game::Init()
 	squidward->SetScale(0.5f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
-	//m->AddTexture(texture);
+	m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
 
@@ -382,7 +384,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 		Entity3D* e = static_cast<Entity3D*>(mEntities[0]);
 		Material* mat = e->GetMaterial("roof");
-		Shader* reflect = am->LoadShader("reflection");
+		Shader* reflect = am->LoadShader("refraction");
 		Shader* phong = am->LoadShader("phong");
 
 		if (mat->GetShader() == phong)

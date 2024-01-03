@@ -4,18 +4,6 @@
 #define MAX_LIGHTS 10
 #define MAX_DIR_LIGHTS 1
 
-// Struct to define material colors and properties of the surface
-struct Material
-{
-    vec4 diffuseColor;
-    vec4 specularColor;
-	float specularIntensity;
-    float shininess;
-    bool hasDiffuseTexture;
-    bool hasSpecularTexture;
-	bool hasEmissionTexture;
-};
-
 // Struct to define a different number of texture units
 // Add more samplers to this struct when needed
 struct TextureSamplers
@@ -79,10 +67,16 @@ layout (std140, binding = 1) uniform LightBuffer
 	DirectionalLight directionalLight[MAX_DIR_LIGHTS];
 };
 
-// Uniform buffer for lights
+// Uniform buffer for materials
 layout (std140, binding = 2) uniform MaterialBuffer
 {
-	Material material;
+	vec4 diffuseColor;
+	vec4 specularColor;
+	float specularIntensity;
+	float shininess;
+	bool hasDiffuseTexture;
+	bool hasSpecularTexture;
+	bool hasEmissionTexture;
 };
 
 // Uniform for the 2D texture samplers
@@ -128,7 +122,7 @@ void main()
 		}
 	}
 
-	if(material.hasEmissionTexture)
+	if(hasEmissionTexture)
 	{
 		vec3 emission = texture(textureSamplers.emission1, textureCoord).rgb;
 		lightResult += emission;
@@ -137,7 +131,7 @@ void main()
 	fragColor = vec4(lightResult, 1.0);
 
 	// Add diffuse maps (textures)
-    if(material.hasDiffuseTexture)
+    if(hasDiffuseTexture)
     {
 		// Sampler colors of a texture with texture function, passing in sampler and coordinates
         vec4 textureColor = texture(textureSamplers.diffuse1, textureCoord);
@@ -168,7 +162,7 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 	// Apply diffuse impact with the light's color to get diffuse light
 	vec3 diffuseLight = diff * light.color.xyz;
 	// Apply the material's diffuse color
-	diffuseLight *= material.diffuseColor.xyz;
+	diffuseLight *= diffuseColor.xyz;
 	// Apply light's diffuse intensity
 	diffuseLight *= light.diffuseIntensity;
 
@@ -181,16 +175,16 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
     // Make sure it's not negative
     spec = max(spec, 0.0);
 	// Raise to power of the material's specular intensity value (higher power = smaller, more focused highlight)
-    spec = pow(spec, material.shininess);
+    spec = pow(spec, shininess);
 	// Apply the material's specular intensity and spec component with light color to get specular light
-	vec3 specularLight = material.specularIntensity * spec * light.color.xyz;
+	vec3 specularLight = specularIntensity * spec * light.color.xyz;
 	// Apply the material's specular color
-	specularLight *= material.specularColor.xyz;
+	specularLight *= specularColor.xyz;
 	// Apply light's specular intensity
 	specularLight *= light.specularIntensity;
 
 	// Add specular maps
-	if(material.hasSpecularTexture)
+	if(hasSpecularTexture)
 	{
 		// Sampler colors of a specular map, passing in sampler and coordinates
 		specularLight *= texture(textureSamplers.specular1, textureCoord).xyz;
