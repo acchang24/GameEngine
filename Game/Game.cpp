@@ -131,6 +131,10 @@ bool Game::Init()
 	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 	am->SaveShader("phong", phongShader);
 
+	UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+	materialBuffer->LinkShader(phongShader);
+	am->SaveBuffer("MaterialBuffer", materialBuffer);
+
 	// General purpose material for objects colored with their vertices
 	Material* colorMaterial = new Material({ glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false });
 	colorMaterial->SetShader(colorShader);
@@ -222,7 +226,7 @@ bool Game::Init()
 	squidward->SetScale(0.5f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
-	m->AddTexture(texture);
+	//m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
 
@@ -252,7 +256,6 @@ bool Game::Init()
 	// Link shaders to light buffer
 	mLightBuffer->LinkShader(phongShader);
 	mLightBuffer->UpdateBufferData(&mLightArrays);
-
 
 	// Link shaders to camera's uniform buffer
 	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
@@ -390,7 +393,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		{
 			e->SetMaterialShader("roof", phong);
 		}
-		//mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
+		mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
 		mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;
 		//mLightArrays.pointLights[1].data.isEnabled = !mLightArrays.pointLights[1].data.isEnabled;
 		mLightArrays.directionalLight[0].data.isEnabled = !mLightArrays.directionalLight[0].data.isEnabled;

@@ -109,20 +109,6 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(mShaderID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    // Sets a material uniform in a shader
-    // @param - Material* to pass in the new material data
-    void SetMaterial(Material* material) const
-    {
-        const MaterialColors& mats = material->GetMats();
-        SetVec4("material.diffuseColor", mats.diffuseColor);
-        SetVec4("material.specularColor", mats.specularColor);
-        SetFloat("material.specularIntensity", mats.specularIntensity);
-        SetFloat("material.shininess", mats.shininess);
-        SetBool("material.hasDiffuseTexture", mats.hasDiffuseTexture);
-        SetBool("material.hasSpecularTexture", mats.hasSpecularTexture);
-        SetBool("material.hasEmissionTexture", mats.hasEmissionTexture);
-    }
-
 private:
 	// The shader program object's reference ID
 	unsigned int mShaderID;

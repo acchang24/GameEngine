@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Material.h"
+#include "UniformBuffer.h"
 
 // The AssetManager is a singleton class that helps load assets on demand
 // and cache them so that subsequent loads will return the cached asset
@@ -65,6 +66,17 @@ public:
 	// Clears each element from the material cache's map
 	void ClearMaterials() { mMaterialCache->Clear(); }
 
+	// Saves a buffer into the uniform buffer cache's map
+	// @param - const std::string& for the buffer's name
+	// @param - UniformBuffer* for the buffer that is being saved
+	void SaveBuffer(const std::string& bufferName, UniformBuffer* buffer) { mBufferCache->StoreCache(bufferName, buffer); }
+	// Retrieves a buffer from the uniform buffer cache's map
+	// @param - const std::string& for the buffer's name
+	// @return - UniformBuffer* for the desired buffer retrieved from the uniform buffer cache map
+	UniformBuffer* LoadBuffer(const std::string& bufferName) { return mBufferCache->Get(bufferName); }
+	// Clears each element from the buffer cache map
+	void ClearBuffers() { mBufferCache->Clear(); }
+
 private:
 	AssetManager();
 	~AssetManager();
@@ -77,4 +89,7 @@ private:
 
 	// Material cache
 	Cache<Material>* mMaterialCache;
+
+	// UniformBuffer cache
+	Cache<UniformBuffer>* mBufferCache;
 };

@@ -2,17 +2,21 @@
 #include <iostream>
 #include "Shader.h"
 #include "Texture.h"
+#include "UniformBuffer.h"
+#include "AssetManager.h"
 
 Material::Material() : 
 	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 32.0f, false, false, false }),
-	mShader(nullptr)
+	mShader(nullptr),
+    mMaterialBuffer(AssetManager::Get()->LoadBuffer("MaterialBuffer"))
 {
 
 }
 
 Material::Material(const MaterialColors& mats) :
     mMats(mats),
-    mShader(nullptr)
+    mShader(nullptr),
+    mMaterialBuffer(AssetManager::Get()->LoadBuffer("MaterialBuffer"))
 {
 
 }
@@ -25,7 +29,8 @@ Material::~Material()
 void Material::SetActive()
 {
 	mShader->SetActive();
-	mShader->SetMaterial(this);
+ 
+    mMaterialBuffer->UpdateBufferData(&mMats);
 
     unsigned int diffuseNum = 1;
     unsigned int specularNum = 1;

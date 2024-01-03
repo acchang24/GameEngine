@@ -79,10 +79,14 @@ layout (std140, binding = 1) uniform LightBuffer
 	DirectionalLight directionalLight[MAX_DIR_LIGHTS];
 };
 
+// Uniform buffer for lights
+layout (std140, binding = 2) uniform MaterialBuffer
+{
+	Material material;
+};
+
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
-// Uniform for Material
-uniform Material material;
 
 // Final vector4 fragment color output
 out vec4 fragColor;
@@ -92,7 +96,7 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragP
 vec3 CalculateDirLight(DirectionalLight light, vec3 normal, vec3 viewDir);
 vec3 CalculateSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 fragPos);
 
-void main() 
+void main()
 {
 	vec3 lightResult = vec3(0.0, 0.0, 0.0);
 	

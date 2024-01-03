@@ -7,7 +7,8 @@ class Shader;
 enum class BufferBindingPoint
 {
 	Camera,
-	Lights
+	Lights,
+	Material
 };
 
 // UniformBuffer class helps abstract an OpenGL uniform buffer object. Use

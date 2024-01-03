@@ -13,7 +13,7 @@ struct LightData
     float ambientIntensity = 0.1f;
     float diffuseIntensity = 1.0f;
     float specularIntensity = 0.5f;
-    bool isEnabled = false;
+    int isEnabled = false;
 };
 
 // Struct for point light data that contains information

@@ -9,6 +9,7 @@ AssetManager::AssetManager() :
 	mShaderCache = new Cache<Shader>(this);
 	mTextureCache = new Cache<Texture>(this);
 	mMaterialCache = new Cache<Material>(this);
+	mBufferCache = new Cache<UniformBuffer>(this);
 }
 
 AssetManager::~AssetManager()
@@ -21,10 +22,12 @@ void AssetManager::Shutdown()
 	delete mShaderCache;
 	delete mTextureCache;
 	delete mMaterialCache;
+	delete mBufferCache;
 
 	mShaderCache = nullptr;
 	mTextureCache = nullptr;
 	mMaterialCache = nullptr;
+	mBufferCache = nullptr;
 }
 
 void AssetManager::Clear()
@@ -32,6 +35,7 @@ void AssetManager::Clear()
 	mShaderCache->Clear();
 	mTextureCache->Clear();
 	mMaterialCache->Clear();
+	mBufferCache->Clear();
 }
 
 AssetManager* AssetManager::Get()

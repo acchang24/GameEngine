@@ -4,6 +4,7 @@
 
 class Shader;
 class Texture;
+class UniformBuffer;
 
 // Struct to define the material's ambient, diffuse, specular colors, shininess, and specular intensity.
 struct MaterialColors
@@ -12,9 +13,10 @@ struct MaterialColors
 	glm::vec4 specularColor;	// The material's specular color
 	float specularIntensity;	// How strong the specular light is
 	float shininess;			// How concentrated the specular light is
-	bool hasDiffuseTexture;		// If the material has a diffuse texture (this is just normal textures)
-	bool hasSpecularTexture;	// If the material has a specular texture (used for specular maps)
-	bool hasEmissionTexture;	// If the material has an emission texture (used for emission maps)
+	int hasDiffuseTexture;		// If the material has a diffuse texture (this is just normal textures)
+	int hasSpecularTexture;		// If the material has a specular texture (used for specular maps)
+	int hasEmissionTexture;		// If the material has an emission texture (used for emission maps)
+	glm::vec3 pad;
 };
 
 // The Material class helps create the object's material's colors and properties it surface. It defines
@@ -74,6 +76,9 @@ public:
 	// Set the material's shader
 	// @param - Shader* for the new shader
 	void SetShader(Shader* shader) { mShader = shader; }
+	// Sets the material's material buffer
+	// @param - UniformBuffer* for the buffer
+	void SetMaterialBuffer(UniformBuffer* buffer) { mMaterialBuffer = buffer; }
 
 	// Changes texture based on its index
 	void ChangeTexture(size_t index, Texture* texture) { mTextures[index] = texture; }
@@ -84,6 +89,9 @@ private:
 
 	// Shader used for this material
 	Shader* mShader;
+
+	// Material buffer to send in the MaterialColors struct to shaders
+	UniformBuffer* mMaterialBuffer;
 
 	// Vector of textures used by this material
 	std::vector<Texture*> mTextures;
