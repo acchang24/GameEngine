@@ -7,63 +7,78 @@
 #include "Material.h"
 #include "Shader.h"
 
-Sphere::Sphere(const glm::vec4& color) :
+Sphere::Sphere(float radius, const glm::vec4& color) :
 	Entity3D(),
     mVertexBuffer(nullptr),
     mMaterial(nullptr)
 {
-    // Create sphere vertices
+    int longitudes = 40;
+    int latitudes = 30;
 
-    float pi = 3.1415926535f;
+    float PI = 3.1415926535f;
 
-    int stacks = 20;
-    int slices = 20;
+    float lengthInv = 1.0f / radius;
 
+    float deltaLatitude = PI / latitudes;
+    float deltaLongitude = 2 * PI / longitudes;
+    float latitudeAngle;
+    float longitudeAngle;
+
+    std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<VertexColor> vertices;
 
-    for (int i = 0; i <= stacks; ++i)
+    for (int i = 0; i <= latitudes; ++i)
     {
-        float v = static_cast<float>(i) / static_cast<float>(stacks);
-        float phi = v * pi;
+        latitudeAngle = PI / 2 - i * deltaLatitude;
+        float xy = radius * cosf(latitudeAngle);
+        float z = radius * sinf(latitudeAngle);
 
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.0f;
-
-        for (int j = 0; j <= slices; ++j)
+        Vertex v = {};
+        for (int j = 0; j <= longitudes; ++j)
         {
-            float u = (float)j / (float)slices;
-            float theta = u * pi * 2.0f;
+            longitudeAngle = j * deltaLongitude;
 
-            x = cosf(theta) * sinf(phi);
-            y = cosf(phi);
-            z = sinf(theta) * sinf(phi);
+            float vx = xy * cosf(longitudeAngle);
+            float vy = xy * sinf(longitudeAngle);
+            float vz = z;
 
-            VertexColor v = {};
-            v.pos = glm::vec3(x, y, z);
-            v.color = color;
+            glm::vec3 pos(vx, vy, vz);
+            glm::vec2 uv((float)j / longitudes, (float)i / latitudes);
+            glm::vec3 normal(vx* lengthInv, vy* lengthInv, vz* lengthInv);
 
+            v.pos = pos;
+            v.normal = normal;
+            v.uv = uv;
             vertices.emplace_back(v);
         }
     }
-
-    // Calculate the indices
-    for (unsigned int i = 0; i < slices * stacks + slices; ++i)
+    unsigned int k1, k2;
+    for (int i = 0; i < latitudes; ++i)
     {
-        indices.emplace_back(i);
-        indices.emplace_back(i + slices + 1);
-        indices.emplace_back(i + slices);
+        k1 = i * (longitudes + 1);
+        k2 = k1 + longitudes + 1;
+        for (int j = 0; j < longitudes; ++j, ++k1, ++k2)
+        {
+            if (i != 0)
+            {
+                indices.emplace_back(k1);
+                indices.emplace_back(k2);
+                indices.emplace_back(k1 + 1);
+            }
 
-        indices.emplace_back(i + slices + 1);
-        indices.emplace_back(i);
-        indices.emplace_back(i + 1);
+            if (i != (latitudes - 1))
+            {
+                indices.emplace_back(k1 + 1);
+                indices.emplace_back(k2);
+                indices.emplace_back(k2 + 1);
+            }
+        }
     }
 
-    size_t vertexSize = sizeof(VertexColor) * vertices.size();
+    size_t vertexSize = sizeof(Vertex) * vertices.size();
     size_t indexSize = sizeof(unsigned int) * indices.size();
  
-    mVertexBuffer = new VertexBuffer(vertices.data(), indices.data(), vertexSize, indexSize, vertices.size(), indices.size(), VertexLayout::VertexColor);
+    mVertexBuffer = new VertexBuffer(vertices.data(), indices.data(), vertexSize, indexSize, vertices.size(), indices.size(), VertexLayout::Vertex);
 }
 
 Sphere::~Sphere()

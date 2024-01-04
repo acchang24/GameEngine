@@ -120,10 +120,12 @@ bool Game::Init()
 	Texture* texture3 = new Texture("Assets/container2.png");
 	Texture* texture4 = new Texture("Assets/container2_specular.png");
 	texture4->SetType(TextureType::Specular);
+	Texture* lightSphereTexture = new Texture("Assets/lightSphere.png");
 
 	am->SaveTexture("Assets/matrix.jpg", texture);
 	am->SaveTexture("Assets/container2.png", texture3);
 	am->SaveTexture("Assets/container2_specular.png", texture4);
+	am->SaveTexture("Assets/lightSphere.png", lightSphereTexture);
 
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	am->SaveShader("color", colorShader);
@@ -131,14 +133,26 @@ bool Game::Init()
 	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 	am->SaveShader("phong", phongShader);
 
+	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
+	am->SaveShader("texture", textureShader);
+
 	UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	materialBuffer->LinkShader(phongShader);
+	materialBuffer->LinkShader(textureShader);
 	am->SaveBuffer("MaterialBuffer", materialBuffer);
+	
+	Material* defaultMaterial = new Material();
+	defaultMaterial->SetShader(phongShader);
+	am->SaveMaterial("default", defaultMaterial);
 
-	// General purpose material for objects colored with their vertices
 	Material* colorMaterial = new Material({ glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false });
 	colorMaterial->SetShader(colorShader);
 	am->SaveMaterial("color", colorMaterial);
+
+	Material* lightSphereMaterial = new Material();
+	lightSphereMaterial->SetShader(textureShader);
+	lightSphereMaterial->AddTexture(lightSphereTexture);
+	am->SaveMaterial("lightSphere", lightSphereMaterial);
 
 	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
 	//am->SaveShader("invertedColor", invertedColorShader);
@@ -235,22 +249,22 @@ bool Game::Init()
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 
 	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
-	Sphere* lightSphere = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere->SetMaterial(colorMaterial);
+	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere->SetMaterial(refractiveMat);
 	lightSphere->SetPosition(lightPosition);
 	AddGameEntity(lightSphere);
 
 	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
-	Sphere* lightSphere2 = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere2->SetMaterial(colorMaterial);
+	Sphere* lightSphere2 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere2->SetMaterial(reflectiveMat);
 	lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
 	AddGameEntity(lightSphere2);
 
 	PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
 	pointLight2->data.specularIntensity = 5.0f;
-	Sphere* lightSphere3 = new Sphere(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere3->SetMaterial(colorMaterial);
+	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere3->SetMaterial(lightSphereMaterial);
 	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
 	AddGameEntity(lightSphere3);
 
@@ -265,6 +279,7 @@ bool Game::Init()
 	camBuffer->LinkShader(colorShader);
 	camBuffer->LinkShader(reflectiveShader);
 	camBuffer->LinkShader(refractiveShader);
+	camBuffer->LinkShader(textureShader);
 	camBuffer->UpdateBufferData(&mCamera->GetCameraConsts());
 
 	return true;

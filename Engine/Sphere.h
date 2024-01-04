@@ -8,7 +8,7 @@ class Material;
 class Sphere :public Entity3D
 {
 public:
-	Sphere(const glm::vec4& color);
+	Sphere(float radius, const glm::vec4& color);
 	~Sphere();
 
 	// Set the sphere's vertex buffer
