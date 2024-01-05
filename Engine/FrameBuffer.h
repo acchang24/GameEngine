@@ -13,7 +13,8 @@ public:
 	// FrameBuffer constructor
 	// @param - int for the screen's width
 	// @param - int for the screen's height
-	FrameBuffer(int width, int height);
+	// @param - int for the number of subsamples for anti aliasing
+	FrameBuffer(int width, int height, int subsamples);
 	~FrameBuffer();
 
 	// Starts the frame buffer by binding this frame buffer object
@@ -36,18 +37,6 @@ public:
 	// Gets the frame buffer's shader
 	// @return - Shader* for the frame buffer's shader
 	Shader* GetShader() { return mShader; }
-	// Gets the frame buffer object's id
-	// @return - unsigned int for the frame buffer object's id
-	unsigned int GetFrameBufferID() const { return mFrameBufferID; }
-	// Gets the texture id
-	// @return - unsigned int for the texture's id
-	unsigned int GetTextureID() const { return mTextureID; }
-	// Gets the render buffer object's id
-	// @return - unsigned int for the render buffer object's id
-	unsigned int GetRenderBufferID() const { return mRenderBufferID; }
-	// See if the frame buffer is active or not
-	// @return - bool for status
-	bool IsActive() const { return mIsActive; }
 
 	// Sets the frame buffer's shader
 	// @param - Shader* for the new shader
@@ -60,18 +49,20 @@ private:
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;
 
+	// MSAA framebuffer
+	unsigned int mMSAAFrameBufferID;
+	// The multisampled offscreen color attachment texture 
+	unsigned int mTextureMultiSampledID;
+	// The multisampled render buffer for depth and stencil attachments
+	unsigned int mRenderBufferMultiSampledID;
+
 	// Frame buffer object as a reference id
 	unsigned int mFrameBufferID;
-
-	// The offscreen texture as a reference id
+	// The offscreen color attachment texture as a reference id
 	unsigned int mTextureID;
-
 	// Render buffer for depth and stencil attatchments as a reference
-	unsigned int mRenderBufferID;
+	//unsigned int mRenderBufferID;
 
 	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
 	int mTextureUnit;
-
-	// Bool for if this frame buffer is active
-	bool mIsActive;
 };

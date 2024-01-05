@@ -24,6 +24,8 @@
 int windowWidth = 1280;
 int windowHeight = 720;
 
+int subsamples = 4;
+
 float nearPlane = 0.1f;
 float farPlane = 10000.0f;
 
@@ -60,6 +62,8 @@ bool Game::Init()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	// Use core-profile
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	glfwWindowHint(GLFW_SAMPLES, subsamples);
 
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -101,6 +105,9 @@ bool Game::Init()
 
 	// Enable face culling
 	glEnable(GL_CULL_FACE);
+
+	// Enable anti-aliasing
+	glEnable(GL_MULTISAMPLE);
 
 	//// Enable blending
 	//glEnable(GL_BLEND);
@@ -172,7 +179,7 @@ bool Game::Init()
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
 	am->SaveShader("screen", screenShader);
 
-	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight);
+	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight, subsamples);
 	mFrameBuffer->SetShader(screenShader);
 
 	// Skybox
@@ -223,19 +230,6 @@ bool Game::Init()
 	mCube->SetYaw(25.0f);
 	TimerComponent* timer = new TimerComponent(mCube);
 	AddGameEntity(mCube);
-
-	//Cube* object = new Cube();
-	//object->SetPosition(glm::vec3(0.0f));
-	//object->SetScale(0.5f);
-	//Material* mat = new Material(am->LoadMaterial("textured"));
-	//mat->SetSpecularIntensity(5.0f);
-	//mat->AddTexture(texture3);
-	//mat->AddTexture(texture4);
-	//mat->AddTexture(texture);
-	//object->SetMaterial(mat);
-	//object->SetYaw(25.0f);
-	//TimerComponent* timer = new TimerComponent(object);
-	//AddGameEntity(object);
 
 	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
@@ -410,6 +404,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		{
 			e->SetMaterialShader("roof", phong);
 		}
+
 		mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
 		mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;
 		//mLightArrays.pointLights[1].data.isEnabled = !mLightArrays.pointLights[1].data.isEnabled;
