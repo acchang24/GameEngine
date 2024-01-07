@@ -29,6 +29,11 @@ public:
 	// @param - VertexLayout enum class for the layout of the vertex
 	void SetVertexAttributePointers(VertexLayout layout);
 
+	// Enables instanced rendering and updates the vertex array's
+	// pointer attributes to point to the data needed per instance
+	// @param - unsigned int for the number of instances to render
+	void MakeInstance(unsigned int numInstances);
+
 	// Sets the VAO as active, then draws based on if it has indices or not
 	void Draw();
 
@@ -52,6 +57,10 @@ private:
 	// Reference ID for the index buffer (element buffer object)
 	unsigned int mIndexBufferID;
 
+	unsigned int mNumInstances;
+
+	size_t mLastAttribIndex;
+
 	// Number of vertices
 	size_t mVertexCount;
 
@@ -60,4 +69,6 @@ private:
 
 	// Bool for if the vertex array uses index based drawing
 	bool mDrawIndexed;
+
+	bool mDrawInstanced;
 };

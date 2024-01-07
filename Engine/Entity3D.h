@@ -22,6 +22,14 @@ public:
 	Entity3D(const std::string& fileName);
 	~Entity3D();
 
+	// Makes this an instanced entity so that multiple instances of the same
+	// vertices can be rendered with one draw function call. This generates 
+	// a new buffer and loops through all the meshes to enable its array attributes
+	// and points them to the data needed per instance.
+	// @param - unsigned int for the number of instances to draw
+	// @param - const void* for an array of model matrices, and any data needed per instance
+	void MakeInstance(unsigned int numInstances, const void* data);
+
 	// Loads the model's file using Assimp
 	// @param - const std::string& for the file name
 	bool LoadModel(const std::string& fileName);
@@ -133,6 +141,9 @@ protected:
 
 	// Entity's scale
 	glm::vec3 mScale;
+
+	// Buffer for if this entity is drawn as an instance
+	unsigned int mInstanceBuffer;
 
 	// Yaw rotation
 	float mYaw;

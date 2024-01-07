@@ -143,18 +143,14 @@ bool Game::Init()
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	am->SaveShader("texture", textureShader);
 
+	Shader* instanceShader = new Shader("Shaders/instanceVS.glsl", "Shaders/instanceFS.glsl");
+	am->SaveShader("instance", instanceShader);
+
 	UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	materialBuffer->LinkShader(phongShader);
+	materialBuffer->LinkShader(instanceShader);
 	materialBuffer->LinkShader(textureShader);
 	am->SaveBuffer("MaterialBuffer", materialBuffer);
-	
-	Material* defaultMaterial = new Material();
-	defaultMaterial->SetShader(phongShader);
-	am->SaveMaterial("default", defaultMaterial);
-
-	Material* colorMaterial = new Material({ glm::vec4(1.0f,1.0f,1.0f,1.0f), glm::vec4(1.0f,1.0f,1.0f,1.0f), 0.0f, 0.0f, false, false, false });
-	colorMaterial->SetShader(colorShader);
-	am->SaveMaterial("color", colorMaterial);
 
 	Material* lightSphereMaterial = new Material();
 	lightSphereMaterial->SetShader(textureShader);
@@ -218,6 +214,50 @@ bool Game::Init()
 
 	glUseProgram(0);
 
+	Texture* rockTexture = new Texture("Assets/models/rock/rock.png");
+	am->SaveTexture("rock", rockTexture);
+
+	// Set model matrices for 10000 instances of a rock model
+	unsigned int rockAmount = 10000;
+	glm::mat4* rockMatrices;
+	rockMatrices = new glm::mat4[rockAmount];
+	std::srand(glfwGetTime()); // initialize random seed	
+	float radius = 100.0;
+	float offset = 20.5f;
+	for (unsigned int i = 0; i < rockAmount; i++)
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+		float angle = (float)i / (float)rockAmount * 360.0f;
+		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float x = sin(angle) * radius + displacement;
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float z = cos(angle) * radius + displacement;
+		model = glm::translate(model, glm::vec3(x, y + 250.0f, z));
+
+		// 2. scale: scale between 0.05 and 0.25f
+		float scale = (rand() % 20) / 100.0f + 0.05;
+		model = glm::scale(model, glm::vec3(scale));
+
+		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+		float rotAngle = (rand() % 360);
+		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+		// 4. now add to list of matrices
+		rockMatrices[i] = model;
+	}
+
+	Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
+	rock->MakeInstance(rockAmount, rockMatrices);
+	Material* rockMat = rock->GetMaterial("Material");
+	rockMat->AddTexture(rockTexture);
+	rockMat->SetShader(instanceShader);
+	AddGameEntity(rock);
+
+	delete[] rockMatrices;
+
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.15);
@@ -265,6 +305,7 @@ bool Game::Init()
 	mLightBuffer = new UniformBuffer(sizeof(LightArrays), BufferBindingPoint::Lights, "LightBuffer");
 	// Link shaders to light buffer
 	mLightBuffer->LinkShader(phongShader);
+	mLightBuffer->LinkShader(instanceShader);
 	mLightBuffer->UpdateBufferData(&mLightArrays);
 
 	// Link shaders to camera's uniform buffer
@@ -274,6 +315,7 @@ bool Game::Init()
 	camBuffer->LinkShader(reflectiveShader);
 	camBuffer->LinkShader(refractiveShader);
 	camBuffer->LinkShader(textureShader);
+	camBuffer->LinkShader(instanceShader);
 	camBuffer->UpdateBufferData(&mCamera->GetCameraConsts());
 
 	return true;
@@ -388,22 +430,6 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_SPACE])
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
-
-		AssetManager* am = AssetManager::Get();
-
-		Entity3D* e = static_cast<Entity3D*>(mEntities[0]);
-		Material* mat = e->GetMaterial("roof");
-		Shader* reflect = am->LoadShader("refraction");
-		Shader* phong = am->LoadShader("phong");
-
-		if (mat->GetShader() == phong)
-		{
-			e->SetMaterialShader("roof", reflect);
-		}
-		else
-		{
-			e->SetMaterialShader("roof", phong);
-		}
 
 		mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
 		mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;

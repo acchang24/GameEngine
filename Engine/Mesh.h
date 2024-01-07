@@ -16,6 +16,8 @@ public:
 
 	void Draw();
 
+	VertexBuffer* GetVertexBuffer() { return mVertexBuffer; }
+
 	// Gets the mesh's material
 	// @return - Material* for the mesh's material
 	Material* GetMaterial() { return mMaterial; }

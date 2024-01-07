@@ -16,6 +16,7 @@ Entity3D::Entity3D() :
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
+	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
 	mRoll(0.0f)
@@ -31,6 +32,7 @@ Entity3D::Entity3D(const std::string& fileName):
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
+	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
 	mRoll(0.0f)
@@ -60,6 +62,20 @@ Entity3D::~Entity3D()
 	mMeshes.clear();
 
 	mMaterialMap.clear();
+
+	glDeleteBuffers(1, &mInstanceBuffer);
+}
+
+void Entity3D::MakeInstance(unsigned int numInstances, const void* data)
+{
+	glGenBuffers(1, &mInstanceBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, mInstanceBuffer);
+	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), data, GL_STATIC_DRAW);
+
+	for (auto m : mMeshes)
+	{
+		m->GetVertexBuffer()->MakeInstance(numInstances);
+	}
 }
 
 bool Entity3D::LoadModel(const std::string& fileName)
@@ -261,7 +277,10 @@ void Entity3D::Update(float deltaTime)
 {
 	Entity::Update(deltaTime);
 
-	OnUpdate(deltaTime);
+	if (mInstanceBuffer == 0)
+	{
+		OnUpdate(deltaTime);
+	}
 }
 
 void Entity3D::Draw()

@@ -1,14 +1,17 @@
 #include "VertexBuffer.h"
 #include <iostream>
 
-VertexBuffer::VertexBuffer(const void* vertices, const void* indices, size_t vertexSize, size_t indexSize, 
+VertexBuffer::VertexBuffer(const void* vertices, const void* indices, size_t vertexSize, size_t indexSize,
 	size_t vertexCount, size_t indexCount, VertexLayout vertexLayout) :
 	mVaoID(0),
 	mVertexBufferID(0),
 	mIndexBufferID(0),
+	mNumInstances(0),
+	mLastAttribIndex(0),
 	mVertexCount(vertexCount),
 	mIndexCount(indexCount),
-	mDrawIndexed(false)
+	mDrawIndexed(false),
+	mDrawInstanced(false)
 {
 	// Create a vertex array object, store it in mVaoID for reference
 	glGenVertexArrays(1, &mVaoID);
@@ -89,13 +92,46 @@ void VertexBuffer::SetVertexAttributePointers(VertexLayout layout)
 		// Increment the spacing by the stride value
 		spacing += strides[i];
 	}
+
+	mLastAttribIndex = strides.size();
+}
+
+void VertexBuffer::MakeInstance(unsigned int numInstances)
+{
+	SetActive();
+
+	mNumInstances = numInstances;
+	mDrawInstanced = true;
+
+	glEnableVertexAttribArray(mLastAttribIndex);
+	glVertexAttribPointer(mLastAttribIndex, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+	glVertexAttribDivisor(mLastAttribIndex, 1);
+	++mLastAttribIndex;
+	glEnableVertexAttribArray(mLastAttribIndex);
+	glVertexAttribPointer(mLastAttribIndex, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+	glVertexAttribDivisor(mLastAttribIndex, 1);
+	++mLastAttribIndex;
+	glEnableVertexAttribArray(mLastAttribIndex);
+	glVertexAttribPointer(mLastAttribIndex, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(mLastAttribIndex, 1);
+	++mLastAttribIndex;
+	glEnableVertexAttribArray(mLastAttribIndex);
+	glVertexAttribPointer(mLastAttribIndex, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+	glVertexAttribDivisor(mLastAttribIndex, 1);
+	++mLastAttribIndex;
+
+	glBindVertexArray(0);
 }
 
 void VertexBuffer::Draw()
 {
 	SetActive();
 
-	if (mDrawIndexed)
+	if (mDrawInstanced)
+	{
+		glDrawElementsInstanced(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0, mNumInstances);
+	}
+	else if (mDrawIndexed)
 	{
 		// - First argument specifies the mode to draw in, in this case draw triangles
 		// - Second argument is the count or number of elements/indices to draw
@@ -110,4 +146,6 @@ void VertexBuffer::Draw()
 		// - Last argument specifies how many vertices to draw
 		glDrawArrays(GL_TRIANGLES, 0, mVertexCount);
 	}
+
+	glBindVertexArray(0);
 }
