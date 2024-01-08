@@ -167,11 +167,17 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 	diffuseLight *= light.diffuseIntensity;
 
 	// Specular light
-	// Calculate reflect direction
-	vec3 reflectDir = reflect(-lightDir, normal);
-	// Calculate specular component
-    // Calculate dot between view and reflect directions
-    float spec = dot(viewDir, reflectDir);
+
+	//// Calculate reflect direction for phong
+	//vec3 reflectDir = reflect(-lightDir, normal);
+	//// Calculate dot between view and reflect directions for phong
+	//float spec = dot(viewDir, reflectDir);
+
+	// Halfway direction for blinn-phong
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	// dot between normal and halfwayDir for blinn-phong
+	float spec = dot(normal, halfwayDir);
+
     // Make sure it's not negative
     spec = max(spec, 0.0);
 	// Raise to power of the material's specular intensity value (higher power = smaller, more focused highlight)

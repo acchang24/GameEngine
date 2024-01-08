@@ -6,7 +6,7 @@
 #include "AssetManager.h"
 
 Material::Material() : 
-	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 32.0f, false, false, false }),
+	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 16.0f, false, false, false }),
 	mShader(nullptr),
     mMaterialBuffer(AssetManager::Get()->LoadBuffer("MaterialBuffer"))
 {

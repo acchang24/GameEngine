@@ -282,21 +282,21 @@ bool Game::Init()
 
 	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 
-	PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
-	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere->SetMaterial(refractiveMat);
-	lightSphere->SetPosition(lightPosition);
-	AddGameEntity(lightSphere);
+	//PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
+	//Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	//lightSphere->SetMaterial(refractiveMat);
+	//lightSphere->SetPosition(lightPosition);
+	//AddGameEntity(lightSphere);
 
-	SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
-		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
-	Sphere* lightSphere2 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lightSphere2->SetMaterial(reflectiveMat);
-	lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
-	AddGameEntity(lightSphere2);
+	//SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
+	//	glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
+	//Sphere* lightSphere2 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	//lightSphere2->SetMaterial(reflectiveMat);
+	//lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
+	//AddGameEntity(lightSphere2);
 
 	PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
-	pointLight2->data.specularIntensity = 5.0f;
+	pointLight2->data.specularIntensity = 3.0f;
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere3->SetMaterial(lightSphereMaterial);
 	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
@@ -431,8 +431,8 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	{
 		mPrevInputs[GLFW_KEY_SPACE] = true;
 
-		mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
-		mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;
+		//mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
+		//mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;
 		//mLightArrays.pointLights[1].data.isEnabled = !mLightArrays.pointLights[1].data.isEnabled;
 		mLightArrays.directionalLight[0].data.isEnabled = !mLightArrays.directionalLight[0].data.isEnabled;
 	}
