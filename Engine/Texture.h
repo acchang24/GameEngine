@@ -28,7 +28,8 @@ public:
 	// Texture constructor takes the name of a texture file
 	// and creates an OpenGl texture object
 	// @param - const std::string& for the texture file name
-	Texture(const std::string& textureFile);
+	// @param - TextureType for the type used for the texture
+	Texture(const std::string& textureFile, TextureType type);
 	~Texture();
 
 	// Binds the texture as the current one

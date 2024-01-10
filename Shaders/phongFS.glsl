@@ -128,7 +128,7 @@ void main()
 		lightResult += emission;
 	}
 
-	fragColor = vec4(lightResult, 1.0);
+	vec3 color = vec3(0.0);
 
 	// Add diffuse maps (textures)
     if(hasDiffuseTexture)
@@ -141,8 +141,12 @@ void main()
 			discard;
 		}
 
-        fragColor *= textureColor;
+        color = textureColor.xyz;
     }
+
+	color *= lightResult;
+
+	fragColor = vec4(color, 1.0);
 }
 
 vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 viewDir)

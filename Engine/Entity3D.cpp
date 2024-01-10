@@ -248,15 +248,18 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 			if (!t)
 			{
 				// Create the new texture
-				Texture* texture = new Texture(path);
+				Texture* texture = nullptr;
 				
 				switch (aiTextureType)
 				{
+				case aiTextureType_DIFFUSE:
+					texture = new Texture(path, TextureType::Diffuse);
+					break;
 				case aiTextureType_SPECULAR:
-					texture->SetType(TextureType::Specular);
+					texture = new Texture(path, TextureType::Specular);
 					break;
 				case aiTextureType_EMISSIVE:
-					texture->SetType(TextureType::Emission);
+					texture = new Texture(path, TextureType::Emission);
 					break;
 				}
 				material->AddTexture(texture);

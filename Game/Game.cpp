@@ -122,12 +122,10 @@ bool Game::Init()
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	Texture* texture = new Texture("Assets/matrix.jpg");
-	texture->SetType(TextureType::Emission);
-	Texture* texture3 = new Texture("Assets/container2.png");
-	Texture* texture4 = new Texture("Assets/container2_specular.png");
-	texture4->SetType(TextureType::Specular);
-	Texture* lightSphereTexture = new Texture("Assets/lightSphere.png");
+	Texture* texture = new Texture("Assets/matrix.jpg", TextureType::Emission);
+	Texture* texture3 = new Texture("Assets/container2.png", TextureType::Diffuse);
+	Texture* texture4 = new Texture("Assets/container2_specular.png", TextureType::Specular);
+	Texture* lightSphereTexture = new Texture("Assets/lightSphere.png", TextureType::Diffuse);
 
 	am->SaveTexture("Assets/matrix.jpg", texture);
 	am->SaveTexture("Assets/container2.png", texture3);
@@ -214,7 +212,7 @@ bool Game::Init()
 
 	glUseProgram(0);
 
-	Texture* rockTexture = new Texture("Assets/models/rock/rock.png");
+	Texture* rockTexture = new Texture("Assets/models/rock/rock.png", TextureType::Diffuse);
 	am->SaveTexture("rock", rockTexture);
 
 	// Set model matrices for 10000 instances of a rock model
