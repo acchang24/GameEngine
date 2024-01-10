@@ -82,6 +82,8 @@ layout (std140, binding = 2) uniform MaterialBuffer
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
 
+//uniform bool gamma;
+
 // Final vector4 fragment color output
 out vec4 fragColor;
 
@@ -145,6 +147,12 @@ void main()
     }
 
 	color *= lightResult;
+
+	// Gamma correction
+	//if(gamma)
+	//{
+		//color = pow(color, vec3(1.0/2.2));
+	//}
 
 	fragColor = vec4(color, 1.0);
 }

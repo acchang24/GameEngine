@@ -32,17 +32,24 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 	{
 		// Get the format based on the number of color channels
 		GLenum wrap = 0;
-		GLenum dataFormat = 0;
-		if (mNumChannels == 4)
-		{
-			dataFormat = GL_RGBA;
-			wrap = GL_CLAMP_TO_EDGE;
-		}
-		else if(mNumChannels == 3)
-		{
-			dataFormat = GL_RGB;
-			wrap = GL_REPEAT;
-		}
+		GLenum dataFormat = GL_RGBA;
+		GLenum internalFormat = GL_SRGB_ALPHA;
+
+		//if (mType != TextureType::Diffuse)
+		//{
+		//	internalFormat = dataFormat;
+		//}
+
+		//if (mNumChannels == 4)
+		//{
+		//	dataFormat = GL_RGBA;
+		//	wrap = GL_CLAMP_TO_EDGE;
+		//}
+		//else if(mNumChannels == 3)
+		//{
+		//	dataFormat = GL_RGB;
+		//	wrap = GL_REPEAT;
+		//}
 
 		// Set the texture's wrapping parameters
 		// GL_REPEAT: The default behavior. Repeats the texture image.
@@ -68,7 +75,7 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 		// - 7th/8th arguments specifies the format and datatype of the source image
 		//   Loaded the image with RGB values, and stored them as chars(bytes)
 		// - Last argument is the actual image data
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, dataFormat, mWidth, mHeight, 0, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		// Automatically generate all the required mipmaps for the currently bound texture
 		glGenerateMipmap(GL_TEXTURE_2D);
