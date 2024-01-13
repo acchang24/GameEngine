@@ -33,7 +33,7 @@ public:
 	// through the texture vector and binds any textures
 	// onto its texture units and sends the MaterialColors
 	// struct to the shader.
-	void SetActive();
+	virtual void SetActive();
 
 	// Adds a texture to the material's vector of textures.
 	// Sets the material's diffuse and specular texture status
@@ -83,7 +83,7 @@ public:
 	// Changes texture based on its index
 	void ChangeTexture(size_t index, Texture* texture) { mTextures[index] = texture; }
 
-private:
+protected:
 	// Material's color
 	MaterialColors mMats;
 
@@ -93,6 +93,7 @@ private:
 	// Material buffer to send in the MaterialColors struct to shaders
 	UniformBuffer* mMaterialBuffer;
 
+private:
 	// Vector of textures used by this material
 	std::vector<Texture*> mTextures;
 };

@@ -3,7 +3,6 @@
 #include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "LightConstants.h"
 
 class Shader;
 class Texture;
@@ -12,7 +11,6 @@ class Camera;
 class AssetManager;
 class FrameBuffer;
 class Skybox;
-class UniformBuffer;
 class Lights;
 
 class Game
