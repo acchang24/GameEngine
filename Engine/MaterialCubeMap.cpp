@@ -26,6 +26,7 @@ MaterialCubeMap::~MaterialCubeMap()
 
 void MaterialCubeMap::SetActive()
 {
+	mShader->SetActive();
 	mCubeMap->SetActive(mShader);
 	mMaterialBuffer->UpdateBufferData(&mMats);
 }

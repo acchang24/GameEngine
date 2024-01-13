@@ -21,6 +21,7 @@
 #include "Mesh.h"
 #include "UniformBuffer.h"
 #include "Lights.h"
+#include "MaterialCubeMap.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -196,9 +197,9 @@ bool Game::Init()
 	reflectiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
 	mAssetManager->SaveShader("reflection", reflectiveShader);
 
-	Material* reflectiveMat = new Material();
+	MaterialCubeMap* reflectiveMat = new MaterialCubeMap();
+	reflectiveMat->SetCubeMap(sky);
 	reflectiveMat->SetShader(reflectiveShader);
-	sky->SetActive(reflectiveShader);
 	mAssetManager->SaveMaterial("reflection", reflectiveMat);
 
 	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMapVS.glsl", "Shaders/EnvironmentMapping/refractionFS.glsl");
@@ -206,9 +207,9 @@ bool Game::Init()
 	refractiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
 	mAssetManager->SaveShader("refraction", refractiveShader);
 
-	Material* refractiveMat = new Material();
+	MaterialCubeMap* refractiveMat = new MaterialCubeMap();
+	refractiveMat->SetCubeMap(sky);
 	refractiveMat->SetShader(refractiveShader);
-	sky->SetActive(refractiveShader);
 	mAssetManager->SaveMaterial("refraction", refractiveMat);
 
 	glUseProgram(0);
