@@ -466,6 +466,16 @@ void Game::Render()
 	// Clear the color buffer, depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	RenderScene();
+
+	// Uncomment this if using off screen frame buffer
+	mFrameBuffer->End(windowWidth, windowHeight);
+
+	glfwSwapBuffers(mWindow);
+}
+
+void Game::RenderScene()
+{
 	for (auto e : mEntities)
 	{
 		e->Draw();
@@ -473,11 +483,6 @@ void Game::Render()
 
 	// Draw sky box last
 	mSkybox->Draw(mCamera->GetViewMatrix(), projection);
-
-	// Uncomment this if using off screen frame buffer
-	mFrameBuffer->End(windowWidth, windowHeight);
-
-	glfwSwapBuffers(mWindow);
 }
 
 void Game::ProcessMouseInput(GLFWwindow* window)

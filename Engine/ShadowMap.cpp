@@ -1,0 +1,92 @@
+#include "ShadowMap.h"
+#include <iostream>
+#include <glad/glad.h>
+#include "Shader.h"
+#include "VertexBuffer.h"
+
+const unsigned int SHADOW_WIDTH = 1024;
+const unsigned int SHADOW_HEIGHT = 1024;
+
+ShadowMap::ShadowMap() :
+	mShader(nullptr),
+	mVertexBuffer(nullptr),
+	mShadowMapFrameBuffer(0),
+	mShadowMap(0)
+{
+	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
+	VertexScreenQuad quadVertices[] = {
+		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
+		glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
+
+		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
+		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f,  1.0f), glm::vec2(1.0f, 1.0f)
+	};
+	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
+
+
+	// Create a framebuffer object
+	glGenFramebuffers(1, &mShadowMapFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mShadowMapFrameBuffer);
+
+	// Create a 2D texture for framebuffer's depth buffer
+	glGenTextures(1, &mShadowMap);
+	glBindTexture(GL_TEXTURE_2D, mShadowMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Attach the depth texture as framebuffer's depth buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mShadowMap, 0);
+	// Set read and draw buffer to none since this does not need a color buffer
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	// Bind back to default frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+
+}
+
+ShadowMap::~ShadowMap()
+{
+	std::cout << "Delete shadow map" << std::endl;
+
+	delete mVertexBuffer;
+
+	glDeleteFramebuffers(1, &mShadowMapFrameBuffer);
+
+	glDeleteTextures(1, &mShadowMap);
+}
+
+void ShadowMap::SetActive()
+{
+	// First pass will render to shadow map
+	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+
+	// Bind to frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, mShadowMapFrameBuffer);
+	// Clear depth buffer
+	glClear(GL_DEPTH_BUFFER_BIT);
+	
+
+
+}
+
+void ShadowMap::Draw()
+{
+}
+
+void ShadowMap::End(int width, int height)
+{
+	// Bind back to default frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Set viewport back to screen's width and height
+	glViewport(0, 0, width, height);
+
+
+
+}

@@ -42,6 +42,8 @@ public:
 	// Sets all the buffers, swap chain, textures, vertex array objects, and renders to screen
 	void Render();
 
+	void RenderScene();
+
 	void ProcessMouseInput(GLFWwindow* window);
 
 	// Resizes and adjusts the viewport as well as updates the perspective matrix
