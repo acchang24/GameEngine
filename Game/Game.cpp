@@ -34,6 +34,7 @@ glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(
 
 Game::Game() :
 	mWindow(nullptr),
+	mAssetManager(nullptr),
 	mCamera(nullptr),
 	mFrameBuffer(nullptr),
 	mSkybox(nullptr),
@@ -117,7 +118,7 @@ bool Game::Init()
 
 	glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 
-	AssetManager* am = AssetManager::Get();
+	mAssetManager = AssetManager::Get();
 
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -127,33 +128,33 @@ bool Game::Init()
 	Texture* texture4 = new Texture("Assets/container2_specular.png", TextureType::Specular);
 	Texture* lightSphereTexture = new Texture("Assets/lightSphere.png", TextureType::Diffuse);
 
-	am->SaveTexture("Assets/matrix.jpg", texture);
-	am->SaveTexture("Assets/container2.png", texture3);
-	am->SaveTexture("Assets/container2_specular.png", texture4);
-	am->SaveTexture("Assets/lightSphere.png", lightSphereTexture);
+	mAssetManager->SaveTexture("Assets/matrix.jpg", texture);
+	mAssetManager->SaveTexture("Assets/container2.png", texture3);
+	mAssetManager->SaveTexture("Assets/container2_specular.png", texture4);
+	mAssetManager->SaveTexture("Assets/lightSphere.png", lightSphereTexture);
 
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
-	am->SaveShader("color", colorShader);
+	mAssetManager->SaveShader("color", colorShader);
 
 	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
-	am->SaveShader("phong", phongShader);
+	mAssetManager->SaveShader("phong", phongShader);
 
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
-	am->SaveShader("texture", textureShader);
+	mAssetManager->SaveShader("texture", textureShader);
 
 	Shader* instanceShader = new Shader("Shaders/instanceVS.glsl", "Shaders/instanceFS.glsl");
-	am->SaveShader("instance", instanceShader);
+	mAssetManager->SaveShader("instance", instanceShader);
 
 	UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	materialBuffer->LinkShader(phongShader);
 	materialBuffer->LinkShader(instanceShader);
 	materialBuffer->LinkShader(textureShader);
-	am->SaveBuffer("MaterialBuffer", materialBuffer);
+	mAssetManager->SaveBuffer("MaterialBuffer", materialBuffer);
 
 	Material* lightSphereMaterial = new Material();
 	lightSphereMaterial->SetShader(textureShader);
 	lightSphereMaterial->AddTexture(lightSphereTexture);
-	am->SaveMaterial("lightSphere", lightSphereMaterial);
+	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
 
 	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
 	//am->SaveShader("invertedColor", invertedColorShader);
@@ -171,7 +172,7 @@ bool Game::Init()
 	//am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
-	am->SaveShader("screen", screenShader);
+	mAssetManager->SaveShader("screen", screenShader);
 
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight, subsamples);
 	mFrameBuffer->SetShader(screenShader);
@@ -193,27 +194,27 @@ bool Game::Init()
 	Shader* reflectiveShader = new Shader("Shaders/EnvironmentMapping/environmentMapVS.glsl", "Shaders/EnvironmentMapping/reflectionFS.glsl");
 	reflectiveShader->SetActive();
 	reflectiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
-	am->SaveShader("reflection", reflectiveShader);
+	mAssetManager->SaveShader("reflection", reflectiveShader);
 
 	Material* reflectiveMat = new Material();
 	reflectiveMat->SetShader(reflectiveShader);
 	sky->SetActive(reflectiveShader);
-	am->SaveMaterial("reflection", reflectiveMat);
+	mAssetManager->SaveMaterial("reflection", reflectiveMat);
 
 	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMapVS.glsl", "Shaders/EnvironmentMapping/refractionFS.glsl");
 	refractiveShader->SetActive();
 	refractiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
-	am->SaveShader("refraction", refractiveShader);
+	mAssetManager->SaveShader("refraction", refractiveShader);
 
 	Material* refractiveMat = new Material();
 	refractiveMat->SetShader(refractiveShader);
 	sky->SetActive(refractiveShader);
-	am->SaveMaterial("refraction", refractiveMat);
+	mAssetManager->SaveMaterial("refraction", refractiveMat);
 
 	glUseProgram(0);
 
 	Texture* rockTexture = new Texture("Assets/models/rock/rock.png", TextureType::Diffuse);
-	am->SaveTexture("rock", rockTexture);
+	mAssetManager->SaveTexture("rock", rockTexture);
 
 	// Set model matrices for 10000 instances of a rock model
 	unsigned int rockAmount = 10000;
@@ -338,6 +339,9 @@ void Game::Shutdown()
 	delete mLightBuffer;
 
 	DeAllocateLights();
+
+	mAssetManager->Shutdown();
+	mAssetManager = nullptr;
 }
 
 void Game::Run()

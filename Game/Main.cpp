@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "AssetManager.h"
 
 int main()
 {
@@ -10,8 +9,6 @@ int main()
 		game.Run();
 	}
 	game.Shutdown();
-
-	AssetManager::Get()->Shutdown();
 
 	return 0;
 }

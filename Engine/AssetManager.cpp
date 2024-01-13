@@ -4,7 +4,8 @@
 AssetManager::AssetManager() :
 	mShaderCache(nullptr),
 	mTextureCache(nullptr),
-	mMaterialCache(nullptr)
+	mMaterialCache(nullptr),
+	mBufferCache(nullptr)
 {
 	mShaderCache = new Cache<Shader>(this);
 	mTextureCache = new Cache<Texture>(this);

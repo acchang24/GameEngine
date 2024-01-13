@@ -97,6 +97,9 @@ private:
 	// Pointer to a GLFWwindow, serves as the main game window.
 	GLFWwindow* mWindow;
 
+	// Pointer to a (static) asset manager
+	AssetManager* mAssetManager;
+
 	// The game's camera
 	Camera* mCamera;
 
@@ -111,8 +114,6 @@ private:
 
 	// Array of different lights
 	LightArrays mLightArrays;
-
-	//unsigned int uboCamera;
 
 	double mMousePosX;
 	double mMousePosY;
