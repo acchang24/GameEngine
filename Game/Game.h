@@ -13,6 +13,7 @@ class AssetManager;
 class FrameBuffer;
 class Skybox;
 class UniformBuffer;
+class Lights;
 
 class Game
 {
@@ -56,36 +57,6 @@ public:
 	// @param - Entity* for the new entity
 	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
 
-	// Allocator for spot lights
-	// @param - const glm::vec4& for the light's color
-	// @param - const glm::vec3& for the light's position
-	// @param - const glm::vec3& for the light's direction
-	// @param - float for the spotlight's inner circle cutoff
-	// @param - float for the spotlight's outer circle cutoff
-	// @param - float for attenuation constant term
-	// @param - float for attenuation linear term
-	// @param - float for attenuation quadratic term
-	// @return - SpotLight* for a newly allocated SpotLight
-	SpotLight* AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic);
-
-	// Allocator for point lights
-	// @param - const glm::vec4& for the point light's color
-	// @param - const glm::vec3& for the light's position
-	// @param - float for attenuation constant term
-	// @param - float for attenuation linear term
-	// @param - float for attenuation quadratic term
-	// @return - PointLight* for a newly allocated PointLight
-	PointLight* AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic);
-
-	// Allocator for directional lights
-	// @param - const glm::vec4& for the light's color
-	// @param - const glm::vec3& for the light's direction
-	// @return - DirectionalLight* a newly allocated DirectionalLight
-	DirectionalLight* AllocateDirectionalLight(const glm::vec4& color, const glm::vec3& direction);
-
-	// Loops through each light and sets them to disabled
-	void DeAllocateLights();
-
 private:
 	// std::unordered_map of keyboard inputs on the previous frame/loop.
 	// Takes key press as an int and stores the key's state as a bool.
@@ -109,11 +80,8 @@ private:
 	// Skybox
 	Skybox* mSkybox;
 
-	// Buffer for lighting data
-	UniformBuffer* mLightBuffer;
-
-	// Array of different lights
-	LightArrays mLightArrays;
+	// Use lighting
+	Lights* mLights;
 
 	double mMousePosX;
 	double mMousePosY;

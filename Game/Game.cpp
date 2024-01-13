@@ -20,6 +20,7 @@
 #include "Skybox.h"
 #include "Mesh.h"
 #include "UniformBuffer.h"
+#include "Lights.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -38,8 +39,7 @@ Game::Game() :
 	mCamera(nullptr),
 	mFrameBuffer(nullptr),
 	mSkybox(nullptr),
-	mLightBuffer(nullptr),
-	mLightArrays({}),
+	mLights(nullptr),
 	mMousePosX(static_cast<double>(windowWidth / 2)),
 	mMousePosY(static_cast<double>(windowHeight / 2)),
 	mMousePrevX(static_cast<double>(windowHeight / 2)),
@@ -279,33 +279,33 @@ bool Game::Init()
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
 
-	DirectionalLight* dirLight = AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
+	// Allocate lights in the scene
+	mLights = new Lights();
+	UniformBuffer* lightBuffer = mLights->GetLightBuffer();
+	lightBuffer->LinkShader(phongShader);
+	lightBuffer->LinkShader(instanceShader);
 
-	//PointLight* pointLight = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
+	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
+
+	//PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
 	//Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	//lightSphere->SetMaterial(refractiveMat);
 	//lightSphere->SetPosition(lightPosition);
 	//AddGameEntity(lightSphere);
 
-	//SpotLight* spotLight = AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
+	//SpotLight* spotLight = mLights->AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 	//	glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
 	//Sphere* lightSphere2 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	//lightSphere2->SetMaterial(reflectiveMat);
 	//lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
 	//AddGameEntity(lightSphere2);
 
-	PointLight* pointLight2 = AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
+	PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
 	pointLight2->data.specularIntensity = 3.0f;
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere3->SetMaterial(lightSphereMaterial);
 	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
 	AddGameEntity(lightSphere3);
-
-	mLightBuffer = new UniformBuffer(sizeof(LightArrays), BufferBindingPoint::Lights, "LightBuffer");
-	// Link shaders to light buffer
-	mLightBuffer->LinkShader(phongShader);
-	mLightBuffer->LinkShader(instanceShader);
-	mLightBuffer->UpdateBufferData(&mLightArrays);
 
 	// Link shaders to camera's uniform buffer
 	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
@@ -336,9 +336,7 @@ void Game::Shutdown()
 
 	delete mSkybox;
 
-	delete mLightBuffer;
-
-	DeAllocateLights();
+	delete mLights;
 
 	mAssetManager->Shutdown();
 	mAssetManager = nullptr;
@@ -436,7 +434,8 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		//mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
 		//mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;
 		//mLightArrays.pointLights[1].data.isEnabled = !mLightArrays.pointLights[1].data.isEnabled;
-		mLightArrays.directionalLight[0].data.isEnabled = !mLightArrays.directionalLight[0].data.isEnabled;
+
+		mLights->GetLights().directionalLight[0].data.isEnabled = !mLights->GetLights().directionalLight[0].data.isEnabled;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
 	{
@@ -456,7 +455,7 @@ void Game::Render()
 {
 	mCamera->SetActive(projection);
 
-	mLightBuffer->UpdateBufferData(&mLightArrays);
+	mLights->SetActive();
 
 	// Uncomment this to draw to offscreen frame buffer instead
 	mFrameBuffer->SetActive();
@@ -555,84 +554,4 @@ void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 
 	windowWidth = width;
 	windowHeight = height;
-}
-
-SpotLight* Game::AllocateSpotLight(const glm::vec4& color, const glm::vec3& pos, const glm::vec3& dir, float cutoff, float outerCutoff, float constant, float linear, float quadratic)
-{
-	SpotLight* spotlight = nullptr;
-
-	for (int i = 0; i < MAX_LIGHTS; ++i)
-	{
-		if (!mLightArrays.spotLights[i].data.isEnabled)
-		{
-			spotlight = &mLightArrays.spotLights[i];
-			spotlight->data.color = color;
-			spotlight->data.isEnabled = true;
-			spotlight->position = pos;
-			spotlight->cutoff = cutoff;
-			spotlight->direction = dir;
-			spotlight->outerCutoff = outerCutoff;
-			spotlight->constant = constant;
-			spotlight->linear = linear;
-			spotlight->quadratic = quadratic;
-			return spotlight;
-		}
-	}
-
-	return spotlight;
-}
-
-PointLight* Game::AllocatePointLight(const glm::vec4& color, const glm::vec3& position, float constant, float linear, float quadratic)
-{
-	PointLight* pointLight = nullptr;
-
-	for (int i = 0; i < MAX_LIGHTS; ++i)
-	{
-		if (!mLightArrays.pointLights[i].data.isEnabled)
-		{
-			pointLight = &mLightArrays.pointLights[i];
-			pointLight->data.color = color;
-			pointLight->data.isEnabled = true;
-			pointLight->position = position;
-			pointLight->constant = constant;
-			pointLight->linear = linear;
-			pointLight->quadratic = quadratic;
-			return pointLight;
-		}
-	}
-
-	return pointLight;
-}
-
-DirectionalLight* Game::AllocateDirectionalLight(const glm::vec4& color, const glm::vec3& direction)
-{
-	DirectionalLight* dirLight = nullptr;
-	for (int i = 0; i < MAX_DIR_LIGHT; ++i)
-	{
-		if (!mLightArrays.directionalLight[i].data.isEnabled)
-		{
-			dirLight = &mLightArrays.directionalLight[i];
-			dirLight->data.color = color;
-			dirLight->data.isEnabled = true;
-			dirLight->direction = direction;
-			return dirLight;
-		}
-	}
-	
-	return dirLight;
-}
-
-void Game::DeAllocateLights()
-{
-	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
-	{
-		mLightArrays.pointLights[i].data.isEnabled = false;
-
-		mLightArrays.spotLights[i].data.isEnabled = false;
-	}
-
-	for (unsigned int i = 0; i < MAX_DIR_LIGHT; ++i)
-	{
-		mLightArrays.directionalLight[i].data.isEnabled = false;
-	}
 }
