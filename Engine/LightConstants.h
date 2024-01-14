@@ -14,6 +14,8 @@ struct LightData
     float diffuseIntensity = 1.0f;
     float specularIntensity = 0.5f;
     int isEnabled = false;
+    int usesShadow = false;
+    glm::vec3 padding;
 };
 
 // Struct for point light data that contains information

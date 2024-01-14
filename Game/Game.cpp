@@ -260,12 +260,12 @@ bool Game::Init()
 		rockMatrices[i] = model;
 	}
 
-	Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
-	rock->MakeInstance(rockAmount, rockMatrices);
-	Material* rockMat = rock->GetMaterial("Material");
-	rockMat->AddTexture(rockTexture);
-	rockMat->SetShader(instanceShader);
-	AddGameEntity(rock);
+	//Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
+	//rock->MakeInstance(rockAmount, rockMatrices);
+	//Material* rockMat = rock->GetMaterial("Material");
+	//rockMat->AddTexture(rockTexture);
+	//rockMat->SetShader(instanceShader);
+	//AddGameEntity(rock);
 
 	delete[] rockMatrices;
 
@@ -275,12 +275,12 @@ bool Game::Init()
 	sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
 
-	Cube* mCube = new Cube();
-	mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	mCube->SetMaterial(reflectiveMat);
-	mCube->SetYaw(25.0f);
-	TimerComponent* timer = new TimerComponent(mCube);
-	AddGameEntity(mCube);
+	//Cube* mCube = new Cube();
+	//mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	//mCube->SetMaterial(reflectiveMat);
+	//mCube->SetYaw(25.0f);
+	//TimerComponent* timer = new TimerComponent(mCube);
+	//AddGameEntity(mCube);
 
 	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, 0.0f));
@@ -300,6 +300,8 @@ bool Game::Init()
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 
 	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
+	pointLight->data.specularIntensity = 3.0f;
+	pointLight->data.usesShadow = true;
 	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere->SetMaterial(refractiveMat);
 	lightSphere->SetPosition(lightPosition);
@@ -487,8 +489,10 @@ void Game::Render()
 	RenderScene(mShadowMap->GetShader());
 
 
-	mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
+	//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
+	mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 
+	RenderScene();
 
 	// Uncomment this if using off screen frame buffer
 	//mFrameBuffer->End(windowWidth, windowHeight);

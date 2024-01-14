@@ -17,6 +17,7 @@ layout (std140, binding = 0) uniform CameraBuffer
 
 // Model matrix uniform
 uniform mat4 model;
+uniform mat4 lightSpace;
 
 // Specify a vec3 normal output to fragment shader
 out vec3 normal;
@@ -26,6 +27,7 @@ out vec2 textureCoord;
 out vec3 fragPos;
 // Pass the CameraBuffer's viewPos to fragment shader
 out vec3 viewPosition;
+out vec4 fragPosLightSpace;
 
 void main()
 {
@@ -44,4 +46,6 @@ void main()
 	fragPos = vec3(model * vec4(position, 1.0));
 
 	viewPosition = viewPos;
+
+	fragPosLightSpace = lightSpace * vec4(fragPos, 1.0);
 }

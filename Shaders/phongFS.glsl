@@ -21,6 +21,7 @@ struct LightData
 	float diffuseIntensity;
 	float specularIntensity;
 	bool isEnabled;
+	bool usesShadow;
 };
 
 // Struct for point light
@@ -58,6 +59,7 @@ in vec3 normal;
 in vec2 textureCoord;
 in vec3 fragPos;
 in vec3 viewPosition;
+in vec4 fragPosLightSpace;
 
 // Uniform buffer for lights
 layout (std140, binding = 1) uniform LightBuffer
@@ -82,6 +84,8 @@ layout (std140, binding = 2) uniform MaterialBuffer
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
 
+uniform sampler2D shadowMap;
+
 //uniform bool gamma;
 
 // Final vector4 fragment color output
@@ -91,6 +95,30 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragPos);
 vec3 CalculateDirLight(DirectionalLight light, vec3 normal, vec3 viewDir);
 vec3 CalculateSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 fragPos);
+
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+
+	float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+//	if(projCoords.z > 1.0)
+//	{
+//		shadow = 0.0;
+//	}
+
+    return shadow;
+}
 
 void main()
 {
@@ -210,6 +238,14 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 
 	// Combine three lights to get phong lighting
 	vec3 phong = ambientLight + diffuseLight + specularLight;
+
+	// Apply shadows for this light
+	if(light.usesShadow)
+	{
+		float shadow = ShadowCalculation(fragPosLightSpace, lightDir, normal);                      
+		vec3 lighting = (ambientLight + (1.0 - shadow) * (diffuseLight + specularLight));
+		return lighting;
+	}
 
 	return phong;
 }
