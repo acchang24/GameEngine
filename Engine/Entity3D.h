@@ -66,7 +66,7 @@ public:
 	virtual void OnDraw();
 
 	// OnDraw function using a shader set explicitly
-	void OnDraw(Shader* shader);
+	virtual void OnDraw(Shader* shader);
 
 	// Gets a material by name through the entity's material map
 	// @param - const std::string& for the name of the material

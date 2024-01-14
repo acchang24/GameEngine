@@ -22,6 +22,8 @@ public:
 	void OnUpdate(float deltaTime) override;
 	// Cube specific draw
 	void OnDraw() override;
+
+	void OnDraw(Shader* s) override;
 private:
 	// Cubes's vertex buffer
 	VertexBuffer* mVertexBuffer;

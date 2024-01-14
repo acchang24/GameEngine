@@ -3,6 +3,7 @@
 
 class VertexBuffer;
 class Material;
+class Shader;
 
 // 3D plane primitive
 class Plane : public Entity3D
@@ -22,6 +23,9 @@ public:
 	void OnUpdate(float deltaTime) override;
 	// Plane specific Draw
 	void OnDraw() override;
+
+	void OnDraw(Shader* s) override;
+
 private:
 	// Planes's vertex buffer
 	VertexBuffer* mVertexBuffer;
