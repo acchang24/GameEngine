@@ -55,11 +55,18 @@ public:
 	// Override draw function for 3D entities
 	void Draw() override;
 
+	// Draw function using a shader set explicitly
+	void Draw(Shader* shader);
+
 	// Entity specific update code (overridable)
 	// This OnUpdate updates the view matrix
 	virtual void OnUpdate(float deltaTime);
+
 	// Entity specific draw code (overrideable)
 	virtual void OnDraw();
+
+	// OnDraw function using a shader set explicitly
+	void OnDraw(Shader* shader);
 
 	// Gets a material by name through the entity's material map
 	// @param - const std::string& for the name of the material

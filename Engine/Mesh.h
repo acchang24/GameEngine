@@ -3,6 +3,7 @@
 class VertexBuffer;
 class Material;
 class Entity3D;
+class Shader;
 
 // Mesh class containes all the relvant data required for
 // rendering an object. It contains all vertex positions,
@@ -15,6 +16,9 @@ public:
 	~Mesh();
 
 	void Draw();
+
+	// Draw function using a shader set explicitly
+	void Draw(Shader* shader);
 
 	VertexBuffer* GetVertexBuffer() { return mVertexBuffer; }
 

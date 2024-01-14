@@ -12,6 +12,7 @@ class AssetManager;
 class FrameBuffer;
 class Skybox;
 class Lights;
+class ShadowMap;
 
 class Game
 {
@@ -43,6 +44,8 @@ public:
 	void Render();
 
 	void RenderScene();
+
+	void RenderScene(Shader* shader);
 
 	void ProcessMouseInput(GLFWwindow* window);
 
@@ -82,6 +85,8 @@ private:
 
 	// Use lighting
 	Lights* mLights;
+
+	ShadowMap* mShadowMap;
 
 	double mMousePosX;
 	double mMousePosY;

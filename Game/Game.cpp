@@ -22,6 +22,7 @@
 #include "UniformBuffer.h"
 #include "Lights.h"
 #include "MaterialCubeMap.h"
+#include "ShadowMap.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -41,6 +42,7 @@ Game::Game() :
 	mFrameBuffer(nullptr),
 	mSkybox(nullptr),
 	mLights(nullptr),
+	mShadowMap(nullptr),
 	mMousePosX(static_cast<double>(windowWidth / 2)),
 	mMousePosY(static_cast<double>(windowHeight / 2)),
 	mMousePrevX(static_cast<double>(windowHeight / 2)),
@@ -212,6 +214,15 @@ bool Game::Init()
 	refractiveMat->SetShader(refractiveShader);
 	mAssetManager->SaveMaterial("refraction", refractiveMat);
 
+	Shader* shadowDepthShader = new Shader("Shaders/shadowDepthVS.glsl", "Shaders/shadowDepthFS.glsl");
+	mAssetManager->SaveShader("shadowDepth", shadowDepthShader);
+
+	Shader* shadowDebugShader = new Shader("Shaders/screenVS.glsl", "Shaders/shadowDebugFS.glsl");
+	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
+
+	mShadowMap = new ShadowMap(lightPosition);
+	mShadowMap->SetShader(shadowDepthShader);
+
 	glUseProgram(0);
 
 	Texture* rockTexture = new Texture("Assets/models/rock/rock.png", TextureType::Diffuse);
@@ -288,11 +299,11 @@ bool Game::Init()
 
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 
-	//PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
-	//Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	//lightSphere->SetMaterial(refractiveMat);
-	//lightSphere->SetPosition(lightPosition);
-	//AddGameEntity(lightSphere);
+	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
+	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere->SetMaterial(refractiveMat);
+	lightSphere->SetPosition(lightPosition);
+	AddGameEntity(lightSphere);
 
 	//SpotLight* spotLight = mLights->AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 	//	glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
@@ -338,6 +349,8 @@ void Game::Shutdown()
 	delete mSkybox;
 
 	delete mLights;
+
+	delete mShadowMap;
 
 	mAssetManager->Shutdown();
 	mAssetManager = nullptr;
@@ -459,17 +472,26 @@ void Game::Render()
 	mLights->SetActive();
 
 	// Uncomment this to draw to offscreen frame buffer instead
-	mFrameBuffer->SetActive();
+	//mFrameBuffer->SetActive();
 
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	// Clear the color buffer, depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	RenderScene();
+
+	mShadowMap->SetActive();
+
+
+	//RenderScene();
+	RenderScene(mShadowMap->GetShader());
+
+
+	mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
+
 
 	// Uncomment this if using off screen frame buffer
-	mFrameBuffer->End(windowWidth, windowHeight);
+	//mFrameBuffer->End(windowWidth, windowHeight);
 
 	glfwSwapBuffers(mWindow);
 }
@@ -482,6 +504,16 @@ void Game::RenderScene()
 	}
 
 	// Draw sky box last
+	mSkybox->Draw(mCamera->GetViewMatrix(), projection);
+}
+
+void Game::RenderScene(Shader* shader)
+{
+	for (auto e : mEntities)
+	{
+		static_cast<Entity3D*>(e)->Draw(shader);
+	}
+
 	mSkybox->Draw(mCamera->GetViewMatrix(), projection);
 }
 

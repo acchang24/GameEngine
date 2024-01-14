@@ -291,6 +291,11 @@ void Entity3D::Draw()
 	OnDraw();
 }
 
+void Entity3D::Draw(Shader* shader)
+{
+	OnDraw(shader);
+}
+
 void Entity3D::OnUpdate(float deltaTime)
 {
 	mModel = glm::mat4(1.0f);
@@ -312,5 +317,13 @@ void Entity3D::OnDraw()
 	for (auto m : mMeshes)
 	{
 		m->Draw();
+	}
+}
+
+void Entity3D::OnDraw(Shader* shader)
+{
+	for (auto m : mMeshes)
+	{
+		m->Draw(shader);
 	}
 }

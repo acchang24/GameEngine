@@ -1,4 +1,5 @@
 #pragma once
+#include <glm/glm.hpp>
 
 class Shader;
 class VertexBuffer;
@@ -6,14 +7,14 @@ class VertexBuffer;
 class ShadowMap
 {
 public:
-	ShadowMap();
+	ShadowMap(const glm::vec3& pos);
 	~ShadowMap();
 
 	void SetActive();
 
-	void Draw();
+	void Draw(Shader* s);
 
-	void End(int width, int height);
+	void End(int width, int height, Shader* s);
 
 	// Gets the frame buffer's shader
 	// @return - Shader* for the frame buffer's shader
@@ -24,6 +25,10 @@ public:
 	void SetShader(Shader* s) { mShader = s; }
 
 private:
+	glm::mat4 mLightSpace;
+
+	glm::vec3 mLightPos;
+
 	// The shader used to help draw the frame buffer's quad
 	Shader* mShader;
 

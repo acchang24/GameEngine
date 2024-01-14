@@ -18,8 +18,6 @@ Mesh::~Mesh()
 	std::cout << "Delete mesh" << std::endl;
 
 	delete mVertexBuffer;
-
-	//delete mMaterial;
 }
 
 void Mesh::Draw()
@@ -28,6 +26,15 @@ void Mesh::Draw()
 	mMaterial->GetShader()->SetMat4("model", mOwner->GetModelMatrix());
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	mVertexBuffer->Draw();
+}
+
+void Mesh::Draw(Shader* shader)
+{
+	mMaterial->SetActive();
+	shader->SetActive();
+	shader->SetMat4("model", mOwner->GetModelMatrix());
 
 	mVertexBuffer->Draw();
 }
