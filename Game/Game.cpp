@@ -119,8 +119,6 @@ bool Game::Init()
 
 	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
-
 	mAssetManager = AssetManager::Get();
 
 	mCamera = new Camera();
@@ -162,19 +160,19 @@ bool Game::Init()
 	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
 
 	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
-	//am->SaveShader("invertedColor", invertedColorShader);
+	//mAssetManager->SaveShader("invertedColor", invertedColorShader);
 
 	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
-	//am->SaveShader("grayScale", grayScaleShader);
+	//mAssetManager->SaveShader("grayScale", grayScaleShader);
 
 	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
-	//am->SaveShader("sharpenKernel", sharpenKernelShader);
+	//mAssetManager->SaveShader("sharpenKernel", sharpenKernelShader);
 
 	//Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
-	//am->SaveShader("blurKernel", blurKernelShader);
+	//mAssetManager->SaveShader("blurKernel", blurKernelShader);
 
 	//Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
-	//am->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
+	//mAssetManager->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
 	mAssetManager->SaveShader("screen", screenShader);
@@ -222,9 +220,6 @@ bool Game::Init()
 	Shader* shadowDebugShader = new Shader("Shaders/screenVS.glsl", "Shaders/shadowDebugFS.glsl");
 	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
 
-	mShadowMap = new ShadowMap(lightPosition);
-	mShadowMap->SetShader(shadowDepthShader);
-
 	glUseProgram(0);
 
 	Texture* rockTexture = new Texture("Assets/models/rock/rock.png", TextureType::Diffuse);
@@ -262,12 +257,12 @@ bool Game::Init()
 		rockMatrices[i] = model;
 	}
 
-	//Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
-	//rock->MakeInstance(rockAmount, rockMatrices);
-	//Material* rockMat = rock->GetMaterial("Material");
-	//rockMat->AddTexture(rockTexture);
-	//rockMat->SetShader(instanceShader);
-	//AddGameEntity(rock);
+	Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
+	rock->MakeInstance(rockAmount, rockMatrices);
+	Material* rockMat = rock->GetMaterial("Material");
+	rockMat->AddTexture(rockTexture);
+	rockMat->SetShader(instanceShader);
+	AddGameEntity(rock);
 
 	delete[] rockMatrices;
 
@@ -290,7 +285,7 @@ bool Game::Init()
 	squidward->SetScale(0.5f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
-	m->AddTexture(texture);
+	//m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
 	
@@ -312,6 +307,12 @@ bool Game::Init()
 	cube2->SetMaterial(woodMat);
 	AddGameEntity(cube2);
 
+	glm::vec3 lightDir(-0.2f, -1.0f, -0.3f);
+	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
+	glm::vec3 lightPosition = lightDir * -10.0f;
+	mShadowMap = new ShadowMap(lightPosition);
+	mShadowMap->SetShader(shadowDepthShader);
+
 	// Allocate lights in the scene
 	mLights = new Lights();
 	UniformBuffer* lightBuffer = mLights->GetLightBuffer();
@@ -319,13 +320,13 @@ bool Game::Init()
 	lightBuffer->LinkShader(instanceShader);
 
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
+	dirLight->data.usesShadow = true;
 
-	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), lightPosition, 1.0f, 0.014f, 0.0007f);
+	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 10.0f, 30.0f), 1.0f, 0.014f, 0.0007f);
 	pointLight->data.specularIntensity = 3.0f;
-	pointLight->data.usesShadow = true;
 	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere->SetMaterial(refractiveMat);
-	lightSphere->SetPosition(lightPosition);
+	lightSphere->SetPosition(glm::vec3(1.0f, 10.0f, 30.0f));
 	AddGameEntity(lightSphere);
 
 	//SpotLight* spotLight = mLights->AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
@@ -494,29 +495,30 @@ void Game::Render()
 
 	mLights->SetActive();
 
-	// Uncomment this to draw to offscreen frame buffer instead
-	//mFrameBuffer->SetActive();
-
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	// Clear the color buffer, depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+	// Render to shadow map
 	mShadowMap->SetActive();
-
-
-	//RenderScene();
 	RenderScene(mShadowMap->GetShader());
 
-
+	// Render the shadow map
 	//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
+	//mShadowMap->Draw(mAssetManager->LoadShader("shadowDebug"));
+
+	// End shadow render pass
 	mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 
+	// Uncomment this to draw to offscreen frame buffer instead
+	mFrameBuffer->SetActive();
+	
+	// Render scene as normal
 	RenderScene();
 
 	// Uncomment this if using off screen frame buffer
-	//mFrameBuffer->End(windowWidth, windowHeight);
+	mFrameBuffer->End(windowWidth, windowHeight);
 
 	glfwSwapBuffers(mWindow);
 }

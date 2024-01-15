@@ -6,10 +6,10 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 
-const unsigned int SHADOW_WIDTH = 1024;
-const unsigned int SHADOW_HEIGHT = 1024;
+const unsigned int SHADOW_WIDTH = 2560;
+const unsigned int SHADOW_HEIGHT = 2560;
 float shadowNearPlane = 1.0f;
-float shadowFarPlane = 30.0f;
+float shadowFarPlane = 75.0f;
 
 ShadowMap::ShadowMap(const glm::vec3& pos) :
 	mLightSpace(glm::mat4(1.0f)),
@@ -99,7 +99,6 @@ void ShadowMap::Draw(Shader* s)
 	glBindTexture(GL_TEXTURE_2D, mShadowMap);
 
 	mVertexBuffer->Draw();
-
 }
 
 void ShadowMap::End(int width, int height, Shader* s)
@@ -118,8 +117,4 @@ void ShadowMap::End(int width, int height, Shader* s)
 	s->SetInt("shadowMap", 13);
 	glActiveTexture(GL_TEXTURE13);
 	glBindTexture(GL_TEXTURE_2D, mShadowMap);
-
-
-
-	//Draw(s);
 }

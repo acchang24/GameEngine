@@ -21,6 +21,7 @@ struct LightData
 	float diffuseIntensity;
 	float specularIntensity;
 	bool isEnabled;
+	bool usesShadow;
 };
 
 // Struct for point light

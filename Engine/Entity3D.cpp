@@ -293,7 +293,10 @@ void Entity3D::Draw()
 
 void Entity3D::Draw(Shader* shader)
 {
-	OnDraw(shader);
+	if (mInstanceBuffer == 0)
+	{
+		OnDraw(shader);
+	}
 }
 
 void Entity3D::OnUpdate(float deltaTime)
