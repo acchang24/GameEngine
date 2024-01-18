@@ -129,12 +129,16 @@ bool Game::Init()
 	Texture* texture4 = new Texture("Assets/container2_specular.png", TextureType::Specular);
 	Texture* lightSphereTexture = new Texture("Assets/lightSphere.png", TextureType::Diffuse);
 	Texture* woodTexture = new Texture("Assets/wood.png", TextureType::Diffuse);
+	Texture* wallTexture = new Texture("Assets/brickwall.jpg", TextureType::Diffuse);
+	Texture* wallNormalTexture = new Texture("Assets/brickwall_normal.jpg", TextureType::Normal);
 
 	mAssetManager->SaveTexture("Assets/matrix.jpg", texture);
 	mAssetManager->SaveTexture("Assets/container2.png", texture3);
 	mAssetManager->SaveTexture("Assets/container2_specular.png", texture4);
 	mAssetManager->SaveTexture("Assets/lightSphere.png", lightSphereTexture);
 	mAssetManager->SaveTexture("Assets/wood.png", woodTexture);
+	mAssetManager->SaveTexture("Assets/brickwall.jpg", wallTexture);
+	mAssetManager->SaveTexture("Assets/brickwall_normal.jpg", wallNormalTexture);
 
 	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
 	mAssetManager->SaveShader("color", colorShader);
@@ -266,11 +270,23 @@ bool Game::Init()
 
 	delete[] rockMatrices;
 
-	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	sponza->SetScale(0.15);
-	sponza->SetYaw(-90.0f);
-	AddGameEntity(sponza);
+	//Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	//sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
+	//sponza->SetScale(0.15);
+	//sponza->SetYaw(-90.0f);
+	//AddGameEntity(sponza);
+
+	Material* wallMaterial = new Material();
+	wallMaterial->SetShader(phongShader);
+	wallMaterial->AddTexture(wallTexture);
+	wallMaterial->AddTexture(wallNormalTexture);
+	mAssetManager->SaveMaterial("wall", wallMaterial);
+
+	Plane* wall = new Plane();
+	//wall->SetPitch(-90.0f);
+	wall->SetPosition(glm::vec3(0.0f, -3.0f, 7.0f));
+	wall->SetMaterial(wallMaterial);
+	AddGameEntity(wall);
 
 	Cube* mCube = new Cube();
 	mCube->SetScale(2.0f);
@@ -295,7 +311,7 @@ bool Game::Init()
 	mAssetManager->SaveMaterial("woodMat", woodMat);
 
 	Plane* plane = new Plane();
-	plane->SetPitch(90.0f);
+	plane->SetPitch(-90.0f);
 	plane->SetPosition(glm::vec3(0.0, -5.0f, 0.0f));
 	plane->SetMaterial(woodMat);
 	plane->SetScale(100.0f);

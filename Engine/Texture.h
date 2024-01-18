@@ -6,7 +6,8 @@ enum class TextureType
 {
 	Diffuse, // Normal texture
 	Specular, // Specular maps
-	Emission // Emission maps
+	Emission, // Emission maps
+	Normal,
 };
 
 // Enum class for texture units

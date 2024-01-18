@@ -11,6 +11,7 @@ struct TextureSamplers
     sampler2D diffuse1;
     sampler2D specular1;
 	sampler2D emission1;
+	sampler2D normal1;
 };
 
 // Struct to define light data
@@ -78,6 +79,7 @@ layout (std140, binding = 2) uniform MaterialBuffer
 	bool hasDiffuseTexture;
 	bool hasSpecularTexture;
 	bool hasEmissionTexture;
+	bool hasNormalTexture;
 };
 
 // Uniform for the 2D texture samplers

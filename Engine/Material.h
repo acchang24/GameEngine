@@ -16,7 +16,8 @@ struct MaterialColors
 	int hasDiffuseTexture;		// If the material has a diffuse texture (this is just normal textures)
 	int hasSpecularTexture;		// If the material has a specular texture (used for specular maps)
 	int hasEmissionTexture;		// If the material has an emission texture (used for emission maps)
-	glm::vec3 pad;
+	int hasNormalTexture;		// If the material has a normal texture (used for normal maps)
+	glm::vec2 pad;
 };
 
 // The Material class helps create the object's material's colors and properties it surface. It defines
@@ -73,6 +74,9 @@ public:
 	// Sets whether or not a material has emission texture
 	// @param - bool for if the material has a emission texture
 	void SetHasEmissionTexture(bool emission) { mMats.hasEmissionTexture = emission; }
+	// Sets whether or not a material has normal maps
+	// @param - bool for if the material has a normal map
+	void SetHasNormalTexture(bool normal) { mMats.hasNormalTexture = normal; }
 	// Set the material's shader
 	// @param - Shader* for the new shader
 	void SetShader(Shader* shader) { mShader = shader; }

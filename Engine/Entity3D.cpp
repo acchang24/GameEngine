@@ -213,8 +213,8 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
 			// Emissive textures
 			LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
-
-			// Normal maps
+			// Normal textures
+			LoadMaterialTextures(material, aiTextureType_NORMALS, mat);
 
 			// Height maps
 
@@ -261,6 +261,9 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 				case aiTextureType_EMISSIVE:
 					texture = new Texture(path, TextureType::Emission);
 					break;
+				case aiTextureType_NORMALS:
+					texture = new Texture(path, TextureType::Normal);
+					break;
 				}
 				material->AddTexture(texture);
 				AssetManager::Get()->SaveTexture(path, texture);
@@ -271,6 +274,10 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 				// use the cached texture from AssetManager
 				material->AddTexture(t);
 			}
+		}
+		else
+		{
+			std::cout << "VHAT" << std::endl;
 		}
 	}
 }

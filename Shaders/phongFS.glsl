@@ -11,6 +11,7 @@ struct TextureSamplers
     sampler2D diffuse1;
     sampler2D specular1;
 	sampler2D emission1;
+	sampler2D normal1;
 };
 
 // Struct to define light data
@@ -79,6 +80,7 @@ layout (std140, binding = 2) uniform MaterialBuffer
 	bool hasDiffuseTexture;
 	bool hasSpecularTexture;
 	bool hasEmissionTexture;
+	bool hasNormalTexture;
 };
 
 // Uniform for the 2D texture samplers
@@ -136,6 +138,13 @@ void main()
 	
 	// Re-normalize the normal for dot product
 	vec3 norm = normalize(normal);
+
+	if(hasNormalTexture)
+	{
+		norm = texture(textureSamplers.normal1, textureCoord).rgb;
+		norm = normalize(norm * 2.0 - 1.0);
+	}
+
 	// Get the view direction from the fragment's position to the view(camera) position
 	vec3 viewDir = normalize(viewPosition - fragPos);
 

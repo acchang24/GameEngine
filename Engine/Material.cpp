@@ -6,7 +6,7 @@
 #include "AssetManager.h"
 
 Material::Material() : 
-	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 16.0f, false, false, false }),
+	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 16.0f, false, false, false, false }),
 	mShader(nullptr),
     mMaterialBuffer(AssetManager::Get()->LoadBuffer("MaterialBuffer"))
 {
@@ -35,6 +35,7 @@ void Material::SetActive()
     unsigned int diffuseNum = 1;
     unsigned int specularNum = 1;
     unsigned int emissionNum = 1;
+    unsigned int normalNum = 1;
 
     std::string number;
     std::string name;
@@ -57,6 +58,11 @@ void Material::SetActive()
             name = "emission";
             number = std::to_string(emissionNum);
             ++emissionNum;
+            break;
+        case TextureType::Normal:
+            name = "normal";
+            number = std::to_string(normalNum);
+            ++normalNum;
             break;
         };
 
@@ -83,6 +89,9 @@ void Material::AddTexture(Texture* t)
 		break;
     case TextureType::Emission:
         SetHasEmissionTexture(true);
+        break;
+    case TextureType::Normal:
+        SetHasNormalTexture(true);
         break;
 	}
 }
