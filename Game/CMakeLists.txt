@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # This grabs all files in the Game directory that end with .cpp .h .hpp or .c
 # and saves it in a variable called ${source_files}
-file(GLOB source_files CONFIGURE_DEPENDS "*.cpp" "*.h" "*.hpp" "*.c")
+file(GLOB_RECURSE source_files CONFIGURE_DEPENDS "Source/*.cpp" "Source/*.h" "Source/*.hpp" "Source/*.c")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${source_files})
 
 ### LINK ENGINE LIBRARY TO GAME PROJECT
