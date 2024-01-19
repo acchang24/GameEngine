@@ -149,7 +149,7 @@ bool Game::Init()
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	mAssetManager->SaveShader("texture", textureShader);
 
-	Shader* instanceShader = new Shader("Shaders/instanceVS.glsl", "Shaders/instanceFS.glsl");
+	Shader* instanceShader = new Shader("Shaders/instanceVS.glsl", "Shaders/phongFS.glsl");
 	mAssetManager->SaveShader("instance", instanceShader);
 
 	UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
@@ -270,11 +270,11 @@ bool Game::Init()
 
 	delete[] rockMatrices;
 
-	//Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	//sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	//sponza->SetScale(0.15);
-	//sponza->SetYaw(-90.0f);
-	//AddGameEntity(sponza);
+	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
+	sponza->SetScale(0.15);
+	sponza->SetYaw(-90.0f);
+	AddGameEntity(sponza);
 
 	Material* wallMaterial = new Material();
 	wallMaterial->SetShader(phongShader);

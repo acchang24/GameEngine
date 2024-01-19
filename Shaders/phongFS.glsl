@@ -141,8 +141,8 @@ void main()
 
 	if(hasNormalTexture)
 	{
-		norm = texture(textureSamplers.normal1, textureCoord).rgb;
-		norm = normalize(norm * 2.0 - 1.0);
+		//norm = texture(textureSamplers.normal1, textureCoord).rgb;
+		//norm = normalize(norm * 2.0 - 1.0);
 	}
 
 	// Get the view direction from the fragment's position to the view(camera) position
