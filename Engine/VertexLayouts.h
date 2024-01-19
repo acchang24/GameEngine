@@ -13,7 +13,8 @@ enum class VertexLayout
 {
 	VertexPos, // VertexPos just contains vec3 position
 	VertexColor, // VertexColor contains position and color
-	Vertex, // Vertex contains position, normal, and texture(uv) coordinates
+	Vertex, // Vertex continas position, normal, texture(uv), tangent, and bitangent
+	VertexSimple, // Vertex contains position, normal, and texture(uv) coordinates
 	VertexScreenQuad // VertexScreenQuad contains position and texutre coordinates (used for frame buffers)
 };
 
@@ -29,6 +30,15 @@ struct VertexColor
 };
 
 struct Vertex
+{
+	glm::vec3 pos;
+	glm::vec3 normal;
+	glm::vec2 uv;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+};
+
+struct VertexSimple
 {
 	glm::vec3 pos;
 	glm::vec3 normal;
@@ -56,6 +66,9 @@ static std::vector<int> GetVertexLayoutStrides(VertexLayout layout)
 		strides = { 3, 4 };
 		break;
 	case VertexLayout::Vertex:
+		strides = { 3, 3, 2, 3, 3 };
+		break;
+	case VertexLayout::VertexSimple:
 		strides = { 3, 3, 2 };
 		break;
 	case VertexLayout::VertexScreenQuad:

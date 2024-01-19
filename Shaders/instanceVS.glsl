@@ -7,8 +7,10 @@ layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 inNormal;
 // texture variable has attribute position 2
 layout (location = 2) in vec2 uv;
+layout (location = 3) in vec3 tangent;
+layout (location = 4) in vec4 bitangent;
 // instance matrices
-layout (location = 3) in mat4 instanceModelMatrix;
+layout (location = 5) in mat4 instanceModelMatrix;
 
 // Uniform buffer for camera's view * proj matrix and position
 layout (std140, binding = 0) uniform CameraBuffer

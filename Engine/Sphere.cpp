@@ -24,7 +24,7 @@ Sphere::Sphere(float radius, const glm::vec4& color) :
     float latitudeAngle;
     float longitudeAngle;
 
-    std::vector<Vertex> vertices;
+    std::vector<VertexSimple> vertices;
     std::vector<unsigned int> indices;
 
     for (int i = 0; i <= latitudes; ++i)
@@ -33,7 +33,7 @@ Sphere::Sphere(float radius, const glm::vec4& color) :
         float xy = radius * cosf(latitudeAngle);
         float z = radius * sinf(latitudeAngle);
 
-        Vertex v = {};
+        VertexSimple v = {};
         for (int j = 0; j <= longitudes; ++j)
         {
             longitudeAngle = j * deltaLongitude;
@@ -75,10 +75,10 @@ Sphere::Sphere(float radius, const glm::vec4& color) :
         }
     }
 
-    size_t vertexSize = sizeof(Vertex) * vertices.size();
+    size_t vertexSize = sizeof(VertexSimple) * vertices.size();
     size_t indexSize = sizeof(unsigned int) * indices.size();
  
-    mVertexBuffer = new VertexBuffer(vertices.data(), indices.data(), vertexSize, indexSize, vertices.size(), indices.size(), VertexLayout::Vertex);
+    mVertexBuffer = new VertexBuffer(vertices.data(), indices.data(), vertexSize, indexSize, vertices.size(), indices.size(), VertexLayout::VertexSimple);
 }
 
 Sphere::~Sphere()

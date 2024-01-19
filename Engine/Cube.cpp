@@ -13,7 +13,7 @@ Cube::Cube() :
     mVertexBuffer(nullptr),
     mMaterial(nullptr)
 {
-    Vertex vertices[] =
+    VertexSimple vertices[] =
     {
         // Back face
         glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 0.0f),
@@ -60,7 +60,7 @@ Cube::Cube() :
         glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)
     };
 
-	mVertexBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices) / sizeof(Vertex), 0, VertexLayout::Vertex);
+	mVertexBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices) / sizeof(VertexSimple), 0, VertexLayout::VertexSimple);
 }
 
 Cube::~Cube()
