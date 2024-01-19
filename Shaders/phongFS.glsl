@@ -140,10 +140,15 @@ void main()
 	// Re-normalize the normal for dot product
 	vec3 norm = normalize(normal);
 
+	// Use normal map normals
 	if(hasNormalTexture)
 	{
-		//norm = texture(textureSamplers.normal1, textureCoord).rgb;
-		//norm = normalize(norm * 2.0 - 1.0);
+		// Sample the normal in tangent space
+		norm = texture(textureSamplers.normal1, textureCoord).rgb;
+		// map to [0, 1]
+		norm = (norm * 2.0 - 1.0);
+		// transform the normal with TBN matrix and normalize to get new normal vector
+		norm = normalize(TBN * norm);
 	}
 
 	// Get the view direction from the fragment's position to the view(camera) position
