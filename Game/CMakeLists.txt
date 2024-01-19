@@ -9,7 +9,7 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${source_files})
 
 ### LINK ENGINE LIBRARY TO GAME PROJECT
 # Include headers from Engine directory
-include_directories(../Engine)
+include_directories(../Engine/Source)
 
 # Create an executable target called game and compiles the ${source_files}.
 add_executable (game ${source_files} )
