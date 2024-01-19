@@ -12,7 +12,4 @@ add_library (engine ${source_files})
 # Link assimp library to engine
 if(WIN32)
 	target_link_libraries(engine assimp-vc142-mtd)
-else()
-	target_link_libraries(engine libassimp)
 endif()
-

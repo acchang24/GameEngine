@@ -21,14 +21,9 @@ include_directories(Libraries/Assimp/include)
 
 if(WIN32)
 	link_directories(Libraries/Assimp/lib/win)
-else()
-	link_directories(Libraries/Assimp/lib/linux)
 endif()
 
-# Include sub-projects.
+# Subdirectories to build
 add_subdirectory(Engine)
 add_subdirectory(Game)
 add_subdirectory(glfw)
-
-# Link game with glfw
-target_link_libraries(game glfw)
