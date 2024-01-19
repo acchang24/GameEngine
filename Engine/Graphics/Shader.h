@@ -2,7 +2,7 @@
 #include <string>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include "../Material.h"
+#include "Material.h"
 
 // Shader class contains a OpenGL shader program that consists of
 // a vertex shader and a fragment shader. This shader class manages

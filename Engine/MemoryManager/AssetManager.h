@@ -2,7 +2,7 @@
 #include "Cache.h"
 #include "../Graphics/Shader.h"
 #include "../Graphics/Texture.h"
-#include "../Material.h"
+#include "../Graphics/Material.h"
 #include "../Graphics/UniformBuffer.h"
 
 // The AssetManager is a singleton class that helps load assets on demand

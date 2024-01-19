@@ -1,6 +1,6 @@
 #include "Component.h"
 #include <iostream>
-#include "../Entity.h"
+#include "../Entity/Entity.h"
 
 Component::Component(Entity* owner) : 
 	mOwner(owner)

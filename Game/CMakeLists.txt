@@ -15,8 +15,6 @@ include_directories(../Engine)
 add_executable (game ${source_files} )
 
 if(WIN32)
-	# Link game with glfw
-	target_link_libraries(game glfw)
 	# Link game target with engine library
 	target_link_libraries(game engine)
 

@@ -5,10 +5,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include "Mesh.h"
-#include "Graphics/VertexLayouts.h"
-#include "Graphics/VertexBuffer.h"
-#include "MemoryManager/AssetManager.h"
+#include "../Graphics/Mesh.h"
+#include "../Graphics/VertexLayouts.h"
+#include "../Graphics/VertexBuffer.h"
+#include "../MemoryManager/AssetManager.h"
 
 Entity3D::Entity3D() :
 	Entity(),

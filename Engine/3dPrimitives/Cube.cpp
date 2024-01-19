@@ -5,7 +5,7 @@
 #include "../Graphics/VertexLayouts.h"
 #include "../Graphics/VertexBuffer.h"
 #include "../Components/TimerComponent.h"
-#include "../Material.h"
+#include "../Graphics/Material.h"
 #include "../Graphics/Shader.h"
 
 Cube::Cube() :

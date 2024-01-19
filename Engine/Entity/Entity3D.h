@@ -3,8 +3,8 @@
 #include <string>
 #include <unordered_map>
 #include <assimp/scene.h>
-#include "Graphics/Texture.h"
-#include "Material.h"
+#include "../Graphics/Texture.h"
+#include "../Graphics/Material.h"
 
 class Mesh;
 class Shader;

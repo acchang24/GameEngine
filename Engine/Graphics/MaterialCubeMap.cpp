@@ -1,9 +1,9 @@
 #include "MaterialCubeMap.h"
 #include <iostream>
-#include "Graphics/Shader.h"
-#include "Graphics/UniformBuffer.h"
-#include "Graphics/Texture.h"
-#include "Graphics/CubeMap.h"
+#include "Shader.h"
+#include "UniformBuffer.h"
+#include "Texture.h"
+#include "CubeMap.h"
 
 MaterialCubeMap::MaterialCubeMap() :
 	Material(),

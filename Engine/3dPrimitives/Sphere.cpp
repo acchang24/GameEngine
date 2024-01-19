@@ -4,7 +4,7 @@
 #include <iostream>
 #include "../Graphics/VertexLayouts.h"
 #include "../Graphics/VertexBuffer.h"
-#include "../Material.h"
+#include "../Graphics/Material.h"
 #include "../Graphics/Shader.h"
 
 Sphere::Sphere(float radius, const glm::vec4& color) :

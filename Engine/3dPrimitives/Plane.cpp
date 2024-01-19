@@ -3,7 +3,7 @@
 #include "../Graphics/VertexLayouts.h"
 #include "../Graphics/VertexBuffer.h"
 #include "../Graphics/Shader.h"
-#include "../Material.h"
+#include "../Graphics/Material.h"
 
 Plane::Plane() :
 	Entity3D(),
