@@ -61,6 +61,7 @@ in vec2 textureCoord;
 in vec3 fragPos;
 in vec3 viewPosition;
 in vec4 fragPosLightSpace;
+in mat3 TBN;
 
 // Uniform buffer for lights
 layout (std140, binding = 1) uniform LightBuffer

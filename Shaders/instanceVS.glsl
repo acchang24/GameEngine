@@ -8,7 +8,7 @@ layout (location = 1) in vec3 inNormal;
 // texture variable has attribute position 2
 layout (location = 2) in vec2 uv;
 layout (location = 3) in vec3 tangent;
-layout (location = 4) in vec4 bitangent;
+layout (location = 4) in vec3 bitangent;
 // instance matrices
 layout (location = 5) in mat4 instanceModelMatrix;
 
@@ -27,6 +27,7 @@ out vec2 textureCoord;
 out vec3 fragPos;
 // Pass the CameraBuffer's viewPos to fragment shader
 out vec3 viewPosition;
+out mat3 TBN;
 
 void main()
 {
@@ -45,4 +46,9 @@ void main()
 	fragPos = vec3(instanceModelMatrix * vec4(position, 1.0));
 
 	viewPosition = viewPos;
+
+	vec3 T = normalize(vec3(instanceModelMatrix * vec4(tangent,   0.0)));
+	vec3 B = normalize(vec3(instanceModelMatrix * vec4(bitangent, 0.0)));
+	vec3 N = normalize(vec3(instanceModelMatrix * vec4(inNormal,    0.0)));
+	TBN = mat3(T, B, N);
 }
