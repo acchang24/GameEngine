@@ -2,10 +2,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
-#include "VertexLayouts.h"
-#include "VertexBuffer.h"
-#include "Material.h"
-#include "Shader.h"
+#include "../Graphics/VertexLayouts.h"
+#include "../Graphics/VertexBuffer.h"
+#include "../Material.h"
+#include "../Graphics/Shader.h"
 
 Sphere::Sphere(float radius, const glm::vec4& color) :
 	Entity3D(),

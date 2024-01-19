@@ -1,9 +1,9 @@
 #include "Material.h"
 #include <iostream>
-#include "Shader.h"
-#include "Texture.h"
-#include "UniformBuffer.h"
-#include "AssetManager.h"
+#include "Graphics/Shader.h"
+#include "Graphics/Texture.h"
+#include "Graphics/UniformBuffer.h"
+#include "MemoryManager/AssetManager.h"
 
 Material::Material() : 
 	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 16.0f, false, false, false, false }),

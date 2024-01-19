@@ -1,9 +1,9 @@
 #include "Plane.h"
 #include <iostream>
-#include "VertexLayouts.h"
-#include "VertexBuffer.h"
-#include "Material.h"
-#include "Shader.h"
+#include "../Graphics/VertexLayouts.h"
+#include "../Graphics/VertexBuffer.h"
+#include "../Graphics/Shader.h"
+#include "../Material.h"
 
 Plane::Plane() :
 	Entity3D(),

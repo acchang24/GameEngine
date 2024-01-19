@@ -6,9 +6,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include "Mesh.h"
-#include "VertexLayouts.h"
-#include "VertexBuffer.h"
-#include "AssetManager.h"
+#include "Graphics/VertexLayouts.h"
+#include "Graphics/VertexBuffer.h"
+#include "MemoryManager/AssetManager.h"
 
 Entity3D::Entity3D() :
 	Entity(),

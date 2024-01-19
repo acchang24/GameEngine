@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "VertexLayouts.h"
 #include "VertexBuffer.h"
-#include "AssetManager.h"
+#include "../MemoryManager/AssetManager.h"
 #include "Shader.h"
 
 Skybox::Skybox(const std::vector<std::string>& faceNames) :

@@ -1,8 +1,8 @@
 #include "Mesh.h"
 #include <iostream>
 #include "Material.h"
-#include "Shader.h"
-#include "VertexBuffer.h"
+#include "Graphics/Shader.h"
+#include "Graphics/VertexBuffer.h"
 #include "Entity3D.h"
 
 Mesh::Mesh(VertexBuffer* vb, Material* material) :

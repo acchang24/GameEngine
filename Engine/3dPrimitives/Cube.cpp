@@ -2,11 +2,11 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "VertexLayouts.h"
-#include "VertexBuffer.h"
-#include "TimerComponent.h"
-#include "Material.h"
-#include "Shader.h"
+#include "../Graphics/VertexLayouts.h"
+#include "../Graphics/VertexBuffer.h"
+#include "../Components/TimerComponent.h"
+#include "../Material.h"
+#include "../Graphics/Shader.h"
 
 Cube::Cube() :
 	Entity3D(),

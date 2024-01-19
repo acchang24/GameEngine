@@ -1,9 +1,9 @@
 #pragma once
 #include "Cache.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "Material.h"
-#include "UniformBuffer.h"
+#include "../Graphics/Shader.h"
+#include "../Graphics/Texture.h"
+#include "../Material.h"
+#include "../Graphics/UniformBuffer.h"
 
 // The AssetManager is a singleton class that helps load assets on demand
 // and cache them so that subsequent loads will return the cached asset

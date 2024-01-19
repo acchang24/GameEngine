@@ -1,6 +1,6 @@
 #include "Entity.h"
 #include <iostream>
-#include "Component.h"
+#include "Components/Component.h"
 
 Entity::Entity()
 {

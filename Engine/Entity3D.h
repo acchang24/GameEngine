@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <assimp/scene.h>
-#include "Texture.h"
+#include "Graphics/Texture.h"
 #include "Material.h"
 
 class Mesh;

@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity3D.h"
+#include "../Entity3D.h"
 
 class VertexBuffer;
 class Material;
