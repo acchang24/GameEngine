@@ -63,8 +63,6 @@ Game::~Game()
 
 bool Game::Init()
 {
-	PROFILE_SCOPE(GAME_INIT);
-
 	mJobManager = JobManager::Get();
 	mJobManager->Begin();
 
@@ -414,8 +412,6 @@ void Game::Run()
 	{
 		Profiler::Get()->ResetAll();
 
-		PROFILE_SCOPE(GAME_LOOP);
-
 		glfwPollEvents();
 
 		// Calculate delta time
@@ -434,8 +430,6 @@ void Game::Run()
 
 void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 {
-	PROFILE_SCOPE(PROCESS_INPUT);
-
 	ProcessMouseInput(window);
 
 	// Check if user clicks on window close
@@ -515,8 +509,6 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 void Game::Update(float deltaTime)
 {
-	PROFILE_SCOPE(UPDATE);
-
 	for (auto e : mEntities)
 	{
 		e->Update(deltaTime);
@@ -529,13 +521,9 @@ void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
 
-	{
-		PROFILE_SCOPE(SET_BUFFERS);
+	mCamera->SetActive(projection);
 
-		mCamera->SetActive(projection);
-
-		mLights->SetActive();
-	}
+	mLights->SetActive();
 
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -543,7 +531,7 @@ void Game::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	{
-		PROFILE_SCOPE(RENDER_SHADOW_MAP);
+		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
 		// Render to shadow map
 		mShadowMap->SetActive();
@@ -558,10 +546,11 @@ void Game::Render()
 	}
 
 	{
-		PROFILE_SCOPE(RENDER_NORMAL_SCENE);
+		//PROFILE_SCOPE(RENDER_NORMAL_SCENE);
 
 		// Uncomment this to draw to offscreen frame buffer instead
 		mFrameBuffer->SetActive();
+		
 
 		// Render scene as normal
 		RenderScene();
@@ -575,6 +564,8 @@ void Game::Render()
 
 void Game::RenderScene()
 {
+	PROFILE_SCOPE(RENDER_SCENE_NORMAL);
+
 	for (auto e : mEntities)
 	{
 		e->Draw();

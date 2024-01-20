@@ -41,8 +41,6 @@ void Plane::OnDraw()
 	mMaterial->SetActive();
 	mMaterial->GetShader()->SetMat4("model", mModel);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 	glDisable(GL_CULL_FACE);
 
 	mVertexBuffer->Draw();

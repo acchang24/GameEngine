@@ -95,9 +95,8 @@ void Sphere::OnUpdate(float deltaTime)
 void Sphere::OnDraw()
 {
     mMaterial->SetActive();
-    mMaterial->GetShader()->SetMat4("model", mModel);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    mMaterial->GetShader()->SetMat4("model", mModel);
 
     mVertexBuffer->Draw();
 }
