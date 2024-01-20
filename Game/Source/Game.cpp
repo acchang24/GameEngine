@@ -23,6 +23,7 @@
 #include "Graphics/Lights.h"
 #include "Graphics/MaterialCubeMap.h"
 #include "Graphics/ShadowMap.h"
+#include "Profiler/Profiler.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -402,6 +403,10 @@ void Game::Run()
 
 	while (mIsRunning)
 	{
+		Profiler::Get()->ResetAll();
+
+		PROFILE_SCOPE(GAME_LOOP);
+
 		glfwPollEvents();
 
 		// Calculate delta time
@@ -420,6 +425,8 @@ void Game::Run()
 
 void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 {
+	PROFILE_SCOPE(PROCESS_INPUT);
+
 	ProcessMouseInput(window);
 
 	// Check if user clicks on window close
@@ -499,6 +506,8 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 void Game::Update(float deltaTime)
 {
+	PROFILE_SCOPE(UPDATE);
+
 	for (auto e : mEntities)
 	{
 		e->Update(deltaTime);
@@ -507,34 +516,48 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
-	mCamera->SetActive(projection);
+	PROFILE_SCOPE(RENDER);
 
-	mLights->SetActive();
+	{
+		PROFILE_SCOPE(SET_BUFFERS);
+
+		mCamera->SetActive(projection);
+
+		mLights->SetActive();
+	}
 
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	// Clear the color buffer, depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Render to shadow map
-	mShadowMap->SetActive();
-	RenderScene(mShadowMap->GetShader());
+	{
+		PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
-	// Render the shadow map
-	//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
-	//mShadowMap->Draw(mAssetManager->LoadShader("shadowDebug"));
+		// Render to shadow map
+		mShadowMap->SetActive();
+		RenderScene(mShadowMap->GetShader());
 
-	// End shadow render pass
-	mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		// Render the shadow map
+		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
+		//mShadowMap->Draw(mAssetManager->LoadShader("shadowDebug"));
 
-	// Uncomment this to draw to offscreen frame buffer instead
-	mFrameBuffer->SetActive();
-	
-	// Render scene as normal
-	RenderScene();
+		// End shadow render pass
+		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+	}
 
-	// Uncomment this if using off screen frame buffer
-	mFrameBuffer->End(windowWidth, windowHeight);
+	{
+		PROFILE_SCOPE(RENDER_NORMAL_SCENE);
+
+		// Uncomment this to draw to offscreen frame buffer instead
+		mFrameBuffer->SetActive();
+
+		// Render scene as normal
+		RenderScene();
+
+		// Uncomment this if using off screen frame buffer
+		mFrameBuffer->End(windowWidth, windowHeight);
+	}
 
 	glfwSwapBuffers(mWindow);
 }
