@@ -13,6 +13,7 @@ class FrameBuffer;
 class Skybox;
 class Lights;
 class ShadowMap;
+class JobManager;
 
 class Game
 {
@@ -86,7 +87,11 @@ private:
 	// Use lighting
 	Lights* mLights;
 
+	// ShadowMap for shadows
 	ShadowMap* mShadowMap;
+
+	// JobManager
+	JobManager* mJobManager;
 
 	double mMousePosX;
 	double mMousePosY;

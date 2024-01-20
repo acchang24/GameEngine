@@ -24,6 +24,7 @@
 #include "Graphics/MaterialCubeMap.h"
 #include "Graphics/ShadowMap.h"
 #include "Profiler/Profiler.h"
+#include "Multithreading/JobManager.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -44,6 +45,7 @@ Game::Game() :
 	mSkybox(nullptr),
 	mLights(nullptr),
 	mShadowMap(nullptr),
+	mJobManager(nullptr),
 	mMousePosX(static_cast<double>(windowWidth / 2)),
 	mMousePosY(static_cast<double>(windowHeight / 2)),
 	mMousePrevX(static_cast<double>(windowHeight / 2)),
@@ -62,6 +64,9 @@ Game::~Game()
 bool Game::Init()
 {
 	PROFILE_SCOPE(GAME_INIT);
+
+	mJobManager = new JobManager();
+	mJobManager->Begin();
 
 	// Initialize GLFW
 	glfwInit();
@@ -395,6 +400,9 @@ void Game::Shutdown()
 
 	delete mShadowMap;
 
+	mJobManager->End();
+	delete mJobManager;
+
 	mAssetManager->Shutdown();
 	mAssetManager = nullptr;
 }
@@ -514,6 +522,8 @@ void Game::Update(float deltaTime)
 	{
 		e->Update(deltaTime);
 	}
+
+	mJobManager->WaitForJobs();
 }
 
 void Game::Render()
