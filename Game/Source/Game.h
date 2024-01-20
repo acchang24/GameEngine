@@ -90,7 +90,7 @@ private:
 	// ShadowMap for shadows
 	ShadowMap* mShadowMap;
 
-	// JobManager
+	// Pointer to a static JobManager
 	JobManager* mJobManager;
 
 	double mMousePosX;

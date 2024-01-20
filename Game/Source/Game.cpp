@@ -65,7 +65,7 @@ bool Game::Init()
 {
 	PROFILE_SCOPE(GAME_INIT);
 
-	mJobManager = new JobManager();
+	mJobManager = JobManager::Get();
 	mJobManager->Begin();
 
 	// Initialize GLFW
@@ -401,7 +401,6 @@ void Game::Shutdown()
 	delete mShadowMap;
 
 	mJobManager->End();
-	delete mJobManager;
 
 	mAssetManager->Shutdown();
 	mAssetManager = nullptr;

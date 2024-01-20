@@ -59,7 +59,13 @@ public:
 	// Tells this thread to wait until the jobs are finished
 	void WaitForJobs();
 
+	// Getter for JobManager instance
+	static JobManager* Get();
+
 private:
+	JobManager();
+	~JobManager();
+
 	// Array of workers
 	Worker mWorkers[NUM_WORKER];
 };

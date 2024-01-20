@@ -51,6 +51,22 @@ void JobManager::WaitForJobs()
 	}
 }
 
+JobManager* JobManager::Get()
+{
+	static JobManager s_JobManager;
+
+	return &s_JobManager;
+}
+
+JobManager::JobManager()
+{
+}
+
+JobManager::~JobManager()
+{
+	std::cout << "Delete job manager" << std::endl;
+}
+
 void JobManager::Worker::Begin()
 {
 	mThread = new std::thread(Loop);
