@@ -16,3 +16,5 @@ bld/
 [Ll]ogs/
 
 .vs
+
+profiler.txt
