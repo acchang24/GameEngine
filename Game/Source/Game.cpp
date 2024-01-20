@@ -64,7 +64,7 @@ Game::~Game()
 bool Game::Init()
 {
 	mJobManager = JobManager::Get();
-	mJobManager->Begin();
+	//mJobManager->Begin();
 
 	// Initialize GLFW
 	glfwInit();
@@ -400,7 +400,7 @@ void Game::Shutdown()
 
 	delete mShadowMap;
 
-	mJobManager->End();
+	//mJobManager->End();
 
 	mAssetManager->Shutdown();
 	mAssetManager = nullptr;
@@ -520,7 +520,7 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mJobManager->WaitForJobs();
+	//mJobManager->WaitForJobs();
 }
 
 void Game::Render()
