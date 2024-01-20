@@ -61,6 +61,8 @@ Game::~Game()
 
 bool Game::Init()
 {
+	PROFILE_SCOPE(GAME_INIT);
+
 	// Initialize GLFW
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

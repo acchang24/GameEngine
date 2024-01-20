@@ -38,13 +38,13 @@ Profiler::~Profiler()
 {
 	std::ofstream outFile("profiler.txt");
 
-	outFile << "name: , avg (ms), max (ms)\n";
+	outFile << "name: , current (ms), avg (ms), max (ms)\n";
 
 	for (auto& t : mTimers)
 	{
 		Timer* timer = t.second;
 
-		outFile << timer->GetName() << ": , " << timer->GetAverageMs() << ", " << timer->GetMaxMs() << "" << "\n";
+		outFile << timer->GetName() << ": , " << timer->mCurrentMs << ", " << timer->GetAverageMs() << ", " << timer->GetMaxMs() << "" << "\n";
 
 		delete timer;
 	}
@@ -61,7 +61,7 @@ void Profiler::Timer::Stop()
 {
 	std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
 
-	mCurrentMs += std::chrono::duration<double, std::milli>(endTime - mStartTime).count();
+	mCurrentMs = std::chrono::duration<double, std::milli>(endTime - mStartTime).count();
 }
 
 void Profiler::Timer::Reset()
@@ -74,6 +74,4 @@ void Profiler::Timer::Reset()
 	{
 		mMaxMs = mCurrentMs;
 	}
-
-	mCurrentMs = 0.0;
 }
