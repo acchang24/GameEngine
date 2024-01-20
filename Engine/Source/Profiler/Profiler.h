@@ -25,7 +25,7 @@ public:
 
 		// Adds the total for this frame to the overall total and
 		// increases the number of frames count. It then updates the
-		// longest frame time and resets the current frame's duration to 0
+		// longest frame time
 		void Reset();
 
 		// Gets the name of the timer
