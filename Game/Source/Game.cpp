@@ -130,6 +130,8 @@ bool Game::Init()
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
+	PROFILE_SCOPE(LOAD_DATA);
+
 	Texture* texture = new Texture("Assets/matrix.jpg", TextureType::Emission);
 	Texture* texture3 = new Texture("Assets/container2.png", TextureType::Diffuse);
 	Texture* texture4 = new Texture("Assets/container2_specular.png", TextureType::Specular);
@@ -412,6 +414,8 @@ void Game::Run()
 	{
 		Profiler::Get()->ResetAll();
 
+		PROFILE_SCOPE(GAME_LOOP);
+
 		glfwPollEvents();
 
 		// Calculate delta time
@@ -509,6 +513,8 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 
 void Game::Update(float deltaTime)
 {
+	PROFILE_SCOPE(UPDATE);
+
 	for (auto e : mEntities)
 	{
 		e->Update(deltaTime);

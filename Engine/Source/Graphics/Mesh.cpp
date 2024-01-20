@@ -23,9 +23,8 @@ Mesh::~Mesh()
 void Mesh::Draw()
 {
 	mMaterial->SetActive();
-	mMaterial->GetShader()->SetMat4("model", mOwner->GetModelMatrix());
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	mMaterial->GetShader()->SetMat4("model", mOwner->GetModelMatrix());
 
 	mVertexBuffer->Draw();
 }
