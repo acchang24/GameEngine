@@ -5,6 +5,7 @@
 #include <assimp/scene.h>
 #include "../Graphics/Texture.h"
 #include "../Graphics/Material.h"
+#include "../Multithreading/JobManager.h"
 
 class Mesh;
 class Shader;
@@ -130,12 +131,28 @@ public:
 	void SetRoll(float roll) { mRoll = roll; }
 
 protected:
+	// Job to update the Entity3D's model matrix on a separate thread
+	class UpdateModelMatrixJob : public JobManager::Job
+	{
+	public:
+		UpdateModelMatrixJob(Entity3D* e) : mEntity(e)
+		{}
+		// Override Job::DoIt() to update this entity's model matrix
+		void DoIt() override;
+
+	private:
+		Entity3D* mEntity;
+	};
+
 	// Entity's vector of meshes
 	std::vector<Mesh*> mMeshes;
 
 	// Map of the entity's materials. Each mesh of this entity
 	// is indexed to one of these materials.
 	std::unordered_map<std::string, Material*> mMaterialMap;
+
+	// Job to update model matrix on seprate thread
+	UpdateModelMatrixJob mUpdateModelMatrixJob;
 
 	// The entity's model directory
 	std::string mDirectory;

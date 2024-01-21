@@ -12,6 +12,7 @@
 
 Entity3D::Entity3D() :
 	Entity(),
+	mUpdateModelMatrixJob(this),
 	mDirectory(),
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
@@ -28,6 +29,7 @@ Entity3D::Entity3D() :
 
 Entity3D::Entity3D(const std::string& fileName):
 	Entity(),
+	mUpdateModelMatrixJob(this),
 	mDirectory(),
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
@@ -316,18 +318,21 @@ void Entity3D::Draw(Shader* shader)
 
 void Entity3D::OnUpdate(float deltaTime)
 {
-	mModel = glm::mat4(1.0f);
+	// Update model matrix on seprate thread
+	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 
-	// Translate
-	mModel = glm::translate(mModel, mPosition);
+	//mModel = glm::mat4(1.0f);
 
-	// Rotate
-	mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	//// Translate
+	//mModel = glm::translate(mModel, mPosition);
 
-	// Scale
-	mModel = glm::scale(mModel, mScale);
+	//// Rotate
+	//mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	//mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	//mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	//// Scale
+	//mModel = glm::scale(mModel, mScale);
 }
 
 void Entity3D::OnDraw()
@@ -344,4 +349,20 @@ void Entity3D::OnDraw(Shader* shader)
 	{
 		m->Draw(shader);
 	}
+}
+
+void Entity3D::UpdateModelMatrixJob::DoIt()
+{
+	mEntity->mModel = glm::mat4(1.0f);
+
+	// Translate
+	mEntity->mModel = glm::translate(mEntity->mModel, mEntity->mPosition);
+
+	// Rotate
+	mEntity->mModel = glm::rotate(mEntity->mModel, glm::radians(mEntity->mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	mEntity->mModel = glm::rotate(mEntity->mModel, glm::radians(mEntity->mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	mEntity->mModel = glm::rotate(mEntity->mModel, glm::radians(mEntity->mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Scale
+	mEntity->mModel = glm::scale(mEntity->mModel, mEntity->mScale);
 }
