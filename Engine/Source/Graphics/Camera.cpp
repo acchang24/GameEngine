@@ -4,6 +4,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "UniformBuffer.h"
 
+const float fov = 45.0f;
+const float near = 0.1f;
+const float far = 10000.0f;
+
+static glm::mat4 s_Projection = glm::perspective(fov, 16.0f / 9.0f, near, far);
+
 Camera::Camera() :
 	mCamConsts({glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f}),
 	mView(glm::translate(glm::mat4(1.0f), mCamConsts.position)),
@@ -16,9 +22,9 @@ Camera::Camera() :
 	mYaw(-90.0f),
 	mPitch(0.0f),
 	mRoll(0.0f),
-	mFOV(45.0f),
-	mNearPlane(0.1f),
-	mFarPlane(10000.0f)
+	mFOV(fov),
+	mNearPlane(near),
+	mFarPlane(far)
 {
 
 }
@@ -30,7 +36,7 @@ Camera::~Camera()
 	delete mCameraBuffer;
 }
 
-void Camera::SetActive(const glm::mat4& proj)
+void Camera::SetActive()
 {
 	switch (mMode)
 	{
@@ -59,7 +65,17 @@ void Camera::SetActive(const glm::mat4& proj)
 
 	mRight = glm::normalize(glm::cross(mForward, mUp));
 
-	mCamConsts.viewProjection = proj * mView;
+	mCamConsts.viewProjection = s_Projection * mView;
 
 	mCameraBuffer->UpdateBufferData(&mCamConsts);
+}
+
+const glm::mat4& Camera::GetProjectionMatrix() const
+{
+	return s_Projection;
+}
+
+void Camera::SetProjection(float newAspectRatio)
+{
+	glm::perspective(fov, newAspectRatio, near, far);
 }

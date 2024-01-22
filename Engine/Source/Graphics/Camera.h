@@ -30,10 +30,9 @@ public:
 
 	// SetActive is responsible for updating the camera's forward vector
 	// as well as recalculating its right vector. It then calculates the 
-	// new view matrix. It combines with the projection matrix and updates
-	// the CameraConsts struct to send to the shader's buffers
-	// @param - const glm::mat4& for the projection matrix
-	void SetActive(const glm::mat4& proj);
+	// new view matrix. It combines the view matrix with the projection matrix 
+	// and updates the CameraConsts struct to send to the shader's buffers
+	void SetActive();
 
 	// Gets the camera's constants
 	// @return - const CameraConst& for the camera's constants
@@ -44,6 +43,9 @@ public:
 	// Gets the camera's view matrix
 	// @return - const mat4& for the camera's view matrix
 	const glm::mat4& GetViewMatrix() const { return mView; }
+	// Gets the camera's projection matrix
+	// @return - const mat4& for the camera's projection matrix
+	const glm::mat4& GetProjectionMatrix() const;
 	// Gets the camera's target position
 	// @return - const glm::vec3& for the camera's target
 	const glm::vec3& GetTarget() const { return mTarget; }
@@ -61,6 +63,10 @@ public:
 	// Gets the camera's mode
 	// @return - CameraMode for the camera's mode
 	CameraMode GetCameraMode() const { return mMode; }
+
+	// Sets the camera's projection matrix
+	// @param - float for the new aspect ratio
+	static void SetProjection(float newAspectRatio);
 
 	// Sets the camera's position
 	// @param - const glm::vec3& for the new position
@@ -98,7 +104,12 @@ private:
 	// Camera's current mode
 	CameraMode mMode;
 
+	// Camera's field of view angle
 	float mFOV;
+
+	// Camera's near plane
 	float mNearPlane;
+
+	// Camera's far plane
 	float mFarPlane;
 };

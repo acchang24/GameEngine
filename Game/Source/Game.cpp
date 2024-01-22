@@ -31,12 +31,6 @@ int windowHeight = 720;
 
 int subsamples = 4;
 
-float nearPlane = 0.1f;
-float farPlane = 10000.0f;
-
-// projection matrix
-glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(windowWidth) / static_cast<float>(windowHeight), nearPlane, farPlane);
-
 Game::Game() :
 	mWindow(nullptr),
 	mAssetManager(nullptr),
@@ -48,7 +42,7 @@ Game::Game() :
 	mJobManager(nullptr),
 	mMousePosX(static_cast<double>(windowWidth / 2)),
 	mMousePosY(static_cast<double>(windowHeight / 2)),
-	mMousePrevX(static_cast<double>(windowHeight / 2)),
+	mMousePrevX(static_cast<double>(windowWidth / 2)),
 	mMousePrevY(static_cast<double>(windowHeight / 2)),
 	mFirstMouse(true),
 	mIsRunning(true)
@@ -527,7 +521,7 @@ void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
 
-	mCamera->SetActive(projection);
+	mCamera->SetActive();
 
 	mLights->SetActive();
 
@@ -577,8 +571,7 @@ void Game::RenderScene()
 		e->Draw();
 	}
 
-	// Draw sky box last
-	mSkybox->Draw(mCamera->GetViewMatrix(), projection);
+	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
 }
 
 void Game::RenderScene(Shader* shader)
@@ -588,7 +581,7 @@ void Game::RenderScene(Shader* shader)
 		static_cast<Entity3D*>(e)->Draw(shader);
 	}
 
-	mSkybox->Draw(mCamera->GetViewMatrix(), projection);
+	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
 }
 
 void Game::ProcessMouseInput(GLFWwindow* window)
@@ -658,11 +651,9 @@ void Game::ProcessMouseInput(GLFWwindow* window)
 
 void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
 {
-	// Set the viewport to new width and height
 	glViewport(0, 0, width, height);
 
-	// Set new width/height ratio for perspective projection matrix, and update the projection matrix
-	projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), nearPlane, farPlane);
+	Camera::SetProjection(static_cast<float>(width) / static_cast<float>(height));
 
 	windowWidth = width;
 	windowHeight = height;
