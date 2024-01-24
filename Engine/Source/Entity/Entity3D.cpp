@@ -20,7 +20,8 @@ Entity3D::Entity3D() :
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
-	mRoll(0.0f)
+	mRoll(0.0f),
+	mHasSkeleton(false)
 {
 	numMesh = 0;
 	numMats = 0;
@@ -92,6 +93,11 @@ bool Entity3D::LoadModel(const std::string& fileName)
 	}
 
 	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
+
+	if (scene->HasAnimations())
+	{
+		mHasSkeleton = true;
+	}
 
 	ProcessNodes(scene->mRootNode, scene);
 

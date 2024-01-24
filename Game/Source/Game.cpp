@@ -263,49 +263,55 @@ bool Game::Init()
 		rockMatrices[i] = model;
 	}
 
-	Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
-	rock->MakeInstance(rockAmount, rockMatrices);
-	Material* rockMat = rock->GetMaterial("Material");
-	rockMat->AddTexture(rockTexture);
-	rockMat->SetShader(instanceShader);
-	AddGameEntity(rock);
+	//Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
+	//rock->MakeInstance(rockAmount, rockMatrices);
+	//Material* rockMat = rock->GetMaterial("Material");
+	//rockMat->AddTexture(rockTexture);
+	//rockMat->SetShader(instanceShader);
+	//AddGameEntity(rock);
 
 	delete[] rockMatrices;
 
-	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	sponza->SetScale(0.15);
-	sponza->SetYaw(-90.0f);
-	AddGameEntity(sponza);
 
-	Material* wallMaterial = new Material();
-	wallMaterial->SetShader(phongShader);
-	wallMaterial->AddTexture(wallTexture);
-	wallMaterial->AddTexture(wallNormalTexture);
-	mAssetManager->SaveMaterial("wall", wallMaterial);
+	Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire->SetScale(0.05f);
+	vampire->SetPosition(glm::vec3(0.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire);
 
-	Plane* wall = new Plane();
-	//wall->SetPitch(-90.0f);
-	wall->SetPosition(glm::vec3(0.0f, -3.0f, 7.0f));
-	wall->SetMaterial(wallMaterial);
-	AddGameEntity(wall);
+	//Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	//sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
+	//sponza->SetScale(0.15);
+	//sponza->SetYaw(-90.0f);
+	//AddGameEntity(sponza);
 
-	Cube* mCube = new Cube();
-	mCube->SetScale(2.0f);
-	mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	mCube->SetMaterial(reflectiveMat);
-	mCube->SetYaw(25.0f);
-	TimerComponent* timer = new TimerComponent(mCube);
-	AddGameEntity(mCube);
+	//Material* wallMaterial = new Material();
+	//wallMaterial->SetShader(phongShader);
+	//wallMaterial->AddTexture(wallTexture);
+	//wallMaterial->AddTexture(wallNormalTexture);
+	//mAssetManager->SaveMaterial("wall", wallMaterial);
 
-	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
-	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
-	squidward->SetScale(0.5f);
-	//squidward->SetMaterialShader("tt", refractiveShader);
-	Material* m = squidward->GetMaterial("tt");
-	//m->AddTexture(texture);
-	m->SetSpecularIntensity(0.0f);
-	AddGameEntity(squidward);
+	//Plane* wall = new Plane();
+	////wall->SetPitch(-90.0f);
+	//wall->SetPosition(glm::vec3(0.0f, -3.0f, 7.0f));
+	//wall->SetMaterial(wallMaterial);
+	//AddGameEntity(wall);
+
+	//Cube* mCube = new Cube();
+	//mCube->SetScale(2.0f);
+	//mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	//mCube->SetMaterial(reflectiveMat);
+	//mCube->SetYaw(25.0f);
+	//TimerComponent* timer = new TimerComponent(mCube);
+	//AddGameEntity(mCube);
+
+	//Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	//squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
+	//squidward->SetScale(0.5f);
+	////squidward->SetMaterialShader("tt", refractiveShader);
+	//Material* m = squidward->GetMaterial("tt");
+	////m->AddTexture(texture);
+	//m->SetSpecularIntensity(0.0f);
+	//AddGameEntity(squidward);
 	
 	Material* woodMat = new Material();
 	woodMat->AddTexture(woodTexture);
@@ -534,15 +540,15 @@ void Game::Render()
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
 		// Render to shadow map
-		mShadowMap->SetActive();
-		RenderScene(mShadowMap->GetShader());
+		//mShadowMap->SetActive();
+		//RenderScene(mShadowMap->GetShader());
 
 		// Render the shadow map
 		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
 		//mShadowMap->Draw(mAssetManager->LoadShader("shadowDebug"));
 
 		// End shadow render pass
-		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 	}
 
 	{

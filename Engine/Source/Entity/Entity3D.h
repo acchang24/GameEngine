@@ -176,7 +176,7 @@ protected:
 	// Roll rotation
 	float mRoll;
 
-
+	bool mHasSkeleton;
 
 	int numMesh;
 	int numMats;

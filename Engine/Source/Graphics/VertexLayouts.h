@@ -14,10 +14,12 @@ enum class VertexLayout
 {
 	VertexPos, // VertexPos just contains vec3 position
 	VertexColor, // VertexColor contains position and color
-	Vertex, // Vertex continas position, normal, texture(uv), tangent, and bitangent
+	Vertex, // Vertex contains position, normal, texture(uv), tangent, bitangent, bone ids, and bone weights
 	VertexSimple, // Vertex contains position, normal, and texture(uv) coordinates
 	VertexScreenQuad // VertexScreenQuad contains position and texutre coordinates (used for frame buffers)
 };
+
+const int MAX_BONE_INFLUENCE = 4;
 
 struct VertexPos
 {
@@ -37,6 +39,9 @@ struct Vertex
 	glm::vec2 uv;
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
+
+	int boneIDs[MAX_BONE_INFLUENCE];
+	float weights[MAX_BONE_INFLUENCE];
 };
 
 struct VertexSimple
@@ -103,8 +108,14 @@ static int VertexAttribPointer()
 	// vertex bitangent
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+	// vertex bone ids
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
+	// bone weights
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 
-	return 5;
+	return 7;
 }
 
 // Set VertexSimple attribute pointers
