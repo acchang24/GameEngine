@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 /*
 	This header file contains structs that define different vertex layouts.
@@ -51,30 +52,86 @@ struct VertexScreenQuad
 	glm::vec2 uv;
 };
 
-// Calculates the stride or spacing between consecutive vertex attributes.
-// @returns - std::vector of ints that represents the stride values between each attribute.
-static std::vector<int> GetVertexLayoutStrides(VertexLayout layout)
+
+
+// Set VertexPos attribute pointers
+static int VertexPosAttribPointer()
 {
-	std::vector<int> strides;
+	// Enable each attribute
+	glEnableVertexAttribArray(0);
+	//   Set vertex attributes pointers
+	//   Link Vertex Attributes with glVertexAttribPointer():
+	// - First argument specifies which vertex attribute to configure. This attribute is specified within the vertex shader
+	// - Second argument specifies the size or number of values for the vertex attribute.
+	// - Third argument specifies the type of the data, which in this case is a GL_Float (vec* in GLSL)
+	// - Fourth argument specifies if the data is going to be normalized.
+	// - Fifth argument is the stride, and defines the space between consecutive vertex attributes
+	// - Last argument is type void*, and is the offset of where the position data begins in the buffer
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPos), (void*)(0));
 
-	switch (layout)
-	{
-	case VertexLayout::VertexPos:
-		strides = { 3 };
-		break;
-	case VertexLayout::VertexColor:
-		strides = { 3, 4 };
-		break;
-	case VertexLayout::Vertex:
-		strides = { 3, 3, 2, 3, 3 };
-		break;
-	case VertexLayout::VertexSimple:
-		strides = { 3, 3, 2 };
-		break;
-	case VertexLayout::VertexScreenQuad:
-		strides = { 2, 2 };
-		break;
-	}
+	return 1;
+}
 
-	return strides;
+// Set VertexColor attribute pointers
+static int VertexColorAttribPointer()
+{
+	// vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (void*)(0));
+	// vertex color
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (void*)offsetof(VertexColor, color));
+
+	return 2;
+}
+
+// Set Vertex attribute pointers
+static int VertexAttribPointer()
+{
+	// vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(0));
+	// vertex normal
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	// vertex texture coordinates
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+	// vertex tangent
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+	// vertex bitangent
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
+	return 5;
+}
+
+// Set VertexSimple attribute pointers
+static int VertexSimpleAttribPointer()
+{
+	// vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexSimple), (void*)(0));
+	// vertex normal
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexSimple), (void*)offsetof(VertexSimple, normal));
+	// vertex texture coordinates
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexSimple), (void*)offsetof(VertexSimple, uv));
+
+	return 3;
+}
+
+// Set VertexScreenQuad attribute pointers
+static int VertexScreenQuadAttribPointer()
+{
+	// vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexScreenQuad), (void*)(0));
+	// vertex texture coordinates
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexScreenQuad), (void*)offsetof(VertexScreenQuad, uv));
+
+	return 3;
 }

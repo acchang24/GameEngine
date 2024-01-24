@@ -63,37 +63,24 @@ VertexBuffer::~VertexBuffer()
 
 void VertexBuffer::SetVertexAttributePointers(VertexLayout layout)
 {
-	// Get the vector of strides based on the vertex layout
-	std::vector<int> strides = GetVertexLayoutStrides(layout);
-
-	// Loop through that vector to get the total number of values within each vertex
-	int totalStride = 0;
-	for (size_t i = 0; i < strides.size(); ++i)
+	switch (layout)
 	{
-		totalStride += strides[i];
+	case VertexLayout::VertexPos:
+		mLastAttribIndex = VertexPosAttribPointer();
+		break;
+	case VertexLayout::VertexColor:
+		mLastAttribIndex = VertexColorAttribPointer();
+		break;
+	case VertexLayout::Vertex:
+		mLastAttribIndex = VertexAttribPointer();
+		break;
+	case VertexLayout::VertexSimple:
+		mLastAttribIndex = VertexSimpleAttribPointer();
+		break;
+	case VertexLayout::VertexScreenQuad:
+		mLastAttribIndex = VertexScreenQuadAttribPointer();
+		break;
 	}
-
-	int spacing = 0;
-
-	// Loop through each attribute of the vertex
-	for (size_t i = 0; i < strides.size(); ++i)
-	{
-		//   Set vertex attributes pointers
-		//   Link Vertex Attributes with glVertexAttribPointer():
-		// - First argument specifies which vertex attribute to configure. This attribute is specified within the vertex shader
-		// - Second argument specifies the size or number of values for the vertex attribute.
-		// - Third argument specifies the type of the data, which in this case is a GL_Float (vec* in GLSL)
-		// - Fourth argument specifies if the data is going to be normalized.
-		// - Fifth argument is the stride, and defines the space between consecutive vertex attributes
-		// - Last argument is type void*, and is the offset of where the position data begins in the buffer
-		glVertexAttribPointer(i, strides[i], GL_FLOAT, GL_FALSE, totalStride * sizeof(float), (void*)(spacing * sizeof(float)));
-		// Enable each attribute
-		glEnableVertexAttribArray(i);
-		// Increment the spacing by the stride value
-		spacing += strides[i];
-	}
-
-	mLastAttribIndex = strides.size();
 }
 
 void VertexBuffer::MakeInstance(unsigned int numInstances)

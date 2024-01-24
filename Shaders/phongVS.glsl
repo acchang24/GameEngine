@@ -7,7 +7,9 @@ layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 inNormal;
 // texture variable has attribute position 2
 layout (location = 2) in vec2 uv;
+// tangent variable has attribute position 3
 layout (location = 3) in vec3 tangent;
+// bitangent variable has attribute position 4
 layout (location = 4) in vec3 bitangent;
 
 // Uniform buffer for camera's view * proj matrix and position
@@ -19,6 +21,7 @@ layout (std140, binding = 0) uniform CameraBuffer
 
 // Model matrix uniform
 uniform mat4 model;
+// Matrix for light's perspective
 uniform mat4 lightSpace;
 
 // Specify a vec3 normal output to fragment shader
@@ -29,7 +32,9 @@ out vec2 textureCoord;
 out vec3 fragPos;
 // Pass the CameraBuffer's viewPos to fragment shader
 out vec3 viewPosition;
+// fragment's position in light space
 out vec4 fragPosLightSpace;
+// Tangent, Bitangent, Normal matrix for normal mapping
 out mat3 TBN;
 
 void main()
