@@ -220,10 +220,10 @@ bool Game::Init()
 	refractiveMat->SetShader(refractiveShader);
 	mAssetManager->SaveMaterial("refraction", refractiveMat);
 
-	Shader* shadowDepthShader = new Shader("Shaders/shadowDepthVS.glsl", "Shaders/shadowDepthFS.glsl");
+	Shader* shadowDepthShader = new Shader("Shaders/Shadow/shadowDepthVS.glsl", "Shaders/Shadow/shadowDepthFS.glsl");
 	mAssetManager->SaveShader("shadowDepth", shadowDepthShader);
 
-	Shader* shadowDebugShader = new Shader("Shaders/screenVS.glsl", "Shaders/shadowDebugFS.glsl");
+	Shader* shadowDebugShader = new Shader("Shaders/screenVS.glsl", "Shaders/Shadow/shadowDebugFS.glsl");
 	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
 
 	glUseProgram(0);
