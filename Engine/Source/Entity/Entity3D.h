@@ -9,6 +9,7 @@
 
 class Mesh;
 class Shader;
+class Skeleton;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -166,6 +167,9 @@ protected:
 	// Entity's scale
 	glm::vec3 mScale;
 
+	// Entity's skeleton (if it has animation)
+	Skeleton* mSkeleton;
+
 	// Buffer for if this entity is drawn as an instance
 	unsigned int mInstanceBuffer;
 
@@ -175,8 +179,6 @@ protected:
 	float mPitch;
 	// Roll rotation
 	float mRoll;
-
-	bool mHasSkeleton;
 
 	int numMesh;
 	int numMats;

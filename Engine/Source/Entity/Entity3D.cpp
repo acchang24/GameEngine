@@ -9,6 +9,7 @@
 #include "../Graphics/VertexLayouts.h"
 #include "../Graphics/VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
+#include "../Animation/Skeleton.h"
 
 Entity3D::Entity3D() :
 	Entity(),
@@ -17,11 +18,11 @@ Entity3D::Entity3D() :
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
+	mSkeleton(nullptr),
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
-	mRoll(0.0f),
-	mHasSkeleton(false)
+	mRoll(0.0f)
 {
 	numMesh = 0;
 	numMats = 0;
@@ -35,6 +36,7 @@ Entity3D::Entity3D(const std::string& fileName):
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
+	mSkeleton(nullptr),
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
@@ -66,6 +68,8 @@ Entity3D::~Entity3D()
 
 	mMaterialMap.clear();
 
+	delete mSkeleton;
+
 	glDeleteBuffers(1, &mInstanceBuffer);
 }
 
@@ -96,7 +100,7 @@ bool Entity3D::LoadModel(const std::string& fileName)
 
 	if (scene->HasAnimations())
 	{
-		mHasSkeleton = true;
+		mSkeleton = new Skeleton();
 	}
 
 	ProcessNodes(scene->mRootNode, scene);
@@ -193,6 +197,14 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		{
 			vertex.uv = glm::vec2(0.0f, 0.0f);
 		}
+
+		// Initialize bone data
+		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+		{
+			vertex.boneIDs[i] = -1;
+			vertex.weights[i] = 0.0f;
+		}
+
 		vertices.emplace_back(vertex);
 	}
 

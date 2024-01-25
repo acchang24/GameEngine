@@ -1,0 +1,27 @@
+#pragma once
+#include <unordered_map>
+#include <string>
+#include <glm/glm.hpp>
+
+struct Bone
+{
+	// bone's index for the bone matrices
+	int index;
+	// offset matrix transforms a vertex from model space to bone space (sets model's pose)
+	glm::mat4 offset;
+};
+
+class Skeleton
+{
+public:
+	Skeleton();
+	~Skeleton();
+
+	std::unordered_map<std::string, Bone>& GetBoneMap() { return mBoneMap; }
+
+
+private:
+	std::unordered_map<std::string, Bone> mBoneMap;
+
+	int mNumBones;
+};
