@@ -1,7 +1,10 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
+#include <assimp/scene.h>
+#include "../Graphics/VertexLayouts.h"
 
 struct Bone
 {
@@ -16,6 +19,10 @@ class Skeleton
 public:
 	Skeleton();
 	~Skeleton();
+
+	void ExtractVertexBoneWeights(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
+
+	void SetVertexBoneData(Vertex& vertex, int boneID, float weight);
 
 	std::unordered_map<std::string, Bone>& GetBoneMap() { return mBoneMap; }
 

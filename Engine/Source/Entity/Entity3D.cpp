@@ -198,13 +198,6 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			vertex.uv = glm::vec2(0.0f, 0.0f);
 		}
 
-		// Initialize bone data
-		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
-		{
-			vertex.boneIDs[i] = -1;
-			vertex.weights[i] = 0.0f;
-		}
-
 		vertices.emplace_back(vertex);
 	}
 
@@ -255,6 +248,11 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		}
 	}
 
+	if (mSkeleton)
+	{
+		mSkeleton->ExtractVertexBoneWeights(vertices, mesh, scene);
+	}
+
 	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
 		vertices.size(), indices.size(), VertexLayout::Vertex);
 
@@ -302,10 +300,6 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 				// use the cached texture from AssetManager
 				material->AddTexture(t);
 			}
-		}
-		else
-		{
-			std::cout << "VHAT" << std::endl;
 		}
 	}
 }
