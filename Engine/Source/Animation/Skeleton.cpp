@@ -29,7 +29,7 @@ void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, aiMesh* m
 		// If there is no bone, make a new bone, add it to the bone map and increment bone count
 		if (mBoneMap.find(boneName) == mBoneMap.end())
 		{
-			Bone newBone = {};
+			BoneData newBone = {};
 			newBone.index = mNumBones;
 			newBone.offset = AssimpGLMHelper::ConvertMatrixToGLMFormat(mesh->mBones[i]->mOffsetMatrix);
 			mBoneMap[boneName] = newBone;

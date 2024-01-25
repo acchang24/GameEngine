@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include "../Graphics/VertexLayouts.h"
 
-struct Bone
+struct BoneData
 {
 	// bone's index for the bone matrices
 	int index;
@@ -24,11 +24,11 @@ public:
 
 	void SetVertexBoneData(Vertex& vertex, int boneID, float weight);
 
-	std::unordered_map<std::string, Bone>& GetBoneMap() { return mBoneMap; }
+	std::unordered_map<std::string, BoneData>& GetBoneMap() { return mBoneMap; }
 
 
 private:
-	std::unordered_map<std::string, Bone> mBoneMap;
+	std::unordered_map<std::string, BoneData> mBoneMap;
 
 	int mNumBones;
 };
