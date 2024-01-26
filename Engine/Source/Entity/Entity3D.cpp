@@ -103,13 +103,16 @@ bool Entity3D::LoadModel(const std::string& fileName)
 	if (scene->HasAnimations())
 	{
 		mSkeleton = new Skeleton();
+	}
 
+	ProcessNodes(scene->mRootNode, scene);
+
+	if (scene->HasAnimations())
+	{
 		Animation* newAnim = new Animation(fileName, mSkeleton);
 
 		mSkeleton->SetAnimation(newAnim);
 	}
-
-	ProcessNodes(scene->mRootNode, scene);
 
 	return true;
 }
@@ -346,26 +349,25 @@ void Entity3D::OnUpdate(float deltaTime)
 
 	if (mSkeleton)
 	{
-		//mSkeleton->UpdateAnimation(deltaTime);
+		mSkeleton->UpdateAnimation(deltaTime);
 
-		//mSkeleton->GetSkeletonBuffer()->UpdateBufferData(&mSkeleton->GetFinalBoneMatrices());
+		mSkeleton->GetSkeletonBuffer()->UpdateBufferData(mSkeleton->GetFinalBoneMatrices().data());
 	}
-	else
-	{
-		JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
-	}
-	//mModel = glm::mat4(1.0f);
+		
+	//JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
+	
+	mModel = glm::mat4(1.0f);
 
-	//// Translate
-	//mModel = glm::translate(mModel, mPosition);
+	// Translate
+	mModel = glm::translate(mModel, mPosition);
 
-	//// Rotate
-	//mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	//mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	//mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	// Rotate
+	mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	//// Scale
-	//mModel = glm::scale(mModel, mScale);
+	// Scale
+	mModel = glm::scale(mModel, mScale);
 }
 
 void Entity3D::OnDraw()
