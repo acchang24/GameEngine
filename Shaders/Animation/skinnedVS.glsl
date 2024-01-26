@@ -58,6 +58,10 @@ void main()
 	vec3 totalNormal = vec3(0.0);
 	for(int i = 0; i < MAX_BONE_INFLUENCE; ++i)
 	{
+		if(boneIds[i] == -1)
+		{
+			continue;
+		}
 		if(boneIds[i] >= MAX_BONES)
 		{
 			totalPosition = vec4(position, 1.0);
