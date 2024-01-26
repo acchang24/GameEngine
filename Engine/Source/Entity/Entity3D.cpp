@@ -10,6 +10,8 @@
 #include "../Graphics/VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 #include "../Animation/Skeleton.h"
+#include "../Animation/Animation.h"
+#include "../Graphics/UniformBuffer.h"
 
 Entity3D::Entity3D() :
 	Entity(),
@@ -101,6 +103,10 @@ bool Entity3D::LoadModel(const std::string& fileName)
 	if (scene->HasAnimations())
 	{
 		mSkeleton = new Skeleton();
+
+		Animation* newAnim = new Animation(fileName, mSkeleton);
+
+		mSkeleton->SetAnimation(newAnim);
 	}
 
 	ProcessNodes(scene->mRootNode, scene);
@@ -227,6 +233,11 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			++numMats;
 			mat = new Material();
 			mat->SetShader(AssetManager::Get()->LoadShader("phong"));
+			if (mSkeleton)
+			{
+				mat->SetShader(AssetManager::Get()->LoadShader("skinned"));
+			}
+
 			mMaterialMap[name] = mat;
 			// Diffuse textures
 			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
@@ -331,8 +342,18 @@ void Entity3D::Draw(Shader* shader)
 void Entity3D::OnUpdate(float deltaTime)
 {
 	// Update model matrix on seprate thread
-	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
+	
 
+	if (mSkeleton)
+	{
+		//mSkeleton->UpdateAnimation(deltaTime);
+
+		//mSkeleton->GetSkeletonBuffer()->UpdateBufferData(&mSkeleton->GetFinalBoneMatrices());
+	}
+	else
+	{
+		JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
+	}
 	//mModel = glm::mat4(1.0f);
 
 	//// Translate

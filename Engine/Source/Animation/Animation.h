@@ -3,8 +3,8 @@
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
-#include "Skeleton.h"
 #include "Bone.h"
+#include "BoneData.h"
 
 class Skeleton;
 
@@ -24,7 +24,7 @@ public:
 
 	void ReadNodeHeirarchy(AssimpNode& dest, const aiNode* src);
 
-	void ReadMissingBones(const aiAnimation* anim, Skeleton* skeleton);
+	void ReadBones(const aiAnimation* anim, Skeleton* skeleton);
 
 	const std::unordered_map<std::string, BoneData>& GetBoneInfoMap() { return mBoneInfoMap; }
 
@@ -41,6 +41,8 @@ public:
 	}
 
 	const AssimpNode& GetRootNode() const { return mRoot; }
+	const std::string& GetName() const { return mName; }
+	
 	float GetDuration() const { return mDuration; }
 	float GetTicksPerSecond() const { return mTicksPerSecond; }
 
@@ -50,6 +52,8 @@ private:
 
 	AssimpNode mRoot;
 	
+	std::string mName;
+
 	float mDuration;
 
 	float mTicksPerSecond;

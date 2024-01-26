@@ -4,13 +4,18 @@
 #include "../Entity/Entity3D.h"
 #include "../Util/AssimpGLMHelper.h"
 #include "Skeleton.h"
+#include <iostream>
 
 Animation::Animation(const std::string& animPath, Skeleton* skeleton)
 {
+	skeleton->AddAnimation(this);
+
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(animPath, aiProcess_Triangulate);
 
 	aiAnimation* animation = scene->mAnimations[0];
+	mName = animation->mName.C_Str();
+
 	mDuration = animation->mDuration;
 	mTicksPerSecond = animation->mTicksPerSecond;
 
@@ -18,11 +23,12 @@ Animation::Animation(const std::string& animPath, Skeleton* skeleton)
 	globalTransformation = globalTransformation.Inverse();
 
 	ReadNodeHeirarchy(mRoot, scene->mRootNode);
-	ReadMissingBones(animation, skeleton);
+	ReadBones(animation, skeleton);
 }
 
 Animation::~Animation()
 {
+	std::cout << "Delete animation" << std::endl;
 }
 
 void Animation::ReadNodeHeirarchy(AssimpNode& dest, const aiNode* src)
@@ -39,7 +45,7 @@ void Animation::ReadNodeHeirarchy(AssimpNode& dest, const aiNode* src)
 	}
 }
 
-void Animation::ReadMissingBones(const aiAnimation* anim, Skeleton* skeleton)
+void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
 {
 	int size = anim->mNumChannels;
 

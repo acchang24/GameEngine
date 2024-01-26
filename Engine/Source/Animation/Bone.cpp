@@ -46,7 +46,7 @@ Bone::Bone(const std::string& name, int id, const aiNodeAnim* channel) :
 
 Bone::~Bone()
 {
-	std::cout << "Delete bone" << std::endl;
+	//std::cout << "Delete bone" << std::endl;
 }
 
 void Bone::Update(float animTime)

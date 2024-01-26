@@ -25,6 +25,7 @@
 #include "Graphics/ShadowMap.h"
 #include "Profiler/Profiler.h"
 #include "Multithreading/JobManager.h"
+#include "Animation/Skeleton.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -148,6 +149,9 @@ bool Game::Init()
 	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
 	mAssetManager->SaveShader("phong", phongShader);
 
+	Shader* skinnedShader = new Shader("Shaders/Animation/skinnedVS.glsl", "Shaders/phongFS.glsl");
+	mAssetManager->SaveShader("skinned", skinnedShader);
+
 	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
 	mAssetManager->SaveShader("texture", textureShader);
 
@@ -159,6 +163,10 @@ bool Game::Init()
 	materialBuffer->LinkShader(instanceShader);
 	materialBuffer->LinkShader(textureShader);
 	mAssetManager->SaveBuffer("MaterialBuffer", materialBuffer);
+
+	UniformBuffer* skeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
+	skeletonBuffer->LinkShader(skinnedShader);
+	mAssetManager->SaveBuffer("SkeletonBuffer", skeletonBuffer);
 
 	Material* lightSphereMaterial = new Material();
 	lightSphereMaterial->SetShader(textureShader);

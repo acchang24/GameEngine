@@ -1,15 +1,32 @@
 #include "Skeleton.h"
 #include <iostream>
 #include "../Util/AssimpGLMHelper.h"
+#include "../MemoryManager/AssetManager.h"
+#include "../Graphics/UniformBuffer.h"
 
 Skeleton::Skeleton() :
+	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
+	mCurrentAnimation(nullptr),
+	mCurrentTime(0.0f),
+	mDeltaTime(0.0f),
 	mNumBones(0)
 {
+	mFinalBoneMatrices.reserve(100);
+	for (int i = 0; i < 100; ++i)
+	{
+		mFinalBoneMatrices.emplace_back(glm::mat4(1.0f));
+	}
 }
 
 Skeleton::~Skeleton()
 {
 	std::cout << "Delete skeleton" << std::endl;
+
+	for (auto& a : mAnimations)
+	{
+		delete a.second;
+	}
+	mAnimations.clear();
 }
 
 void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
@@ -72,4 +89,54 @@ void Skeleton::SetVertexBoneData(Vertex& vertex, int boneID, float weight)
 			break;
 		}
 	}
+}
+
+void Skeleton::UpdateAnimation(float deltaTime)
+{
+	mDeltaTime = deltaTime;
+	
+	if (mCurrentAnimation)
+	{
+		mCurrentTime += mCurrentAnimation->GetTicksPerSecond() * deltaTime;
+		mCurrentTime = fmod(mCurrentTime, mCurrentAnimation->GetDuration());
+
+		CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
+	}
+}
+
+void Skeleton::CalculateBoneTransform(const AssimpNode* node, glm::mat4 parentTransform)
+{
+	std::string nodeName = node->name;
+
+	glm::mat4 nodeTransform = node->transformation;
+
+	Bone* bone = mCurrentAnimation->FindBone(nodeName);
+
+	if (bone)
+	{
+		bone->Update(mCurrentTime);
+
+		nodeTransform = bone->GetLocalTransform();
+	}
+
+	glm::mat4 globalTransformation = parentTransform * nodeTransform;
+
+
+	std::unordered_map<std::string, BoneData> boneMap = mCurrentAnimation->GetBoneInfoMap();
+
+	if (boneMap.find(nodeName) != boneMap.end())
+	{
+		BoneData bd = boneMap[nodeName];
+
+		int index = bd.index;
+		glm::mat4 offset = bd.offset;
+
+		mFinalBoneMatrices[index] = globalTransformation * offset;
+	}
+
+	for (int i = 0; i < node->numChildren; ++i)
+	{
+		CalculateBoneTransform(&node->children[i], globalTransformation);
+	}
+
 }
