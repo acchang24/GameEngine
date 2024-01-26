@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
+#include <assimp/scene.h>
 #include "Bone.h"
 #include "BoneData.h"
 
@@ -10,16 +11,16 @@ class Skeleton;
 
 struct AssimpNode
 {
-	glm::mat4 transformation;
-	std::string name;
+	glm::mat4 transformation = glm::mat4(1.0f);
 	std::vector<AssimpNode> children;
-	int numChildren;
+	std::string name;
+	int numChildren = 0;
 };
 
 class Animation
 {
 public:
-	Animation(const std::string& animPath, Skeleton* skeleton);
+	Animation(const aiAnimation* animation, const aiNode* rootNode, Skeleton* skeleton);
 	~Animation();
 
 	void ReadNodeHeirarchy(AssimpNode& dest, const aiNode* src);

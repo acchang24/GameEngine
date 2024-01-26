@@ -12,6 +12,7 @@
 #include "../Animation/Skeleton.h"
 #include "../Animation/Animation.h"
 #include "../Graphics/UniformBuffer.h"
+#include "../Profiler/Profiler.h"
 
 Entity3D::Entity3D() :
 	Entity(),
@@ -109,9 +110,11 @@ bool Entity3D::LoadModel(const std::string& fileName)
 
 	if (scene->HasAnimations())
 	{
-		Animation* newAnim = new Animation(fileName, mSkeleton);
-
-		mSkeleton->SetAnimation(newAnim);
+		for (int i = 0; i < scene->mNumAnimations; ++i)
+		{
+			Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, mSkeleton);
+			mSkeleton->SetAnimation(newAnim);
+		}
 	}
 
 	return true;
@@ -349,6 +352,7 @@ void Entity3D::OnUpdate(float deltaTime)
 
 	if (mSkeleton)
 	{
+		PROFILE_SCOPE(ANIMATE);
 		mSkeleton->UpdateAnimation(deltaTime);
 
 		mSkeleton->GetSkeletonBuffer()->UpdateBufferData(mSkeleton->GetFinalBoneMatrices().data());

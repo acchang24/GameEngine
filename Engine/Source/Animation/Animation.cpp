@@ -1,28 +1,20 @@
 #include "Animation.h"
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 #include "../Entity/Entity3D.h"
 #include "../Util/AssimpGLMHelper.h"
 #include "Skeleton.h"
 #include <iostream>
 
-Animation::Animation(const std::string& animPath, Skeleton* skeleton)
+Animation::Animation(const aiAnimation* animation, const aiNode* rootNode, Skeleton* skeleton) :
+	mName(animation->mName.C_Str()),
+	mDuration(animation->mDuration),
+	mTicksPerSecond(animation->mTicksPerSecond)
 {
 	skeleton->AddAnimation(this);
 
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(animPath, aiProcess_Triangulate);
-
-	aiAnimation* animation = scene->mAnimations[0];
-	mName = animation->mName.C_Str();
-
-	mDuration = animation->mDuration;
-	mTicksPerSecond = animation->mTicksPerSecond;
-
-	aiMatrix4x4 globalTransformation = scene->mRootNode->mTransformation;
+	aiMatrix4x4 globalTransformation = rootNode->mTransformation;
 	globalTransformation = globalTransformation.Inverse();
 
-	ReadNodeHeirarchy(mRoot, scene->mRootNode);
+	ReadNodeHeirarchy(mRoot, rootNode);
 	ReadBones(animation, skeleton);
 }
 
@@ -64,8 +56,7 @@ void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
 			boneInfoMap[boneName].index = boneCount;
 			++boneCount;
 		}
-		mBones.emplace_back(Bone(channel->mNodeName.data, boneInfoMap[channel->mNodeName.data].index, channel));
-
+		mBones.emplace_back(Bone(boneName, boneInfoMap[boneName].index, boneInfoMap[boneName].offset, channel));
 	}
 	mBoneInfoMap = boneInfoMap;
 }

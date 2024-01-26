@@ -112,31 +112,25 @@ void Skeleton::CalculateBoneTransform(const AssimpNode* node, glm::mat4 parentTr
 
 	Bone* bone = mCurrentAnimation->FindBone(nodeName);
 
+	glm::mat4 globalTransformation(1.0f);
+
 	if (bone)
 	{
 		bone->Update(mCurrentTime);
 
 		nodeTransform = bone->GetLocalTransform();
+
+		globalTransformation = parentTransform * nodeTransform;
+
+		mFinalBoneMatrices[bone->GetBoneID()] = globalTransformation * bone->GetOffetMatrix();
 	}
-
-	glm::mat4 globalTransformation = parentTransform * nodeTransform;
-
-
-	std::unordered_map<std::string, BoneData> boneMap = mCurrentAnimation->GetBoneInfoMap();
-
-	if (boneMap.find(nodeName) != boneMap.end())
+	else
 	{
-		BoneData bd = boneMap[nodeName];
-
-		int index = bd.index;
-		glm::mat4 offset = bd.offset;
-
-		mFinalBoneMatrices[index] = globalTransformation * offset;
+		globalTransformation = parentTransform * nodeTransform;
 	}
 
 	for (int i = 0; i < node->numChildren; ++i)
 	{
 		CalculateBoneTransform(&node->children[i], globalTransformation);
 	}
-
 }

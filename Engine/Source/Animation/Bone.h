@@ -27,7 +27,7 @@ class Bone
 public:
 	// Bone constructor reads in keyframes from an aiNodeAnim and saves
 	// all position, rotation, scalings in a vector as its key frame count
-	Bone(const std::string& name, int id, const aiNodeAnim* channel);
+	Bone(const std::string& name, int id, const glm::mat4 offset, const aiNodeAnim* channel);
 	~Bone();
 
 	void Update(float animTime);
@@ -46,6 +46,8 @@ public:
 
 	const glm::mat4& GetLocalTransform() const { return mLocalTransform; }
 
+	const glm::mat4& GetOffetMatrix() const { return mOffset; }
+
 	const std::string& GetBoneName() const { return mName; }
 
 	int GetBoneID() const { return mID; }
@@ -56,6 +58,7 @@ private:
 	std::vector<KeyScale> mScalings;
 
 	glm::mat4 mLocalTransform;
+	glm::mat4 mOffset;
 
 	std::string mName;
 
