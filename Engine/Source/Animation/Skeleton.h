@@ -26,6 +26,7 @@ public:
 
 	std::unordered_map<std::string, BoneData>& GetBoneMap() { return mBoneMap; }
 
+	int& GetNumBones() { return mNumBones; }
 
 private:
 	std::unordered_map<std::string, BoneData> mBoneMap;
