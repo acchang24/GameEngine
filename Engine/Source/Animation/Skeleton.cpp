@@ -5,6 +5,7 @@
 #include "../Graphics/UniformBuffer.h"
 
 Skeleton::Skeleton() :
+	mGlobalInverseTransform(glm::mat4(1.0f)),
 	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
 	mCurrentAnimation(nullptr),
 	mCurrentTime(0.0f),
@@ -122,7 +123,7 @@ void Skeleton::CalculateBoneTransform(const AssimpNode* node, const glm::mat4& p
 
 		globalTransformation = parentTransform * nodeTransform;
 
-		mFinalBoneMatrices[bone->GetBoneID()] = globalTransformation * bone->GetOffetMatrix();
+		mFinalBoneMatrices[bone->GetBoneID()] = mGlobalInverseTransform * globalTransformation * bone->GetOffetMatrix();
 	}
 	else
 	{

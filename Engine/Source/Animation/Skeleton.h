@@ -56,12 +56,16 @@ public:
 		mCurrentTime = 0.0f;
 	}
 
+	void SetGlobalInverseTransform(const glm::mat4& transform) { mGlobalInverseTransform = transform; }
+
 
 private:
 	std::unordered_map<std::string, BoneData> mBoneMap;
 	std::unordered_map<std::string, Animation*> mAnimations;
 
 	std::vector<glm::mat4> mFinalBoneMatrices;
+
+	glm::mat4 mGlobalInverseTransform;
 
 	UniformBuffer* mSkeletonBuffer;
 

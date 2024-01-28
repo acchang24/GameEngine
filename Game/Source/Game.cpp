@@ -282,7 +282,7 @@ bool Game::Init()
 
 
 	Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire->SetScale(5.0f);
+	vampire->SetScale(0.075f);
 	vampire->SetPosition(glm::vec3(0.0f, -4.0f, 0.0f));
 	AddGameEntity(vampire);
 

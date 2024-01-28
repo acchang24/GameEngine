@@ -14,6 +14,10 @@ Animation::Animation(const aiAnimation* animation, const aiNode* rootNode, Skele
 	aiMatrix4x4 globalTransformation = rootNode->mTransformation;
 	globalTransformation = globalTransformation.Inverse();
 
+	glm::mat4 transform = AssimpGLMHelper::ConvertMatrixToGLMFormat(globalTransformation);
+
+	skeleton->SetGlobalInverseTransform(transform);
+
 	ReadNodeHeirarchy(mRoot, rootNode);
 	ReadBones(animation, skeleton);
 }
