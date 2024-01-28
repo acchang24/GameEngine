@@ -104,7 +104,7 @@ void Skeleton::UpdateAnimation(float deltaTime)
 	}
 }
 
-void Skeleton::CalculateBoneTransform(const AssimpNode* node, glm::mat4 parentTransform)
+void Skeleton::CalculateBoneTransform(const AssimpNode* node, const glm::mat4& parentTransform)
 {
 	std::string nodeName = node->name;
 

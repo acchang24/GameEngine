@@ -28,6 +28,7 @@ void Animation::ReadNodeHeirarchy(AssimpNode& dest, const aiNode* src)
 	dest.name = src->mName.data;
 	dest.transformation = AssimpGLMHelper::ConvertMatrixToGLMFormat(src->mTransformation);
 	dest.numChildren = src->mNumChildren;
+	dest.children.reserve(dest.numChildren);
 
 	for (int i = 0; i < src->mNumChildren; ++i)
 	{

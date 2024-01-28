@@ -28,7 +28,7 @@ public:
 
 	void UpdateAnimation(float deltaTime);
 
-	void CalculateBoneTransform(const AssimpNode* node, glm::mat4 parentTransform);
+	void CalculateBoneTransform(const AssimpNode* node, const glm::mat4& parentTransform);
 
 
 

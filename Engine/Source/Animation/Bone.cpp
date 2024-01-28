@@ -11,6 +11,7 @@ Bone::Bone(const std::string& name, int id, const glm::mat4 offset, const aiNode
 	mNumRotations(channel->mNumRotationKeys),
 	mNumScalings(channel->mNumScalingKeys)
 {
+	mPositions.reserve(mNumPositions);
 	for (int i = 0; i < mNumPositions; ++i)
 	{
 		aiVectorKey key = channel->mPositionKeys[i];
@@ -21,7 +22,7 @@ Bone::Bone(const std::string& name, int id, const glm::mat4 offset, const aiNode
 		data.timeStamp = timeStamp;
 		mPositions.emplace_back(data);
 	}
-
+	mRotations.reserve(mNumRotations);
 	for (int i = 0; i < mNumRotations; ++i)
 	{
 		aiQuatKey key = channel->mRotationKeys[i];
@@ -32,7 +33,7 @@ Bone::Bone(const std::string& name, int id, const glm::mat4 offset, const aiNode
 		data.timeStamp = timeStamp;
 		mRotations.emplace_back(data);
 	}
-
+	mScalings.reserve(mNumScalings);
 	for (int i = 0; i < mNumScalings; ++i)
 	{
 		aiVectorKey key = channel->mScalingKeys[i];
