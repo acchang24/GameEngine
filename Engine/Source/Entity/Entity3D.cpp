@@ -267,7 +267,7 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
 	if (mSkeleton)
 	{
-		mSkeleton->ExtractVertexBoneWeights(vertices, mesh, scene);
+		mSkeleton->ExtractVertexBoneWeights(vertices, mesh);
 	}
 
 	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),

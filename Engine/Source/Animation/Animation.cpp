@@ -27,16 +27,16 @@ Animation::~Animation()
 	std::cout << "Delete animation" << std::endl;
 }
 
-void Animation::ReadNodeHeirarchy(AssimpNode& dest, const aiNode* src)
+void Animation::ReadNodeHeirarchy(AnimNode& dest, const aiNode* src)
 {
 	dest.name = src->mName.data;
 	dest.transformation = AssimpGLMHelper::ConvertMatrixToGLMFormat(src->mTransformation);
 	dest.numChildren = src->mNumChildren;
-	dest.children.reserve(dest.numChildren);
+	dest.children.reserve(src->mNumChildren);
 
 	for (int i = 0; i < src->mNumChildren; ++i)
 	{
-		AssimpNode newNode = {};
+		AnimNode newNode = {};
 		ReadNodeHeirarchy(newNode, src->mChildren[i]);
 		dest.children.emplace_back(newNode);
 	}
@@ -45,6 +45,8 @@ void Animation::ReadNodeHeirarchy(AssimpNode& dest, const aiNode* src)
 void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
 {
 	int size = anim->mNumChannels;
+
+	mBones.reserve(static_cast<size_t>(size));
 
 	auto& boneInfoMap = skeleton->GetBoneMap();
 	int& boneCount = skeleton->GetNumBones();

@@ -10,6 +10,9 @@ class AssimpGLMHelper
 {
 public:
 
+	// Converts an assimp importer Matrix4x4 to a glm::mat4 format
+	// @param - const aiMatrix4x4& for the assimp matrix
+	// @return - glm::mat4 for the glm format of an assimp matrix
 	static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from)
 	{
 		glm::mat4 to;
@@ -21,11 +24,17 @@ public:
 		return to;
 	}
 
+	// Converts an assimp importer Vector3D to a glm::vec3 format
+	// @param - const aiVector3D& for the 3d vector
+	// @return - glm::vec3 for the glm format of a vector3
 	static inline glm::vec3 GetGLMVec(const aiVector3D& vec)
 	{
 		return glm::vec3(vec.x, vec.y, vec.z);
 	}
 
+	// Converts an assimp importer Quaternion to a glm::quat format
+	// @param - const aiQuaternion& for the assimp quaternion
+	// @return - glm::quat for the glm format of an assimp quaternion
 	static inline glm::quat GetGLMQuat(const aiQuaternion& pOrientation)
 	{
 		return glm::quat(pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z);

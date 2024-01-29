@@ -9,11 +9,10 @@ Skeleton::Skeleton() :
 	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
 	mCurrentAnimation(nullptr),
 	mCurrentTime(0.0f),
-	mDeltaTime(0.0f),
 	mNumBones(0)
 {
-	mFinalBoneMatrices.reserve(100);
-	for (int i = 0; i < 100; ++i)
+	mFinalBoneMatrices.reserve(MAX_BONES);
+	for (int i = 0; i < MAX_BONES; ++i)
 	{
 		mFinalBoneMatrices.emplace_back(glm::mat4(1.0f));
 	}
@@ -30,12 +29,12 @@ Skeleton::~Skeleton()
 	mAnimations.clear();
 }
 
-void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
+void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh)
 {
 	// The bone's name
 	std::string boneName;
 
-	// Loop through the mesh's bones
+	// Loop through the assimp mesh's bones
 	for (int i = 0; i < mesh->mNumBones; ++i)
 	{
 		boneName = mesh->mBones[i]->mName.C_Str();
@@ -43,7 +42,7 @@ void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, aiMesh* m
 		// Bone's ID
 		int boneID = -1;
 
-		// Check to see if bone is in the map and set its ID to the one in the index
+		// Check to see if bone is in the map and set the boneID to the one in the index
 		// If there is no bone, make a new bone, add it to the bone map and increment bone count
 		if (mBoneMap.find(boneName) == mBoneMap.end())
 		{
@@ -59,8 +58,6 @@ void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, aiMesh* m
 			boneID = mBoneMap[boneName].index;
 		}
 
-		// boneID != -1
-
 		// Bone's array of bone weights
 		aiVertexWeight* weightArray = mesh->mBones[i]->mWeights;
 		// Number of weights for this bone
@@ -72,14 +69,12 @@ void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, aiMesh* m
 			int vertexID = weightArray[weightIndex].mVertexId;
 			float weight = weightArray[weightIndex].mWeight;
 
-			// vertexID <= vertices.size()
-
 			SetVertexBoneData(vertices[vertexID], boneID, weight);
 		}
 	}
 }
 
-void Skeleton::SetVertexBoneData(Vertex& vertex, int boneID, float weight)
+void Skeleton::SetVertexBoneData(Vertex& vertex, int boneID, float weight) const
 {
 	for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
 	{
@@ -94,18 +89,19 @@ void Skeleton::SetVertexBoneData(Vertex& vertex, int boneID, float weight)
 
 void Skeleton::UpdateAnimation(float deltaTime)
 {
-	mDeltaTime = deltaTime;
-	
 	if (mCurrentAnimation)
 	{
 		mCurrentTime += mCurrentAnimation->GetTicksPerSecond() * deltaTime;
-		mCurrentTime = fmod(mCurrentTime, mCurrentAnimation->GetDuration());
+		if (mCurrentTime > mCurrentAnimation->GetDuration())
+		{
+			mCurrentTime = 0.0f;
+		}
 
 		CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
 	}
 }
 
-void Skeleton::CalculateBoneTransform(const AssimpNode* node, const glm::mat4& parentTransform)
+void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& parentTransform)
 {
 	std::string nodeName = node->name;
 
