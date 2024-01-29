@@ -286,6 +286,51 @@ bool Game::Init()
 	vampire->SetPosition(glm::vec3(0.0f, -4.0f, 0.0f));
 	AddGameEntity(vampire);
 
+	Entity3D* vampire2 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire2->SetScale(0.075f);
+	vampire2->SetPosition(glm::vec3(10.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire2);
+
+	Entity3D* vampire3 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire3->SetScale(0.075f);
+	vampire3->SetPosition(glm::vec3(-10.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire3);
+
+	Entity3D* vampire4 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire4->SetScale(0.075f);
+	vampire4->SetPosition(glm::vec3(10.0f, -4.0f, 10.0f));
+	AddGameEntity(vampire4);
+
+	Entity3D* vampire5 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire5->SetScale(0.075f);
+	vampire5->SetPosition(glm::vec3(10.0f, -4.0f, -10.0f));
+	AddGameEntity(vampire5);
+
+	Entity3D* vampire6 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire6->SetScale(0.075f);
+	vampire6->SetPosition(glm::vec3(20.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire6);
+
+	Entity3D* vampire7 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire7->SetScale(0.075f);
+	vampire7->SetPosition(glm::vec3(-15.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire7);
+
+	Entity3D* vampire8 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire8->SetScale(0.075f);
+	vampire8->SetPosition(glm::vec3(15.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire8);
+
+	Entity3D* vampire9 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire9->SetScale(0.075f);
+	vampire9->SetPosition(glm::vec3(10.0f, -4.0f, 15.0f));
+	AddGameEntity(vampire9);
+
+	Entity3D* vampire10 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire10->SetScale(0.075f);
+	vampire10->SetPosition(glm::vec3(10.0f, -4.0f, -15.0f));
+	AddGameEntity(vampire10);
+
 	//Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	//sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	//sponza->SetScale(0.15);

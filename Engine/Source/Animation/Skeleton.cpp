@@ -8,6 +8,7 @@ Skeleton::Skeleton() :
 	mGlobalInverseTransform(glm::mat4(1.0f)),
 	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
 	mCurrentAnimation(nullptr),
+	mJob(this),
 	mCurrentTime(0.0f),
 	mNumBones(0)
 {
@@ -97,7 +98,10 @@ void Skeleton::UpdateAnimation(float deltaTime)
 			mCurrentTime = 0.0f;
 		}
 
-		CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
+		// Update bone transformations on separate thread
+		JobManager::Get()->AddJob(&mJob);
+
+		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
 	}
 }
 
@@ -130,4 +134,13 @@ void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& par
 	{
 		CalculateBoneTransform(&node->children[i], globalTransformation);
 	}
+}
+
+void Skeleton::UpdateBoneJob::DoIt()
+{
+	const AnimNode* root = &mSkeleton->GetCurrentAnimation()->GetRootNode();
+
+	glm::mat4 parent(1.0f);
+
+	mSkeleton->CalculateBoneTransform(root, parent);
 }

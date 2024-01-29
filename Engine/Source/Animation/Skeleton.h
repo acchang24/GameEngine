@@ -7,6 +7,7 @@
 #include "../Graphics/VertexLayouts.h"
 #include "BoneData.h"
 #include "Animation.h"
+#include "../Multithreading/JobManager.h"
 
 const int MAX_BONES = 100;
 
@@ -88,6 +89,19 @@ public:
 	void SetGlobalInverseTransform(const glm::mat4& transform) { mGlobalInverseTransform = transform; }
 
 private:
+	// Job to update bone matrices
+	class UpdateBoneJob : public JobManager::Job
+	{
+	public:
+		UpdateBoneJob(Skeleton* s) : mSkeleton(s)
+		{}
+
+		void DoIt() override;
+
+	private:
+		Skeleton* mSkeleton;
+	};
+
 	// Gets the reference to the skeleton's bone map (can change)
 	// @return - std::unordered_map<std::string, BoneData>& for the skeleton's bone data map
 	std::unordered_map<std::string, BoneData>& GetBoneMap() { return mBoneMap; }
@@ -112,6 +126,9 @@ private:
 
 	// The skeleton's current animation
 	Animation* mCurrentAnimation;
+
+	// Job to update bone matrices
+	UpdateBoneJob mJob;
 
 	// The current time elapsed for the animation
 	float mCurrentTime;

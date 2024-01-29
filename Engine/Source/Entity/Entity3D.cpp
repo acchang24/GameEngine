@@ -236,28 +236,37 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skelet
 		// If the material index is not in the entity's material map, create a new material
 		if (mMaterialMap.find(name) == mMaterialMap.end())
 		{
-			std::cout << name << " " << mesh->mMaterialIndex << std::endl;
-			++numMats;
-			mat = new Material();
-			mat->SetShader(AssetManager::Get()->LoadShader("phong"));
-			if (skeleton)
+			AssetManager* am = AssetManager::Get();
+
+			// Check to see if it's in the asset manager map
+			mat = am->LoadMaterial(name);
+
+			// Create a new material if it's not in the asset manager
+			if(!mat)
 			{
-				mat->SetShader(AssetManager::Get()->LoadShader("skinned"));
+				std::cout << name << " " << mesh->mMaterialIndex << std::endl;
+				++numMats;
+				mat = new Material();
+				mat->SetShader(AssetManager::Get()->LoadShader("phong"));
+				if (skeleton)
+				{
+					mat->SetShader(AssetManager::Get()->LoadShader("skinned"));
+				}
+
+				mMaterialMap[name] = mat;
+				// Diffuse textures
+				LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
+				// Specular textures
+				LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
+				// Emissive textures
+				LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
+				// Normal textures
+				LoadMaterialTextures(material, aiTextureType_NORMALS, mat);
+
+				// Height maps
+
+				am->SaveMaterial(name, mat);
 			}
-
-			mMaterialMap[name] = mat;
-			// Diffuse textures
-			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
-			// Specular textures
-			LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
-			// Emissive textures
-			LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
-			// Normal textures
-			LoadMaterialTextures(material, aiTextureType_NORMALS, mat);
-
-			// Height maps
-
-			AssetManager::Get()->SaveMaterial(name, mat);
 		}
 		else
 		{
