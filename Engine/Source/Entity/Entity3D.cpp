@@ -13,6 +13,7 @@
 #include "../Animation/Animation.h"
 #include "../Graphics/UniformBuffer.h"
 #include "../Profiler/Profiler.h"
+#include "../Components/AnimationComponent.h"
 
 Entity3D::Entity3D() :
 	Entity(),
@@ -21,7 +22,6 @@ Entity3D::Entity3D() :
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
-	mSkeleton(nullptr),
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
@@ -39,7 +39,6 @@ Entity3D::Entity3D(const std::string& fileName):
 	mModel(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
-	mSkeleton(nullptr),
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
@@ -71,8 +70,6 @@ Entity3D::~Entity3D()
 
 	mMaterialMap.clear();
 
-	delete mSkeleton;
-
 	glDeleteBuffers(1, &mInstanceBuffer);
 }
 
@@ -101,26 +98,30 @@ bool Entity3D::LoadModel(const std::string& fileName)
 
 	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
 
+	Skeleton* skeleton = nullptr;
+
 	if (scene->HasAnimations())
 	{
-		mSkeleton = new Skeleton();
+		// Create a new animation component for this model
+		skeleton = new Skeleton();
+		AnimationComponent* animComp = new AnimationComponent(this, skeleton);
 	}
 
-	ProcessNodes(scene->mRootNode, scene);
+	ProcessNodes(scene->mRootNode, scene, skeleton);
 
 	if (scene->HasAnimations())
 	{
 		for (int i = 0; i < scene->mNumAnimations; ++i)
 		{
-			Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, mSkeleton);
-			mSkeleton->SetAnimation(newAnim);
+			Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, skeleton);
+			skeleton->SetAnimation(newAnim);
 		}
 	}
 
 	return true;
 }
 
-void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene)
+void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton)
 {
 	//// Process the node's mesh
 	//for (unsigned int i = 0; i < node->mNumMeshes; ++i)
@@ -145,7 +146,7 @@ void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene)
 		for (unsigned int i = 0; i < currNode->mNumMeshes; ++i)
 		{
 			aiMesh* mesh = scene->mMeshes[currNode->mMeshes[i]];
-			Mesh* newMesh = ProcessMesh(mesh, scene);
+			Mesh* newMesh = ProcessMesh(mesh, scene, skeleton);
 			newMesh->SetOwner(this);
 			AddMesh(newMesh);
 		}
@@ -160,7 +161,7 @@ void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene)
 	}
 }
 
-Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -239,7 +240,7 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			++numMats;
 			mat = new Material();
 			mat->SetShader(AssetManager::Get()->LoadShader("phong"));
-			if (mSkeleton)
+			if (skeleton)
 			{
 				mat->SetShader(AssetManager::Get()->LoadShader("skinned"));
 			}
@@ -265,9 +266,9 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		}
 	}
 
-	if (mSkeleton)
+	if (skeleton)
 	{
-		mSkeleton->ExtractVertexBoneWeights(vertices, mesh);
+		skeleton->ExtractVertexBoneWeights(vertices, mesh);
 	}
 
 	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
@@ -347,17 +348,7 @@ void Entity3D::Draw(Shader* shader)
 
 void Entity3D::OnUpdate(float deltaTime)
 {
-	// Update model matrix on seprate thread
-	
-
-	if (mSkeleton)
-	{
-		PROFILE_SCOPE(ANIMATE);
-		mSkeleton->UpdateAnimation(deltaTime);
-
-		mSkeleton->GetSkeletonBuffer()->UpdateBufferData(mSkeleton->GetFinalBoneMatrices().data());
-	}
-		
+	// Update model matrix on seprate thread		
 	//JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 	
 	mModel = glm::mat4(1.0f);

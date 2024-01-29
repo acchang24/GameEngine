@@ -35,15 +35,17 @@ public:
 	// Loads the model's file using Assimp
 	// @param - const std::string& for the file name
 	bool LoadModel(const std::string& fileName);
-	// Recursivelly goes through the scene's nodes and loads any meshes
+	// Recursively goes through the scene's nodes and loads any meshes
 	// @param - aiNode*
 	// @param - const aiScene*
-	void ProcessNodes(aiNode* node, const aiScene* scene);
+	// @param - Skeleton* if there is a skeleton for this model
+	void ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton);
 	// Takes an assimp mesh and store it in our own Mesh object.
 	// It then appends that mesh to the entity's vector of meshes.
 	// @param - aiMesh*
 	// @param - const aiScene*
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	// @param - Skeleton* if there is a skeleton for this model
+	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton);
 	// Loads the textures of the material
 	// @param - aiMaterial*
 	// @param - aiTextureType
@@ -166,9 +168,6 @@ protected:
 
 	// Entity's scale
 	glm::vec3 mScale;
-
-	// Entity's skeleton (if it has animation)
-	Skeleton* mSkeleton;
 
 	// Buffer for if this entity is drawn as an instance
 	unsigned int mInstanceBuffer;
