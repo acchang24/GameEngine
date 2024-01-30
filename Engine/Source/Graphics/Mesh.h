@@ -1,8 +1,8 @@
 #pragma once
+#include <glm/glm.hpp>
 
 class VertexBuffer;
 class Material;
-class Entity3D;
 class Shader;
 
 // Mesh class containes all the relvant data required for
@@ -15,26 +15,20 @@ public:
 	Mesh(VertexBuffer* vb, Material* material);
 	~Mesh();
 
-	void Draw();
+	void Draw(const glm::mat4& modelMatrix);
 
 	// Draw function using a shader set explicitly
-	void Draw(Shader* shader);
+	void Draw(Shader* shader, const glm::mat4& modelMatrix);
 
 	VertexBuffer* GetVertexBuffer() { return mVertexBuffer; }
 
 	// Gets the mesh's material
 	// @return - Material* for the mesh's material
 	Material* GetMaterial() { return mMaterial; }
-	// Gets the mesh's owner
-	// @return - Entity3D* for the mesh's owner
-	Entity3D* GetOwner() { return mOwner; }
 
 	// Sets the mesh's material
 	// @param - Material* for the new material
 	void SetMaterial(Material* material) { mMaterial = material; }
-	// Sets the mesh's owner
-	// @param - Entity3D* for the new owner
-	void SetOwner(Entity3D* owner) { mOwner = owner; }
 
 private:
 	// The mesh's vertex buffer
@@ -42,7 +36,4 @@ private:
 
 	// The mesh's material
 	Material* mMaterial;
-
-	// The mesh's owner
-	Entity3D* mOwner;
 };

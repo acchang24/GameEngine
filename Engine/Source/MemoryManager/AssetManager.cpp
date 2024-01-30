@@ -2,17 +2,12 @@
 #include <iostream>
 
 AssetManager::AssetManager() :
-	mShaderCache(nullptr),
-	mTextureCache(nullptr),
-	mMaterialCache(nullptr),
-	mMeshCache(nullptr),
-	mBufferCache(nullptr)
+	mShaderCache(new Cache<Shader>(this)),
+	mTextureCache(new Cache<Texture>(this)),
+	mMaterialCache(new Cache<Material>(this)),
+	mMeshCache(new Cache<Mesh>(this)),
+	mBufferCache(new Cache<UniformBuffer>(this))
 {
-	mShaderCache = new Cache<Shader>(this);
-	mTextureCache = new Cache<Texture>(this);
-	mMaterialCache = new Cache<Material>(this);
-	mMeshCache = new Cache<Mesh>(this);
-	mBufferCache = new Cache<UniformBuffer>(this);
 }
 
 AssetManager::~AssetManager()

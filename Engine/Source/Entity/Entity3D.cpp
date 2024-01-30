@@ -123,20 +123,6 @@ bool Entity3D::LoadModel(const std::string& fileName)
 
 void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton)
 {
-	//// Process the node's mesh
-	//for (unsigned int i = 0; i < node->mNumMeshes; ++i)
-	//{
-	//	aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-	//	Mesh* newMesh = ProcessMesh(mesh, scene);
-	//	newMesh->SetOwner(this);
-	//	AddMesh(newMesh);
-	//}
-	//// Process any children nodes
-	//for (unsigned int i = 0; i < node->mNumChildren; ++i)
-	//{
-	//	ProcessNodes(node->mChildren[i], scene);
-	//}
-
 	std::queue<aiNode*> nodeQ;
 	nodeQ.push(node);
 	aiNode* currNode = nullptr;
@@ -147,7 +133,6 @@ void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skelet
 		{
 			aiMesh* mesh = scene->mMeshes[currNode->mMeshes[i]];
 			Mesh* newMesh = ProcessMesh(mesh, scene, skeleton);
-			newMesh->SetOwner(this);
 			AddMesh(newMesh);
 		}
 		nodeQ.pop();
@@ -378,7 +363,7 @@ void Entity3D::OnDraw()
 {
 	for (auto m : mMeshes)
 	{
-		m->Draw();
+		m->Draw(mModel);
 	}
 }
 
@@ -386,7 +371,7 @@ void Entity3D::OnDraw(Shader* shader)
 {
 	for (auto m : mMeshes)
 	{
-		m->Draw(shader);
+		m->Draw(shader, mModel);
 	}
 }
 

@@ -3,12 +3,10 @@
 #include "Material.h"
 #include "Shader.h"
 #include "VertexBuffer.h"
-#include "../Entity/Entity3D.h"
 
 Mesh::Mesh(VertexBuffer* vb, Material* material) :
 	mVertexBuffer(vb),
-	mMaterial(material),
-	mOwner(nullptr)
+	mMaterial(material)
 {
 
 }
@@ -20,20 +18,21 @@ Mesh::~Mesh()
 	delete mVertexBuffer;
 }
 
-void Mesh::Draw()
+void Mesh::Draw(const glm::mat4& modelMatrix)
 {
 	mMaterial->SetActive();
 
-	mMaterial->GetShader()->SetMat4("model", mOwner->GetModelMatrix());
+	mMaterial->GetShader()->SetMat4("model", modelMatrix);
 
 	mVertexBuffer->Draw();
 }
 
-void Mesh::Draw(Shader* shader)
+void Mesh::Draw(Shader* shader, const glm::mat4& modelMatrix)
 {
 	mMaterial->SetActive();
+
 	shader->SetActive();
-	shader->SetMat4("model", mOwner->GetModelMatrix());
+	shader->SetMat4("model", modelMatrix);
 
 	mVertexBuffer->Draw();
 }
