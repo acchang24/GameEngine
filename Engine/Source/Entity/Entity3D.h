@@ -10,6 +10,7 @@
 class Mesh;
 class Shader;
 class Skeleton;
+class AssetManager;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -50,7 +51,7 @@ public:
 	// @param - aiMaterial*
 	// @param - aiTextureType
 	// @param - Material* for the material
-	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material);
+	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am);
 
 	// Override update function for 3D entities
 	// @param - float for delta time

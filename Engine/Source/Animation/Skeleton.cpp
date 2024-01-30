@@ -116,7 +116,9 @@ void Skeleton::UpdateAnimation(float deltaTime)
 		// Update bone transformations on separate thread
 		JobManager::Get()->AddJob(&mJob);
 
-		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
+		//{
+		//	CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
+		//}
 	}
 }
 

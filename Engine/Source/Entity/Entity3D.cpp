@@ -221,8 +221,6 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skelet
 			// If the material index is not in the entity's material map, create a new material
 			if (mMaterialMap.find(name) == mMaterialMap.end())
 			{
-				AssetManager* am = AssetManager::Get();
-
 				// Check to see if it's in the asset manager map
 				mat = am->LoadMaterial(name);
 
@@ -232,21 +230,21 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skelet
 					std::cout << name << " " << mesh->mMaterialIndex << std::endl;
 					++numMats;
 					mat = new Material();
-					mat->SetShader(AssetManager::Get()->LoadShader("phong"));
+					mat->SetShader(am->LoadShader("phong"));
 					if (skeleton)
 					{
-						mat->SetShader(AssetManager::Get()->LoadShader("skinned"));
+						mat->SetShader(am->LoadShader("skinned"));
 					}
 
 					mMaterialMap[name] = mat;
 					// Diffuse textures
-					LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
+					LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat, am);
 					// Specular textures
-					LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
+					LoadMaterialTextures(material, aiTextureType_SPECULAR, mat, am);
 					// Emissive textures
-					LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
+					LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat, am);
 					// Normal textures
-					LoadMaterialTextures(material, aiTextureType_NORMALS, mat);
+					LoadMaterialTextures(material, aiTextureType_NORMALS, mat, am);
 
 					// Height maps
 
@@ -283,10 +281,11 @@ Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skelet
 	return newMesh;
 }
 
-void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material)
+void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am)
 {
 	aiString str;
 	std::string path = mDirectory;
+
 	for (unsigned int i = 0; i < mat->GetTextureCount(aiTextureType); ++i)
 	{
 		if (AI_SUCCESS == mat->GetTexture(aiTextureType, i, &str))
@@ -294,7 +293,7 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 			path = mDirectory + (str.C_Str());
 
 			// See if texture is already loaded
-			Texture* t = AssetManager::Get()->LoadTexture(path);
+			Texture* t = am->LoadTexture(path);
 			if (!t)
 			{
 				// Create the new texture
@@ -316,7 +315,7 @@ void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType
 					break;
 				}
 				material->AddTexture(texture);
-				AssetManager::Get()->SaveTexture(path, texture);
+				am->SaveTexture(path, texture);
 				++numTextures;
 			}
 			else
@@ -355,20 +354,22 @@ void Entity3D::Draw(Shader* shader)
 void Entity3D::OnUpdate(float deltaTime)
 {
 	// Update model matrix on seprate thread		
-	//JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
+	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 	
-	mModel = glm::mat4(1.0f);
+	//{
+	//	mModel = glm::mat4(1.0f);
 
-	// Translate
-	mModel = glm::translate(mModel, mPosition);
+	//	// Translate
+	//	mModel = glm::translate(mModel, mPosition);
 
-	// Rotate
-	mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	//	// Rotate
+	//	mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	//	mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	//	mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	// Scale
-	mModel = glm::scale(mModel, mScale);
+	//	// Scale
+	//	mModel = glm::scale(mModel, mScale);
+	//}
 }
 
 void Entity3D::OnDraw()
