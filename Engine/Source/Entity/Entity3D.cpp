@@ -62,12 +62,6 @@ Entity3D::~Entity3D()
 {
 	std::cout << "Delete entity 3D" << std::endl;
 
-	for (auto m : mMeshes)
-	{
-		delete m;
-	}
-	mMeshes.clear();
-
 	mMaterialMap.clear();
 
 	glDeleteBuffers(1, &mInstanceBuffer);
@@ -109,13 +103,10 @@ bool Entity3D::LoadModel(const std::string& fileName)
 
 	ProcessNodes(scene->mRootNode, scene, skeleton);
 
-	if (scene->HasAnimations())
+	for (int i = 0; i < scene->mNumAnimations; ++i)
 	{
-		for (int i = 0; i < scene->mNumAnimations; ++i)
-		{
-			Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, skeleton);
-			skeleton->SetAnimation(newAnim);
-		}
+		Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, skeleton);
+		skeleton->SetAnimation(newAnim);
 	}
 
 	return true;
@@ -148,127 +139,148 @@ void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skelet
 
 Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 {
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-	vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
-	indices.reserve(static_cast<size_t>(mesh->mNumFaces * 3));
+	AssetManager* am = AssetManager::Get();
 
-	Vertex vertex = {};
-	glm::vec3 vector(0.0f);
+	std::string meshName = mesh->mName.C_Str();
 
-	// Loop through vertices and add to our vector of vertices
-	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+	// Check to see if mesh has already been loaded
+	Mesh* newMesh = am->LoadMesh(meshName);
+
+	if (!newMesh)
 	{
-		// Vertices
-		vector.x = mesh->mVertices[i].x;
-		vector.y = mesh->mVertices[i].y;
-		vector.z = mesh->mVertices[i].z;
-		vertex.pos = vector;
+		std::vector<Vertex> vertices;
+		std::vector<unsigned int> indices;
+		vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
+		indices.reserve(static_cast<size_t>(mesh->mNumFaces * 3));
 
-		// Normals
-		vector.x = mesh->mNormals[i].x;
-		vector.y = mesh->mNormals[i].y;
-		vector.z = mesh->mNormals[i].z;
-		vertex.normal = vector;
-	
-		// Textures
-		if (mesh->mTextureCoords[0])
+		Vertex vertex = {};
+		glm::vec3 vector(0.0f);
+
+		// Loop through vertices and add to our vector of vertices
+		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
-			glm::vec2 uv(0.0f);
-			uv.x = mesh->mTextureCoords[0][i].x;
-			uv.y = mesh->mTextureCoords[0][i].y;
-			vertex.uv = uv;
+			// Vertices
+			vector.x = mesh->mVertices[i].x;
+			vector.y = mesh->mVertices[i].y;
+			vector.z = mesh->mVertices[i].z;
+			vertex.pos = vector;
 
-			// Tangent
-			vector.x = mesh->mTangents[i].x;
-			vector.y = mesh->mTangents[i].y;
-			vector.z = mesh->mTangents[i].z;
-			vertex.tangent = vector;
+			// Normals
+			vector.x = mesh->mNormals[i].x;
+			vector.y = mesh->mNormals[i].y;
+			vector.z = mesh->mNormals[i].z;
+			vertex.normal = vector;
 
-			// Bitangent
-			vector.x = mesh->mBitangents[i].x;
-			vector.y = mesh->mBitangents[i].y;
-			vector.z = mesh->mBitangents[i].z;
-			vertex.bitangent = vector;
-		}
-		else
-		{
-			vertex.uv = glm::vec2(0.0f, 0.0f);
-		}
-
-		vertices.emplace_back(vertex);
-	}
-
-	// Loop through the mesh's faces to get indices
-	for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
-	{
-		aiFace face = mesh->mFaces[i];
-		// Retrieve index info of the face
-		for (unsigned int j = 0; j < face.mNumIndices; ++j)
-		{
-			indices.emplace_back(face.mIndices[j]);
-		}
-	}
-
-	// Load materials
-	Material* mat = nullptr;
-	++numMesh;
-	if (mesh->mMaterialIndex >= 0)
-	{
-		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		std::string name = material->GetName().C_Str();
-		
-		// If the material index is not in the entity's material map, create a new material
-		if (mMaterialMap.find(name) == mMaterialMap.end())
-		{
-			AssetManager* am = AssetManager::Get();
-
-			// Check to see if it's in the asset manager map
-			mat = am->LoadMaterial(name);
-
-			// Create a new material if it's not in the asset manager
-			if(!mat)
+			// Textures
+			if (mesh->mTextureCoords[0])
 			{
-				std::cout << name << " " << mesh->mMaterialIndex << std::endl;
-				++numMats;
-				mat = new Material();
-				mat->SetShader(AssetManager::Get()->LoadShader("phong"));
-				if (skeleton)
-				{
-					mat->SetShader(AssetManager::Get()->LoadShader("skinned"));
-				}
+				glm::vec2 uv(0.0f);
+				uv.x = mesh->mTextureCoords[0][i].x;
+				uv.y = mesh->mTextureCoords[0][i].y;
+				vertex.uv = uv;
 
-				mMaterialMap[name] = mat;
-				// Diffuse textures
-				LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
-				// Specular textures
-				LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
-				// Emissive textures
-				LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
-				// Normal textures
-				LoadMaterialTextures(material, aiTextureType_NORMALS, mat);
+				// Tangent
+				vector.x = mesh->mTangents[i].x;
+				vector.y = mesh->mTangents[i].y;
+				vector.z = mesh->mTangents[i].z;
+				vertex.tangent = vector;
 
-				// Height maps
+				// Bitangent
+				vector.x = mesh->mBitangents[i].x;
+				vector.y = mesh->mBitangents[i].y;
+				vector.z = mesh->mBitangents[i].z;
+				vertex.bitangent = vector;
+			}
+			else
+			{
+				vertex.uv = glm::vec2(0.0f, 0.0f);
+			}
 
-				am->SaveMaterial(name, mat);
+			vertices.emplace_back(vertex);
+		}
+
+		// Loop through the mesh's faces to get indices
+		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+		{
+			aiFace face = mesh->mFaces[i];
+			// Retrieve index info of the face
+			for (unsigned int j = 0; j < face.mNumIndices; ++j)
+			{
+				indices.emplace_back(face.mIndices[j]);
 			}
 		}
-		else
+
+		// Load materials
+		Material* mat = nullptr;
+		++numMesh;
+		if (mesh->mMaterialIndex >= 0)
 		{
-			// use the material from the material map instead
-			mat = mMaterialMap[name];
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			std::string name = material->GetName().C_Str();
+
+			// If the material index is not in the entity's material map, create a new material
+			if (mMaterialMap.find(name) == mMaterialMap.end())
+			{
+				AssetManager* am = AssetManager::Get();
+
+				// Check to see if it's in the asset manager map
+				mat = am->LoadMaterial(name);
+
+				// Create a new material if it's not in the asset manager
+				if (!mat)
+				{
+					std::cout << name << " " << mesh->mMaterialIndex << std::endl;
+					++numMats;
+					mat = new Material();
+					mat->SetShader(AssetManager::Get()->LoadShader("phong"));
+					if (skeleton)
+					{
+						mat->SetShader(AssetManager::Get()->LoadShader("skinned"));
+					}
+
+					mMaterialMap[name] = mat;
+					// Diffuse textures
+					LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
+					// Specular textures
+					LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
+					// Emissive textures
+					LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
+					// Normal textures
+					LoadMaterialTextures(material, aiTextureType_NORMALS, mat);
+
+					// Height maps
+
+					am->SaveMaterial(name, mat);
+				}
+			}
+			else
+			{
+				// use the material from the material map instead
+				mat = mMaterialMap[name];
+			}
 		}
+
+		// Add bone id and weights to vertex if there is a skeletal animation
+		if (skeleton)
+		{
+			skeleton->ExtractVertexBoneWeights(vertices, mesh);
+		}
+
+		VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
+			vertices.size(), indices.size(), VertexLayout::Vertex);
+
+		newMesh = new Mesh(vb, mat);
+
+		am->SaveMesh(meshName, newMesh);
 	}
 
+	// Load skeletal bone data
 	if (skeleton)
 	{
-		skeleton->ExtractVertexBoneWeights(vertices, mesh);
+		skeleton->LoadBoneData(mesh);
 	}
-
-	VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
-		vertices.size(), indices.size(), VertexLayout::Vertex);
-
-	return new Mesh(vb, mat);
+	
+	return newMesh;
 }
 
 void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material)

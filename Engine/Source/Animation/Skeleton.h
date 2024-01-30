@@ -31,6 +31,11 @@ public:
 	Skeleton();
 	~Skeleton();
 
+	// Loops through the assimp mesh's bones and loads the bone's id and inverse bind pose matrices
+	// into the skeleton's bone map
+	// @param - const aiMesh* for the mesh being processed
+	void LoadBoneData(const aiMesh* mesh);
+
 	// Loops through the assimp mesh's bones and extracts the bone's id and inverse bind pose matrices.
 	// It then extracts that bone's weights and sets them to the vertex's bone ids and weight arrays.
 	// @param - std::vector<Vertex>& for the array of vertices used to store the bone id and weights

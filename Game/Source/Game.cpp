@@ -357,14 +357,14 @@ bool Game::Init()
 	//TimerComponent* timer = new TimerComponent(mCube);
 	//AddGameEntity(mCube);
 
-	//Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
-	//squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
-	//squidward->SetScale(0.5f);
-	////squidward->SetMaterialShader("tt", refractiveShader);
-	//Material* m = squidward->GetMaterial("tt");
-	////m->AddTexture(texture);
-	//m->SetSpecularIntensity(0.0f);
-	//AddGameEntity(squidward);
+	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
+	squidward->SetScale(0.5f);
+	//squidward->SetMaterialShader("tt", refractiveShader);
+	Material* m = squidward->GetMaterial("tt");
+	//m->AddTexture(texture);
+	m->SetSpecularIntensity(0.0f);
+	AddGameEntity(squidward);
 	
 	Material* woodMat = new Material();
 	woodMat->AddTexture(woodTexture);

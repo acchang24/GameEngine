@@ -30,6 +30,31 @@ Skeleton::~Skeleton()
 	mAnimations.clear();
 }
 
+void Skeleton::LoadBoneData(const aiMesh* mesh)
+{
+	// The bone's name
+	std::string boneName;
+
+	// Loop through the assimp mesh's bones
+	for (int i = 0; i < mesh->mNumBones; ++i)
+	{
+		boneName = mesh->mBones[i]->mName.C_Str();
+
+		// Bone's ID
+		int boneID = i;
+
+		// Check to see if bone is in the map and set the boneID to the one in the index
+		// If there is no bone, make a new bone, add it to the bone map
+		if (mBoneMap.find(boneName) == mBoneMap.end())
+		{
+			BoneData newBone = {};
+			newBone.index = i;
+			newBone.offset = AssimpGLMHelper::ConvertMatrixToGLMFormat(mesh->mBones[i]->mOffsetMatrix);
+			mBoneMap[boneName] = newBone;
+		}
+	}
+}
+
 void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh)
 {
 	// The bone's name
@@ -41,20 +66,10 @@ void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiM
 		boneName = mesh->mBones[i]->mName.C_Str();
 
 		// Bone's ID
-		int boneID = -1;
+		int boneID = i;
 
 		// Check to see if bone is in the map and set the boneID to the one in the index
-		// If there is no bone, make a new bone, add it to the bone map and increment bone count
-		if (mBoneMap.find(boneName) == mBoneMap.end())
-		{
-			BoneData newBone = {};
-			newBone.index = mNumBones;
-			newBone.offset = AssimpGLMHelper::ConvertMatrixToGLMFormat(mesh->mBones[i]->mOffsetMatrix);
-			mBoneMap[boneName] = newBone;
-			boneID = mNumBones;
-			++mNumBones;
-		}
-		else
+		if (mBoneMap.find(boneName) != mBoneMap.end())
 		{
 			boneID = mBoneMap[boneName].index;
 		}
