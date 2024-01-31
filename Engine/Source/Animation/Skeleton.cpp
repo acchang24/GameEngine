@@ -5,6 +5,7 @@
 #include "../Graphics/UniformBuffer.h"
 
 Skeleton::Skeleton() :
+	mSkeletonConsts({}),
 	mGlobalInverseTransform(glm::mat4(1.0f)),
 	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
 	mCurrentAnimation(nullptr),
@@ -12,11 +13,6 @@ Skeleton::Skeleton() :
 	mCurrentTime(0.0f),
 	mNumBones(0)
 {
-	mFinalBoneMatrices.reserve(MAX_BONES);
-	for (int i = 0; i < MAX_BONES; ++i)
-	{
-		mFinalBoneMatrices.emplace_back(glm::mat4(1.0f));
-	}
 }
 
 Skeleton::~Skeleton()
@@ -115,7 +111,8 @@ void Skeleton::UpdateAnimation(float deltaTime)
 
 		// Update bone transformations on separate thread
 		JobManager::Get()->AddJob(&mJob);
-
+		
+		// Uncomment this and remove the JobManager::AddJob() function above to use single thread
 		//{
 		//	CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
 		//}
@@ -140,7 +137,7 @@ void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& par
 
 		globalTransformation = parentTransform * nodeTransform;
 
-		mFinalBoneMatrices[bone->GetBoneID()] = mGlobalInverseTransform * globalTransformation * bone->GetOffetMatrix();
+		mSkeletonConsts.finalBoneMatrices[bone->GetBoneID()] = mGlobalInverseTransform * globalTransformation * bone->GetOffetMatrix();
 	}
 	else
 	{

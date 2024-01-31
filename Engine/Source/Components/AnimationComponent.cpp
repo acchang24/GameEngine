@@ -20,5 +20,5 @@ void AnimationComponent::Update(float deltaTime)
 	PROFILE_SCOPE(ANIMATE);
 
 	mSkeleton->UpdateAnimation(deltaTime);
-	mSkeleton->GetSkeletonBuffer()->UpdateBufferData(mSkeleton->GetFinalBoneMatrices().data());
+	mSkeleton->GetSkeletonBuffer()->UpdateBufferData(mSkeleton->GetFinalBoneMatrices());
 }

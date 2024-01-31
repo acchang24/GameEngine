@@ -59,8 +59,8 @@ public:
 	void CalculateBoneTransform(const AnimNode* node, const glm::mat4& parentTransform);
 
 	// Gets the array of final bone matrices to send to a shader
-	// @return - std::vector<glm::mat4>& for the bone matrix array
-	std::vector<glm::mat4>& GetFinalBoneMatrices() { return mFinalBoneMatrices; }
+	// @return - const glm::mat4* for the final bone matrix array
+	const glm::mat4* GetFinalBoneMatrices() { return mSkeletonConsts.finalBoneMatrices; }
 
 	// Gets the skeleton buffer
 	// @return - UniformBuffer* for the skeleton's buffer
@@ -115,14 +115,16 @@ private:
 	// @return - int for the number of bones in the skeleton
 	int& GetNumBones() { return mNumBones; }
 
+
+	// MEMBER VARIABLES
 	// Map of the skeleton's bones
 	std::unordered_map<std::string, BoneData> mBoneMap;
 
 	// Map of the skeleton's animations
 	std::unordered_map<std::string, Animation*> mAnimations;
 
-	// Array of the skeleton's final bone matrices
-	std::vector<glm::mat4> mFinalBoneMatrices;
+	// Skeleton consts to send to buffers in shaders
+	SkeletonConsts mSkeletonConsts;
 
 	glm::mat4 mGlobalInverseTransform;
 
