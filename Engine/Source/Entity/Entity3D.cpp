@@ -356,7 +356,6 @@ void Entity3D::OnUpdate(float deltaTime)
 	// Update model matrix on seprate thread		
 	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 	
-	//{
 	//	mModel = glm::mat4(1.0f);
 
 	//	// Translate
@@ -369,7 +368,6 @@ void Entity3D::OnUpdate(float deltaTime)
 
 	//	// Scale
 	//	mModel = glm::scale(mModel, mScale);
-	//}
 }
 
 void Entity3D::OnDraw()
