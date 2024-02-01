@@ -331,11 +331,11 @@ bool Game::Init()
 	vampire10->SetPosition(glm::vec3(10.0f, -4.0f, -15.0f));
 	AddGameEntity(vampire10);
 
-	//Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
-	//sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	//sponza->SetScale(0.15);
-	//sponza->SetYaw(-90.0f);
-	//AddGameEntity(sponza);
+	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
+	sponza->SetScale(0.15);
+	sponza->SetYaw(-90.0f);
+	AddGameEntity(sponza);
 
 	//Material* wallMaterial = new Material();
 	//wallMaterial->SetShader(phongShader);
@@ -399,12 +399,12 @@ bool Game::Init()
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->data.usesShadow = true;
 
-	//PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 10.0f, 30.0f), 1.0f, 0.014f, 0.0007f);
-	//pointLight->data.specularIntensity = 3.0f;
-	//Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	//lightSphere->SetMaterial(refractiveMat);
-	//lightSphere->SetPosition(glm::vec3(1.0f, 10.0f, 30.0f));
-	//AddGameEntity(lightSphere);
+	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 10.0f, 30.0f), 1.0f, 0.014f, 0.0007f);
+	pointLight->data.specularIntensity = 3.0f;
+	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere->SetMaterial(refractiveMat);
+	lightSphere->SetPosition(glm::vec3(1.0f, 10.0f, 30.0f));
+	AddGameEntity(lightSphere);
 
 	//SpotLight* spotLight = mLights->AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 	//	glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
@@ -413,12 +413,12 @@ bool Game::Init()
 	//lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
 	//AddGameEntity(lightSphere2);
 
-	//PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
-	//pointLight2->data.specularIntensity = 3.0f;
-	//Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	//lightSphere3->SetMaterial(lightSphereMaterial);
-	//lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
-	//AddGameEntity(lightSphere3);
+	PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
+	pointLight2->data.specularIntensity = 3.0f;
+	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lightSphere3->SetMaterial(lightSphereMaterial);
+	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
+	AddGameEntity(lightSphere3);
 
 	// Link shaders to camera's uniform buffer
 	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();

@@ -25,7 +25,8 @@ Entity3D::Entity3D() :
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
-	mRoll(0.0f)
+	mRoll(0.0f),
+	mIsSkinned(false)
 {
 	numMesh = 0;
 	numMats = 0;
@@ -42,7 +43,8 @@ Entity3D::Entity3D(const std::string& fileName):
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
-	mRoll(0.0f)
+	mRoll(0.0f),
+	mIsSkinned(false)
 {
 	numMesh = 0;
 	numMats = 0;
@@ -96,6 +98,8 @@ bool Entity3D::LoadModel(const std::string& fileName)
 
 	if (scene->HasAnimations())
 	{
+		mIsSkinned = true;
+
 		// Create a new animation component for this model
 		skeleton = new Skeleton();
 		AnimationComponent* animComp = new AnimationComponent(this, skeleton);
@@ -356,22 +360,27 @@ void Entity3D::OnUpdate(float deltaTime)
 	// Update model matrix on seprate thread		
 	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 	
-	//	mModel = glm::mat4(1.0f);
+	//mModel = glm::mat4(1.0f);
 
-	//	// Translate
-	//	mModel = glm::translate(mModel, mPosition);
+	//// Translate
+	//mModel = glm::translate(mModel, mPosition);
 
-	//	// Rotate
-	//	mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	//	mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	//	mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	//// Rotate
+	//mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	//mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	//mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	//	// Scale
-	//	mModel = glm::scale(mModel, mScale);
+	//// Scale
+	//mModel = glm::scale(mModel, mScale);
 }
 
 void Entity3D::OnDraw()
 {
+	if (mIsSkinned)
+	{
+		GetComponent<AnimationComponent>()->UpdateBoneMatrices();
+	}
+
 	for (auto m : mMeshes)
 	{
 		m->Draw(mModel);
@@ -388,16 +397,18 @@ void Entity3D::OnDraw(Shader* shader)
 
 void Entity3D::UpdateModelMatrixJob::DoIt()
 {
-	mEntity->mModel = glm::mat4(1.0f);
+	glm::mat4 model = glm::mat4(1.0f);
 
 	// Translate
-	mEntity->mModel = glm::translate(mEntity->mModel, mEntity->mPosition);
+	model = glm::translate(model, mEntity->mPosition);
 
 	// Rotate
-	mEntity->mModel = glm::rotate(mEntity->mModel, glm::radians(mEntity->mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	mEntity->mModel = glm::rotate(mEntity->mModel, glm::radians(mEntity->mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	mEntity->mModel = glm::rotate(mEntity->mModel, glm::radians(mEntity->mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(mEntity->mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, glm::radians(mEntity->mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(mEntity->mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Scale
-	mEntity->mModel = glm::scale(mEntity->mModel, mEntity->mScale);
+	model = glm::scale(model, mEntity->mScale);
+
+	mEntity->mModel = model;
 }

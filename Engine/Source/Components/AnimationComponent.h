@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "../Animation/Skeleton.h"
+#include "../Graphics/UniformBuffer.h"
 
 class Entity;
 class Animation;
@@ -31,6 +32,9 @@ public:
 	// Adds an animation to the skelton's map of animations if it doesn't exist
 	// @param - Animation* for the new animation
 	void AddAnimation(Animation* a) { mSkeleton->AddAnimation(a); }
+
+	// Updates the skeleton buffer with the final bone matrices array
+	void UpdateBoneMatrices() { mSkeleton->GetSkeletonBuffer()->UpdateBufferData(mSkeleton->GetFinalBoneMatrices()); }
 
 private:
 	// The skeleton used for this animation component

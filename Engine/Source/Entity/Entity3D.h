@@ -183,4 +183,7 @@ protected:
 	int numMesh;
 	int numMats;
 	int numTextures;
+
+	// Bool to see if this entity has an animation
+	bool mIsSkinned;
 };

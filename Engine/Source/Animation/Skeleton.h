@@ -126,6 +126,7 @@ private:
 	// Skeleton consts to send to buffers in shaders
 	SkeletonConsts mSkeletonConsts;
 
+	// Global inverse transform matrix
 	glm::mat4 mGlobalInverseTransform;
 
 	// Uniform buffer to send the skeleton's bone matrices to a shader
