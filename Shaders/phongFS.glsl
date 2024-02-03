@@ -318,7 +318,9 @@ vec3 CalculateSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 fragPos
     // Distance from fragment position to the point light's position
     float dist = length(light.position - fragPos);
     // Calculate attenuation
-    float attenuation = 1.0f / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
+    //float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
+
+	float attenuation = 1.0 / (dist * dist);
 
     vec3 phong = CalculatePhongLighting(light.data, lightDir, normal, viewDir);
 
