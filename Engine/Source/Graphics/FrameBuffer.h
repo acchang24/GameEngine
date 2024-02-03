@@ -50,18 +50,18 @@ private:
 	VertexBuffer* mVertexBuffer;
 
 	// MSAA framebuffer
-	unsigned int mMSAAFrameBufferID;
+	unsigned int mMSAAFrameBuffer;
 	// The multisampled offscreen color attachment texture 
-	unsigned int mTextureMultiSampledID;
+	unsigned int mTextureMultiSampled;
 	// The multisampled render buffer for depth and stencil attachments
-	unsigned int mRenderBufferMultiSampledID;
+	unsigned int mRenderBufferMultiSampled;
 
 	// Frame buffer object as a reference id
-	unsigned int mFrameBufferID;
+	unsigned int mFrameBuffer;
 	// The offscreen color attachment texture as a reference id
-	unsigned int mTextureID;
+	unsigned int mTexture;
 	// Render buffer for depth and stencil attatchments as a reference
-	//unsigned int mRenderBufferID;
+	//unsigned int mRenderBuffer;
 
 	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
 	int mTextureUnit;

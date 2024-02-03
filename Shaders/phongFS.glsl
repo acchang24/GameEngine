@@ -89,8 +89,6 @@ uniform TextureSamplers textureSamplers;
 
 uniform sampler2D shadowMap;
 
-//uniform bool gamma;
-
 // Final vector4 fragment color output
 out vec4 fragColor;
 
@@ -201,12 +199,6 @@ void main()
 
 	color *= lightResult;
 
-	// Gamma correction
-	//if(gamma)
-	//{
-		//color = pow(color, vec3(1.0/2.2));
-	//}
-
 	fragColor = vec4(color, 1.0);
 }
 
@@ -281,8 +273,10 @@ vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 fragP
 	// Get the distance from fragment position to the point light's position
 	float dist = length(light.position - fragPos);
 	// Calculate attentuation
-	float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
+	//float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
 	
+	float attenuation = 1.0 / (dist * dist);
+
 	// Calculate the direction from fragment's position to the light source's position
 	vec3 lightDir = normalize(light.position - fragPos);
 

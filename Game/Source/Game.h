@@ -103,4 +103,6 @@ private:
 
 	// Bool to check if the game is running.
 	bool mIsRunning;
+
+	bool hdr;
 };

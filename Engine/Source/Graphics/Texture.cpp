@@ -35,10 +35,10 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 		GLenum dataFormat = GL_RGBA;
 		GLenum internalFormat = GL_SRGB_ALPHA;
 
-		//if (mType != TextureType::Diffuse)
-		//{
-		//	internalFormat = dataFormat;
-		//}
+		if (mType == TextureType::Normal || mType == TextureType::Specular)
+		{
+			internalFormat = dataFormat;
+		}
 
 		//if (mNumChannels == 4)
 		//{
@@ -75,7 +75,7 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 		// - 7th/8th arguments specifies the format and datatype of the source image
 		//   Loaded the image with RGB values, and stored them as chars(bytes)
 		// - Last argument is the actual image data
-		glTexImage2D(GL_TEXTURE_2D, 0, dataFormat, mWidth, mHeight, 0, dataFormat, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, mWidth, mHeight, 0, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		// Automatically generate all the required mipmaps for the currently bound texture
 		glGenerateMipmap(GL_TEXTURE_2D);
