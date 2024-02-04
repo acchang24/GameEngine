@@ -13,6 +13,8 @@ out vec4 fragColor;
 // Toggle hdr
 uniform bool hdr;
 
+uniform float exposure;
+
 void main()
 {
     // Normal offscreen texture
@@ -24,7 +26,7 @@ void main()
         // color = color / (color + vec3(1.0));
 
         // exposure tone mapping
-        color = vec3(1.0) - exp(-color * 1.0);
+        color = vec3(1.0) - exp(-color * exposure);
     }
 
     // Gamma correction

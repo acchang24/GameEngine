@@ -191,6 +191,8 @@ bool Game::Init()
 	//mAssetManager->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
 	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
+	screenShader->SetActive();
+	screenShader->SetFloat("exposure", 1.0f);
 	mAssetManager->SaveShader("screen", screenShader);
 
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight, subsamples);
@@ -283,55 +285,55 @@ bool Game::Init()
 	delete[] rockMatrices;
 
 
-	//Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire->SetScale(0.075f);
-	//vampire->SetPosition(glm::vec3(0.0f, -4.0f, 0.0f));
-	//AddGameEntity(vampire);
+	Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire->SetScale(0.075f);
+	vampire->SetPosition(glm::vec3(0.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire);
 
-	//Entity3D* vampire2 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire2->SetScale(0.075f);
-	//vampire2->SetPosition(glm::vec3(10.0f, -4.0f, 0.0f));
-	//AddGameEntity(vampire2);
+	Entity3D* vampire2 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire2->SetScale(0.075f);
+	vampire2->SetPosition(glm::vec3(10.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire2);
 
-	//Entity3D* vampire3 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire3->SetScale(0.075f);
-	//vampire3->SetPosition(glm::vec3(-10.0f, -4.0f, 0.0f));
-	//AddGameEntity(vampire3);
+	Entity3D* vampire3 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire3->SetScale(0.075f);
+	vampire3->SetPosition(glm::vec3(-10.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire3);
 
-	//Entity3D* vampire4 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire4->SetScale(0.075f);
-	//vampire4->SetPosition(glm::vec3(10.0f, -4.0f, 10.0f));
-	//AddGameEntity(vampire4);
+	Entity3D* vampire4 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire4->SetScale(0.075f);
+	vampire4->SetPosition(glm::vec3(10.0f, -4.0f, 10.0f));
+	AddGameEntity(vampire4);
 
-	//Entity3D* vampire5 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire5->SetScale(0.075f);
-	//vampire5->SetPosition(glm::vec3(10.0f, -4.0f, -10.0f));
-	//AddGameEntity(vampire5);
+	Entity3D* vampire5 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire5->SetScale(0.075f);
+	vampire5->SetPosition(glm::vec3(10.0f, -4.0f, -10.0f));
+	AddGameEntity(vampire5);
 
-	//Entity3D* vampire6 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire6->SetScale(0.075f);
-	//vampire6->SetPosition(glm::vec3(20.0f, -4.0f, 0.0f));
-	//AddGameEntity(vampire6);
+	Entity3D* vampire6 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire6->SetScale(0.075f);
+	vampire6->SetPosition(glm::vec3(20.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire6);
 
-	//Entity3D* vampire7 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire7->SetScale(0.075f);
-	//vampire7->SetPosition(glm::vec3(-15.0f, -4.0f, 0.0f));
-	//AddGameEntity(vampire7);
+	Entity3D* vampire7 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire7->SetScale(0.075f);
+	vampire7->SetPosition(glm::vec3(-15.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire7);
 
-	//Entity3D* vampire8 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire8->SetScale(0.075f);
-	//vampire8->SetPosition(glm::vec3(15.0f, -4.0f, 0.0f));
-	//AddGameEntity(vampire8);
+	Entity3D* vampire8 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire8->SetScale(0.075f);
+	vampire8->SetPosition(glm::vec3(15.0f, -4.0f, 0.0f));
+	AddGameEntity(vampire8);
 
-	//Entity3D* vampire9 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire9->SetScale(0.075f);
-	//vampire9->SetPosition(glm::vec3(10.0f, -4.0f, 15.0f));
-	//AddGameEntity(vampire9);
+	Entity3D* vampire9 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire9->SetScale(0.075f);
+	vampire9->SetPosition(glm::vec3(10.0f, -4.0f, 15.0f));
+	AddGameEntity(vampire9);
 
-	//Entity3D* vampire10 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	//vampire10->SetScale(0.075f);
-	//vampire10->SetPosition(glm::vec3(10.0f, -4.0f, -15.0f));
-	//AddGameEntity(vampire10);
+	Entity3D* vampire10 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+	vampire10->SetScale(0.075f);
+	vampire10->SetPosition(glm::vec3(10.0f, -4.0f, -15.0f));
+	AddGameEntity(vampire10);
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
@@ -359,14 +361,14 @@ bool Game::Init()
 	//TimerComponent* timer = new TimerComponent(mCube);
 	//AddGameEntity(mCube);
 
-	//Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
-	//squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
-	//squidward->SetScale(0.5f);
-	////squidward->SetMaterialShader("tt", refractiveShader);
-	//Material* m = squidward->GetMaterial("tt");
-	////m->AddTexture(texture);
-	//m->SetSpecularIntensity(0.0f);
-	//AddGameEntity(squidward);
+	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
+	squidward->SetScale(0.5f);
+	//squidward->SetMaterialShader("tt", refractiveShader);
+	Material* m = squidward->GetMaterial("tt");
+	//m->AddTexture(texture);
+	m->SetSpecularIntensity(0.0f);
+	AddGameEntity(squidward);
 	
 	Material* woodMat = new Material();
 	woodMat->AddTexture(woodTexture);
@@ -589,13 +591,14 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		mPrevInputs[GLFW_KEY_SPACE] = false;
 	}
 
+
+	Shader* shader = mFrameBuffer->GetShader();
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_H])
 	{
 		mPrevInputs[GLFW_KEY_H] = true;
 
 		hdr = !hdr;
 
-		Shader* shader = mFrameBuffer->GetShader();
 		shader->SetActive();
 		shader->SetBool("hdr", hdr);
 	}
@@ -603,6 +606,32 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	{
 		mPrevInputs[GLFW_KEY_H] = false;
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_0))
+	{
+		shader->SetFloat("exposure", 0.1f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_1))
+	{
+		shader->SetFloat("exposure", 1.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_2))
+	{
+		shader->SetFloat("exposure", 2.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_3))
+	{
+		shader->SetFloat("exposure", 3.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_4))
+	{
+		shader->SetFloat("exposure", 4.0f);
+	}
+	if (glfwGetKey(window, GLFW_KEY_5))
+	{
+		shader->SetFloat("exposure", 5.0f);
+	}
+
 }
 
 void Game::Update(float deltaTime)
