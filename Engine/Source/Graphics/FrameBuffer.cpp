@@ -4,16 +4,21 @@
 #include <glm/glm.hpp>
 #include "Shader.h"
 #include "VertexBuffer.h"
+#include "../MemoryManager/AssetManager.h"
 
 FrameBuffer::FrameBuffer(int width, int height, int subsamples) :
 	mShader(nullptr),
 	mVertexBuffer(nullptr),
+	mAssetManager(AssetManager::Get()),
 	mMSAAFrameBuffer(),
 	mTextureMultiSampled(0),
 	mRenderBufferMultiSampled(0),
 	mFrameBuffer(0),
 	mTexture(0),
 	//mRenderBufferID(0),
+	mBloomFrameBuffer(0),
+	mBloomTextureNormal(0),
+	mBloomTextureMasked(0),
 	mTextureUnit(static_cast<int>(TextureUnit::FrameBuffer))
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
@@ -100,6 +105,37 @@ FrameBuffer::FrameBuffer(int width, int height, int subsamples) :
 
 	// Bind back to the default framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	glGenFramebuffers(1, &mBloomFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mBloomFrameBuffer);
+	glGenTextures(1, &mBloomTextureNormal);
+	glBindTexture(GL_TEXTURE_2D, mBloomTextureNormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mBloomTextureNormal, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glGenTextures(1, &mBloomTextureMasked);
+	glBindTexture(GL_TEXTURE_2D, mBloomTextureMasked);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mBloomTextureMasked, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, attachments);
+
+	// Check for frame buffer's completion
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "Framebuffer is not complete!" << std::endl;
+	}
+
+	// Bind back to the default framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 FrameBuffer::~FrameBuffer()
@@ -115,6 +151,10 @@ FrameBuffer::~FrameBuffer()
 	glDeleteFramebuffers(1, &mFrameBuffer);
 	glDeleteTextures(1, &mTexture);
 	//glDeleteRenderbuffers(1, &mRenderBuffer);
+
+	glDeleteFramebuffers(1, &mBloomFrameBuffer);
+	glDeleteTextures(1, &mBloomTextureNormal);
+	glDeleteTextures(1, &mBloomTextureMasked);
 }
 
 void FrameBuffer::SetActive()
@@ -130,37 +170,41 @@ void FrameBuffer::SetActive()
 
 void FrameBuffer::End(int width, int height)
 {
-	// Blit multisampled buffers to normal color buffer of mFrameBuffer.
-	// The image is stored in mTextureID
+	// Blit multisampled buffers to normal color buffer of mFrameBuffer
+	// Use mFrameBuffer's texture color attachment
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, mMSAAFrameBuffer);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFrameBuffer);
 	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-	// Bind back to default frame buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Bind to bloom frame buffer before the default frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, mBloomFrameBuffer);
+	// Draw using bloomMask shader to draw a texture as a full screen pass, and a second texture to represent all the bright spots in a scene
+	Draw(width, height, mAssetManager->LoadShader("bloomMask"), mTexture);
 
+	// Bind back to default frame buffer to draw to the screen and finish with hdr and gamma correction
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Draw(width, height, mAssetManager->LoadShader("hdrGamma"), mBloomTextureMasked);
+}
+
+void FrameBuffer::Draw(int width, int height, Shader* shader, int texture)
+{
 	// Disable depth test so screen quad isn't discarded
 	glDisable(GL_DEPTH_TEST);
 
-	Draw(width, height);
+	shader->SetActive();
 
-	// Enable depth test again
-	glEnable(GL_DEPTH_TEST);
-}
-
-void FrameBuffer::Draw(int width, int height)
-{
-	mShader->SetActive();
-
-	mShader->SetInt("screenTexture", mTextureUnit);
+	shader->SetInt("screenTexture", mTextureUnit);
 
 	// Activate texture unit
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 
 	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glBindTexture(GL_TEXTURE_2D, mTexture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 	mVertexBuffer->Draw();
+
+	// Enable depth test again
+	glEnable(GL_DEPTH_TEST);
 }

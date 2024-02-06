@@ -190,13 +190,20 @@ bool Game::Init()
 	//Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
 	//mAssetManager->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
-	Shader* screenShader = new Shader("Shaders/screenVS.glsl", "Shaders/screenFS.glsl");
-	screenShader->SetActive();
-	screenShader->SetFloat("exposure", 1.0f);
-	mAssetManager->SaveShader("screen", screenShader);
+	Shader* copyScreenShader = new Shader("Shaders/screenVS.glsl", "Shaders/copyScreenFS.glsl");
+	mAssetManager->SaveShader("copyScreen", copyScreenShader);
+
+	Shader* bloomMaskShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomMaskFS.glsl");
+	mAssetManager->SaveShader("bloomMask", bloomMaskShader);
+
+	Shader* hdrGammaShader = new Shader("Shaders/screenVS.glsl", "Shaders/hdrGammaFS.glsl");
+	hdrGammaShader->SetActive();
+	hdrGammaShader->SetFloat("exposure", 1.0f);
+	hdrGammaShader->SetBool("hdr", hdr);
+	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight, subsamples);
-	mFrameBuffer->SetShader(screenShader);
+	mFrameBuffer->SetShader(copyScreenShader);
 
 	// Skybox
 	std::vector<std::string> faceNames
@@ -592,7 +599,7 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	}
 
 
-	Shader* shader = mFrameBuffer->GetShader();
+	Shader* shader = mAssetManager->LoadShader("hdrGamma");
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_H])
 	{
 		mPrevInputs[GLFW_KEY_H] = true;

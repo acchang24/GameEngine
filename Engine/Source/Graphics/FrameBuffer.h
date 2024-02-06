@@ -3,6 +3,7 @@
 
 class Shader;
 class VertexBuffer;
+class AssetManager;
 
 // Creates an OpenGL frame buffer that allows an additional target 
 // to render to. Custom color, depth, and stencil buffers can be defined
@@ -32,7 +33,7 @@ public:
 	void End(int width, int height);
 
 	// Draws the frame buffer's off screen quad
-	void Draw(int width, int height);
+	void Draw(int width, int height, Shader* shader, int texture);
 
 	// Gets the frame buffer's shader
 	// @return - Shader* for the frame buffer's shader
@@ -49,6 +50,9 @@ private:
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;
 
+	// Pointer to the assetmanager
+	AssetManager* mAssetManager;
+
 	// MSAA framebuffer
 	unsigned int mMSAAFrameBuffer;
 	// The multisampled offscreen color attachment texture 
@@ -58,10 +62,17 @@ private:
 
 	// Frame buffer object as a reference id
 	unsigned int mFrameBuffer;
-	// The offscreen color attachment texture as a reference id
+	// The offscreen color attachment texture created after blitting the multisample texture
 	unsigned int mTexture;
 	// Render buffer for depth and stencil attatchments as a reference
 	//unsigned int mRenderBuffer;
+
+	// Frame buffer used for bloom
+	unsigned int mBloomFrameBuffer;
+	// normal texture (use directly if there is no bloom)
+	unsigned int mBloomTextureNormal;
+	// texture that masks off dark spots and shows only bright areas
+	unsigned int mBloomTextureMasked;
 
 	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
 	int mTextureUnit;
