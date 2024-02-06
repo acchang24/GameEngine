@@ -74,8 +74,11 @@ private:
 	// Bloom mask render buffer
 	unsigned int mBloomMaskRenderBuffer;
 
-	unsigned int mBloomBlurFrameBuffer;
-	unsigned int mBloomBlurTexture;
+	unsigned int mBloomBlurHorizontalFrameBuffer;
+	unsigned int mBloomBlurHorizontalTexture;
+
+	unsigned int mBloomBlurVerticalFrameBuffer;
+	unsigned int mBloomBlurVerticalTexture;
 
 	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
 	int mTextureUnit;

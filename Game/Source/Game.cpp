@@ -196,8 +196,11 @@ bool Game::Init()
 	Shader* bloomMaskShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomMaskFS.glsl");
 	mAssetManager->SaveShader("bloomMask", bloomMaskShader);
 
-	Shader* bloomBlurShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomBlurFS.glsl");
-	mAssetManager->SaveShader("bloomBlur", bloomBlurShader);
+	Shader* bloomBlurHorizontalShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomBlurHorizontalFS.glsl");
+	mAssetManager->SaveShader("bloomBlurHorizontal", bloomBlurHorizontalShader);
+
+	Shader* bloomBlurVerticalShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomBlurVerticalFS.glsl");
+	mAssetManager->SaveShader("bloomBlurVertical", bloomBlurVerticalShader);
 
 	Shader* hdrGammaShader = new Shader("Shaders/screenVS.glsl", "Shaders/hdrGammaFS.glsl");
 	hdrGammaShader->SetActive();
