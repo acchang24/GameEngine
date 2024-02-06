@@ -14,10 +14,6 @@ void main()
 {
     vec3 color = texture(screenTexture, textureCoord).rgb;
 
-     // Normal full screen pass
-    //fragColor = vec4(color, 1.0);
-
-
     // Texture for bright spots
     float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
 
