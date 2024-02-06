@@ -7,8 +7,7 @@ in vec2 textureCoord;
 // Uniform sampler
 uniform sampler2D screenTexture;
 
-//layout (location = 0) out vec4 fragColor;
-out vec4 brightColor;
+out vec4 fragColor;
 
 void main()
 {
@@ -24,6 +23,5 @@ void main()
         color += texture(screenTexture, textureCoord - vec2(offset[i] / 200.0, 0.0)).rgb * weight[i];
     }
 
-
-    brightColor = vec4(color, 1.0);
+    fragColor = vec4(color, 1.0);
 }

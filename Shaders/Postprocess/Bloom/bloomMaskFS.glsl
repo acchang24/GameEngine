@@ -7,7 +7,6 @@ in vec2 textureCoord;
 // Uniform sampler
 uniform sampler2D screenTexture;
 
-//layout (location = 0) out vec4 fragColor;
 out vec4 brightColor;
 
 void main()
@@ -17,7 +16,7 @@ void main()
     // Texture for bright spots
     float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
 
-    if(brightness >= 0.78)
+    if(brightness >= 1.0)
     {
         brightColor = vec4(color, 1.0);
     }
