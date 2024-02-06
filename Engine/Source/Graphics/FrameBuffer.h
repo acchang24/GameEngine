@@ -67,12 +67,13 @@ private:
 	// Render buffer for depth and stencil attatchments as a reference
 	//unsigned int mRenderBuffer;
 
-	// Frame buffer used for bloom
-	unsigned int mBloomFrameBuffer;
-	// normal texture (use directly if there is no bloom)
-	unsigned int mBloomTextureNormal;
-	// texture that masks off dark spots and shows only bright areas
-	unsigned int mBloomTextureMasked;
+	// Frame buffer used for bloom mask
+	unsigned int mBloomMaskFrameBuffer;
+	// Bloom mask texture downsized by 1/2 that masks off dark spots and shows only bright areas
+	unsigned int mBloomMaskTexture;
+	// Bloom mask render buffer
+	unsigned int mBloomMaskRenderBuffer;
+
 
 	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
 	int mTextureUnit;
