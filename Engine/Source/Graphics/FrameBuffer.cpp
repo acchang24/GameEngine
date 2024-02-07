@@ -257,7 +257,37 @@ void FrameBuffer::End(int width, int height)
 	// Reset viewport size
 	glViewport(0, 0, width, height);
 	// Draw to the screen and finish with hdr and gamma correction
-	Draw(width, height, mAssetManager->LoadShader("hdrGamma"), mBloomBlurVerticalTexture);
+
+	Shader* shader = mAssetManager->LoadShader("hdrGamma");
+
+	// Disable depth test so screen quad isn't discarded
+	glDisable(GL_DEPTH_TEST);
+
+	shader->SetActive();
+
+	shader->SetInt("screenTexture", mTextureUnit);
+
+	// Activate texture unit
+	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
+
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glBindTexture(GL_TEXTURE_2D, mTexture);
+
+	int blurUnit = mTextureUnit + 2;
+
+	shader->SetInt("blurTexture", blurUnit);
+	glActiveTexture(GL_TEXTURE0 + blurUnit);
+	glBindTexture(GL_TEXTURE_2D, mBloomBlurVerticalTexture);
+
+
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+	mVertexBuffer->Draw();
+
+	// Enable depth test again
+	glEnable(GL_DEPTH_TEST);
+
+	//Draw(width, height, mAssetManager->LoadShader("hdrGamma"), mBloomBlurVerticalTexture);
 }
 
 void FrameBuffer::Draw(int width, int height, Shader* shader, int texture)

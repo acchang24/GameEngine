@@ -6,6 +6,7 @@ in vec2 textureCoord;
 
 // Uniform sampler
 uniform sampler2D screenTexture;
+uniform sampler2D blurTexture;
 
 // Specify a vec4 output
 out vec4 fragColor;
@@ -23,11 +24,16 @@ void main()
 
     if(hdr)
     {
+        vec3 hdrColor = color;
+        vec3 bloomColor = texture(blurTexture, textureCoord).rgb;
+
+        hdrColor += bloomColor;
+
         // reinhard tone mapping
         // color = color / (color + vec3(1.0));
 
         // exposure tone mapping
-        color = vec3(1.0) - exp(-color * exposure);
+        color = vec3(1.0) - exp(-hdrColor * exposure);
     }
 
     // Gamma correction

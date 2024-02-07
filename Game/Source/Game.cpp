@@ -438,12 +438,12 @@ bool Game::Init()
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->data.usesShadow = true;
 
-	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(19.0f, 19.0f, 19.0f, 1.0f), glm::vec3(1.0f, 10.0f, -160.0f), 1.0f, 0.014f, 0.0007f);
-	pointLight->data.diffuseIntensity = 100.0f;
+	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 3.0f, 60.0f), 1.0f, 0.014f, 0.0007f);
+	pointLight->data.diffuseIntensity = 70.0f;
 	pointLight->data.specularIntensity = 50.0f;
 	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere->SetMaterial(lightSphereMaterial);
-	lightSphere->SetPosition(glm::vec3(1.0f, 10.0f, -160.0f));
+	lightSphere->SetPosition(glm::vec3(1.0f, 3.0f, 60.0f));
 	AddGameEntity(lightSphere);
 
 	//SpotLight* spotLight = mLights->AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
@@ -454,7 +454,7 @@ bool Game::Init()
 	//AddGameEntity(lightSphere2);
 
 	PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
-	pointLight2->data.diffuseIntensity = 100.0f;
+	pointLight2->data.diffuseIntensity = 150.0f;
 	pointLight2->data.specularIntensity = 900.0f;
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere3->SetMaterial(lightSphereMaterial);
