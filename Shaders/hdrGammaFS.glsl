@@ -4,8 +4,9 @@
 // Vec2 input from vertex shader
 in vec2 textureCoord;
 
-// Uniform sampler
+// Uniform sampler for the regular framebuffer image
 uniform sampler2D screenTexture;
+// Uniform sampler for the blur framebuffer image
 uniform sampler2D blurTexture;
 
 // Specify a vec4 output

@@ -197,9 +197,13 @@ bool Game::Init()
 	mAssetManager->SaveShader("bloomMask", bloomMaskShader);
 
 	Shader* bloomBlurHorizontalShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomBlurHorizontalFS.glsl");
+	bloomBlurHorizontalShader->SetActive();
+	bloomBlurHorizontalShader->SetFloat("width", static_cast<float>(windowWidth / 4));
 	mAssetManager->SaveShader("bloomBlurHorizontal", bloomBlurHorizontalShader);
 
 	Shader* bloomBlurVerticalShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomBlurVerticalFS.glsl");
+	bloomBlurVerticalShader->SetActive();
+	bloomBlurVerticalShader->SetFloat("height", static_cast<float>(windowHeight / 4));
 	mAssetManager->SaveShader("bloomBlurVertical", bloomBlurVerticalShader);
 
 	Shader* hdrGammaShader = new Shader("Shaders/screenVS.glsl", "Shaders/hdrGammaFS.glsl");
@@ -454,7 +458,7 @@ bool Game::Init()
 	//AddGameEntity(lightSphere2);
 
 	PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
-	pointLight2->data.diffuseIntensity = 150.0f;
+	pointLight2->data.diffuseIntensity = 70.0f;
 	pointLight2->data.specularIntensity = 900.0f;
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere3->SetMaterial(lightSphereMaterial);

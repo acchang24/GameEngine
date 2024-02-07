@@ -266,28 +266,19 @@ void FrameBuffer::End(int width, int height)
 	shader->SetActive();
 
 	shader->SetInt("screenTexture", mTextureUnit);
-
-	// Activate texture unit
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
-
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 	glBindTexture(GL_TEXTURE_2D, mTexture);
 
 	int blurUnit = mTextureUnit + 2;
-
 	shader->SetInt("blurTexture", blurUnit);
 	glActiveTexture(GL_TEXTURE0 + blurUnit);
 	glBindTexture(GL_TEXTURE_2D, mBloomBlurVerticalTexture);
 
 
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-
 	mVertexBuffer->Draw();
 
 	// Enable depth test again
 	glEnable(GL_DEPTH_TEST);
-
-	//Draw(width, height, mAssetManager->LoadShader("hdrGamma"), mBloomBlurVerticalTexture);
 }
 
 void FrameBuffer::Draw(int width, int height, Shader* shader, int texture)
