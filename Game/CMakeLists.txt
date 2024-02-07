@@ -27,4 +27,6 @@ if(WIN32)
 			COMMENT "Copy dll file to ${CMAKE_CURRENT_BINARY_DIR} directory" VERBATIM
 		)
 	endforeach()
+
+	#set_target_properties(game PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
 endif()

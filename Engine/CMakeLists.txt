@@ -13,8 +13,8 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${source_files})
 add_library (engine ${source_files})
 
 if(WIN32)
-	# Link glfw library with engine
-	target_link_libraries(engine glfw)
+	# Link glfw library to engine
+	target_link_libraries(engine glfw3)
 	# Link assimp library to engine
 	target_link_libraries(engine assimp-vc142-mtd)
 endif()
