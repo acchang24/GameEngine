@@ -26,15 +26,15 @@ void main()
     // Normal offscreen texture
     vec3 color = texture(screenTexture, textureCoord).rgb;
 
+    if(bloom)
+    {
+        vec3 bloomColor = texture(blurTexture, textureCoord).rgb;
+        color += bloomColor;
+    }
+
     if(hdr)
     {
         vec3 hdrColor = color;
-
-        if(bloom)
-        {
-            vec3 bloomColor = texture(blurTexture, textureCoord).rgb;
-            hdrColor += bloomColor;
-        }
 
         // reinhard tone mapping
         // color = color / (color + vec3(1.0));
