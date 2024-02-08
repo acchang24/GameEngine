@@ -15,6 +15,9 @@ out vec4 fragColor;
 // Toggle hdr
 uniform bool hdr;
 
+// Toggle bloom
+uniform bool bloom;
+
 // HDR exposure
 uniform float exposure;
 
@@ -26,9 +29,12 @@ void main()
     if(hdr)
     {
         vec3 hdrColor = color;
-        vec3 bloomColor = texture(blurTexture, textureCoord).rgb;
 
-        hdrColor += bloomColor;
+        if(bloom)
+        {
+            vec3 bloomColor = texture(blurTexture, textureCoord).rgb;
+            hdrColor += bloomColor;
+        }
 
         // reinhard tone mapping
         // color = color / (color + vec3(1.0));

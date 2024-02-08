@@ -105,4 +105,6 @@ private:
 	bool mIsRunning;
 
 	bool hdr;
+
+	bool bloom;
 };

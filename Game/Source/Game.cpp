@@ -47,11 +47,13 @@ Game::Game() :
 	mMousePrevY(static_cast<double>(windowHeight / 2)),
 	mFirstMouse(true),
 	mIsRunning(true),
-	hdr(false)
+	hdr(false),
+	bloom(false)
 {
 	mPrevInputs[GLFW_KEY_ESCAPE] = false;
 	mPrevInputs[GLFW_KEY_SPACE] = false;
 	mPrevInputs[GLFW_KEY_H] = false;
+	mPrevInputs[GLFW_KEY_B] = false;
 }
 
 Game::~Game()
@@ -210,6 +212,7 @@ bool Game::Init()
 	hdrGammaShader->SetActive();
 	hdrGammaShader->SetFloat("exposure", 1.0f);
 	hdrGammaShader->SetBool("hdr", hdr);
+	hdrGammaShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
 	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight, subsamples);
@@ -566,6 +569,20 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_RELEASE)
 	{
 		mPrevInputs[GLFW_KEY_H] = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_B])
+	{
+		mPrevInputs[GLFW_KEY_B] = true;
+
+		bloom = !bloom;
+
+		shader->SetActive();
+		shader->SetBool("bloom", bloom);
+	}
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
+	{
+		mPrevInputs[GLFW_KEY_B] = false;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_0))
