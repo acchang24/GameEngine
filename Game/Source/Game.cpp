@@ -301,60 +301,26 @@ bool Game::Init()
 
 	delete[] rockMatrices;
 
+	std::vector<glm::vec3> vampirePositions = { 
+		glm::vec3(0.0f, -4.0f, 0.0f), glm::vec3(10.0f, -4.0f, 0.0f),
+		glm::vec3(-10.0f, -4.0f, 0.0f), glm::vec3(10.0f, -4.0f, 10.0f),
+		glm::vec3(10.0f, -4.0f, -10.0f), glm::vec3(20.0f, -4.0f, 0.0f),
+		glm::vec3(-15.0f, -4.0f, 0.0f), glm::vec3(15.0f, -4.0f, 0.0f),
+		glm::vec3(10.0f, -4.0f, 15.0f), glm::vec3(10.0f, -4.0f, -15.0f),
+		glm::vec3(10.0f, -4.0f, -15.0f) 
+	};
 
-	Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire->SetScale(0.075f);
-	vampire->SetPosition(glm::vec3(0.0f, -4.0f, 0.0f));
-	AddGameEntity(vampire);
-
-	Entity3D* vampire2 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire2->SetScale(0.075f);
-	vampire2->SetPosition(glm::vec3(10.0f, -4.0f, 0.0f));
-	AddGameEntity(vampire2);
-
-	Entity3D* vampire3 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire3->SetScale(0.075f);
-	vampire3->SetPosition(glm::vec3(-10.0f, -4.0f, 0.0f));
-	AddGameEntity(vampire3);
-
-	Entity3D* vampire4 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire4->SetScale(0.075f);
-	vampire4->SetPosition(glm::vec3(10.0f, -4.0f, 10.0f));
-	AddGameEntity(vampire4);
-
-	Entity3D* vampire5 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire5->SetScale(0.075f);
-	vampire5->SetPosition(glm::vec3(10.0f, -4.0f, -10.0f));
-	AddGameEntity(vampire5);
-
-	Entity3D* vampire6 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire6->SetScale(0.075f);
-	vampire6->SetPosition(glm::vec3(20.0f, -4.0f, 0.0f));
-	AddGameEntity(vampire6);
-
-	Entity3D* vampire7 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire7->SetScale(0.075f);
-	vampire7->SetPosition(glm::vec3(-15.0f, -4.0f, 0.0f));
-	AddGameEntity(vampire7);
-
-	Entity3D* vampire8 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire8->SetScale(0.075f);
-	vampire8->SetPosition(glm::vec3(15.0f, -4.0f, 0.0f));
-	AddGameEntity(vampire8);
-
-	Entity3D* vampire9 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire9->SetScale(0.075f);
-	vampire9->SetPosition(glm::vec3(10.0f, -4.0f, 15.0f));
-	AddGameEntity(vampire9);
-
-	Entity3D* vampire10 = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
-	vampire10->SetScale(0.075f);
-	vampire10->SetPosition(glm::vec3(10.0f, -4.0f, -15.0f));
-	AddGameEntity(vampire10);
+	for (size_t i = 0; i < 11; ++i)
+	{
+		Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+		vampire->SetScale(0.05f);
+		vampire->SetPosition(vampirePositions[i]);
+		AddGameEntity(vampire);
+	}
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	sponza->SetScale(0.15);
+	sponza->SetScale(0.1);
 	sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
 
@@ -380,7 +346,7 @@ bool Game::Init()
 
 	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
-	squidward->SetScale(0.5f);
+	squidward->SetScale(0.35f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetMaterial("tt");
 	//m->AddTexture(texture);
@@ -396,7 +362,7 @@ bool Game::Init()
 	plane->SetPitch(-90.0f);
 	plane->SetPosition(glm::vec3(0.0, -5.0f, 0.0f));
 	plane->SetMaterial(woodMat);
-	plane->SetScale(100.0f);
+	plane->SetScale(70.0f);
 	AddGameEntity(plane);
 
 	//Cube* cube2 = new Cube();
@@ -417,28 +383,6 @@ bool Game::Init()
 	lightBuffer->LinkShader(phongShader);
 	lightBuffer->LinkShader(instanceShader);
 
-	//glm::vec3 lightPositions[] = {
-	//	glm::vec3(-3.0f, 0.0f, 0.0f),
-	//	glm::vec3(-1.0f, 0.0f, 0.0f),
-	//	glm::vec3(1.0f, 0.0f, 0.0f),
-	//	glm::vec3(3.0f, 0.0f, 0.0f)
-	//};
-	//glm::vec4 lightColors[] = {
-	//	glm::vec4(glm::vec3(0.25), 1.0f),
-	//	glm::vec4(glm::vec3(0.50), 1.0f),
-	//	glm::vec4(glm::vec3(0.75), 1.0f),
-	//	glm::vec4(glm::vec3(1.00), 1.0f)
-	//};
-
-	//for (size_t i = 0; i < 4; ++i)
-	//{
-	//	PointLight* pointLight = mLights->AllocatePointLight(lightColors[i], lightPositions[i], 1.0f, 0.014f, 0.0007f);
-	//	//Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	//	//lightSphere->SetMaterial(lightSphereMaterial);
-	//	//lightSphere->SetPosition(lightPositions[i]);
-	//	//AddGameEntity(lightSphere);
-	//}
-
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->data.usesShadow = true;
 
@@ -457,12 +401,12 @@ bool Game::Init()
 	//lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
 	//AddGameEntity(lightSphere2);
 
-	PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -170.0f), 1.0f, 0.014f, 0.0007f);
+	PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -120.0f), 1.0f, 0.014f, 0.0007f);
 	pointLight2->data.diffuseIntensity = 70.0f;
 	pointLight2->data.specularIntensity = 900.0f;
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere3->SetMaterial(lightSphereMaterial);
-	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -170.0f));
+	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -120.0f));
 	AddGameEntity(lightSphere3);
 
 	// Link shaders to camera's uniform buffer
