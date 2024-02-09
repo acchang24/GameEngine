@@ -14,12 +14,13 @@
 #include "../Graphics/UniformBuffer.h"
 #include "../Profiler/Profiler.h"
 #include "../Components/AnimationComponent.h"
+#include "../Graphics/Model.h"
 
 Entity3D::Entity3D() :
 	Entity(),
+	mModel(nullptr),
 	mUpdateModelMatrixJob(this),
-	mDirectory(),
-	mModel(glm::mat4(1.0f)),
+	mModelMatrix(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mInstanceBuffer(0),
@@ -28,16 +29,13 @@ Entity3D::Entity3D() :
 	mRoll(0.0f),
 	mIsSkinned(false)
 {
-	numMesh = 0;
-	numMats = 0;
-	numTextures = 0;
 }
 
 Entity3D::Entity3D(const std::string& fileName):
 	Entity(),
+	mModel(nullptr),
 	mUpdateModelMatrixJob(this),
-	mDirectory(),
-	mModel(glm::mat4(1.0f)),
+	mModelMatrix(glm::mat4(1.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mInstanceBuffer(0),
@@ -46,25 +44,24 @@ Entity3D::Entity3D(const std::string& fileName):
 	mRoll(0.0f),
 	mIsSkinned(false)
 {
-	numMesh = 0;
-	numMats = 0;
-	numTextures = 0;
-	LoadModel(fileName);
-	if (numMesh != mMeshes.size())
+	AssetManager* am = AssetManager::Get();
+
+	Model* model = am->LoadModel(fileName);
+
+	if (model)
 	{
-		std::cout << "different mesh numbers" << std::endl;
+		AnimationComponent* animComp = new AnimationComponent(this, new Skeleton(*model->GetSkeleton()));
+		mModel = model;
 	}
-	if (numMats != mMaterialMap.size())
+	else
 	{
-		std::cout << "different material numbers" << std::endl;
+		mModel = new Model(fileName, this);
 	}
 }
 
 Entity3D::~Entity3D()
 {
 	std::cout << "Delete entity 3D" << std::endl;
-
-	mMaterialMap.clear();
 
 	glDeleteBuffers(1, &mInstanceBuffer);
 }
@@ -75,262 +72,8 @@ void Entity3D::MakeInstance(unsigned int numInstances, const void* data)
 	glBindBuffer(GL_ARRAY_BUFFER, mInstanceBuffer);
 	glBufferData(GL_ARRAY_BUFFER, numInstances * sizeof(glm::mat4), data, GL_STATIC_DRAW);
 
-	for (auto m : mMeshes)
-	{
-		m->GetVertexBuffer()->MakeInstance(numInstances);
-	}
+	mModel->MakeInstance(numInstances);
 }
-
-bool Entity3D::LoadModel(const std::string& fileName)
-{
-	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace);
-
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-	{
-		std::cout << "ERROR ASSIMP parsing the object's file:: " << import.GetErrorString() << std::endl;
-		return false;
-	}
-
-	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
-
-	Skeleton* skeleton = nullptr;
-
-	if (scene->HasAnimations())
-	{
-		mIsSkinned = true;
-
-		// Create a new animation component for this model
-		skeleton = new Skeleton();
-		AnimationComponent* animComp = new AnimationComponent(this, skeleton);
-	}
-
-	ProcessNodes(scene->mRootNode, scene, skeleton);
-
-	for (int i = 0; i < scene->mNumAnimations; ++i)
-	{
-		Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, skeleton);
-		skeleton->SetAnimation(newAnim);
-	}
-
-	return true;
-}
-
-void Entity3D::ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton)
-{
-	std::queue<aiNode*> nodeQ;
-	nodeQ.push(node);
-	aiNode* currNode = nullptr;
-	while (!nodeQ.empty())
-	{
-		currNode = nodeQ.front();
-		for (unsigned int i = 0; i < currNode->mNumMeshes; ++i)
-		{
-			aiMesh* mesh = scene->mMeshes[currNode->mMeshes[i]];
-			Mesh* newMesh = ProcessMesh(mesh, scene, skeleton);
-			AddMesh(newMesh);
-		}
-		nodeQ.pop();
-		for (unsigned int i = 0; i < currNode->mNumChildren; ++i)
-		{
-			if (currNode->mChildren[i])
-			{
-				nodeQ.push(currNode->mChildren[i]);
-			}
-		}
-	}
-}
-
-Mesh* Entity3D::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
-{
-	AssetManager* am = AssetManager::Get();
-
-	std::string meshName = mesh->mName.C_Str();
-
-	// Check to see if mesh has already been loaded
-	Mesh* newMesh = am->LoadMesh(meshName);
-
-	if (!newMesh)
-	{
-		std::vector<Vertex> vertices;
-		std::vector<unsigned int> indices;
-		vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
-		indices.reserve(static_cast<size_t>(mesh->mNumFaces * 3));
-
-		Vertex vertex = {};
-		glm::vec3 vector(0.0f);
-
-		// Loop through vertices and add to our vector of vertices
-		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
-		{
-			// Vertices
-			vector.x = mesh->mVertices[i].x;
-			vector.y = mesh->mVertices[i].y;
-			vector.z = mesh->mVertices[i].z;
-			vertex.pos = vector;
-
-			// Normals
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.normal = vector;
-
-			// Textures
-			if (mesh->mTextureCoords[0])
-			{
-				glm::vec2 uv(0.0f);
-				uv.x = mesh->mTextureCoords[0][i].x;
-				uv.y = mesh->mTextureCoords[0][i].y;
-				vertex.uv = uv;
-
-				// Tangent
-				vector.x = mesh->mTangents[i].x;
-				vector.y = mesh->mTangents[i].y;
-				vector.z = mesh->mTangents[i].z;
-				vertex.tangent = vector;
-
-				// Bitangent
-				vector.x = mesh->mBitangents[i].x;
-				vector.y = mesh->mBitangents[i].y;
-				vector.z = mesh->mBitangents[i].z;
-				vertex.bitangent = vector;
-			}
-			else
-			{
-				vertex.uv = glm::vec2(0.0f, 0.0f);
-			}
-
-			vertices.emplace_back(vertex);
-		}
-
-		// Loop through the mesh's faces to get indices
-		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
-		{
-			aiFace face = mesh->mFaces[i];
-			// Retrieve index info of the face
-			for (unsigned int j = 0; j < face.mNumIndices; ++j)
-			{
-				indices.emplace_back(face.mIndices[j]);
-			}
-		}
-
-		// Load materials
-		Material* mat = nullptr;
-		++numMesh;
-		if (mesh->mMaterialIndex >= 0)
-		{
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			std::string name = material->GetName().C_Str();
-
-			// If the material index is not in the entity's material map, create a new material
-			if (mMaterialMap.find(name) == mMaterialMap.end())
-			{
-				// Check to see if it's in the asset manager map
-				mat = am->LoadMaterial(name);
-
-				// Create a new material if it's not in the asset manager
-				if (!mat)
-				{
-					std::cout << name << " " << mesh->mMaterialIndex << std::endl;
-					++numMats;
-					mat = new Material();
-					mat->SetShader(am->LoadShader("phong"));
-					if (skeleton)
-					{
-						mat->SetShader(am->LoadShader("skinned"));
-					}
-
-					mMaterialMap[name] = mat;
-					// Diffuse textures
-					LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat, am);
-					// Specular textures
-					LoadMaterialTextures(material, aiTextureType_SPECULAR, mat, am);
-					// Emissive textures
-					LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat, am);
-					// Normal textures
-					LoadMaterialTextures(material, aiTextureType_NORMALS, mat, am);
-
-					// Height maps
-
-					am->SaveMaterial(name, mat);
-				}
-			}
-			else
-			{
-				// use the material from the material map instead
-				mat = mMaterialMap[name];
-			}
-		}
-
-		// Add bone id and weights to vertex if there is a skeletal animation
-		if (skeleton)
-		{
-			skeleton->ExtractVertexBoneWeights(vertices, mesh);
-		}
-
-		VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
-			vertices.size(), indices.size(), VertexLayout::Vertex);
-
-		newMesh = new Mesh(vb, mat);
-
-		am->SaveMesh(meshName, newMesh);
-	}
-
-	// Load skeletal bone data
-	if (skeleton)
-	{
-		skeleton->LoadBoneData(mesh);
-	}
-	
-	return newMesh;
-}
-
-void Entity3D::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am)
-{
-	aiString str;
-	std::string path = mDirectory;
-
-	for (unsigned int i = 0; i < mat->GetTextureCount(aiTextureType); ++i)
-	{
-		if (AI_SUCCESS == mat->GetTexture(aiTextureType, i, &str))
-		{
-			path = mDirectory + (str.C_Str());
-
-			// See if texture is already loaded
-			Texture* t = am->LoadTexture(path);
-			if (!t)
-			{
-				// Create the new texture
-				Texture* texture = nullptr;
-				
-				switch (aiTextureType)
-				{
-				case aiTextureType_DIFFUSE:
-					texture = new Texture(path, TextureType::Diffuse);
-					break;
-				case aiTextureType_SPECULAR:
-					texture = new Texture(path, TextureType::Specular);
-					break;
-				case aiTextureType_EMISSIVE:
-					texture = new Texture(path, TextureType::Emission);
-					break;
-				case aiTextureType_NORMALS:
-					texture = new Texture(path, TextureType::Normal);
-					break;
-				}
-				material->AddTexture(texture);
-				am->SaveTexture(path, texture);
-				++numTextures;
-			}
-			else
-			{
-				// use the cached texture from AssetManager
-				material->AddTexture(t);
-			}
-		}
-	}
-}
-
 
 void Entity3D::Update(float deltaTime)
 {
@@ -381,18 +124,17 @@ void Entity3D::OnDraw()
 		GetComponent<AnimationComponent>()->UpdateBoneMatrices();
 	}
 
-	for (auto m : mMeshes)
-	{
-		m->Draw(mModel);
-	}
+	mModel->Draw(mModelMatrix);
 }
 
 void Entity3D::OnDraw(Shader* shader)
 {
-	for (auto m : mMeshes)
+	if (mIsSkinned)
 	{
-		m->Draw(shader, mModel);
+		GetComponent<AnimationComponent>()->UpdateBoneMatrices();
 	}
+
+	mModel->Draw(shader, mModelMatrix);
 }
 
 void Entity3D::UpdateModelMatrixJob::DoIt()
@@ -410,5 +152,5 @@ void Entity3D::UpdateModelMatrixJob::DoIt()
 	// Scale
 	model = glm::scale(model, mEntity->mScale);
 
-	mEntity->mModel = model;
+	mEntity->mModelMatrix = model;
 }

@@ -30,6 +30,7 @@ class Skeleton
 public:
 	Skeleton();
 	~Skeleton();
+	Skeleton(Skeleton& other);
 
 	// Loops through the assimp mesh's bones and loads the bone's id and inverse bind pose matrices
 	// into the skeleton's bone map

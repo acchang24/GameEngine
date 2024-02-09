@@ -10,12 +10,13 @@ class Skeleton;
 class Material;
 class AssetManager;
 class Entity3D;
+class Shader;
 
 // Model class represents any 3D object
 class Model
 {
 public:
-	// Model constructor loads the model using assimp
+	// Model constructor loads a model using assimp library
 	// @param - const std::string& for the model's file name
 	// @param - Entity3D* for the model's entity
 	Model(const std::string& fileName, Entity3D* entity);
@@ -64,6 +65,8 @@ public:
 	// Loops through each mesh and calls Mesh::Draw()
 	// @param - const glm::mat4& for the model matrix
 	void Draw(const glm::mat4& model);
+
+	void Draw(Shader* s, const glm::mat4& model);
 
 	Skeleton* GetSkeleton() { return mSkeleton; }
 

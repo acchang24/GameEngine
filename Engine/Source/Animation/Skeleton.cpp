@@ -19,11 +19,20 @@ Skeleton::~Skeleton()
 {
 	std::cout << "Delete skeleton" << std::endl;
 
-	for (auto& a : mAnimations)
-	{
-		delete a.second;
-	}
 	mAnimations.clear();
+}
+
+Skeleton::Skeleton(Skeleton& other) :
+	mSkeletonConsts({}),
+	mGlobalInverseTransform(other.mGlobalInverseTransform),
+	mSkeletonBuffer(other.mSkeletonBuffer),
+	mCurrentAnimation(other.mCurrentAnimation),
+	mJob(this),
+	mCurrentTime(other.mCurrentTime),
+	mNumBones(other.mNumBones)
+{
+	mBoneMap = other.mBoneMap;
+	mAnimations = other.mAnimations;
 }
 
 void Skeleton::LoadBoneData(const aiMesh* mesh)

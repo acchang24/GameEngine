@@ -74,10 +74,10 @@ void Cube::OnUpdate(float deltaTime)
     // UNCOMMENT THIS IF JUST REGULAR CUBE (this currently makes cubes to rotate infinitely on their own for now)
     // Entity3D::OnUpdate(deltaTime);
 
-    mModel = glm::mat4(1.0f);
+    mModelMatrix = glm::mat4(1.0f);
 
     // Translation
-    mModel = glm::translate(mModel, mPosition);
+    mModelMatrix = glm::translate(mModelMatrix, mPosition);
 
     TimerComponent* tc = GetComponent<TimerComponent>();
     float speed = 0.0f;
@@ -87,17 +87,17 @@ void Cube::OnUpdate(float deltaTime)
     }
 
     // Rotation over time
-    mModel = glm::rotate(mModel, speed * glm::radians(mYaw), glm::vec3(0.5f, 1.0f, 0.0f));
+    mModelMatrix = glm::rotate(mModelMatrix, speed * glm::radians(mYaw), glm::vec3(0.5f, 1.0f, 0.0f));
 
     // Scale
-    mModel = glm::scale(mModel, mScale);
+    mModelMatrix = glm::scale(mModelMatrix, mScale);
 }
 
 void Cube::OnDraw()
 {
     mMaterial->SetActive();
 
-    mMaterial->GetShader()->SetMat4("model", mModel);
+    mMaterial->GetShader()->SetMat4("model", mModelMatrix);
 
     mVertexBuffer->Draw();
 }
@@ -107,7 +107,7 @@ void Cube::OnDraw(Shader* s)
     mMaterial->SetActive();
     s->SetActive();
 
-    s->SetMat4("model", mModel);
+    s->SetMat4("model", mModelMatrix);
 
     mVertexBuffer->Draw();
 }

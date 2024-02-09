@@ -26,6 +26,8 @@
 #include "Profiler/Profiler.h"
 #include "Multithreading/JobManager.h"
 #include "Animation/Skeleton.h"
+#include "Graphics/Model.h"
+#include "Components/AnimationComponent.h"
 
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -351,7 +353,7 @@ bool Game::Init()
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
 	squidward->SetScale(0.35f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
-	Material* m = squidward->GetMaterial("tt");
+	Material* m = squidward->GetModel()->GetMaterial("tt");
 	//m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);

@@ -24,7 +24,7 @@ Model::Model(const std::string& fileName, Entity3D* entity) :
 {
 	if (LoadModel(fileName, entity))
 	{
-		//AssetManager::Get()->SaveModel(fileName, this);
+		AssetManager::Get()->SaveModel(fileName, this);
 	}
 }
 
@@ -33,8 +33,6 @@ Model::~Model()
 	std::cout << "Delete model" << std::endl;
 
 	mMaterialMap.clear();
-
-	delete mSkeleton;
 }
 
 void Model::MakeInstance(unsigned int numInstances)
@@ -60,7 +58,7 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 
 	if (scene->HasAnimations())
 	{
-		//entity->SetIsSkinned(true);
+		entity->SetIsSkinned(true);
 
 		// Create a new animation component for this model
 		mSkeleton = new Skeleton();
@@ -71,7 +69,9 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 
 	for (int i = 0; i < scene->mNumAnimations; ++i)
 	{
+		std::string animName = scene->mAnimations[i]->mName.C_Str();
 		Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, mSkeleton);
+		AssetManager::Get()->SaveAnimation(animName, newAnim);
 		mSkeleton->SetAnimation(newAnim);
 	}
 
@@ -295,13 +295,16 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 
 void Model::Draw(const glm::mat4& model)
 {
-	//if (mSkeleton)
-	//{
-	//	GetComponent<AnimationComponent>()->UpdateBoneMatrices();
-	//}
-
 	for (auto m : mMeshes)
 	{
 		m->Draw(model);
+	}
+}
+
+void Model::Draw(Shader* s, const glm::mat4& model)
+{
+	for (auto m : mMeshes)
+	{
+		m->Draw(s, model);
 	}
 }

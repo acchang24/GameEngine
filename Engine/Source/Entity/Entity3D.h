@@ -11,6 +11,7 @@ class Mesh;
 class Shader;
 class Skeleton;
 class AssetManager;
+class Model;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -33,26 +34,6 @@ public:
 	// @param - const void* for an array of model matrices, and any data needed per instance
 	void MakeInstance(unsigned int numInstances, const void* data);
 
-	// Loads the model's file using Assimp
-	// @param - const std::string& for the file name
-	bool LoadModel(const std::string& fileName);
-	// Recursively goes through the scene's nodes and loads any meshes
-	// @param - aiNode*
-	// @param - const aiScene*
-	// @param - Skeleton* if there is a skeleton for this model
-	void ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton);
-	// Takes an assimp mesh and store it in our own Mesh object.
-	// It then appends that mesh to the entity's vector of meshes.
-	// @param - aiMesh*
-	// @param - const aiScene*
-	// @param - Skeleton* if there is a skeleton for this model
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton);
-	// Loads the textures of the material
-	// @param - aiMaterial*
-	// @param - aiTextureType
-	// @param - Material* for the material
-	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am);
-
 	// Override update function for 3D entities
 	// @param - float for delta time
 	void Update(float deltaTime) override;
@@ -73,29 +54,9 @@ public:
 	// OnDraw function using a shader set explicitly
 	virtual void OnDraw(Shader* shader);
 
-	// Gets a material by name through the entity's material map
-	// @param - const std::string& for the name of the material
-	// @return - Material* for the desired material
-	Material* GetMaterial(const std::string& name) { return mMaterialMap[name]; }
-	// Uses the material map to help sets a particular material's shader. This will
-	// affect any mesh using that particular material.
-	// @param - const std::string& for the name of the material
-	// @param - Shader* for the new shader
-	void SetMaterialShader(const std::string& name, Shader* s) { mMaterialMap[name]->SetShader(s); }
-
-	// Adds a mesh to the entity's vector of meshes
-	// @param - Mesh* for the new mesh
-	void AddMesh(Mesh* m) { mMeshes.emplace_back(m); }
-	// Gets the enitity's vector of meshes (can change data)
-	// @return - std::vector<Mesh*>& for the vector of meshes
-	std::vector<Mesh*>& GetMeshes() { return mMeshes; }
-	// Gets the entity's number of meshes
-	// @return - size_t for the number of meshes
-	size_t GetNumMeshes() const { return mMeshes.size(); }
-
 	// Gets the entity's model matrix
 	// @return - const glm::mat4& for the entity's model matrix
-	const glm::mat4& GetModelMatrix() const { return mModel; }
+	const glm::mat4& GetModelMatrix() const { return mModelMatrix; }
 	// Gets the entity's position
 	// @return - const glm::vec3& for the entity's position
 	const glm::vec3& GetPosition() const { return mPosition; }
@@ -114,7 +75,7 @@ public:
 	
 	// Set the entity's model matrix
 	// @param - const glm::mat4& for the new model matrix
-	void SetModelMatrix(const glm::mat4& m) { mModel = m; }
+	void SetModelMatrix(const glm::mat4& m) { mModelMatrix = m; }
 	// Set the entity's position
 	// @param - const glm::vec3& for the new position
 	void SetPosition(const glm::vec3& pos) { mPosition = pos; }
@@ -134,6 +95,10 @@ public:
 	// @param - float for the new roll rotation
 	void SetRoll(float roll) { mRoll = roll; }
 
+	void SetIsSkinned(bool skin) { mIsSkinned = skin; }
+
+	Model* GetModel() { return mModel; }
+
 protected:
 	// Job to update the Entity3D's model matrix on a separate thread
 	class UpdateModelMatrixJob : public JobManager::Job
@@ -148,21 +113,14 @@ protected:
 		Entity3D* mEntity;
 	};
 
-	// Entity's vector of meshes
-	std::vector<Mesh*> mMeshes;
-
-	// Map of the entity's materials. Each mesh of this entity
-	// is indexed to one of these materials.
-	std::unordered_map<std::string, Material*> mMaterialMap;
+	// Entity's 3D model
+	Model* mModel;
 
 	// Job to update model matrix on seprate thread
 	UpdateModelMatrixJob mUpdateModelMatrixJob;
 
-	// The entity's model directory
-	std::string mDirectory;
-
 	// Entity's model matrix
-	glm::mat4 mModel;
+	glm::mat4 mModelMatrix;
 
 	// Entity's position
 	glm::vec3 mPosition;
@@ -179,10 +137,6 @@ protected:
 	float mPitch;
 	// Roll rotation
 	float mRoll;
-
-	int numMesh;
-	int numMats;
-	int numTextures;
 
 	// Bool to see if this entity has an animation
 	bool mIsSkinned;

@@ -5,6 +5,8 @@
 #include "../Graphics/Material.h"
 #include "../Graphics/UniformBuffer.h"
 #include "../Graphics/Mesh.h"
+#include "../Graphics/Model.h"
+#include "../Animation/Animation.h"
 
 // The AssetManager is a singleton class that helps load assets on demand
 // and cache them so that subsequent loads will return the cached asset
@@ -89,6 +91,28 @@ public:
 	// Clears each element from the buffer cache map
 	void ClearBuffers() { mBufferCache->Clear(); }
 
+	// Saves a model into the model cache's map
+	// @param - const std::string& for the model's name
+	// @param - Model* for the model to save
+	void SaveModel(const std::string& modelName, Model* model) { mModelCache->StoreCache(modelName, model); }
+	// Retrieves a model from the model cache's map
+	// @param - const std::string& for the model's name
+	// @return - Model* for the desired model retrieved from the model cache map
+	Model* LoadModel(const std::string& modelName) { return mModelCache->Get(modelName); }
+	// Clears each element from the model cache map
+	void ClearModels() { mModelCache->Clear(); }
+
+	// Saves an animation into the animation cache's map
+	// @param - const std::string& for the animation's name
+	// @param - Animation* for the animation to save
+	void SaveAnimation(const std::string& animationName, Animation* animation) { mAnimationCache->StoreCache(animationName, animation); }
+	// Retrieves an animation from the animation cache's map
+	// @param - const std::string& for the animation's name
+	// @return - Animation* for the desired animation retrieved from the animation cache map
+	Animation* LoadAnimation(const std::string& animName) { return mAnimationCache->Get(animName); }
+	// Clears each element from the animation cache map
+	void ClearAnimations() { mAnimationCache->Clear(); }
+
 private:
 	AssetManager();
 	~AssetManager();
@@ -107,4 +131,10 @@ private:
 
 	// UniformBuffer cache
 	Cache<UniformBuffer>* mBufferCache;
+
+	// Model cache
+	Cache<Model>* mModelCache;
+
+	// Animation cache
+	Cache<Animation>* mAnimationCache;
 };

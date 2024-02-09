@@ -96,7 +96,7 @@ void Sphere::OnDraw()
 {
     mMaterial->SetActive();
 
-    mMaterial->GetShader()->SetMat4("model", mModel);
+    mMaterial->GetShader()->SetMat4("model", mModelMatrix);
 
     mVertexBuffer->Draw();
 }

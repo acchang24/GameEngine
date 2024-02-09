@@ -39,7 +39,7 @@ void Plane::OnUpdate(float deltaTime)
 void Plane::OnDraw()
 {
 	mMaterial->SetActive();
-	mMaterial->GetShader()->SetMat4("model", mModel);
+	mMaterial->GetShader()->SetMat4("model", mModelMatrix);
 
 	glDisable(GL_CULL_FACE);
 
@@ -53,7 +53,7 @@ void Plane::OnDraw(Shader* s)
 	mMaterial->SetActive();
 	s->SetActive();
 
-	s->SetMat4("model", mModel);
+	s->SetMat4("model", mModelMatrix);
 
 	mVertexBuffer->Draw();
 }
