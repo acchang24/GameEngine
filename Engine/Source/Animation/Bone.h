@@ -37,39 +37,26 @@ public:
 
 	// Updates the bone's position, orientation (rotation), and scale matrices by interpolating 
 	// between two keyframes. It uses those matrices to calculate a matrix to transform a bone into bone space
-	void Update(float animTime);
-
-	// Gets the position index based off of the current animation time
-	// @param - float for the current animation time
-	int GetPositionIndex(float animTime) const;
-	// Gets the rotation index based off of the current animation time
-	// @param - float for the current animation time
-	int GetRotationIndex(float animTime) const;
-	// Gets the scaling index based off of the current animation time
-	// @param - float for the current animation time
-	int GetScaleIndex(float animTime) const;
-
-	// Gets a float scale factor to interpolate between two frames
-	// @param - float for the current frame's index
-	// @param - float for the next frame's index
-	// @param - float for the current animation time
-	float GetScaleFactor(float currFrame, float nextFrame, float animTime) const;
+	// @param - float for the current time elapsed
+	// @param - float for the animation's duration
+	void Update(float animTime, float animDuration);
 
 	// Interpolates the position based off the animation time and returns 
 	// a translation matrix for the bone's position
 	// @param - float for the current animation time
+	// @param - float for the current animation's duration
 	// @return - glm::mat4 for the bone's translation matrix
-	glm::mat4 InterpolatePosition(float animTime) const;
+	glm::mat4 InterpolatePosition(float animTime, float animDuration) const;
 	// Interpolates the rotation based off the animation time and returns 
 	// a rotation matrix for the bone's rotation
 	// @param - float for the current animation time
 	// @return - glm::mat4 for the bone's rotation matrix
-	glm::mat4 InterpolateRotation(float animTime) const;
+	glm::mat4 InterpolateRotation(float animTime, float animDuration) const;
 	// Interpolates the scale based off the animation time and returns 
 	// a scaling matrix for the bone's scale
 	// @param - float for the current animation time
 	// @return - glm::mat4 for the bone's scale matrix
-	glm::mat4 InterpolateScaling(float animTime) const;
+	glm::mat4 InterpolateScaling(float animTime, float animDuration) const;
 
 	// Gets the bone's local transform matrix (matrix to transform into bone space)
 	// @return - const glm::mat4& for the bone's local transform matrix

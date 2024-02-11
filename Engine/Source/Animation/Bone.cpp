@@ -51,100 +51,60 @@ Bone::~Bone()
 	//std::cout << "Delete bone" << std::endl;
 }
 
-void Bone::Update(float animTime)
+void Bone::Update(float animTime, float animDuration)
 {
-	glm::mat4 translation = InterpolatePosition(animTime);
-	glm::mat4 rotation = InterpolateRotation(animTime);
-	glm::mat4 scale = InterpolateScaling(animTime);
+	glm::mat4 translation = InterpolatePosition(animTime, animDuration);
+	glm::mat4 rotation = InterpolateRotation(animTime, animDuration);
+	glm::mat4 scale = InterpolateScaling(animTime, animDuration);
 
 	mLocalTransform = translation * rotation * scale;
 }
 
-int Bone::GetPositionIndex(float animTime) const
-{
-	for (int i = 0; i < mNumPositions - 1; ++i)
-	{
-		if (animTime < mPositions[static_cast<size_t>(i + 1)].timeStamp)
-		{
-			return i;
-		}
-	}
-	return 0;
-}
-
-int Bone::GetRotationIndex(float animTime) const
-{
-	for (int i = 0; i < mNumRotations - 1; ++i)
-	{
-		if (animTime < mRotations[static_cast<size_t>(i + 1)].timeStamp)
-		{
-			return i;
-		}
-	}
-	return 0;
-}
-
-int Bone::GetScaleIndex(float animTime) const
-{
-	for (int i = 0; i < mNumScalings - 1; ++i)
-	{
-		if (animTime < mScalings[static_cast<size_t>(i + 1)].timeStamp)
-		{
-			return i;
-		}
-	}
-	return 0;
-}
-
-float Bone::GetScaleFactor(float currFrame, float nextFrame, float animTime) const
-{
-	float scaleFactor = 0.0f;
-	float mid = animTime - currFrame;
-	float diff = nextFrame - currFrame;
-	scaleFactor = mid / diff;
-
-	return scaleFactor;
-}
-
-glm::mat4 Bone::InterpolatePosition(float animTime) const
+glm::mat4 Bone::InterpolatePosition(float animTime, float animDuration) const
 {
 	if (mNumPositions == 1)
 	{
 		return glm::translate(glm::mat4(1.0f), mPositions[0].position);
 	}
-	int index = GetPositionIndex(animTime);
+	float timePerFrame = animDuration / static_cast<float>(mNumPositions - 1);
+	float frame = animTime / timePerFrame;
+	int index = static_cast<int>(frame);
 	int nextIndex = index + 1;
-	float scaleFactor = GetScaleFactor(mPositions[index].timeStamp, mPositions[nextIndex].timeStamp, animTime);
-	glm::vec3 finalPosition = glm::mix(mPositions[index].position, mPositions[nextIndex].position, scaleFactor);
+
+	glm::vec3 finalPosition = glm::mix(mPositions[index].position, mPositions[nextIndex].position, (frame - index));
 
 	return glm::translate(glm::mat4(1.0f), finalPosition);
 }
 
-glm::mat4 Bone::InterpolateRotation(float animTime) const
+glm::mat4 Bone::InterpolateRotation(float animTime, float animDuration) const
 {
 	if (mNumRotations == 1)
 	{
 		glm::quat rot = glm::normalize(mRotations[0].rotation);
 		return glm::toMat4(rot);
 	}
-	int index = GetRotationIndex(animTime);
+	float timePerFrame = animDuration / static_cast<float>(mNumRotations - 1);
+	float frame = animTime / timePerFrame;
+	int index = static_cast<int>(frame);
 	int nextIndex = index + 1;
-	float scaleFactor = GetScaleFactor(mRotations[index].timeStamp, mRotations[nextIndex].timeStamp, animTime);
-	glm::quat finalRotation = glm::slerp(mRotations[index].rotation, mRotations[nextIndex].rotation, scaleFactor);
+
+	glm::quat finalRotation = glm::slerp(mRotations[index].rotation, mRotations[nextIndex].rotation, (frame - index));
 	finalRotation = glm::normalize(finalRotation);
 	return glm::toMat4(finalRotation);
 }
 
-glm::mat4 Bone::InterpolateScaling(float animTime) const
+glm::mat4 Bone::InterpolateScaling(float animTime, float animDuration) const
 {
 	if (mNumScalings == 1)
 	{
 		return glm::scale(glm::mat4(1.0f), mScalings[0].scale);
 	}
-	int index = GetScaleIndex(animTime);
+	float timePerFrame = animDuration / static_cast<float>(mNumScalings - 1);
+	float frame = animTime / timePerFrame;
+	int index = static_cast<int>(frame);
 	int nextIndex = index + 1;
-	float scaleFactor = GetScaleFactor(mScalings[index].timeStamp, mScalings[nextIndex].timeStamp, animTime);
-	glm::vec3 finalScale = glm::mix(mScalings[index].scale, mScalings[nextIndex].scale, scaleFactor);
+
+	glm::vec3 finalScale = glm::mix(mScalings[index].scale, mScalings[nextIndex].scale, (frame - index));
 
 	return glm::scale(glm::mat4(1.0f), finalScale);
 }

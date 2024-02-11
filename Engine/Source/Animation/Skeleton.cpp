@@ -119,10 +119,10 @@ void Skeleton::UpdateAnimation(float deltaTime)
 		}
 
 		// Update bone transformations on separate thread
-		JobManager::Get()->AddJob(&mJob);
+		//JobManager::Get()->AddJob(&mJob);
 		
 		// Uncomment this and remove the JobManager::AddJob() function above to use single thread
-		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), mGlobalInverseTransform);
+		CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), mGlobalInverseTransform);
 	}
 }
 
@@ -138,7 +138,7 @@ void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& par
 
 	if (bone)
 	{
-		bone->Update(mCurrentTime);
+		bone->Update(mCurrentTime, mCurrentAnimation->GetDuration());
 
 		nodeTransform = bone->GetLocalTransform();
 
