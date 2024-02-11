@@ -122,7 +122,7 @@ void Skeleton::UpdateAnimation(float deltaTime)
 		JobManager::Get()->AddJob(&mJob);
 		
 		// Uncomment this and remove the JobManager::AddJob() function above to use single thread
-		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), glm::mat4(1.0f));
+		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), mGlobalInverseTransform);
 	}
 }
 
@@ -144,7 +144,7 @@ void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& par
 
 		globalTransformation = parentTransform * nodeTransform;
 
-		mSkeletonConsts.finalBoneMatrices[bone->GetBoneID()] = mGlobalInverseTransform * globalTransformation * bone->GetOffetMatrix();
+		mSkeletonConsts.finalBoneMatrices[bone->GetBoneID()] = globalTransformation * bone->GetOffetMatrix();
 	}
 	else
 	{
@@ -159,9 +159,5 @@ void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& par
 
 void Skeleton::UpdateBoneJob::DoIt()
 {
-	const AnimNode* root = &mSkeleton->GetCurrentAnimation()->GetRootNode();
-
-	glm::mat4 parent(1.0f);
-
-	mSkeleton->CalculateBoneTransform(root, parent);
+	mSkeleton->CalculateBoneTransform(&mSkeleton->GetCurrentAnimation()->GetRootNode(), mSkeleton->mGlobalInverseTransform);
 }
