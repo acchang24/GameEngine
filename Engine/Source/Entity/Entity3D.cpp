@@ -103,18 +103,18 @@ void Entity3D::OnUpdate(float deltaTime)
 	// Update model matrix on seprate thread		
 	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 	
-	//mModel = glm::mat4(1.0f);
+	//mModelMatrix = glm::mat4(1.0f);
 
 	//// Translate
-	//mModel = glm::translate(mModel, mPosition);
+	//mModelMatrix = glm::translate(mModelMatrix, mPosition);
 
 	//// Rotate
-	//mModel = glm::rotate(mModel, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	//mModel = glm::rotate(mModel, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	//mModel = glm::rotate(mModel, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	//mModelMatrix = glm::rotate(mModelMatrix, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	//mModelMatrix = glm::rotate(mModelMatrix, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	//mModelMatrix = glm::rotate(mModelMatrix, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	//// Scale
-	//mModel = glm::scale(mModel, mScale);
+	//mModelMatrix = glm::scale(mModelMatrix, mScale);
 }
 
 void Entity3D::OnDraw()
