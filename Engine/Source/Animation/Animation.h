@@ -39,10 +39,6 @@ public:
 	// sets the animation's bone map to the skeleton's bone map
 	void ReadBones(const aiAnimation* anim, Skeleton* skeleton);
 
-	// Returns the animation's bone map (shared with skeleton)
-	// @return - const std::unordered_map<std::string, BoneData>& for the bone map
-	const std::unordered_map<std::string, BoneData>& GetBoneInfoMap() { return mBoneInfoMap; }
-
 	// Finds the bone int the animation based off its name
 	// @param - const std::string& for the bone's name
 	// @return - Bone* for the bone if it is found
@@ -75,9 +71,6 @@ public:
 	float GetTicksPerSecond() const { return mTicksPerSecond; }
 
 private:
-	// Map of the skeleton's bones (shared with skeleton class)
-	std::unordered_map<std::string, BoneData> mBoneInfoMap;
-
 	// Array of bones for this animation
 	std::vector<Bone> mBones;
 

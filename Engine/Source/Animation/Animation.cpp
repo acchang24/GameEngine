@@ -65,5 +65,4 @@ void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
 		}
 		mBones.emplace_back(Bone(boneName, boneInfoMap[boneName].index, boneInfoMap[boneName].offset, channel));
 	}
-	mBoneInfoMap = boneInfoMap;
 }
