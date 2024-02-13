@@ -349,11 +349,11 @@ bool Game::Init()
 	//TimerComponent* timer = new TimerComponent(mCube);
 	//AddGameEntity(mCube);
 
-	Entity3D* squidward = new Entity3D("Assets/models/Squidward/squidward.obj");
+	Entity3D* squidward = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
 	squidward->SetScale(0.35f);
 	//squidward->SetMaterialShader("tt", refractiveShader);
-	Material* m = squidward->GetModel()->GetMaterial("tt");
+	Material* m = squidward->GetModel()->GetMaterial("ttmat");
 	//m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
