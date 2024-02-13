@@ -18,26 +18,47 @@ Animation::Animation(const aiAnimation* animation, const aiNode* rootNode, Skele
 
 	skeleton->SetGlobalInverseTransform(transform);
 
-	ReadNodeHeirarchy(mRoot, rootNode);
+	mData.reserve(static_cast<size_t>(animation->mNumChannels));
+	mBones.reserve(static_cast<size_t>(animation->mNumChannels));
+
+	ReadNodeHeirarchy(mRoot, rootNode, skeleton->GetBoneMap());
 	ReadBones(animation, skeleton);
 }
 
 Animation::~Animation()
 {
 	std::cout << "Delete animation" << std::endl;
+
+	for (auto& b : mBones)
+	{
+		delete b;
+	}
 }
 
-void Animation::ReadNodeHeirarchy(AnimNode& dest, const aiNode* src)
+void Animation::ReadNodeHeirarchy(AnimNode& dest, const aiNode* src, std::unordered_map<std::string, BoneData>& boneData)
 {
 	dest.name = src->mName.data;
 	dest.transformation = AssimpGLMHelper::ConvertMatrixToGLMFormat(src->mTransformation);
 	dest.numChildren = src->mNumChildren;
 	dest.children.reserve(src->mNumChildren);
 
+	if (boneData.find(dest.name) != boneData.end())
+	{
+		BoneData bd = boneData[dest.name];
+		Bone* bone = new Bone(dest.name, bd.index, bd.offset);
+		dest.bone = bone;
+		mBones.emplace_back(bone);
+		mData.emplace_back(dest);
+	}
+	else
+	{
+		mData.emplace_back(dest);
+	}
+
 	for (int i = 0; i < src->mNumChildren; ++i)
 	{
 		AnimNode newNode = {};
-		ReadNodeHeirarchy(newNode, src->mChildren[i]);
+		ReadNodeHeirarchy(newNode, src->mChildren[i], boneData);
 		dest.children.emplace_back(newNode);
 	}
 }
@@ -46,11 +67,6 @@ void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
 {
 	int size = anim->mNumChannels;
 
-	mBones.reserve(static_cast<size_t>(size));
-
-	auto& boneInfoMap = skeleton->GetBoneMap();
-	int& boneCount = skeleton->GetNumBones();
-
 	std::string boneName;
 
 	for (int i = 0; i < size; ++i)
@@ -58,11 +74,9 @@ void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
 		aiNodeAnim* channel = anim->mChannels[i];
 		boneName = channel->mNodeName.data;
 
-		if (boneInfoMap.find(boneName) == boneInfoMap.end())
+		if (boneName == mBones[i]->GetBoneName())
 		{
-			boneInfoMap[boneName].index = boneCount;
-			++boneCount;
+			mBones[i]->ReadKeyFrames(channel);
 		}
-		mBones.emplace_back(Bone(boneName, boneInfoMap[boneName].index, boneInfoMap[boneName].offset, channel));
 	}
 }

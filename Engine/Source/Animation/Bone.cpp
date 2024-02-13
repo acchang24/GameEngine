@@ -2,15 +2,25 @@
 #include <iostream>
 #include "../Util/AssimpGLMHelper.h"
 
-Bone::Bone(const std::string& name, int id, const glm::mat4 offset, const aiNodeAnim* channel) :
+Bone::Bone(const std::string& name, int id, const glm::mat4 offset) :
 	mLocalTransform(glm::mat4(1.0f)),
 	mOffset(offset),
 	mName(name),
 	mID(id),
-	mNumPositions(channel->mNumPositionKeys),
-	mNumRotations(channel->mNumRotationKeys),
-	mNumScalings(channel->mNumScalingKeys)
+	mNumPositions(0),
+	mNumRotations(0),
+	mNumScalings(0)
 {
+}
+
+Bone::~Bone()
+{
+	std::cout << "Delete bone" << std::endl;
+}
+
+void Bone::ReadKeyFrames(const aiNodeAnim* channel)
+{
+	mNumPositions = channel->mNumPositionKeys;
 	mPositions.reserve(mNumPositions);
 	for (int i = 0; i < mNumPositions; ++i)
 	{
@@ -22,6 +32,7 @@ Bone::Bone(const std::string& name, int id, const glm::mat4 offset, const aiNode
 		data.timeStamp = timeStamp;
 		mPositions.emplace_back(data);
 	}
+	mNumRotations = channel->mNumRotationKeys;
 	mRotations.reserve(mNumRotations);
 	for (int i = 0; i < mNumRotations; ++i)
 	{
@@ -33,6 +44,7 @@ Bone::Bone(const std::string& name, int id, const glm::mat4 offset, const aiNode
 		data.timeStamp = timeStamp;
 		mRotations.emplace_back(data);
 	}
+	mNumScalings = channel->mNumScalingKeys;
 	mScalings.reserve(mNumScalings);
 	for (int i = 0; i < mNumScalings; ++i)
 	{
@@ -44,11 +56,6 @@ Bone::Bone(const std::string& name, int id, const glm::mat4 offset, const aiNode
 		data.timeStamp = timeStamp;
 		mScalings.emplace_back(data);
 	}
-}
-
-Bone::~Bone()
-{
-	//std::cout << "Delete bone" << std::endl;
 }
 
 void Bone::Update(float animTime, float animDuration)

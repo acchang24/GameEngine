@@ -13,8 +13,9 @@ class Skeleton;
 struct AnimNode
 {
 	glm::mat4 transformation = glm::mat4(1.0f); // Transformation relative to the parent
-	std::vector<AnimNode> children;
 	std::string name;
+	std::vector<AnimNode> children;
+	Bone* bone = nullptr;
 	int numChildren = 0;
 };
 
@@ -31,28 +32,13 @@ public:
 	// Recursively reads through all the assimp animation nodes and sets them into an AnimNode
 	// @param - AnimNode& for the animation's root node
 	// @param - const aiNode* for the assimp root node
-	void ReadNodeHeirarchy(AnimNode& dest, const aiNode* src);
+	void ReadNodeHeirarchy(AnimNode& dest, const aiNode* src, std::unordered_map<std::string, BoneData>& boneData);
 
 	// Takes in an assimp animation, loops through all the channels and creates
 	// a Bone. If there are extra bones in the animation that weren't parsed for the
 	// skeleton, it will add those missing bones to the skeleton's map of bones. It then 
 	// sets the animation's bone map to the skeleton's bone map
 	void ReadBones(const aiAnimation* anim, Skeleton* skeleton);
-
-	// Finds the bone int the animation based off its name
-	// @param - const std::string& for the bone's name
-	// @return - Bone* for the bone if it is found
-	Bone* FindBone(const std::string& name)
-	{
-		auto iter = std::find_if(mBones.begin(), mBones.end(),
-			[&](const Bone& bone)
-			{
-				return bone.GetBoneName() == name;
-			}
-		);
-		if (iter == mBones.end()) return nullptr;
-		else return &(*iter);
-	}
 
 	// Gets the animation's root node
 	// @return - const AnimNode& for the animation's root node
@@ -70,9 +56,16 @@ public:
 	// @return - float for the ticks per second
 	float GetTicksPerSecond() const { return mTicksPerSecond; }
 
+	// Gets the animation node data
+	// @return - std::vector<AnimNode>& for the animation's data
+	std::vector<AnimNode>& GetAnimData() { return mData; }
+
 private:
 	// Array of bones for this animation
-	std::vector<Bone> mBones;
+	std::vector<Bone*> mBones;
+
+	// Array of anim data
+	std::vector<AnimNode> mData;
 
 	// The animation's root node
 	AnimNode mRoot;

@@ -119,31 +119,24 @@ void Skeleton::UpdateAnimation(float deltaTime)
 		}
 
 		// Update bone transformations on separate thread
-		//JobManager::Get()->AddJob(&mJob);
+		JobManager::Get()->AddJob(&mJob);
 		
 		// Uncomment this and remove the JobManager::AddJob() function above to use single thread
-		CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), mGlobalInverseTransform);
+		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), mGlobalInverseTransform);
 	}
 }
 
 void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& parentTransform)
 {
 	std::string nodeName = node->name;
-
 	glm::mat4 nodeTransform = node->transformation;
-
-	Bone* bone = mCurrentAnimation->FindBone(nodeName);
-
+	Bone* bone = node->bone;
 	glm::mat4 globalTransformation(1.0f);
-
 	if (bone)
 	{
 		bone->Update(mCurrentTime, mCurrentAnimation->GetDuration());
-
 		nodeTransform = bone->GetLocalTransform();
-
 		globalTransformation = parentTransform * nodeTransform;
-
 		mSkeletonConsts.finalBoneMatrices[bone->GetBoneID()] = globalTransformation * bone->GetOffetMatrix();
 	}
 	else

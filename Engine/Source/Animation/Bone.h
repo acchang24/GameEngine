@@ -32,8 +32,12 @@ class Bone
 public:
 	// Bone constructor reads in keyframes from an aiNodeAnim and saves
 	// all position, rotation, scalings in a vector as its key frame count
-	Bone(const std::string& name, int id, const glm::mat4 offset, const aiNodeAnim* channel);
+	Bone(const std::string& name, int id, const glm::mat4 offset);
 	~Bone();
+
+	// Reads in all the position, rotation, and scale for each bone
+	// @param - const aiNodeAnim* for the channel
+	void ReadKeyFrames(const aiNodeAnim* channel);
 
 	// Updates the bone's position, orientation (rotation), and scale matrices by interpolating 
 	// between two keyframes. It uses those matrices to calculate a matrix to transform a bone into bone space
