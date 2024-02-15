@@ -377,9 +377,9 @@ bool Game::Init()
 	//cube2->SetMaterial(woodMat);
 	//AddGameEntity(cube2);
 
-	glm::vec3 lightDir(-0.2f, -1.0f, -0.3f);
+	glm::vec3 lightDir(-0.1f, -1.0f, -0.2f);
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
-	glm::vec3 lightPosition = lightDir * -10.0f;
+	glm::vec3 lightPosition = lightDir * -600.0f;
 	mShadowMap = new ShadowMap(lightPosition);
 	mShadowMap->SetShader(shadowDepthShader);
 

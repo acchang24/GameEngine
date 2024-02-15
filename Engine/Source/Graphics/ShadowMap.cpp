@@ -6,10 +6,10 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 
-const unsigned int SHADOW_WIDTH = 2560;
-const unsigned int SHADOW_HEIGHT = 2560;
+const unsigned int SHADOW_WIDTH = 8560;
+const unsigned int SHADOW_HEIGHT = 8560;
 float shadowNearPlane = 1.0f;
-float shadowFarPlane = 75.0f;
+float shadowFarPlane = 1000.0f;
 
 ShadowMap::ShadowMap(const glm::vec3& pos) :
 	mLightSpace(glm::mat4(1.0f)),
@@ -70,7 +70,7 @@ ShadowMap::~ShadowMap()
 void ShadowMap::SetActive()
 {
 	// Render the depth of a scene to a texture (from the light's perspective)
-	glm::mat4 lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, shadowNearPlane, shadowFarPlane);
+	glm::mat4 lightProjection = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, shadowNearPlane, shadowFarPlane);
 	glm::mat4 lightView = glm::lookAt(mLightPos, glm::vec3(0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
 	
 	mLightSpace = lightProjection * lightView;
