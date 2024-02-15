@@ -359,17 +359,17 @@ bool Game::Init()
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
 	
-	Material* woodMat = new Material();
-	woodMat->AddTexture(woodTexture);
-	woodMat->SetShader(phongShader);
-	mAssetManager->SaveMaterial("woodMat", woodMat);
+	//Material* woodMat = new Material();
+	//woodMat->AddTexture(woodTexture);
+	//woodMat->SetShader(phongShader);
+	//mAssetManager->SaveMaterial("woodMat", woodMat);
 
-	Plane* plane = new Plane();
-	plane->SetPitch(-90.0f);
-	plane->SetPosition(glm::vec3(0.0, -5.0f, 0.0f));
-	plane->SetMaterial(woodMat);
-	plane->SetScale(70.0f);
-	AddGameEntity(plane);
+	//Plane* plane = new Plane();
+	//plane->SetPitch(-90.0f);
+	//plane->SetPosition(glm::vec3(0.0, -5.0f, 0.0f));
+	//plane->SetMaterial(woodMat);
+	//plane->SetScale(70.0f);
+	//AddGameEntity(plane);
 
 	//Cube* cube2 = new Cube();
 	//cube2->SetScale(3.0f);

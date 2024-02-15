@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 #include <assimp/scene.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -30,12 +31,15 @@ struct KeyScale
 class Bone
 {
 public:
-	// Bone constructor reads in keyframes from an aiNodeAnim and saves
-	// all position, rotation, scalings in a vector as its key frame count
-	Bone(const std::string& name, int id, const glm::mat4 offset);
+	// Bone constructor
+	// @param - const std::string& for the bone's name
+	// @param - int for the bone's id
+	// @param - const glm::mat4& for the bone's offset matrix
+	Bone(const std::string& name, int id, const glm::mat4& offset);
 	~Bone();
 
-	// Reads in all the position, rotation, and scale for each bone
+	// Reads in all the position, rotation, and scale key frames for each bone
+	// and saves it in a vector as well as its key frame count
 	// @param - const aiNodeAnim* for the channel
 	void ReadKeyFrames(const aiNodeAnim* channel);
 
@@ -88,13 +92,11 @@ private:
 
 	// Local transform matrix (matrix to transform the bone into bone space)
 	glm::mat4 mLocalTransform;
-
 	// Bone's offset matrix (matrix to transform bone into bind pose, or the inverse bind pose matrix)
 	glm::mat4 mOffset;
 
 	// The bone's name
 	std::string mName;
-
 	// The bone's id
 	int mID;
 

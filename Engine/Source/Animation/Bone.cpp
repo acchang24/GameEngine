@@ -2,7 +2,7 @@
 #include <iostream>
 #include "../Util/AssimpGLMHelper.h"
 
-Bone::Bone(const std::string& name, int id, const glm::mat4 offset) :
+Bone::Bone(const std::string& name, int id, const glm::mat4& offset) :
 	mLocalTransform(glm::mat4(1.0f)),
 	mOffset(offset),
 	mName(name),
