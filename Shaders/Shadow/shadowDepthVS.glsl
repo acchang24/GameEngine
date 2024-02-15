@@ -24,25 +24,37 @@ uniform mat4 model;
 
 uniform mat4 lightSpace;
 
+uniform bool isSkinned;
+
 void main()
 {
-	vec4 totalPosition = vec4(0.0);
-	for(int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+	vec4 pos;
+
+	if(isSkinned)
 	{
-		if(boneIds[i] == -1)
+		vec4 totalPosition = vec4(0.0);
+		for(int i = 0; i < MAX_BONE_INFLUENCE; ++i)
 		{
-			continue;
+			if(boneIds[i] == -1)
+			{
+				continue;
+			}
+			if(boneIds[i] >= MAX_BONES)
+			{
+				totalPosition = vec4(position, 1.0);
+				break;
+			}
+			vec4 localPosition = boneMatrices[boneIds[i]] * vec4(position, 1.0);
+			totalPosition += localPosition * weights[i];
 		}
-		if(boneIds[i] >= MAX_BONES)
-		{
-			totalPosition = vec4(position, 1.0);
-			break;
-		}
-		vec4 localPosition = boneMatrices[boneIds[i]] * vec4(position, 1.0);
-		totalPosition += localPosition * weights[i];
+		pos = totalPosition;
+	}
+	else
+	{
+		pos = vec4(position, 1.0);
 	}
 
 	// Multiply position by model and view/projection matrices
 	// Then transform to light space
-	gl_Position = lightSpace * model * vec4(position, 1.0);
+	gl_Position = lightSpace * model * pos;
 }

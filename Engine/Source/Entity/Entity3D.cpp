@@ -50,7 +50,12 @@ Entity3D::Entity3D(const std::string& fileName):
 
 	if (model)
 	{
-		AnimationComponent* animComp = new AnimationComponent(this, new Skeleton(*model->GetSkeleton()));
+		Skeleton* skeleton = model->GetSkeleton();
+		if (skeleton)
+		{
+			mIsSkinned = true;
+			AnimationComponent* animComp = new AnimationComponent(this, new Skeleton(*model->GetSkeleton()));
+		}
 		mModel = model;
 	}
 	else
@@ -133,6 +138,9 @@ void Entity3D::OnDraw(Shader* shader)
 	{
 		GetComponent<AnimationComponent>()->UpdateBoneMatrices();
 	}
+
+	shader->SetActive();
+	shader->SetBool("isSkinned", mIsSkinned);
 
 	mModel->Draw(shader, mModelMatrix);
 }
