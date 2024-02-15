@@ -100,3 +100,13 @@ void Sphere::OnDraw()
 
     mVertexBuffer->Draw();
 }
+
+void Sphere::OnDraw(Shader* s)
+{
+    mMaterial->SetActive();
+    s->SetActive();
+
+    s->SetMat4("model", mModelMatrix);
+
+    mVertexBuffer->Draw();
+}

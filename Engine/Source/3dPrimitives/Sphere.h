@@ -22,6 +22,7 @@ public:
 	void OnUpdate(float deltaTime) override;
 	// Sphere specific draw
 	void OnDraw() override;
+	void OnDraw(Shader* s) override;
 private:
 	// Sphere's vertex buffer
 	VertexBuffer* mVertexBuffer;
