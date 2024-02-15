@@ -3,6 +3,7 @@
 #include "../Util/AssimpGLMHelper.h"
 #include "../MemoryManager/AssetManager.h"
 #include "../Graphics/UniformBuffer.h"
+#include "Bone.h"
 
 Skeleton::Skeleton() :
 	mSkeletonConsts({}),

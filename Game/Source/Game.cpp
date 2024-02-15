@@ -644,15 +644,15 @@ void Game::Render()
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
 		// Render to shadow map
-		mShadowMap->SetActive();
-		RenderScene(mShadowMap->GetShader());
+		//mShadowMap->SetActive();
+		//RenderScene(mShadowMap->GetShader());
 
 		// Render the shadow map
 		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
 		//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 
 		// End shadow render pass
-		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 	}
 
 	{

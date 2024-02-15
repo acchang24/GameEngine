@@ -1,10 +1,11 @@
 #include "Animation.h"
-#include "../Entity/Entity3D.h"
+#include <iostream>
 #include "../Util/AssimpGLMHelper.h"
 #include "Skeleton.h"
-#include <iostream>
+#include "Bone.h"
 
 Animation::Animation(const aiAnimation* animation, const aiNode* rootNode, Skeleton* skeleton) :
+	mRoot({}),
 	mName(animation->mName.C_Str()),
 	mDuration(animation->mDuration),
 	mTicksPerSecond(animation->mTicksPerSecond)
@@ -18,24 +19,26 @@ Animation::Animation(const aiAnimation* animation, const aiNode* rootNode, Skele
 
 	skeleton->SetGlobalInverseTransform(transform);
 
+	std::vector<Bone*> bones;
+	bones.reserve(static_cast<size_t>(animation->mNumChannels));
 	mData.reserve(static_cast<size_t>(animation->mNumChannels));
-	mBones.reserve(static_cast<size_t>(animation->mNumChannels));
 
-	ReadNodeHeirarchy(mRoot, rootNode, skeleton->GetBoneMap());
-	ReadBones(animation, skeleton);
+	ReadNodeHeirarchy(mRoot, rootNode, skeleton->GetBoneMap(), bones);
+	ReadBones(animation, bones);
 }
 
 Animation::~Animation()
 {
 	std::cout << "Delete animation" << std::endl;
 
-	for (auto& b : mBones)
+	for (auto& d : mData)
 	{
-		delete b;
+		delete d.bone;
 	}
+	mData.clear();
 }
 
-void Animation::ReadNodeHeirarchy(AnimNode& dest, const aiNode* src, std::unordered_map<std::string, BoneData>& boneData)
+void Animation::ReadNodeHeirarchy(AnimNode& dest, const aiNode* src, std::unordered_map<std::string, BoneData>& boneData, std::vector<Bone*>& bones)
 {
 	dest.name = src->mName.data;
 	dest.transformation = AssimpGLMHelper::ConvertMatrixToGLMFormat(src->mTransformation);
@@ -47,23 +50,20 @@ void Animation::ReadNodeHeirarchy(AnimNode& dest, const aiNode* src, std::unorde
 		BoneData bd = boneData[dest.name];
 		Bone* bone = new Bone(dest.name, bd.index, bd.offset);
 		dest.bone = bone;
-		mBones.emplace_back(bone);
-		mData.emplace_back(dest);
+		bones.emplace_back(bone);
 	}
-	else
-	{
-		mData.emplace_back(dest);
-	}
+	mData.emplace_back(dest);
+	
 
 	for (int i = 0; i < src->mNumChildren; ++i)
 	{
 		AnimNode newNode = {};
-		ReadNodeHeirarchy(newNode, src->mChildren[i], boneData);
+		ReadNodeHeirarchy(newNode, src->mChildren[i], boneData, bones);
 		dest.children.emplace_back(newNode);
 	}
 }
 
-void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
+void Animation::ReadBones(const aiAnimation* anim, std::vector<Bone*>& bones)
 {
 	int size = anim->mNumChannels;
 
@@ -74,9 +74,9 @@ void Animation::ReadBones(const aiAnimation* anim, Skeleton* skeleton)
 		aiNodeAnim* channel = anim->mChannels[i];
 		boneName = channel->mNodeName.data;
 
-		if (boneName == mBones[i]->GetBoneName())
+		if (boneName == bones[i]->GetBoneName())
 		{
-			mBones[i]->ReadKeyFrames(channel);
+			bones[i]->ReadKeyFrames(channel);
 		}
 	}
 }
