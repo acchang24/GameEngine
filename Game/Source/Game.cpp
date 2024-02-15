@@ -164,6 +164,12 @@ bool Game::Init()
 	Shader* instanceShader = new Shader("Shaders/instanceVS.glsl", "Shaders/phongFS.glsl");
 	mAssetManager->SaveShader("instance", instanceShader);
 
+	Shader* shadowDepthShader = new Shader("Shaders/Shadow/shadowDepthVS.glsl", "Shaders/Shadow/shadowDepthFS.glsl");
+	mAssetManager->SaveShader("shadowDepth", shadowDepthShader);
+
+	Shader* shadowDebugShader = new Shader("Shaders/screenVS.glsl", "Shaders/Shadow/shadowDebugFS.glsl");
+	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
+
 	UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	materialBuffer->LinkShader(phongShader);
 	materialBuffer->LinkShader(instanceShader);
@@ -172,6 +178,7 @@ bool Game::Init()
 
 	UniformBuffer* skeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 	skeletonBuffer->LinkShader(skinnedShader);
+	skeletonBuffer->LinkShader(shadowDepthShader);
 	mAssetManager->SaveBuffer("SkeletonBuffer", skeletonBuffer);
 
 	Material* lightSphereMaterial = new Material();
@@ -253,12 +260,6 @@ bool Game::Init()
 	refractiveMat->SetCubeMap(sky);
 	refractiveMat->SetShader(refractiveShader);
 	mAssetManager->SaveMaterial("refraction", refractiveMat);
-
-	Shader* shadowDepthShader = new Shader("Shaders/Shadow/shadowDepthVS.glsl", "Shaders/Shadow/shadowDepthFS.glsl");
-	mAssetManager->SaveShader("shadowDepth", shadowDepthShader);
-
-	Shader* shadowDebugShader = new Shader("Shaders/screenVS.glsl", "Shaders/Shadow/shadowDebugFS.glsl");
-	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
 
 	glUseProgram(0);
 
