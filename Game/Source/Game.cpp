@@ -648,25 +648,25 @@ void Game::Render()
 		RenderScene(mShadowMap->GetShader());
 
 		// Render the shadow map
-		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
-		mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
+		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
+		//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 
 		// End shadow render pass
-		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 	}
 
 	{
 		//PROFILE_SCOPE(RENDER_NORMAL_SCENE);
 
 		// Uncomment this to draw to offscreen frame buffer instead
-		//mFrameBuffer->SetActive();
+		mFrameBuffer->SetActive();
 		
 
 		// Render scene as normal
-		//RenderScene();
+		RenderScene();
 
 		// Uncomment this if using off screen frame buffer
-		//mFrameBuffer->End(windowWidth, windowHeight);
+		mFrameBuffer->End(windowWidth, windowHeight);
 	}
 
 	glfwSwapBuffers(mWindow);

@@ -269,7 +269,7 @@ void FrameBuffer::End(int width, int height)
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, mTexture);
 
-	int blurUnit = mTextureUnit + 2;
+	int blurUnit = mTextureUnit + 3;
 	shader->SetInt("blurTexture", blurUnit);
 	glActiveTexture(GL_TEXTURE0 + blurUnit);
 	glBindTexture(GL_TEXTURE_2D, mBloomBlurVerticalTexture);
