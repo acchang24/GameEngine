@@ -12,7 +12,7 @@ public:
 
 	void SetActive();
 
-	void Draw(Shader* s);
+	void DrawDebug(Shader* s);
 
 	void End(int width, int height, Shader* s);
 

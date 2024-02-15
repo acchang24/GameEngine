@@ -89,7 +89,7 @@ void ShadowMap::SetActive()
 	//glCullFace(GL_FRONT);
 }
 
-void ShadowMap::Draw(Shader* s)
+void ShadowMap::DrawDebug(Shader* s)
 {
 	s->SetActive();
 	s->SetFloat("nearPlane", shadowNearPlane);
