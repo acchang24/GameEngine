@@ -18,12 +18,14 @@ Skeleton::Skeleton() :
 
 Skeleton::~Skeleton()
 {
-	std::cout << "Delete skeleton" << std::endl;
+	std::cout << "Delete skeleton\n";
 
 	mAnimations.clear();
 }
 
 Skeleton::Skeleton(Skeleton& other) :
+	mBoneMap(other.mBoneMap),
+	mAnimations(other.mAnimations),
 	mSkeletonConsts({}),
 	mGlobalInverseTransform(other.mGlobalInverseTransform),
 	mSkeletonBuffer(other.mSkeletonBuffer),
@@ -32,8 +34,6 @@ Skeleton::Skeleton(Skeleton& other) :
 	mCurrentTime(other.mCurrentTime),
 	mNumBones(other.mNumBones)
 {
-	mBoneMap = other.mBoneMap;
-	mAnimations = other.mAnimations;
 }
 
 void Skeleton::LoadBoneData(const aiMesh* mesh)

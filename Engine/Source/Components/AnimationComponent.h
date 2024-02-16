@@ -34,7 +34,7 @@ public:
 	void AddAnimation(Animation* a) { mSkeleton->AddAnimation(a); }
 
 	// Updates the skeleton buffer with the final bone matrices array
-	void UpdateBoneMatrices() { mSkeleton->GetSkeletonBuffer()->UpdateBufferData(mSkeleton->GetFinalBoneMatrices()); }
+	void UpdateBoneMatrices() { mSkeleton->UpdateSkeletonBuffer(); }
 
 private:
 	// The skeleton used for this animation component

@@ -4,27 +4,28 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <assimp/scene.h>
+#include "../Graphics/UniformBuffer.h"
 #include "../Graphics/VertexLayouts.h"
+#include "../Multithreading/JobManager.h"
 #include "BoneData.h"
 #include "Animation.h"
-#include "../Multithreading/JobManager.h"
 
+// Max number of bones a skeleton can have
 const int MAX_BONES = 100;
 
 // Struct for the skeleton constants to send to a buffer
-// in a shader. Holds an array of 100 bone matrices used
+// in a shader. Holds an array of MAX_BONES bone matrices used
 // for the skeleton's final bone pose.
 struct SkeletonConsts
 {
 	glm::mat4 finalBoneMatrices[MAX_BONES];
 };
 
-class UniformBuffer;
-
 // Skeleton class is used to hold bone and animation data.
-// This helps skin a 3d entity to be able to update its animations.
+// This helps skin a 3d model to be able to update its animations.
 class Skeleton
 {
+	// Allow Animation class to access private Skeleton functions
 	friend class Animation;
 
 public:
@@ -37,8 +38,7 @@ public:
 	// @param - const aiMesh* for the mesh being processed
 	void LoadBoneData(const aiMesh* mesh);
 
-	// Loops through the assimp mesh's bones and extracts the bone's id and inverse bind pose matrices.
-	// It then extracts that bone's weights and sets them to the vertex's bone ids and weight arrays.
+	// Loops through the assimp mesh's bones and extracts that bone's ids and weights and sets them to the vertex
 	// @param - std::vector<Vertex>& for the array of vertices used to store the bone id and weights
 	// @param - const aiMesh* for the mesh being processed
 	void ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh);
@@ -54,18 +54,13 @@ public:
 	// @param - float for delta time
 	void UpdateAnimation(float deltaTime);
 
-	// Takes the animation's root node and calculates the bone transformations on each bone
+	// Takes the animation's root node and calculates the final bone transformations on each bone
 	// @param - const AnimNode* for the animation's root node
 	// @param - const glm::mat4& for the bone's transformation relative to its parent
 	void CalculateBoneTransform(const AnimNode* node, const glm::mat4& parentTransform);
 
-	// Gets the array of final bone matrices to send to a shader
-	// @return - const glm::mat4* for the final bone matrix array
-	const glm::mat4* GetFinalBoneMatrices() { return mSkeletonConsts.finalBoneMatrices; }
-
-	// Gets the skeleton buffer
-	// @return - UniformBuffer* for the skeleton's buffer
-	UniformBuffer* GetSkeletonBuffer() { return mSkeletonBuffer; }
+	// Updates the skeleton buffer with the skeleton's final bone matrices
+	void UpdateSkeletonBuffer() { mSkeletonBuffer->UpdateBufferData(mSkeletonConsts.finalBoneMatrices); }
 	
 	// Gets the skeleton's current animation
 	// @return - Animation* for the skeleton's current animation
@@ -95,7 +90,7 @@ public:
 	void SetGlobalInverseTransform(const glm::mat4& transform) { mGlobalInverseTransform = transform; }
 
 private:
-	// Job to update bone matrices
+	// Job to update bone matrices on a separate thread
 	class UpdateBoneJob : public JobManager::Job
 	{
 	public:
@@ -111,10 +106,6 @@ private:
 	// Gets the reference to the skeleton's bone map (can change)
 	// @return - std::unordered_map<std::string, BoneData>& for the skeleton's bone data map
 	std::unordered_map<std::string, BoneData>& GetBoneMap() { return mBoneMap; }
-
-	// Gets the reference to the skeleton's bone count (can change)
-	// @return - int for the number of bones in the skeleton
-	int& GetNumBones() { return mNumBones; }
 
 
 	// MEMBER VARIABLES
