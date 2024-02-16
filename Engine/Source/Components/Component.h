@@ -9,7 +9,7 @@ class Entity;
 class Component
 {
 public:
-	// Component constructor
+	// Component constructor adds this component to the owner's array of components
 	// @param - Entity* to save a pointer to the component's entity
 	Component(Entity* owner);
 	virtual ~Component();

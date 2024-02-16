@@ -10,7 +10,7 @@ Component::Component(Entity* owner) :
 
 Component::~Component()
 {
-	std::cout << "Delete component" << std::endl;
+	std::cout << "Delete component\n";
 }
 
 void Component::Update(float deltaTime)
