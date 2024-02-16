@@ -29,7 +29,7 @@ Animation::Animation(const aiAnimation* animation, const aiNode* rootNode, Skele
 
 Animation::~Animation()
 {
-	std::cout << "Delete animation" << std::endl;
+	std::cout << "Delete animation\n";
 
 	for (auto& d : mData)
 	{

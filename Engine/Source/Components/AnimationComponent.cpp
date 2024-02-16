@@ -1,6 +1,5 @@
 #include "AnimationComponent.h"
 #include <iostream>
-#include "../Graphics/UniformBuffer.h"
 #include "../Profiler/Profiler.h"
 
 AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton) :
@@ -11,7 +10,7 @@ AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton) :
 
 AnimationComponent::~AnimationComponent()
 {
-	std::cout << "Delete animation component" << std::endl;
+	std::cout << "Delete animation component\n";
 	delete mSkeleton;
 }
 

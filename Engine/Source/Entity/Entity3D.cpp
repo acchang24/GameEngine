@@ -126,7 +126,7 @@ void Entity3D::OnDraw()
 {
 	if (mIsSkinned)
 	{
-		GetComponent<AnimationComponent>()->UpdateBoneMatrices();
+		GetComponent<AnimationComponent>()->UpdateSkeletonBuffer();
 	}
 
 	mModel->Draw(mModelMatrix);
@@ -136,7 +136,7 @@ void Entity3D::OnDraw(Shader* shader)
 {
 	if (mIsSkinned)
 	{
-		GetComponent<AnimationComponent>()->UpdateBoneMatrices();
+		GetComponent<AnimationComponent>()->UpdateSkeletonBuffer();
 	}
 
 	shader->SetActive();
