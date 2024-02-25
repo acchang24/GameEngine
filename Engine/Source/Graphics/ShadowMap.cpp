@@ -67,11 +67,11 @@ ShadowMap::~ShadowMap()
 	glDeleteTextures(1, &mShadowMap);
 }
 
-void ShadowMap::SetActive()
+void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& pos)
 {
 	// Render the depth of a scene to a texture (from the light's perspective)
-	glm::mat4 lightProjection = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, shadowNearPlane, shadowFarPlane);
-	glm::mat4 lightView = glm::lookAt(mLightPos, glm::vec3(0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, near, far);
+	glm::mat4 lightView = glm::lookAt(pos, glm::vec3(0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
 	
 	mLightSpace = lightProjection * lightView;
 

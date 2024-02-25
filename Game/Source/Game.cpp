@@ -34,6 +34,13 @@ int windowHeight = 720;
 
 int subsamples = 4;
 
+float size = 250.0f;
+float near = 1.0f;
+float far = 670.0f;
+glm::vec3 pos(0.0f);
+glm::vec3 lightDir(-0.2f, -1.0f, -0.2f);
+float dist = 520.0f;
+
 Game::Game() :
 	mWindow(nullptr),
 	mAssetManager(nullptr),
@@ -56,6 +63,12 @@ Game::Game() :
 	mPrevInputs[GLFW_KEY_SPACE] = false;
 	mPrevInputs[GLFW_KEY_H] = false;
 	mPrevInputs[GLFW_KEY_B] = false;
+	mPrevInputs[GLFW_KEY_UP] = false;
+	mPrevInputs[GLFW_KEY_DOWN] = false;
+	mPrevInputs[GLFW_KEY_LEFT] = false;
+	mPrevInputs[GLFW_KEY_RIGHT] = false;
+	mPrevInputs[GLFW_KEY_L] = false;
+	mPrevInputs[GLFW_KEY_K] = false;
 }
 
 Game::~Game()
@@ -377,11 +390,12 @@ bool Game::Init()
 	//cube2->SetMaterial(woodMat);
 	//AddGameEntity(cube2);
 
-	glm::vec3 lightDir(-0.1f, -1.0f, -0.2f);
+	
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
-	glm::vec3 lightPosition = lightDir * -600.0f;
+	glm::vec3 lightPosition = lightDir * -210.0f;
 	mShadowMap = new ShadowMap(lightPosition);
 	mShadowMap->SetShader(shadowDepthShader);
+	pos = lightPosition;
 
 	// Allocate lights in the scene
 	mLights = new Lights();
@@ -588,6 +602,70 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 		mPrevInputs[GLFW_KEY_B] = false;
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_UP])
+	{
+		mPrevInputs[GLFW_KEY_UP] = true;
+
+		size += 10.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE)
+	{
+		mPrevInputs[GLFW_KEY_UP] = false;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_DOWN])
+	{
+		mPrevInputs[GLFW_KEY_DOWN] = true;
+
+		size -= 10.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)
+	{
+		mPrevInputs[GLFW_KEY_DOWN] = false;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_LEFT])
+	{
+		mPrevInputs[GLFW_KEY_LEFT] = true;
+
+		far -= 10.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
+	{
+		mPrevInputs[GLFW_KEY_LEFT] = false;
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_RIGHT])
+	{
+		mPrevInputs[GLFW_KEY_RIGHT] = true;
+
+		far += 10.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
+	{
+		mPrevInputs[GLFW_KEY_RIGHT] = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_L])
+	{
+		mPrevInputs[GLFW_KEY_L] = true;
+
+		dist -= 10.0f;
+		pos = (lightDir * -dist);
+	}
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE)
+	{
+		mPrevInputs[GLFW_KEY_L] = false;
+	}
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_K])
+	{
+		mPrevInputs[GLFW_KEY_K] = true;
+
+		dist += 10.0f;
+		pos = (lightDir * -dist);
+	}
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_RELEASE)
+	{
+		mPrevInputs[GLFW_KEY_K] = false;
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_0))
 	{
 		shader->SetFloat("exposure", 0.1f);
@@ -643,16 +721,18 @@ void Game::Render()
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
+		std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
+
 		// Render to shadow map
-		//mShadowMap->SetActive();
-		//RenderScene(mShadowMap->GetShader());
+		mShadowMap->SetActive(size, near, far, pos);
+		RenderScene(mShadowMap->GetShader());
 
 		// Render the shadow map
 		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
 		//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 
 		// End shadow render pass
-		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 	}
 
 	{

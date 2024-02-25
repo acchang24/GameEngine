@@ -10,7 +10,7 @@ public:
 	ShadowMap(const glm::vec3& pos);
 	~ShadowMap();
 
-	void SetActive();
+	void SetActive(float size, float near, float far, const glm::vec3& pos);
 
 	void DrawDebug(Shader* s);
 
@@ -23,6 +23,8 @@ public:
 	// Sets the frame buffer's shader
 	// @param - Shader* for the new shader
 	void SetShader(Shader* s) { mShader = s; }
+
+	void SetPos(const glm::vec3& pos) { mLightPos = pos; }
 
 private:
 	glm::mat4 mLightSpace;
