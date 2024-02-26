@@ -721,18 +721,18 @@ void Game::Render()
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
-		std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
+		//std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
 
 		// Render to shadow map
-		mShadowMap->SetActive(size, near, far, pos);
-		RenderScene(mShadowMap->GetShader());
+		//mShadowMap->SetActive(size, near, far, pos);
+		//RenderScene(mShadowMap->GetShader());
 
 		// Render the shadow map
 		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
 		//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 
 		// End shadow render pass
-		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 	}
 
 	{
