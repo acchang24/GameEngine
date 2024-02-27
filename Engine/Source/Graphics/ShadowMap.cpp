@@ -71,7 +71,7 @@ void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& po
 {
 	// Render the depth of a scene to a texture (from the light's perspective)
 	glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, near, far);
-	glm::mat4 lightView = glm::lookAt(pos, glm::vec3(0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(pos, glm::vec3(0.0f, 0.0f, 0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
 	
 	mLightSpace = lightProjection * lightView;
 
@@ -91,6 +91,7 @@ void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& po
 
 void ShadowMap::DrawDebug(Shader* s)
 {
+	glViewport(0, 0, 400, 300);
 	s->SetActive();
 	s->SetFloat("nearPlane", shadowNearPlane);
 	s->SetFloat("farPlane", shadowFarPlane);

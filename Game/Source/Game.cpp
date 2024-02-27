@@ -36,10 +36,10 @@ int subsamples = 4;
 
 float size = 250.0f;
 float near = 1.0f;
-float far = 670.0f;
+float far = 750.0f;
 glm::vec3 pos(0.0f);
-glm::vec3 lightDir(-0.2f, -1.0f, -0.2f);
-float dist = 520.0f;
+glm::vec3 lightDir(-0.05f, -1.0f, -0.2f);
+float dist = 650.0f;
 
 Game::Game() :
 	mWindow(nullptr),
@@ -392,7 +392,7 @@ bool Game::Init()
 
 	
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
-	glm::vec3 lightPosition = lightDir * -210.0f;
+	glm::vec3 lightPosition = lightDir * -dist;
 	mShadowMap = new ShadowMap(lightPosition);
 	mShadowMap->SetShader(shadowDepthShader);
 	pos = lightPosition;
@@ -721,34 +721,35 @@ void Game::Render()
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
-		//std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
+		std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
 
 		// Render to shadow map
-		//mShadowMap->SetActive(size, near, far, pos);
-		//RenderScene(mShadowMap->GetShader());
+		mShadowMap->SetActive(size, near, far, pos);
+		RenderScene(mShadowMap->GetShader());
 
 		// Render the shadow map
 		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
 		//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 
 		// End shadow render pass
-		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
 	}
 
 	{
-		//PROFILE_SCOPE(RENDER_NORMAL_SCENE);
+		////PROFILE_SCOPE(RENDER_NORMAL_SCENE);
 
-		// Uncomment this to draw to offscreen frame buffer instead
+		//// Uncomment this to draw to offscreen frame buffer instead
 		mFrameBuffer->SetActive();
 		
 
-		// Render scene as normal
+		//// Render scene as normal
 		RenderScene();
 
-		// Uncomment this if using off screen frame buffer
+		//// Uncomment this if using off screen frame buffer
 		mFrameBuffer->End(windowWidth, windowHeight);
 	}
-
+	mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
+	glViewport(0, 0, windowWidth, windowHeight);
 	glfwSwapBuffers(mWindow);
 }
 
