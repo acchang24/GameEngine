@@ -138,30 +138,32 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 			vertex.normal = vector;
 
 			// Textures
-			//aiVector3D* coord = mesh->mTextureCoords[0];
-			//if (coord)
-			//{
-			glm::vec2 uv(0.0f);
-			uv.x = mesh->mTextureCoords[0][i].x;
-			uv.y = mesh->mTextureCoords[0][i].y;
-			vertex.uv = uv;
+			aiVector3D* coord = mesh->mTextureCoords[0];
+			if (coord && mesh->HasTextureCoords(0))
+			{
+				aiVector3D uv = mesh->mTextureCoords[0][i];
+				vertex.uv = glm::vec2(uv.x, uv.y);
 
-			// Tangent
-			vector.x = mesh->mTangents[i].x;
-			vector.y = mesh->mTangents[i].y;
-			vector.z = mesh->mTangents[i].z;
-			vertex.tangent = vector;
+				// Tangent
+				aiVector3D tangent = mesh->mTangents[i];
+				vector.x = tangent.x;
+				vector.y = tangent.y;
+				vector.z = tangent.z;
+				vertex.tangent = vector;
 
-			// Bitangent
-			vector.x = mesh->mBitangents[i].x;
-			vector.y = mesh->mBitangents[i].y;
-			vector.z = mesh->mBitangents[i].z;
-			vertex.bitangent = vector;
-			//}
-			//else
-			//{
-			//	vertex.uv = glm::vec2(0.0f, 0.0f);
-			//}
+				// Bitangent
+				aiVector3D bitangent = mesh->mBitangents[i];
+				vector.x = bitangent.x;
+				vector.y = bitangent.y;
+				vector.z = bitangent.z;
+				vertex.bitangent = vector;
+			}
+			else
+			{
+				vertex.uv = glm::vec2(0.0f);
+				vertex.tangent = glm::vec3(0.0f);
+				vertex.bitangent = glm::vec3(0.0f);
+			}
 
 			vertices.emplace_back(vertex);
 		}
