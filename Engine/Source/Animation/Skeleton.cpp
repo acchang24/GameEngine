@@ -7,7 +7,6 @@
 
 Skeleton::Skeleton() :
 	mSkeletonConsts({}),
-	mGlobalInverseTransform(glm::mat4(1.0f)),
 	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
 	mCurrentAnimation(nullptr),
 	mJob(this),
@@ -27,7 +26,6 @@ Skeleton::Skeleton(Skeleton& other) :
 	mBoneMap(other.mBoneMap),
 	mAnimations(other.mAnimations),
 	mSkeletonConsts({}),
-	mGlobalInverseTransform(other.mGlobalInverseTransform),
 	mSkeletonBuffer(other.mSkeletonBuffer),
 	mCurrentAnimation(other.mCurrentAnimation),
 	mJob(this),
@@ -123,7 +121,7 @@ void Skeleton::UpdateAnimation(float deltaTime)
 		JobManager::Get()->AddJob(&mJob);
 		
 		// Uncomment this and remove the JobManager::AddJob() function above to use single thread
-		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), mGlobalInverseTransform);
+		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), GetCurrentAnimation()->GetGlobalInverseTransform());
 	}
 }
 
@@ -153,5 +151,5 @@ void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& par
 
 void Skeleton::UpdateBoneJob::DoIt()
 {
-	mSkeleton->CalculateBoneTransform(&mSkeleton->GetCurrentAnimation()->GetRootNode(), mSkeleton->mGlobalInverseTransform);
+	mSkeleton->CalculateBoneTransform(&mSkeleton->GetCurrentAnimation()->GetRootNode(), mSkeleton->GetCurrentAnimation()->GetGlobalInverseTransform());
 }

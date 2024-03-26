@@ -85,10 +85,6 @@ public:
 		mCurrentTime = 0.0f;
 	}
 
-	// Sets the global inverse transform matrix
-	// @param - const glm::mat4& for the transformation matrix
-	void SetGlobalInverseTransform(const glm::mat4& transform) { mGlobalInverseTransform = transform; }
-
 private:
 	// Job to update bone matrices on a separate thread
 	class UpdateBoneJob : public JobManager::Job
@@ -117,9 +113,6 @@ private:
 
 	// Skeleton consts to send to buffers in shaders
 	SkeletonConsts mSkeletonConsts;
-
-	// Global inverse transform matrix
-	glm::mat4 mGlobalInverseTransform;
 
 	// Uniform buffer to send the skeleton's bone matrices to a shader
 	UniformBuffer* mSkeletonBuffer;
