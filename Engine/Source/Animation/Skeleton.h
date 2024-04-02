@@ -7,22 +7,22 @@
 #include "../Graphics/UniformBuffer.h"
 #include "../Graphics/VertexLayouts.h"
 #include "../Multithreading/JobManager.h"
-#include "BoneData.h"
 #include "Animation.h"
+#include "BoneData.h"
 
-// Max number of bones a skeleton can have
+// Maximum number of bones a skeleton can have
 const int MAX_BONES = 100;
 
-// Struct for the skeleton constants to send to a buffer
-// in a shader. Holds an array of MAX_BONES bone matrices used
-// for the skeleton's final bone pose.
+// Skeleton constants to send to a buffer in a shader. 
+// Holds an array of MAX_BONES size of glm::mat4 for bone matrices used
+// to create the skeleton's pose at a certain frame of an animation.
 struct SkeletonConsts
 {
 	glm::mat4 finalBoneMatrices[MAX_BONES];
 };
 
 // Skeleton class is used to hold bone and animation data.
-// This helps skin a 3d model to be able to update its animations.
+// This helps skin a 3d model to be able to animate 3D objects.
 class Skeleton
 {
 	// Allow Animation class to access private Skeleton functions
@@ -33,20 +33,22 @@ public:
 	~Skeleton();
 	Skeleton(Skeleton& other);
 
-	// Loops through the assimp mesh's bones and loads the bone's id and inverse bind pose matrices
-	// into the skeleton's bone map
-	// @param - const aiMesh* for the mesh being processed
+	// Loops through the assimp mesh's bones and creates a BoneData variable if it doesn't exist within the
+	// skeleton's bone data map. It then loads the bone's id and inverse bind pose matrices and adds that BoneData
+	// into the skeleton's bone data map by name.
+	// @param - const aiMesh* for the assimp mesh that is currently being processed
 	void LoadBoneData(const aiMesh* mesh);
 
-	// Loops through the assimp mesh's bones and extracts that bone's ids and weights and sets them to the vertex
+	// Loops through the assimp mesh's bones and extracts that bone's ids and array of bone weights.
+	// It then loops through the bone's weights array and sets the vertex's bone data by calling SetVertexBoneData()
 	// @param - std::vector<Vertex>& for the array of vertices used to store the bone id and weights
-	// @param - const aiMesh* for the mesh being processed
-	void ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh);
+	// @param - const aiMesh* for the assimp mesh that is currently being processed
+	void ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh) const;
 
-	// Sets the vertex's bone id and bone weights
+	// Sets the vertex's bone id and bone weights (bone id and weights that influence a vertex)
 	// @param - Vertex& for the vertex
-	// @param - the bone's id
-	// @param - the bone's weight
+	// @param - the bone's id that will influence the vertex
+	// @param - the bone's weight that will influence the vertex
 	void SetVertexBoneData(Vertex& vertex, int boneID, float weight) const;
 
 	// If an animation exists, increment the animation's current time. Resets the anim time whenver
@@ -54,7 +56,7 @@ public:
 	// @param - float for delta time
 	void UpdateAnimation(float deltaTime);
 
-	// Takes the animation's root node and calculates the final bone transformations on each bone
+	// Takes the animation's root node and recursively calculates the bone transformation matrices on each bone
 	// @param - const AnimNode* for the animation's root node
 	// @param - const glm::mat4& for the bone's transformation relative to its parent
 	void CalculateBoneTransform(const AnimNode* node, const glm::mat4& parentTransform);
@@ -99,14 +101,10 @@ private:
 		Skeleton* mSkeleton;
 	};
 
-	// Gets the reference to the skeleton's bone map (can change)
-	// @return - std::unordered_map<std::string, BoneData>& for the skeleton's bone data map
-	std::unordered_map<std::string, BoneData>& GetBoneMap() { return mBoneMap; }
 
 
-	// MEMBER VARIABLES
-	// Map of the skeleton's bones
-	std::unordered_map<std::string, BoneData> mBoneMap;
+	// Map of the skeleton's bone data
+	std::unordered_map<std::string, BoneData> mBoneDataMap;
 
 	// Map of the skeleton's animations
 	std::unordered_map<std::string, Animation*> mAnimations;
@@ -114,14 +112,14 @@ private:
 	// Skeleton consts to send to buffers in shaders
 	SkeletonConsts mSkeletonConsts;
 
+	// Job to update bone matrices
+	UpdateBoneJob mJob;
+
 	// Uniform buffer to send the skeleton's bone matrices to a shader
 	UniformBuffer* mSkeletonBuffer;
 
 	// The skeleton's current animation
 	Animation* mCurrentAnimation;
-
-	// Job to update bone matrices
-	UpdateBoneJob mJob;
 
 	// The current time elapsed for the animation
 	float mCurrentTime;

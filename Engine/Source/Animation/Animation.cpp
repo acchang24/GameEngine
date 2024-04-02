@@ -20,7 +20,7 @@ Animation::Animation(const aiAnimation* animation, const aiNode* rootNode, Skele
 
 	mBones.reserve(static_cast<size_t>(animation->mNumChannels));
 
-	ReadNodeHeirarchy(mRoot, rootNode, skeleton->GetBoneMap());
+	ReadNodeHeirarchy(mRoot, rootNode, skeleton->mBoneDataMap);
 	ReadBones(animation);
 }
 

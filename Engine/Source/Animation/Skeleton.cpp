@@ -2,14 +2,13 @@
 #include <iostream>
 #include "../Util/AssimpGLMHelper.h"
 #include "../MemoryManager/AssetManager.h"
-#include "../Graphics/UniformBuffer.h"
 #include "Bone.h"
 
 Skeleton::Skeleton() :
 	mSkeletonConsts({}),
+	mJob(this),
 	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
 	mCurrentAnimation(nullptr),
-	mJob(this),
 	mCurrentTime(0.0f),
 	mNumBones(0)
 {
@@ -17,18 +16,20 @@ Skeleton::Skeleton() :
 
 Skeleton::~Skeleton()
 {
-	std::cout << "Delete skeleton\n";
+	mBoneDataMap.clear();
 
 	mAnimations.clear();
+
+	std::cout << "Deleted skeleton at " << this << "\n";
 }
 
 Skeleton::Skeleton(Skeleton& other) :
-	mBoneMap(other.mBoneMap),
+	mBoneDataMap(other.mBoneDataMap),
 	mAnimations(other.mAnimations),
 	mSkeletonConsts({}),
+	mJob(this),
 	mSkeletonBuffer(other.mSkeletonBuffer),
 	mCurrentAnimation(other.mCurrentAnimation),
-	mJob(this),
 	mCurrentTime(other.mCurrentTime),
 	mNumBones(other.mNumBones)
 {
@@ -36,58 +37,36 @@ Skeleton::Skeleton(Skeleton& other) :
 
 void Skeleton::LoadBoneData(const aiMesh* mesh)
 {
-	// The bone's name
 	std::string boneName;
 
-	// Loop through the assimp mesh's bones
 	for (int i = 0; i < mesh->mNumBones; ++i)
 	{
 		boneName = mesh->mBones[i]->mName.C_Str();
 
-		// Bone's ID
-		int boneID = i;
-
-		// Check to see if bone is in the map and set the boneID to the one in the index
-		// If there is no bone, make a new bone, add it to the bone map
-		if (mBoneMap.find(boneName) == mBoneMap.end())
+		if (mBoneDataMap.find(boneName) == mBoneDataMap.end())
 		{
 			BoneData newBone = {};
 			newBone.index = i;
 			newBone.offset = AssimpGLMHelper::ConvertMatrixToGLMFormat(mesh->mBones[i]->mOffsetMatrix);
-			mBoneMap[boneName] = newBone;
+			mBoneDataMap[boneName] = newBone;
 		}
 	}
 }
 
-void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh)
+void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh) const
 {
-	// The bone's name
-	std::string boneName;
-
-	// Loop through the assimp mesh's bones
 	for (int i = 0; i < mesh->mNumBones; ++i)
 	{
-		boneName = mesh->mBones[i]->mName.C_Str();
-
-		// Bone's ID
 		int boneID = i;
 
-		// Check to see if bone is in the map and set the boneID to the one in the index
-		if (mBoneMap.find(boneName) != mBoneMap.end())
-		{
-			boneID = mBoneMap[boneName].index;
-		}
+		aiVertexWeight* boneWeightsArray = mesh->mBones[i]->mWeights;
 
-		// Bone's array of bone weights
-		aiVertexWeight* weightArray = mesh->mBones[i]->mWeights;
-		// Number of weights for this bone
 		int numWeights = mesh->mBones[i]->mNumWeights;
 
-		// Loop through the bone's weights and set the vertex's bone data
 		for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
 		{
-			int vertexID = weightArray[weightIndex].mVertexId;
-			float weight = weightArray[weightIndex].mWeight;
+			int vertexID = boneWeightsArray[weightIndex].mVertexId;
+			float weight = boneWeightsArray[weightIndex].mWeight;
 
 			SetVertexBoneData(vertices[vertexID], boneID, weight);
 		}
@@ -117,10 +96,10 @@ void Skeleton::UpdateAnimation(float deltaTime)
 			mCurrentTime = 0.0f;
 		}
 
-		// Update bone transformations on separate thread
+		// Updates bone transformations on separate thread
 		JobManager::Get()->AddJob(&mJob);
 		
-		// Uncomment this and remove the JobManager::AddJob() function above to use single thread
+		// Uncomment this and remove/comment out the JobManager::Get()->AddJob() function the line above to use single thread
 		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), GetCurrentAnimation()->GetGlobalInverseTransform());
 	}
 }
