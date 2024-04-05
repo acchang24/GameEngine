@@ -12,7 +12,7 @@ AnimationComponent::~AnimationComponent()
 {
 	delete mSkeleton;
 
-	std::cout << "Delete animation component\n";
+	std::cout << "Deleted animation component at " << this << "\n";
 }
 
 void AnimationComponent::Update(float deltaTime)
