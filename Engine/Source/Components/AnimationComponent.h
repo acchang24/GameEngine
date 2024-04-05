@@ -5,7 +5,7 @@
 class Entity;
 class Animation;
 
-// Component to help animate 3D objects
+// Component to used by 3D entities that animate
 class AnimationComponent : public Component
 {
 public:

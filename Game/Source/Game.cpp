@@ -9,7 +9,6 @@
 #include "Graphics/VertexLayouts.h"
 #include "Graphics/Texture.h"
 #include "Entity/Entity3D.h"
-#include "Components/TimerComponent.h"
 #include "3dPrimitives/Cube.h"
 #include "3dPrimitives/Sphere.h"
 #include "Graphics/Camera.h"
@@ -360,7 +359,6 @@ bool Game::Init()
 	//mCube->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	//mCube->SetMaterial(reflectiveMat);
 	//mCube->SetYaw(25.0f);
-	//TimerComponent* timer = new TimerComponent(mCube);
 	//AddGameEntity(mCube);
 
 	Entity3D* squidward = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");

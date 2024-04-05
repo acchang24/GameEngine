@@ -4,7 +4,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../Graphics/VertexLayouts.h"
 #include "../Graphics/VertexBuffer.h"
-#include "../Components/TimerComponent.h"
 #include "../Graphics/Material.h"
 #include "../Graphics/Shader.h"
 
@@ -71,26 +70,7 @@ Cube::~Cube()
 
 void Cube::OnUpdate(float deltaTime)
 {
-    // UNCOMMENT THIS IF JUST REGULAR CUBE (this currently makes cubes to rotate infinitely on their own for now)
-    // Entity3D::OnUpdate(deltaTime);
-
-    mModelMatrix = glm::mat4(1.0f);
-
-    // Translation
-    mModelMatrix = glm::translate(mModelMatrix, mPosition);
-
-    TimerComponent* tc = GetComponent<TimerComponent>();
-    float speed = 0.0f;
-    if (tc)
-    {
-        speed = GetComponent<TimerComponent>()->GetTimeElapsed();
-    }
-
-    // Rotation over time
-    mModelMatrix = glm::rotate(mModelMatrix, speed * glm::radians(mYaw), glm::vec3(0.5f, 1.0f, 0.0f));
-
-    // Scale
-    mModelMatrix = glm::scale(mModelMatrix, mScale);
+    Entity3D::OnUpdate(deltaTime);
 }
 
 void Cube::OnDraw()

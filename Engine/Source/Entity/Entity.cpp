@@ -9,13 +9,13 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-	std::cout << "Delete entity" << std::endl;
-
 	for (auto c : mComponents)
 	{
 		delete c;
 	}
 	mComponents.clear();
+
+	std::cout << "Delete entity" << std::endl;
 }
 
 void Entity::Update(float deltaTime)

@@ -10,8 +10,9 @@ AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton) :
 
 AnimationComponent::~AnimationComponent()
 {
-	std::cout << "Delete animation component\n";
 	delete mSkeleton;
+
+	std::cout << "Delete animation component\n";
 }
 
 void AnimationComponent::Update(float deltaTime)
