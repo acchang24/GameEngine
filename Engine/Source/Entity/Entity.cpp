@@ -4,7 +4,6 @@
 
 Entity::Entity()
 {
-
 }
 
 Entity::~Entity()
@@ -15,7 +14,7 @@ Entity::~Entity()
 	}
 	mComponents.clear();
 
-	std::cout << "Delete entity" << std::endl;
+	std::cout << "Deleted entity at " << this << "\n";
 }
 
 void Entity::Update(float deltaTime)
