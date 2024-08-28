@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "Graphics/Shader.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
@@ -312,7 +313,7 @@ bool Game::Init()
 
 	//Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
 	//rock->MakeInstance(rockAmount, rockMatrices);
-	//Material* rockMat = rock->GetMaterial("Material");
+	//Material* rockMat = rock->GetModel()->GetMaterial("Material");
 	//rockMat->AddTexture(rockTexture);
 	//rockMat->SetShader(instanceShader);
 	//AddGameEntity(rock);
@@ -364,6 +365,29 @@ bool Game::Init()
 	Entity3D* squidward = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
 	squidward->SetScale(0.35f);
+	squidward->SetYaw(-90.0f);
+	squidward->SetPitch(45.0f);
+	squidward->SetRoll(20.0f);
+	glm::quat rot = squidward->GetRotation();
+	glm::vec3 euler = glm::eulerAngles(rot);
+
+	std::cout << "pitch: " << glm::degrees(euler.x) << " yaw: " << glm::degrees(euler.y) << " roll: " << glm::degrees(euler.z) << "\n";
+	glm::quat rot2 = glm::quat(euler);
+
+	Entity3D* squidward2 = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
+	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f)); 
+	squidward2->SetScale(0.35f);
+	glm::quat newRot = glm::quat(glm::vec3(glm::radians(45.0f), glm::radians(-90.0f), glm::radians(20.0f)));
+	squidward2->SetRotation(newRot);
+	AddGameEntity(squidward2);
+
+	glm::quat rot3 = squidward2->GetRotation();
+	glm::vec3 euler2 = glm::eulerAngles(rot3);
+	std::cout << "pitch: " << glm::degrees(euler2.x) << " yaw: " << glm::degrees(euler2.y) << " roll: " << glm::degrees(euler2.z) << "\n";
+	glm::vec3 euler3 = glm::eulerAngles(newRot);
+	std::cout << "pitch: " << glm::degrees(euler3.x) << " yaw: " << glm::degrees(euler3.y) << " roll: " << glm::degrees(euler3.z) << "\n";
+	glm::quat testquat = glm::quat(euler2);
+
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetModel()->GetMaterial("ttmat");
 	//m->AddTexture(texture);

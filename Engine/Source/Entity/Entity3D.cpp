@@ -1,28 +1,21 @@
 #include "Entity3D.h"
 #include <iostream>
-#include <queue>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include "../Graphics/Mesh.h"
-#include "../Graphics/VertexLayouts.h"
-#include "../Graphics/VertexBuffer.h"
-#include "../MemoryManager/AssetManager.h"
 #include "../Animation/Skeleton.h"
-#include "../Animation/Animation.h"
-#include "../Graphics/UniformBuffer.h"
-#include "../Profiler/Profiler.h"
 #include "../Components/AnimationComponent.h"
 #include "../Graphics/Model.h"
+#include "../Graphics/Shader.h"
+#include "../MemoryManager/AssetManager.h"
 
 Entity3D::Entity3D() :
 	Entity(),
-	mModel(nullptr),
 	mUpdateModelMatrixJob(this),
 	mModelMatrix(glm::mat4(1.0f)),
+	mRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
+	mModel(nullptr),
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
@@ -33,11 +26,12 @@ Entity3D::Entity3D() :
 
 Entity3D::Entity3D(const std::string& fileName):
 	Entity(),
-	mModel(nullptr),
 	mUpdateModelMatrixJob(this),
 	mModelMatrix(glm::mat4(1.0f)),
+	mRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
+	mModel(nullptr),
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
@@ -66,9 +60,9 @@ Entity3D::Entity3D(const std::string& fileName):
 
 Entity3D::~Entity3D()
 {
-	std::cout << "Delete entity 3D" << std::endl;
-
 	glDeleteBuffers(1, &mInstanceBuffer);
+
+	std::cout << "Deleted entity 3D at " << this << "\n";
 }
 
 void Entity3D::MakeInstance(unsigned int numInstances, const void* data)
@@ -108,18 +102,7 @@ void Entity3D::OnUpdate(float deltaTime)
 	// Update model matrix on seprate thread		
 	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 	
-	//mModelMatrix = glm::mat4(1.0f);
-
-	//// Translate
-	//mModelMatrix = glm::translate(mModelMatrix, mPosition);
-
-	//// Rotate
-	//mModelMatrix = glm::rotate(mModelMatrix, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	//mModelMatrix = glm::rotate(mModelMatrix, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	//mModelMatrix = glm::rotate(mModelMatrix, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	//// Scale
-	//mModelMatrix = glm::scale(mModelMatrix, mScale);
+	//CalculateModelMatrix();
 }
 
 void Entity3D::OnDraw()
@@ -145,20 +128,25 @@ void Entity3D::OnDraw(Shader* shader)
 	mModel->Draw(shader, mModelMatrix);
 }
 
-void Entity3D::UpdateModelMatrixJob::DoIt()
+void Entity3D::CalculateWorldTransform()
 {
 	glm::mat4 model = glm::mat4(1.0f);
 
-	// Translate
-	model = glm::translate(model, mEntity->mPosition);
+	glm::mat4 translate = glm::translate(model, mPosition);
 
-	// Rotate
-	model = glm::rotate(model, glm::radians(mEntity->mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = glm::rotate(model, glm::radians(mEntity->mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(mEntity->mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 rotation = glm::toMat4(mRotation);
 
-	// Scale
-	model = glm::scale(model, mEntity->mScale);
+	// Euler angles
+	//glm::mat4 rotation = glm::rotate(model, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+	//rotation = glm::rotate(rotation, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	//rotation = glm::rotate(rotation, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	mEntity->mModelMatrix = model;
+	glm::mat4 scale = glm::scale(model, mScale);
+
+	mModelMatrix = translate * rotation * scale;
+}
+
+void Entity3D::UpdateModelMatrixJob::DoIt()
+{
+	mEntity->CalculateWorldTransform();
 }

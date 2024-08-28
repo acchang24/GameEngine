@@ -1,17 +1,14 @@
 #pragma once
+#define _USE_MATH_DEFINES
 #include "Entity.h"
 #include <string>
-#include <unordered_map>
-#include <assimp/scene.h>
-#include "../Graphics/Texture.h"
-#include "../Graphics/Material.h"
+#include <math.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "../Multithreading/JobManager.h"
 
-class Mesh;
-class Shader;
-class Skeleton;
-class AssetManager;
 class Model;
+class Shader;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
 // objects. The class's Update and Draw functions override the parent class.
@@ -20,8 +17,11 @@ class Entity3D : public Entity
 public:
 	Entity3D();
 	// Entity3D constructor using a model's file.
-	// This will load the model using Assimp and create
-	// the entity's meshes
+	// This will check to see if the model has been loaded with the asset manager.
+	// It will create a new model object if nullptr. If there is a model, it will
+	// check to see if this model has animations and flag this entity as skinned. It 
+	// will then create a new animation component and copy a skeleton object and add it
+	// to the entity's vector of components.
 	// @param - const std::string& for the model's file name
 	Entity3D(const std::string& fileName);
 	~Entity3D();
@@ -53,6 +53,8 @@ public:
 
 	// OnDraw function using a shader set explicitly
 	virtual void OnDraw(Shader* shader);
+
+	void CalculateWorldTransform();
 
 	// Gets the entity's model matrix
 	// @return - const glm::mat4& for the entity's model matrix
@@ -87,15 +89,40 @@ public:
 	void SetScale(float scale) { mScale = glm::vec3(scale, scale, scale); }
 	// Set the entity's yaw rotation
 	// @param - float for the new yaw rotation
-	void SetYaw(float yaw) { mYaw = yaw; }
+	void SetYaw(float yaw)
+	{
+		mYaw = yaw;
+
+		glm::quat newRotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		mRotation = newRotation * mRotation;
+	}
 	// Set the entity's pitch rotation
 	// @param - float for the new pitch rotation
-	void SetPitch(float pitch) { mPitch = pitch; }
+	void SetPitch(float pitch)
+	{
+		mPitch = pitch;
+
+		glm::quat newRotation = glm::angleAxis(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+
+		mRotation = newRotation * mRotation;
+	}
 	// Set the entity's roll rotation
 	// @param - float for the new roll rotation
-	void SetRoll(float roll) { mRoll = roll; }
+	void SetRoll(float roll)
+	{
+		mRoll = roll;
+
+		glm::quat newRotation = glm::angleAxis(glm::radians(roll), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		mRotation = newRotation * mRotation;
+	}
+
+	void SetRotation(const glm::quat& rotation) { mRotation = rotation; }
 
 	void SetIsSkinned(bool skin) { mIsSkinned = skin; }
+
+	const glm::quat& GetRotation() const { return mRotation; }
 
 	Model* GetModel() { return mModel; }
 
@@ -113,20 +140,22 @@ protected:
 		Entity3D* mEntity;
 	};
 
-	// Entity's 3D model
-	Model* mModel;
-
 	// Job to update model matrix on seprate thread
 	UpdateModelMatrixJob mUpdateModelMatrixJob;
 
-	// Entity's model matrix
+	// Model matrix to transform this entity from model space to world space
 	glm::mat4 mModelMatrix;
+
+	glm::quat mRotation;
 
 	// Entity's position
 	glm::vec3 mPosition;
 
 	// Entity's scale
 	glm::vec3 mScale;
+
+	// Entity's 3D model
+	Model* mModel;
 
 	// Buffer for if this entity is drawn as an instance
 	unsigned int mInstanceBuffer;
