@@ -1,8 +1,6 @@
 #pragma once
-#define _USE_MATH_DEFINES
 #include "Entity.h"
 #include <string>
-#include <math.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "../Multithreading/JobManager.h"
