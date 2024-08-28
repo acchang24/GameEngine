@@ -162,25 +162,25 @@ bool Game::Init()
 	mAssetManager->SaveTexture("Assets/brickwall.jpg", wallTexture);
 	mAssetManager->SaveTexture("Assets/brickwall_normal.jpg", wallNormalTexture);
 
-	Shader* colorShader = new Shader("Shaders/colorVS.glsl", "Shaders/colorFS.glsl");
+	Shader* colorShader = new Shader("Shaders/color.vert", "Shaders/color.frag");
 	mAssetManager->SaveShader("color", colorShader);
 
-	Shader* phongShader = new Shader("Shaders/phongVS.glsl", "Shaders/phongFS.glsl");
+	Shader* phongShader = new Shader("Shaders/phong.vert", "Shaders/phong.frag");
 	mAssetManager->SaveShader("phong", phongShader);
 
-	Shader* skinnedShader = new Shader("Shaders/Animation/skinnedVS.glsl", "Shaders/phongFS.glsl");
+	Shader* skinnedShader = new Shader("Shaders/Animation/skinned.vert", "Shaders/phong.frag");
 	mAssetManager->SaveShader("skinned", skinnedShader);
 
-	Shader* textureShader = new Shader("Shaders/textureVS.glsl", "Shaders/textureFS.glsl");
+	Shader* textureShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
 	mAssetManager->SaveShader("texture", textureShader);
 
-	Shader* instanceShader = new Shader("Shaders/instanceVS.glsl", "Shaders/phongFS.glsl");
+	Shader* instanceShader = new Shader("Shaders/instance.vert", "Shaders/phong.frag");
 	mAssetManager->SaveShader("instance", instanceShader);
 
-	Shader* shadowDepthShader = new Shader("Shaders/Shadow/shadowDepthVS.glsl", "Shaders/Shadow/shadowDepthFS.glsl");
+	Shader* shadowDepthShader = new Shader("Shaders/Shadow/shadowDepth.vert", "Shaders/Shadow/shadowDepth.frag");
 	mAssetManager->SaveShader("shadowDepth", shadowDepthShader);
 
-	Shader* shadowDebugShader = new Shader("Shaders/screenVS.glsl", "Shaders/Shadow/shadowDebugFS.glsl");
+	Shader* shadowDebugShader = new Shader("Shaders/screen.vert", "Shaders/Shadow/shadowDebug.frag");
 	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
 
 	UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
@@ -199,38 +199,38 @@ bool Game::Init()
 	lightSphereMaterial->AddTexture(lightSphereTexture);
 	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
 
-	//Shader* invertedColorShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/invertedColorFS.glsl");
+	//Shader* invertedColorShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/invertedColor.frag");
 	//mAssetManager->SaveShader("invertedColor", invertedColorShader);
 
-	//Shader* grayScaleShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/grayScaleFS.glsl");
+	//Shader* grayScaleShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/grayScale.frag");
 	//mAssetManager->SaveShader("grayScale", grayScaleShader);
 
-	//Shader* sharpenKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/sharpenKernelFS.glsl");
+	//Shader* sharpenKernelShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/sharpenKernel.frag");
 	//mAssetManager->SaveShader("sharpenKernel", sharpenKernelShader);
 
-	//Shader* blurKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/blurKernelFS.glsl");
+	//Shader* blurKernelShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/blurKernel.frag");
 	//mAssetManager->SaveShader("blurKernel", blurKernelShader);
 
-	//Shader* edgeDetectKernelShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/edgeDetectKernelFS.glsl");
+	//Shader* edgeDetectKernelShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/edgeDetectKernel.frag");
 	//mAssetManager->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
-	Shader* copyScreenShader = new Shader("Shaders/screenVS.glsl", "Shaders/copyScreenFS.glsl");
+	Shader* copyScreenShader = new Shader("Shaders/screen.vert", "Shaders/copyScreen.frag");
 	mAssetManager->SaveShader("copyScreen", copyScreenShader);
 
-	Shader* bloomMaskShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomMaskFS.glsl");
+	Shader* bloomMaskShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomMask.frag");
 	mAssetManager->SaveShader("bloomMask", bloomMaskShader);
 
-	Shader* bloomBlurHorizontalShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomBlurHorizontalFS.glsl");
+	Shader* bloomBlurHorizontalShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurHorizontal.frag");
 	bloomBlurHorizontalShader->SetActive();
 	bloomBlurHorizontalShader->SetFloat("width", static_cast<float>(windowWidth / 4));
 	mAssetManager->SaveShader("bloomBlurHorizontal", bloomBlurHorizontalShader);
 
-	Shader* bloomBlurVerticalShader = new Shader("Shaders/screenVS.glsl", "Shaders/Postprocess/Bloom/bloomBlurVerticalFS.glsl");
+	Shader* bloomBlurVerticalShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurVertical.frag");
 	bloomBlurVerticalShader->SetActive();
 	bloomBlurVerticalShader->SetFloat("height", static_cast<float>(windowHeight / 4));
 	mAssetManager->SaveShader("bloomBlurVertical", bloomBlurVerticalShader);
 
-	Shader* hdrGammaShader = new Shader("Shaders/screenVS.glsl", "Shaders/hdrGammaFS.glsl");
+	Shader* hdrGammaShader = new Shader("Shaders/screen.vert", "Shaders/hdrGamma.frag");
 	hdrGammaShader->SetActive();
 	hdrGammaShader->SetFloat("exposure", 1.0f);
 	hdrGammaShader->SetBool("hdr", hdr);
@@ -254,7 +254,7 @@ bool Game::Init()
 
 	CubeMap* sky = mSkybox->GetCubeMap();
 
-	Shader* reflectiveShader = new Shader("Shaders/EnvironmentMapping/environmentMapVS.glsl", "Shaders/EnvironmentMapping/reflectionFS.glsl");
+	Shader* reflectiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
 	reflectiveShader->SetActive();
 	reflectiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
 	mAssetManager->SaveShader("reflection", reflectiveShader);
@@ -264,7 +264,7 @@ bool Game::Init()
 	reflectiveMat->SetShader(reflectiveShader);
 	mAssetManager->SaveMaterial("reflection", reflectiveMat);
 
-	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMapVS.glsl", "Shaders/EnvironmentMapping/refractionFS.glsl");
+	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
 	refractiveShader->SetActive();
 	refractiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
 	mAssetManager->SaveShader("refraction", refractiveShader);
