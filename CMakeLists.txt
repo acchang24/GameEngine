@@ -19,12 +19,15 @@ include_directories(Libraries/GLM/include)
 include_directories(Libraries/KHR/include)
 include_directories(Libraries/Assimp/include)
 include_directories(Libraries/GLFW/include)
+include_directories(Libraries/SDL/include)
 
 if(WIN32)
 	link_directories(Libraries/Assimp/lib/win)
 	link_directories(Libraries/GLFW/lib/win)
+	link_directories(Libraries/SDL/lib/win)
 endif()
 
 # Subdirectories to build
 add_subdirectory(Engine)
 add_subdirectory(Game)
+add_subdirectory(Template)

@@ -3,7 +3,7 @@
 int main(int argc, char* args[])
 {
 	Game game;
-	
+
 	if (game.Init())
 	{
 		game.Run();

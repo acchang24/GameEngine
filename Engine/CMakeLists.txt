@@ -17,4 +17,6 @@ if(WIN32)
 	target_link_libraries(engine glfw3)
 	# Link assimp library to engine
 	target_link_libraries(engine assimp-vc142-mtd)
+	# Link SDL library to engine
+	target_link_libraries(engine SDL2 SDL2main)
 endif()
