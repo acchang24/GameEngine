@@ -75,6 +75,10 @@ public:
 	// @param - const glm::vec3& for the new target position
 	void SetTarget(const glm::vec3& target) { mTarget = target; }
 
+	void SetPanDir(const glm::vec3& dir) { mPanDir = dir; }
+
+	void Update(float deltaTime, double mouseX, double mouseY);
+
 	double mYaw;
 	double mPitch;
 	double mRoll;
@@ -97,6 +101,9 @@ private:
 
 	// Camera's right vector (normalized vector pointing the camera's right)
 	glm::vec3 mRight;
+
+	// Camera's direction that it will pan/move to
+	glm::vec3 mPanDir;
 
 	// Uniform buffer for camera
 	UniformBuffer* mCameraBuffer;

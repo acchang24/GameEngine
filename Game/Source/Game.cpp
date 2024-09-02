@@ -1,38 +1,34 @@
 #include "Game.h"
+#include <chrono>
 #include <iostream>
-#include <fstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "3dPrimitives/Cube.h"
+#include "3dPrimitives/Plane.h"
+#include "3dPrimitives/Sphere.h"
+#include "Animation/Skeleton.h"
+#include "Components/AnimationComponent.h"
+#include "Entity/Entity3D.h"
+#include "Graphics/Camera.h"
+#include "Graphics/FrameBuffer.h"
+#include "Graphics/Lights.h"
+#include "Graphics/Material.h"
+#include "Graphics/MaterialCubeMap.h"
+#include "Graphics/Mesh.h"
+#include "Graphics/Model.h"
 #include "Graphics/Shader.h"
+#include "Graphics/ShadowMap.h"
+#include "Graphics/Skybox.h"
+#include "Graphics/Texture.h"
+#include "Graphics/UniformBuffer.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
-#include "Graphics/Texture.h"
-#include "Entity/Entity3D.h"
-#include "3dPrimitives/Cube.h"
-#include "3dPrimitives/Sphere.h"
-#include "Graphics/Camera.h"
 #include "MemoryManager/AssetManager.h"
-#include "Graphics/Material.h"
-#include "3dPrimitives/Plane.h"
-#include "Graphics/FrameBuffer.h"
-#include "Graphics/Skybox.h"
-#include "Graphics/Mesh.h"
-#include "Graphics/UniformBuffer.h"
-#include "Graphics/Lights.h"
-#include "Graphics/MaterialCubeMap.h"
-#include "Graphics/ShadowMap.h"
-#include "Profiler/Profiler.h"
 #include "Multithreading/JobManager.h"
-#include "Animation/Skeleton.h"
-#include "Graphics/Model.h"
-#include "Components/AnimationComponent.h"
+#include "Profiler/Profiler.h"
 
-int windowWidth = 1280;
-int windowHeight = 720;
-
-int subsamples = 4;
 
 float size = 250.0f;
 float near = 1.0f;
@@ -41,8 +37,35 @@ glm::vec3 pos(0.0f);
 glm::vec3 lightDir(-0.05f, -1.0f, -0.2f);
 float dist = 650.0f;
 
+bool IS_FULLSCREEN = false;
+int WINDOW_WIDTH = 1280;
+int WINDOW_HEIGHT = 720;
+double MOUSE_SENSITIVITY = 0.05;
+int SUB_SAMPLES = 4;
+int VSYNC = 1;
+const char* TITLE = "Game";
+
+// Static function that triggers everytime the window is resized.
+static int ResizeWindowEventWatcher(void* data, SDL_Event* event) 
+{
+	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) 
+	{
+		SDL_Window* win = SDL_GetWindowFromID(event->window.windowID);
+		if (win == data) 
+		{
+			SDL_GetWindowSize(win, &WINDOW_WIDTH, &WINDOW_HEIGHT);
+			printf("Window width: %i, Window height: %i\n", WINDOW_WIDTH, WINDOW_HEIGHT);
+			glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+			Camera::SetProjection(static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT));
+		}
+	}
+	return 0;
+}
+
 Game::Game() :
+	mPrevKeyInputs(),
 	mWindow(nullptr),
+	mContext(nullptr),
 	mAssetManager(nullptr),
 	mCamera(nullptr),
 	mFrameBuffer(nullptr),
@@ -50,25 +73,15 @@ Game::Game() :
 	mLights(nullptr),
 	mShadowMap(nullptr),
 	mJobManager(nullptr),
-	mMousePosX(static_cast<double>(windowWidth / 2)),
-	mMousePosY(static_cast<double>(windowHeight / 2)),
-	mMousePrevX(static_cast<double>(windowWidth / 2)),
-	mMousePrevY(static_cast<double>(windowHeight / 2)),
+	mMousePosX(0),
+	mMousePosY(0),
 	mFirstMouse(true),
 	mIsRunning(true),
 	hdr(false),
-	bloom(false)
+	bloom(false),
+	mMouseCaptured(SDL_TRUE)
 {
-	mPrevInputs[GLFW_KEY_ESCAPE] = false;
-	mPrevInputs[GLFW_KEY_SPACE] = false;
-	mPrevInputs[GLFW_KEY_H] = false;
-	mPrevInputs[GLFW_KEY_B] = false;
-	mPrevInputs[GLFW_KEY_UP] = false;
-	mPrevInputs[GLFW_KEY_DOWN] = false;
-	mPrevInputs[GLFW_KEY_LEFT] = false;
-	mPrevInputs[GLFW_KEY_RIGHT] = false;
-	mPrevInputs[GLFW_KEY_L] = false;
-	mPrevInputs[GLFW_KEY_K] = false;
+
 }
 
 Game::~Game()
@@ -80,48 +93,95 @@ bool Game::Init()
 	mJobManager = JobManager::Get();
 	mJobManager->Begin();
 
-	// Initialize GLFW
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-	// Use core-profile
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// Inititialize SDL for video and audio, and check if successful
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+	{
+		std::cout << "Could not initialize SDL: " << SDL_GetError() << "\n";
+		return false;
+	}
 
-	glfwWindowHint(GLFW_SAMPLES, subsamples);
+	// Load default OpenGL library
+	SDL_GL_LoadLibrary(NULL);
 
-	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	//mWindow = glfwCreateWindow(mode->width, mode->height, "Game", monitor, NULL);
+	// Set OpenGL attributes
+	// Use core OpenGL profile
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	// Tell OpenGL to use hardware acceleration
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	// Specify OpenGL 4.5 context
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	// Enable double buffering
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	// Request a color buffer with 8 bits per RGBA channel
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	// Request a depth buffer with 24 bits
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	// Multisampling
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, SUB_SAMPLES);
 
-	mWindow = glfwCreateWindow(windowWidth, windowHeight, "Game", NULL, NULL);
+	// Create the window
+	if (IS_FULLSCREEN)
+	{
+		mWindow = SDL_CreateWindow(
+			TITLE,
+			SDL_WINDOWPOS_UNDEFINED,
+			SDL_WINDOWPOS_UNDEFINED,
+			0,
+			0,
+			SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP
+		);
+	}
+	else
+	{
+		mWindow = SDL_CreateWindow(
+			TITLE,
+			SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED,
+			WINDOW_WIDTH,
+			WINDOW_HEIGHT,
+			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+		);
+	}
 
+	// Check if window creation was successful
 	if (!mWindow)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
+		std::cout << "Failed to create a window " << SDL_GetError() << "\n";
 		return false;
 	}
-	glfwMakeContextCurrent(mWindow);
 
-	// Initialize GLAD
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	// Create OpenGL context using the new window
+	mContext = SDL_GL_CreateContext(mWindow);
+
+	if (mContext == NULL)
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		std::cout << "Failed to create an OpenGL context " << SDL_GetError() << "\n";
 		return false;
 	}
 
-	// Set viewport
-	glViewport(0, 0, windowWidth, windowHeight);
-	// Full screen viewport
-	//glViewport(0, 0, mode->width, mode->height);
-	//windowWidth = mode->width;
-	//windowHeight = mode->height;
+	// Obtain API function pointers for OpenGL/Initialize GLAD
+	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-	// Register the callback function for when window gets resized
-	glfwSetFramebufferSizeCallback(mWindow, FrameBufferSizeCallBack);
+	std::cout << "OpenGL loaded\n";
+	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+	std::cout << "Graphics: " << glGetString(GL_RENDERER) << "\n";
+	std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
 
 	// Enable v-sync by default
-	glfwSwapInterval(1);
+	SDL_GL_SetSwapInterval(VSYNC);
+
+	// Enable relative mouse mode
+	SDL_SetRelativeMouseMode(mMouseCaptured);
+	// Clear any saved values
+	SDL_GetRelativeMouseState(nullptr, nullptr);
+	
+	// Callback function for when window is resized
+	SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
 
 	// Enable z-buffering (depth testing)
 	glEnable(GL_DEPTH_TEST);
@@ -137,7 +197,19 @@ bool Game::Init()
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// Set viewport
+	if (IS_FULLSCREEN)
+	{
+		SDL_DisplayMode dm{};
+
+		SDL_GetDesktopDisplayMode(0, &dm);
+
+		WINDOW_WIDTH = dm.w;
+		WINDOW_HEIGHT = dm.h;
+	}
+	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	
+
 
 	mAssetManager = AssetManager::Get();
 
@@ -222,12 +294,12 @@ bool Game::Init()
 
 	Shader* bloomBlurHorizontalShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurHorizontal.frag");
 	bloomBlurHorizontalShader->SetActive();
-	bloomBlurHorizontalShader->SetFloat("width", static_cast<float>(windowWidth / 4));
+	bloomBlurHorizontalShader->SetFloat("width", static_cast<float>(WINDOW_WIDTH / 4));
 	mAssetManager->SaveShader("bloomBlurHorizontal", bloomBlurHorizontalShader);
 
 	Shader* bloomBlurVerticalShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurVertical.frag");
 	bloomBlurVerticalShader->SetActive();
-	bloomBlurVerticalShader->SetFloat("height", static_cast<float>(windowHeight / 4));
+	bloomBlurVerticalShader->SetFloat("height", static_cast<float>(WINDOW_HEIGHT / 4));
 	mAssetManager->SaveShader("bloomBlurVertical", bloomBlurVerticalShader);
 
 	Shader* hdrGammaShader = new Shader("Shaders/screen.vert", "Shaders/hdrGamma.frag");
@@ -237,7 +309,7 @@ bool Game::Init()
 	hdrGammaShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
-	mFrameBuffer = new FrameBuffer(windowWidth, windowHeight, subsamples);
+	mFrameBuffer = new FrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES);
 	mFrameBuffer->SetShader(copyScreenShader);
 
 	// Skybox
@@ -276,49 +348,49 @@ bool Game::Init()
 
 	glUseProgram(0);
 
-	Texture* rockTexture = new Texture("Assets/models/rock/rock.png", TextureType::Diffuse);
-	mAssetManager->SaveTexture("rock", rockTexture);
+	//Texture* rockTexture = new Texture("Assets/models/rock/rock.png", TextureType::Diffuse);
+	//mAssetManager->SaveTexture("rock", rockTexture);
 
-	// Set model matrices for 10000 instances of a rock model
-	unsigned int rockAmount = 10000;
-	glm::mat4* rockMatrices;
-	rockMatrices = new glm::mat4[rockAmount];
-	std::srand(glfwGetTime()); // initialize random seed	
-	float radius = 100.0;
-	float offset = 20.5f;
-	for (unsigned int i = 0; i < rockAmount; i++)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-		float angle = (float)i / (float)rockAmount * 360.0f;
-		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float x = sin(angle) * radius + displacement;
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float z = cos(angle) * radius + displacement;
-		model = glm::translate(model, glm::vec3(x, y + 250.0f, z));
+	//// Set model matrices for 10000 instances of a rock model
+	//unsigned int rockAmount = 10000;
+	//glm::mat4* rockMatrices;
+	//rockMatrices = new glm::mat4[rockAmount];
+	//std::srand(glfwGetTime()); // initialize random seed	
+	//float radius = 100.0;
+	//float offset = 20.5f;
+	//for (unsigned int i = 0; i < rockAmount; i++)
+	//{
+	//	glm::mat4 model = glm::mat4(1.0f);
+	//	// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+	//	float angle = (float)i / (float)rockAmount * 360.0f;
+	//	float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+	//	float x = sin(angle) * radius + displacement;
+	//	displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+	//	float y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
+	//	displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+	//	float z = cos(angle) * radius + displacement;
+	//	model = glm::translate(model, glm::vec3(x, y + 250.0f, z));
 
-		// 2. scale: scale between 0.05 and 0.25f
-		float scale = (rand() % 20) / 100.0f + 0.05;
-		model = glm::scale(model, glm::vec3(scale));
+	//	// 2. scale: scale between 0.05 and 0.25f
+	//	float scale = (rand() % 20) / 100.0f + 0.05;
+	//	model = glm::scale(model, glm::vec3(scale));
 
-		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
-		float rotAngle = (rand() % 360);
-		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+	//	// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+	//	float rotAngle = (rand() % 360);
+	//	model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
-		// 4. now add to list of matrices
-		rockMatrices[i] = model;
-	}
+	//	// 4. now add to list of matrices
+	//	rockMatrices[i] = model;
+	//}
 
-	//Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
-	//rock->MakeInstance(rockAmount, rockMatrices);
-	//Material* rockMat = rock->GetModel()->GetMaterial("Material");
-	//rockMat->AddTexture(rockTexture);
-	//rockMat->SetShader(instanceShader);
-	//AddGameEntity(rock);
+	////Entity3D* rock = new Entity3D("Assets/models/rock/rock.obj");
+	////rock->MakeInstance(rockAmount, rockMatrices);
+	////Material* rockMat = rock->GetModel()->GetMaterial("Material");
+	////rockMat->AddTexture(rockTexture);
+	////rockMat->SetShader(instanceShader);
+	////AddGameEntity(rock);
 
-	delete[] rockMatrices;
+	//delete[] rockMatrices;
 
 	std::vector<glm::vec3> vampirePositions = { 
 		glm::vec3(0.0f, -4.0f, 0.0f), glm::vec3(10.0f, -4.0f, 0.0f),
@@ -466,7 +538,12 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
-	glfwTerminate();
+	// Delete the OpenGL context
+	SDL_GL_DeleteContext(mContext);
+	// Destroy the window
+	SDL_DestroyWindow(mWindow);
+	// Quit SDL
+	SDL_Quit();
 
 	for (auto e : mEntities)
 	{
@@ -492,7 +569,7 @@ void Game::Shutdown()
 
 void Game::Run()
 {
-	float startTime = glfwGetTime();
+	std::chrono::high_resolution_clock::time_point frameStart = std::chrono::high_resolution_clock::now();
 
 	while (mIsRunning)
 	{
@@ -500,15 +577,13 @@ void Game::Run()
 
 		PROFILE_SCOPE(GAME_LOOP);
 
-		glfwPollEvents();
-
 		// Calculate delta time
-		float endTime = glfwGetTime();
-		float deltaTime = endTime - startTime;
-		// Set the new starting time stamp to the current end time stamp
-		startTime = endTime;
+		std::chrono::high_resolution_clock::time_point frameEnd = std::chrono::high_resolution_clock::now();
+		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count());
+		float deltaTime = static_cast<float>(0.000000001 * duration);
+		frameStart = frameEnd;
 
-		ProcessInput(mWindow, deltaTime);
+		ProcessInput();
 
 		Update(deltaTime);
 
@@ -516,12 +591,25 @@ void Game::Run()
 	}
 }
 
-void Game::ProcessInput(GLFWwindow* window, float deltaTime)
+void Game::ProcessInput()
 {
-	ProcessMouseInput(window);
+	// Check to see when user quits the game
+	SDL_Event event;
+	while (SDL_PollEvent(&event))
+	{
+		switch (event.type)
+		{
+		case SDL_QUIT:
+			mIsRunning = false;
+			break;
+		}
+	}
 
-	// Check if user clicks on window close
-	if (glfwWindowShouldClose(mWindow))
+	ProcessMouseInput();
+
+	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
+
+	if (keyboardState[SDL_SCANCODE_ESCAPE])
 	{
 		mIsRunning = false;
 	}
@@ -530,189 +618,162 @@ void Game::ProcessInput(GLFWwindow* window, float deltaTime)
 	CameraMode mode = mCamera->GetCameraMode();
 	glm::vec3 right = mCamera->GetRight();
 	glm::vec3 up = mCamera->GetUp();
-	float speed = 50.0f;
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	glm::vec3 camPanDir = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	// Move camera around
+	if (keyboardState[SDL_SCANCODE_W])
+	{	
+		switch (mode)
+		{
+		case CameraMode::First:
+			camPanDir += glm::normalize(glm::cross(up, right));
+			break;
+		case CameraMode::Fly:
+			camPanDir += mCamera->GetForward();
+			break;
+		}
+	}
+	if (keyboardState[SDL_SCANCODE_S])
 	{
 		switch (mode)
 		{
 		case CameraMode::First:
-			// Cross product between up and right vector to get the forward/backward dir
-			mCamera->SetPosition(mCamera->GetPosition() + glm::normalize(glm::cross(up, right)) * speed * deltaTime);
+			camPanDir -= glm::normalize(glm::cross(up, right));
 			break;
 		case CameraMode::Fly:
-			// Use the camera's forward
-			mCamera->SetPosition(mCamera->GetPosition() + mCamera->GetForward() * speed * deltaTime);
+			camPanDir -= mCamera->GetForward();
 			break;
 		}
 	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		switch (mode)
-		{
-		case CameraMode::First:
-			// Cross product between up and right vector to get the forward/backward dir
-			mCamera->SetPosition(mCamera->GetPosition() - glm::normalize(glm::cross(up, right)) * speed * deltaTime);
-			break;
-		case CameraMode::Fly:
-			// Use the camera's forward
-			mCamera->SetPosition(mCamera->GetPosition() - mCamera->GetForward() * speed * deltaTime);
-			break;
-		}
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	if (keyboardState[SDL_SCANCODE_A])
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
-			mCamera->SetPosition(mCamera->GetPosition() - right * speed * deltaTime);
+			camPanDir -= right;
 		}
 	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	if (keyboardState[SDL_SCANCODE_D])
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
-			mCamera->SetPosition(mCamera->GetPosition() + right * speed * deltaTime);
+			camPanDir += right;
 		}
 	}
+	mCamera->SetPanDir(camPanDir);
 
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	// Toggle the main directional light
+	if (keyboardState[SDL_SCANCODE_SPACE] && !mPrevKeyInputs[SDL_SCANCODE_SPACE])
 	{
-		mIsRunning = false;
-	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_SPACE])
-	{
-		mPrevInputs[GLFW_KEY_SPACE] = true;
-
-		//mLightArrays.spotLights[0].data.isEnabled = !mLightArrays.spotLights[0].data.isEnabled;
-		//mLightArrays.pointLights[0].data.isEnabled = !mLightArrays.pointLights[0].data.isEnabled;
-		//mLightArrays.pointLights[1].data.isEnabled = !mLightArrays.pointLights[1].data.isEnabled;
-
 		mLights->GetLights().directionalLight[0].data.isEnabled = !mLights->GetLights().directionalLight[0].data.isEnabled;
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+
+	// Capture mouse
+	if (keyboardState[SDL_SCANCODE_M] && !mPrevKeyInputs[SDL_SCANCODE_M])
 	{
-		mPrevInputs[GLFW_KEY_SPACE] = false;
+		if (mMouseCaptured == SDL_TRUE)
+		{
+			mMouseCaptured = SDL_FALSE;
+		}
+		else
+		{
+			mMouseCaptured = SDL_TRUE;
+		}
+
+		// Enable relative mouse mode
+		SDL_SetRelativeMouseMode(mMouseCaptured);
+		// Clear any saved values
+		SDL_GetRelativeMouseState(nullptr, nullptr);
 	}
 
 
+	// HDR/Exposure
 	Shader* shader = mAssetManager->LoadShader("hdrGamma");
-	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_H])
+
+	if (keyboardState[SDL_SCANCODE_H] && !mPrevKeyInputs[SDL_SCANCODE_H])
 	{
-		mPrevInputs[GLFW_KEY_H] = true;
-
 		hdr = !hdr;
-
 		shader->SetActive();
 		shader->SetBool("hdr", hdr);
 	}
-	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_RELEASE)
+	if (keyboardState[SDL_SCANCODE_B] && !mPrevKeyInputs[SDL_SCANCODE_B])
 	{
-		mPrevInputs[GLFW_KEY_H] = false;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_B])
-	{
-		mPrevInputs[GLFW_KEY_B] = true;
-
 		bloom = !bloom;
 
 		shader->SetActive();
 		shader->SetBool("bloom", bloom);
 	}
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
+	// Exposure levels
+	if (keyboardState[SDL_SCANCODE_0])
 	{
-		mPrevInputs[GLFW_KEY_B] = false;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_UP])
-	{
-		mPrevInputs[GLFW_KEY_UP] = true;
-
-		size += 10.0f;
-	}
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE)
-	{
-		mPrevInputs[GLFW_KEY_UP] = false;
-	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_DOWN])
-	{
-		mPrevInputs[GLFW_KEY_DOWN] = true;
-
-		size -= 10.0f;
-	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE)
-	{
-		mPrevInputs[GLFW_KEY_DOWN] = false;
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_LEFT])
-	{
-		mPrevInputs[GLFW_KEY_LEFT] = true;
-
-		far -= 10.0f;
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE)
-	{
-		mPrevInputs[GLFW_KEY_LEFT] = false;
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_RIGHT])
-	{
-		mPrevInputs[GLFW_KEY_RIGHT] = true;
-
-		far += 10.0f;
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
-	{
-		mPrevInputs[GLFW_KEY_RIGHT] = false;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_L])
-	{
-		mPrevInputs[GLFW_KEY_L] = true;
-
-		dist -= 10.0f;
-		pos = (lightDir * -dist);
-	}
-	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE)
-	{
-		mPrevInputs[GLFW_KEY_L] = false;
-	}
-	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS && !mPrevInputs[GLFW_KEY_K])
-	{
-		mPrevInputs[GLFW_KEY_K] = true;
-
-		dist += 10.0f;
-		pos = (lightDir * -dist);
-	}
-	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_RELEASE)
-	{
-		mPrevInputs[GLFW_KEY_K] = false;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_0))
-	{
+		shader->SetActive();
 		shader->SetFloat("exposure", 0.1f);
 	}
-	if (glfwGetKey(window, GLFW_KEY_1))
+	if (keyboardState[SDL_SCANCODE_1])
 	{
+		shader->SetActive();
 		shader->SetFloat("exposure", 1.0f);
 	}
-	if (glfwGetKey(window, GLFW_KEY_2))
+	if (keyboardState[SDL_SCANCODE_2])
 	{
+		shader->SetActive();
 		shader->SetFloat("exposure", 2.0f);
 	}
-	if (glfwGetKey(window, GLFW_KEY_3))
+	if (keyboardState[SDL_SCANCODE_3])
 	{
+		shader->SetActive();
 		shader->SetFloat("exposure", 3.0f);
 	}
-	if (glfwGetKey(window, GLFW_KEY_4))
+	if (keyboardState[SDL_SCANCODE_4])
 	{
+		shader->SetActive();
 		shader->SetFloat("exposure", 4.0f);
 	}
-	if (glfwGetKey(window, GLFW_KEY_5))
+	if (keyboardState[SDL_SCANCODE_5])
 	{
+		shader->SetActive();
 		shader->SetFloat("exposure", 5.0f);
 	}
 
+	// Shadow debug inputs
+	if (keyboardState[SDL_SCANCODE_UP] && !mPrevKeyInputs[SDL_SCANCODE_UP])
+	{
+		size += 10.0f;
+	}
+	if (keyboardState[SDL_SCANCODE_DOWN] && !mPrevKeyInputs[SDL_SCANCODE_DOWN])
+	{
+		size -= 10.0f;
+	}
+	if (keyboardState[SDL_SCANCODE_LEFT] && !mPrevKeyInputs[SDL_SCANCODE_LEFT])
+	{
+		far -= 10.0f;
+	}
+	if (keyboardState[SDL_SCANCODE_RIGHT] && !mPrevKeyInputs[SDL_SCANCODE_RIGHT])
+	{
+		far += 10.0f;
+	}
+	if (keyboardState[SDL_SCANCODE_L] && !mPrevKeyInputs[SDL_SCANCODE_L])
+	{
+		dist -= 10.0f;
+		pos = (lightDir * -dist);
+	}
+	if (keyboardState[SDL_SCANCODE_K] && !mPrevKeyInputs[SDL_SCANCODE_K])
+	{
+		dist += 10.0f;
+		pos = (lightDir * -dist);
+	}
+
+	// Save previous key inputs
+	mPrevKeyInputs[SDL_SCANCODE_SPACE] = keyboardState[SDL_SCANCODE_SPACE];
+	mPrevKeyInputs[SDL_SCANCODE_H] = keyboardState[SDL_SCANCODE_H];
+	mPrevKeyInputs[SDL_SCANCODE_B] = keyboardState[SDL_SCANCODE_B];
+	mPrevKeyInputs[SDL_SCANCODE_UP] = keyboardState[SDL_SCANCODE_UP];
+	mPrevKeyInputs[SDL_SCANCODE_DOWN] = keyboardState[SDL_SCANCODE_DOWN];
+	mPrevKeyInputs[SDL_SCANCODE_LEFT] = keyboardState[SDL_SCANCODE_LEFT];
+	mPrevKeyInputs[SDL_SCANCODE_RIGHT] = keyboardState[SDL_SCANCODE_RIGHT];
+	mPrevKeyInputs[SDL_SCANCODE_L] = keyboardState[SDL_SCANCODE_L];
+	mPrevKeyInputs[SDL_SCANCODE_K] = keyboardState[SDL_SCANCODE_K];
+	mPrevKeyInputs[SDL_SCANCODE_M] = keyboardState[SDL_SCANCODE_M];
 }
 
 void Game::Update(float deltaTime)
@@ -723,6 +784,8 @@ void Game::Update(float deltaTime)
 	{
 		e->Update(deltaTime);
 	}
+
+	mCamera->Update(deltaTime, mMousePosX, mMousePosY);
 
 	//mJobManager->WaitForJobs();
 }
@@ -768,11 +831,13 @@ void Game::Render()
 		RenderScene();
 
 		//// Uncomment this if using off screen frame buffer
-		mFrameBuffer->End(windowWidth, windowHeight);
+		mFrameBuffer->End(WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 	//glViewport(0, 0, windowWidth, windowHeight);
-	glfwSwapBuffers(mWindow);
+
+	// Swap the buffers
+	SDL_GL_SwapWindow(mWindow);
 }
 
 void Game::RenderScene()
@@ -797,77 +862,20 @@ void Game::RenderScene(Shader* shader)
 	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
 }
 
-void Game::ProcessMouseInput(GLFWwindow* window)
+void Game::ProcessMouseInput()
 {
-	glfwGetCursorPos(mWindow, &mMousePosX, &mMousePosY);
-
 	if (mFirstMouse)
 	{
-		mMousePrevX = mMousePosX;
-		mMousePrevY = mMousePosY;
+		std::cout << mMousePosX << " " << mMousePosY << "\n";
+		mMousePosX = 0.0;
+		mMousePosY = 0.0;
 		mFirstMouse = false;
 	}
 
-	// Calculate mouse offset
-	double xOffset = mMousePosX - mMousePrevX;
-	double yOffset = mMousePrevY - mMousePosY; // reverse since y coordinates range bottom to top
-
-	mMousePrevX = mMousePosX;
-	mMousePrevY = mMousePosY;
-
-	double sensitivity = 0.05;
-	xOffset *= sensitivity;
-	yOffset *= sensitivity;
-
-	// Update camera angles
-	mCamera->mYaw = mCamera->mYaw + xOffset;
-	mCamera->mPitch = mCamera->mPitch + yOffset;
-
-	if (mCamera->mPitch >= 89.0)
-	{
-		mCamera->mPitch = 89.0;
-		yOffset = 0.0f;
-	}
-	if (mCamera->mPitch <= -89.0)
-	{
-		mCamera->mPitch = -89.0;
-		yOffset = 0.0f;
-	}
-
-	if (mCamera->GetCameraMode() == CameraMode::Orbit)
-	{
-		glm::vec3 camPos = mCamera->GetPosition();
-		glm::vec3 camUp = mCamera->GetUp();
-		glm::vec3 camTarget = mCamera->GetTarget();
-
-		// Temp vec4 for camera position
-		glm::vec4 pos(camPos, 1.0f);
-		// Temp vec4 for the camera's pivot point
-		glm::vec4 pivot(camTarget, 1.0f);
-
-		// Calculate rotation matrix along y axis (yaw)
-		glm::mat4x4 rotationX(1.0f);
-		// Rotate based on xOffset
-		rotationX = glm::rotate(rotationX, glm::radians(static_cast<float>(-xOffset)), camUp);
-		pos = (rotationX * (pos - pivot)) + pivot;
-
-		// Calculate rotation matrix along x axis (pitch)
-		glm::mat4x4 rotationY(1.0f);
-		// Rotate based on yOffset
-		glm::vec3 right = glm::normalize(glm::cross(camUp, glm::normalize(camTarget - glm::vec3(pos.x, pos.y, pos.z))));
-		rotationY = glm::rotate(rotationY, glm::radians(static_cast<float>(-yOffset)), right);
-		pos = (rotationY * (pos - pivot)) + pivot;
-
-		mCamera->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
-	}
-}
-
-void Game::FrameBufferSizeCallBack(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-
-	Camera::SetProjection(static_cast<float>(width) / static_cast<float>(height));
-
-	windowWidth = width;
-	windowHeight = height;
+	// Calculate mouse movement
+	int x = 0;
+	int y = 0;
+	SDL_GetRelativeMouseState(&x, &y);
+	mMousePosX = x * MOUSE_SENSITIVITY;
+	mMousePosY = -y * MOUSE_SENSITIVITY;
 }
