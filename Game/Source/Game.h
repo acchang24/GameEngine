@@ -20,7 +20,7 @@ public:
 	Game();
 	~Game();
 
-	// Initializes the game, GLFW library, and any other things required for the game
+	// Initializes the game, libraries, and any loads any assets required for the game
 	// @return - Returns true if successfully initialized, false if not.
 	bool Init();
 
