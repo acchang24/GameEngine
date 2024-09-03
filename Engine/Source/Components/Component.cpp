@@ -13,6 +13,11 @@ Component::~Component()
 	std::cout << "Deleted component at " << this << "\n";
 }
 
+void Component::ProcessInput(const Uint8* keyState)
+{
+
+}
+
 void Component::Update(float deltaTime)
 {
 

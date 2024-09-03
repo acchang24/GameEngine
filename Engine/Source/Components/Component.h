@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL2/SDL_stdinc.h>
 
 class Entity;
 
@@ -13,6 +14,10 @@ public:
 	// @param - Entity* to save a pointer to the component's entity
 	Component(Entity* owner);
 	virtual ~Component();
+
+	// Overridable process input function for this component if it's needed
+	// @param - const Uint8* for the keyboard state
+	virtual void ProcessInput(const Uint8* keyState);
 
 	// Overridable update function that updates a particular component
 	// @param - float for delta time

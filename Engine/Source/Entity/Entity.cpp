@@ -2,8 +2,10 @@
 #include <iostream>
 #include "../Components/Component.h"
 
-Entity::Entity()
+Entity::Entity() :
+	mState(EntityState::Active)
 {
+
 }
 
 Entity::~Entity()
@@ -17,14 +19,29 @@ Entity::~Entity()
 	std::cout << "Deleted entity at " << this << "\n";
 }
 
+void Entity::ProcessInput(const Uint8* keyState)
+{
+	if (mState == EntityState::Active)
+	{
+		for (auto c : mComponents)
+		{
+			c->ProcessInput(keyState);
+		}
+	}
+}
+
 void Entity::Update(float deltaTime)
 {
-	for (auto c : mComponents)
+	if (mState == EntityState::Active)
 	{
-		c->Update(deltaTime);
+		for (auto c : mComponents)
+		{
+			c->Update(deltaTime);
+		}
 	}
 }
 
 void Entity::Draw()
 {
+
 }

@@ -1,5 +1,13 @@
 #pragma once
 #include <vector>
+#include <SDL2/SDL_stdinc.h>
+
+enum class EntityState
+{
+	Active,
+	Paused,
+	Destroy
+};
 
 class Component;
 
@@ -12,6 +20,10 @@ class Entity
 public:
 	Entity();
 	virtual ~Entity();
+
+	// Virtual ProcessInput that checks if the entity is active.
+	// If so, it will Call ProcessInput on all of its components
+	virtual void ProcessInput(const Uint8* keyState);
 
 	// Virtual Update function that updates and handles the entity's own unique attributes.
 	// This base/parent class Update function simply loops through the vector of components updates them.
@@ -41,7 +53,18 @@ public:
 		return nullptr;
 	}
 
+	// Gets the entity's state
+	// @return - const EntityState& for the entity's state
+	const EntityState& GetEntityState() const { return mState; }
+
+	// Sets the entity's state
+	// @param - EnttityState for the entity's new state
+	void SetEntityState(EntityState state) { mState = state; }
+
 protected:
 	// Vector of components the entity uses
 	std::vector<Component*> mComponents;
+
+	// Entity's state
+	EntityState mState;
 };

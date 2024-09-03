@@ -74,6 +74,13 @@ void Entity3D::MakeInstance(unsigned int numInstances, const void* data)
 	mModel->MakeInstance(numInstances);
 }
 
+void Entity3D::ProcessInput(const Uint8* keyState)
+{
+	Entity::ProcessInput(keyState);
+
+	OnProcessInput(keyState);
+}
+
 void Entity3D::Update(float deltaTime)
 {
 	Entity::Update(deltaTime);
@@ -95,6 +102,10 @@ void Entity3D::Draw(Shader* shader)
 	{
 		OnDraw(shader);
 	}
+}
+
+void Entity3D::OnProcessInput(const Uint8* keyState)
+{
 }
 
 void Entity3D::OnUpdate(float deltaTime)
