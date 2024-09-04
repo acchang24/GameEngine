@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 
 class FrameBuffer;
+class FrameBufferMultiSampled;
 class Shader;
 
 class Renderer3D
@@ -28,7 +29,9 @@ public:
 	// @param - int for the number of subsamples used for anti-aliasing
 	// @param - bool for if the framebuffer uses multi-sample
 	// @return - FrameBuffer* for the newly created framebuffer
-	FrameBuffer* CreateFrameBuffer(int width, int height, int subsamples, bool multisampled);
+	FrameBuffer* CreateFrameBuffer(int width, int height);
+
+	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples);
 
 	void SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader);
 
@@ -40,7 +43,8 @@ public:
 
 	// Retrieves the main frame buffer
 	// @return - FrameBuffer* for the main frame buffer
-	FrameBuffer* GetMainFrameBuffer() { return mMainFrameBuffer; }
+	FrameBufferMultiSampled* GetMainFrameBuffer() { return mMainFrameBuffer; }
+	FrameBuffer* GetBloomMaskFrameBuffer() { return mBloomMaskFrameBuffer; }
 
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
@@ -57,7 +61,9 @@ private:
 	// Framebuffers - Add any additional framebuffers here if needed
 	// and use CreateFrameBuffers() to generate a new one.
 	// Add a specific getter for any new framebuffer created.
-	FrameBuffer* mMainFrameBuffer;
+	FrameBufferMultiSampled* mMainFrameBuffer;
+
+	FrameBuffer* mBloomMaskFrameBuffer;
 
 	// SDL window used for the game
 	SDL_Window* mWindow;

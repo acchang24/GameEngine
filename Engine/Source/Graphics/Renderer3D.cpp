@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include "Camera.h"
 #include "FrameBuffer.h"
+#include "FrameBufferMultiSampled.h"
 
 // Window width
 static int s_WindowWidth;
@@ -13,6 +14,7 @@ static SDL_bool s_MouseCaptured;
 
 Renderer3D::Renderer3D() :
 	mMainFrameBuffer(nullptr),
+	mBloomMaskFrameBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -162,7 +164,8 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Set the new viewport
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
-	mMainFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples, true);
+	mMainFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples);
+	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth / 2, s_WindowHeight / 2);
 
 	return true;
 }
@@ -192,16 +195,25 @@ void Renderer3D::BeginFrame()
 
 void Renderer3D::EndFrame()
 {
+	mMainFrameBuffer->BlitBuffers();
+
+	mBloomMaskFrameBuffer->End(mMainFrameBuffer->GetTexture());
+
 	//// Uncomment this if using off screen frame buffer
-	mMainFrameBuffer->End();
+	mMainFrameBuffer->End(mBloomMaskFrameBuffer->GetTexture());
 
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
 }
 
-FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, int subsamples, bool multisampled)
+FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height)
 {
-	return new FrameBuffer(width, height, subsamples, multisampled);
+	return new FrameBuffer(width, height);
+}
+
+FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int width, int height, int subsamples)
+{
+	return new FrameBufferMultiSampled(width, height, subsamples);
 }
 
 void Renderer3D::SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader)

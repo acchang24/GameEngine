@@ -15,14 +15,14 @@ public:
 	// @param - int for the screen's width
 	// @param - int for the screen's height
 	// @param - int for the number of subsamples for anti aliasing
-	FrameBuffer(int width, int height, int subsamples, bool multiSampled);
-	~FrameBuffer();
+	FrameBuffer(int width, int height);
+	virtual ~FrameBuffer();
 
 	// Starts the frame buffer by binding this frame buffer object
 	// as the current target. This is called right before clearing buffers
 	// in the main render loop. Any renders should be done as normal after
 	// this call.
-	void SetActive() const;
+	virtual void SetActive() const;
 	// Binds the frame buffer to the default one, then
 	// disables the depth test, clears any relevant buffers,
 	// draws the frame buffer, and enable depth test back again.
@@ -30,7 +30,7 @@ public:
 	// buffers.
 	// @param - int for the screen's width
 	// @param - int for the screen's height
-	void End();
+	virtual void End(unsigned int texture);
 
 	// Draws the frame buffer's off screen quad
 	void Draw(int texture);
@@ -43,7 +43,9 @@ public:
 	// @param - Shader* for the new shader
 	void SetShader(Shader* s) { mShader = s; }
 
-private:
+	unsigned int GetTexture() const { return mTexture; }
+
+protected:
 	// The shader used to help draw the frame buffer's quad
 	Shader* mShader;
 
@@ -53,12 +55,12 @@ private:
 	// Pointer to the assetmanager
 	AssetManager* mAssetManager;
 
-	// MSAA framebuffer
-	unsigned int mMSAAFrameBuffer;
-	// The multisampled offscreen color attachment texture 
-	unsigned int mTextureMultiSampled;
-	// The multisampled render buffer for depth and stencil attachments
-	unsigned int mRenderBufferMultiSampled;
+	//// MSAA framebuffer
+	//unsigned int mMSAAFrameBuffer;
+	//// The multisampled offscreen color attachment texture 
+	//unsigned int mTextureMultiSampled;
+	//// The multisampled render buffer for depth and stencil attachments
+	//unsigned int mRenderBufferMultiSampled;
 
 	// Frame buffer object as a reference id
 	unsigned int mFrameBuffer;
@@ -67,12 +69,12 @@ private:
 	// Render buffer for depth and stencil attatchments as a reference
 	unsigned int mRenderBuffer;
 
-	// Frame buffer used for bloom mask
-	unsigned int mBloomMaskFrameBuffer;
-	// Bloom mask texture downsized by 1/2 that masks off dark spots and shows only bright areas
-	unsigned int mBloomMaskTexture;
-	// Bloom mask render buffer
-	unsigned int mBloomMaskRenderBuffer;
+	//// Frame buffer used for bloom mask
+	//unsigned int mBloomMaskFrameBuffer;
+	//// Bloom mask texture downsized by 1/2 that masks off dark spots and shows only bright areas
+	//unsigned int mBloomMaskTexture;
+	//// Bloom mask render buffer
+	//unsigned int mBloomMaskRenderBuffer;
 
 	//unsigned int mBloomBlurHorizontalFrameBuffer;
 	//unsigned int mBloomBlurHorizontalTexture;

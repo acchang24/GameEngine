@@ -13,6 +13,7 @@
 #include "Entity/Entity3D.h"
 #include "Graphics/Camera.h"
 #include "Graphics/FrameBuffer.h"
+#include "Graphics/FrameBufferMultiSampled.h"
 #include "Graphics/Lights.h"
 #include "Graphics/Material.h"
 #include "Graphics/MaterialCubeMap.h"
@@ -314,7 +315,8 @@ bool Game::Init()
 	hdrGammaShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
-	mRenderer->SetFrameBufferShader(mRenderer->GetMainFrameBuffer(), hdrGammaShader);
+	mRenderer->SetFrameBufferShader(static_cast<FrameBufferMultiSampled*>(mRenderer->GetMainFrameBuffer()), hdrGammaShader);
+	mRenderer->SetFrameBufferShader(mRenderer->GetBloomMaskFrameBuffer(), bloomMaskShader);
 
 	//mFrameBuffer = new FrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES);
 	//mFrameBuffer->SetShader(hdrGammaShader);
