@@ -162,7 +162,7 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Set the new viewport
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
-	mMainFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples);
+	mMainFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples, true);
 
 	return true;
 }
@@ -199,9 +199,9 @@ void Renderer3D::EndFrame()
 	SDL_GL_SwapWindow(mWindow);
 }
 
-FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, int subsamples)
+FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, int subsamples, bool multisampled)
 {
-	return new FrameBuffer(width, height, subsamples);
+	return new FrameBuffer(width, height, subsamples, multisampled);
 }
 
 void Renderer3D::SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader)

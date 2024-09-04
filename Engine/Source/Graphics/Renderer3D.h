@@ -26,8 +26,9 @@ public:
 	// @param - int for the width of the frame buffer
 	// @param - int for the height of the frame buffer
 	// @param - int for the number of subsamples used for anti-aliasing
+	// @param - bool for if the framebuffer uses multi-sample
 	// @return - FrameBuffer* for the newly created framebuffer
-	FrameBuffer* CreateFrameBuffer(int width, int height, int subsamples);
+	FrameBuffer* CreateFrameBuffer(int width, int height, int subsamples, bool multisampled);
 
 	void SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader);
 

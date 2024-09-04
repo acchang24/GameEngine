@@ -6,7 +6,7 @@
 #include "VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 
-FrameBuffer::FrameBuffer(int width, int height, int subsamples) :
+FrameBuffer::FrameBuffer(int width, int height, int subsamples, bool multiSampled) :
 	mShader(nullptr),
 	mVertexBuffer(nullptr),
 	mAssetManager(AssetManager::Get()),
@@ -15,7 +15,7 @@ FrameBuffer::FrameBuffer(int width, int height, int subsamples) :
 	mRenderBufferMultiSampled(0),
 	mFrameBuffer(0),
 	mTexture(0),
-	//mRenderBufferID(0),
+	mRenderBuffer(0),
 	//mBloomMaskFrameBuffer(0),
 	//mBloomMaskTexture(0),
 	//mBloomMaskRenderBuffer(0),
@@ -95,13 +95,13 @@ FrameBuffer::FrameBuffer(int width, int height, int subsamples) :
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexture, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	//// Create a renderbuffer object for depth and stencil attachment (won't be sample from these)
-	//glGenRenderbuffers(1, &mRenderBuffer);
-	//glBindRenderbuffer(GL_RENDERBUFFER, mRenderBuffer);
-	//// Create a depth and stencil render buffer object
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	//// Attatch render buffer object
-	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBuffer);
+	// Create a renderbuffer object for depth and stencil attachment (won't be sample from these)
+	glGenRenderbuffers(1, &mRenderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, mRenderBuffer);
+	// Create a depth and stencil render buffer object
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	// Attatch render buffer object
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBuffer);
 
 	// Check for frame buffer's completion
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
@@ -200,7 +200,7 @@ FrameBuffer::~FrameBuffer()
 
 	glDeleteFramebuffers(1, &mFrameBuffer);
 	glDeleteTextures(1, &mTexture);
-	//glDeleteRenderbuffers(1, &mRenderBuffer);
+	glDeleteRenderbuffers(1, &mRenderBuffer);
 
 	//glDeleteFramebuffers(1, &mBloomMaskFrameBuffer);
 	//glDeleteTextures(1, &mBloomMaskTexture);

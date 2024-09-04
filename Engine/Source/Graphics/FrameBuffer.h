@@ -15,7 +15,7 @@ public:
 	// @param - int for the screen's width
 	// @param - int for the screen's height
 	// @param - int for the number of subsamples for anti aliasing
-	FrameBuffer(int width, int height, int subsamples);
+	FrameBuffer(int width, int height, int subsamples, bool multiSampled);
 	~FrameBuffer();
 
 	// Starts the frame buffer by binding this frame buffer object
@@ -65,7 +65,7 @@ private:
 	// The offscreen color attachment texture created after blitting the multisample texture
 	unsigned int mTexture;
 	// Render buffer for depth and stencil attatchments as a reference
-	//unsigned int mRenderBuffer;
+	unsigned int mRenderBuffer;
 
 	//// Frame buffer used for bloom mask
 	//unsigned int mBloomMaskFrameBuffer;
