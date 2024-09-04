@@ -55,11 +55,8 @@ FrameBufferMultiSampled::~FrameBufferMultiSampled()
 
 void FrameBufferMultiSampled::SetActive() const
 {
-	// Draw scene as normal in the multisampled buffer
+	// Draw scene in the multisampled buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, mMSAAFrameBuffer);
-
-	// Frame buffer without multisampling
-	//glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferID);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -78,13 +75,12 @@ void FrameBufferMultiSampled::End(unsigned int texture)
 
 	mShader->SetInt("screenTexture", mTextureUnit);
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, mTexture);
 
 	int blurUnit = mTextureUnit + 3;
 	mShader->SetInt("blurTexture", blurUnit);
 	glActiveTexture(GL_TEXTURE0 + blurUnit);
 	glBindTexture(GL_TEXTURE_2D, texture);
-
 
 	mVertexBuffer->Draw();
 
@@ -94,8 +90,6 @@ void FrameBufferMultiSampled::End(unsigned int texture)
 
 void FrameBufferMultiSampled::BlitBuffers()
 {
-	// Blit multisampled buffers to normal color buffer of mFrameBuffer
-	// Use mFrameBuffer's texture color attachment
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, mMSAAFrameBuffer);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFrameBuffer);
 	glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);

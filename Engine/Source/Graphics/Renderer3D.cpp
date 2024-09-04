@@ -15,6 +15,8 @@ static SDL_bool s_MouseCaptured;
 Renderer3D::Renderer3D() :
 	mMainFrameBuffer(nullptr),
 	mBloomMaskFrameBuffer(nullptr),
+	mBloomBlurHorizontalFrameBuffer(nullptr),
+	mBloomBlurVerticalFrameBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -166,6 +168,8 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 
 	mMainFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples);
 	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth / 2, s_WindowHeight / 2);
+	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
+	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
 
 	return true;
 }
@@ -181,6 +185,9 @@ void Renderer3D::Shutdown()
 	SDL_Quit();
 
 	delete mMainFrameBuffer;
+	delete mBloomMaskFrameBuffer;
+	delete mBloomBlurHorizontalFrameBuffer;
+	delete mBloomBlurVerticalFrameBuffer;
 }
 
 void Renderer3D::BeginFrame()
@@ -197,10 +204,14 @@ void Renderer3D::EndFrame()
 {
 	mMainFrameBuffer->BlitBuffers();
 
+	// Use the blitted texture and mask off dark spots
 	mBloomMaskFrameBuffer->End(mMainFrameBuffer->GetTexture());
-
-	//// Uncomment this if using off screen frame buffer
-	mMainFrameBuffer->End(mBloomMaskFrameBuffer->GetTexture());
+	// Use the masked off texture and blur horizontally
+	mBloomBlurHorizontalFrameBuffer->End(mBloomMaskFrameBuffer->GetTexture());
+	// Use the horizontally blurred texture to blur vertically
+	mBloomBlurVerticalFrameBuffer->End(mBloomBlurHorizontalFrameBuffer->GetTexture());
+	// Uses the blitted texture and the blurred texture to additively blend them for final image
+	mMainFrameBuffer->End(mBloomBlurVerticalFrameBuffer->GetTexture());
 
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);

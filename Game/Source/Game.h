@@ -9,7 +9,6 @@ class Texture;
 class Entity;
 class Camera;
 class AssetManager;
-//class FrameBuffer;
 class Skybox;
 class Lights;
 class ShadowMap;
@@ -60,12 +59,6 @@ private:
 	std::vector<Entity*> mEntities;
 
 	Renderer3D* mRenderer;
-
-	//// SDL window used for the game
-	//SDL_Window* mWindow;
-
-	//// OpenGL context
-	//SDL_GLContext mContext;
 
 	// Pointer to a (static) asset manager
 	AssetManager* mAssetManager;

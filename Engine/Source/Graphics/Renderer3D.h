@@ -45,6 +45,8 @@ public:
 	// @return - FrameBuffer* for the main frame buffer
 	FrameBufferMultiSampled* GetMainFrameBuffer() { return mMainFrameBuffer; }
 	FrameBuffer* GetBloomMaskFrameBuffer() { return mBloomMaskFrameBuffer; }
+	FrameBuffer* GetBloomBlurHorizontalFrameBuffer() { return mBloomBlurHorizontalFrameBuffer; }
+	FrameBuffer* GetBloomBlurVerticalFrameBuffer() { return mBloomBlurVerticalFrameBuffer; }
 
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
@@ -64,7 +66,9 @@ private:
 	FrameBufferMultiSampled* mMainFrameBuffer;
 
 	FrameBuffer* mBloomMaskFrameBuffer;
-
+	FrameBuffer* mBloomBlurHorizontalFrameBuffer;
+	FrameBuffer* mBloomBlurVerticalFrameBuffer;
+	
 	// SDL window used for the game
 	SDL_Window* mWindow;
 
