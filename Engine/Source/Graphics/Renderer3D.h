@@ -1,6 +1,9 @@
 #pragma once
 #include <SDL2/SDL.h>
 
+class FrameBuffer;
+class Shader;
+
 class Renderer3D
 {
 public:
@@ -15,7 +18,18 @@ public:
 	// De-allocates any resources from SDL
 	void Shutdown();
 
+
+	void BeginFrame();
 	void EndFrame();
+
+	// Creates a frame buffer for the renderer to use
+	// @param - int for the width of the frame buffer
+	// @param - int for the height of the frame buffer
+	// @param - int for the number of subsamples used for anti-aliasing
+	// @return - FrameBuffer* for the newly created framebuffer
+	FrameBuffer* CreateFrameBuffer(int width, int height, int subsamples);
+
+	void SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader);
 
 	// Static function that triggers everytime the window is resized.
 	static int ResizeWindowEventWatcher(void* data, SDL_Event* event);
@@ -23,6 +37,9 @@ public:
 	// Toggles capturing the mouse in the window
 	static void ToggleMouseCapture();
 
+	// Retrieves the main frame buffer
+	// @return - FrameBuffer* for the main frame buffer
+	FrameBuffer* GetMainFrameBuffer() { return mMainFrameBuffer; }
 
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
@@ -35,6 +52,11 @@ public:
 private:
 	Renderer3D();
 	~Renderer3D();
+
+	// Framebuffers - Add any additional framebuffers here if needed
+	// and use CreateFrameBuffers() to generate a new one.
+	// Add a specific getter for any new framebuffer created.
+	FrameBuffer* mMainFrameBuffer;
 
 	// SDL window used for the game
 	SDL_Window* mWindow;

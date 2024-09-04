@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "Camera.h"
+#include "FrameBuffer.h"
 
 // Window width
 static int s_WindowWidth;
@@ -11,6 +12,7 @@ static int s_WindowHeight;
 static SDL_bool s_MouseCaptured;
 
 Renderer3D::Renderer3D() :
+	mMainFrameBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -157,7 +159,10 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 		s_WindowWidth = dm.w;
 		s_WindowHeight = dm.h;
 	}
+	// Set the new viewport
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
+
+	mMainFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples);
 
 	return true;
 }
@@ -171,12 +176,37 @@ void Renderer3D::Shutdown()
 	SDL_DestroyWindow(mWindow);
 	// Quit SDL
 	SDL_Quit();
+
+	delete mMainFrameBuffer;
+}
+
+void Renderer3D::BeginFrame()
+{
+	// Specify color to clear the screen
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	// Clear the color buffer, depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	mMainFrameBuffer->SetActive();
 }
 
 void Renderer3D::EndFrame()
 {
+	//// Uncomment this if using off screen frame buffer
+	mMainFrameBuffer->End(s_WindowWidth, s_WindowHeight);
+
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
+}
+
+FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, int subsamples)
+{
+	return new FrameBuffer(width, height, subsamples);
+}
+
+void Renderer3D::SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader)
+{
+	frameBuffer->SetShader(shader);
 }
 
 int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)

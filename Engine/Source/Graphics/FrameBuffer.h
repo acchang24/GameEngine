@@ -22,7 +22,7 @@ public:
 	// as the current target. This is called right before clearing buffers
 	// in the main render loop. Any renders should be done as normal after
 	// this call.
-	void SetActive();
+	void SetActive() const;
 	// Binds the frame buffer to the default one, then
 	// disables the depth test, clears any relevant buffers,
 	// draws the frame buffer, and enable depth test back again.
@@ -67,18 +67,18 @@ private:
 	// Render buffer for depth and stencil attatchments as a reference
 	//unsigned int mRenderBuffer;
 
-	// Frame buffer used for bloom mask
-	unsigned int mBloomMaskFrameBuffer;
-	// Bloom mask texture downsized by 1/2 that masks off dark spots and shows only bright areas
-	unsigned int mBloomMaskTexture;
-	// Bloom mask render buffer
-	unsigned int mBloomMaskRenderBuffer;
+	//// Frame buffer used for bloom mask
+	//unsigned int mBloomMaskFrameBuffer;
+	//// Bloom mask texture downsized by 1/2 that masks off dark spots and shows only bright areas
+	//unsigned int mBloomMaskTexture;
+	//// Bloom mask render buffer
+	//unsigned int mBloomMaskRenderBuffer;
 
-	unsigned int mBloomBlurHorizontalFrameBuffer;
-	unsigned int mBloomBlurHorizontalTexture;
+	//unsigned int mBloomBlurHorizontalFrameBuffer;
+	//unsigned int mBloomBlurHorizontalTexture;
 
-	unsigned int mBloomBlurVerticalFrameBuffer;
-	unsigned int mBloomBlurVerticalTexture;
+	//unsigned int mBloomBlurVerticalFrameBuffer;
+	//unsigned int mBloomBlurVerticalTexture;
 
 	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
 	int mTextureUnit;

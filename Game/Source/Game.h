@@ -9,7 +9,7 @@ class Texture;
 class Entity;
 class Camera;
 class AssetManager;
-class FrameBuffer;
+//class FrameBuffer;
 class Skybox;
 class Lights;
 class ShadowMap;
@@ -74,7 +74,7 @@ private:
 	Camera* mCamera;
 
 	// Frame buffer
-	FrameBuffer* mFrameBuffer;
+	//FrameBuffer* mFrameBuffer;
 
 	// Skybox
 	Skybox* mSkybox;

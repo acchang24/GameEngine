@@ -16,13 +16,13 @@ FrameBuffer::FrameBuffer(int width, int height, int subsamples) :
 	mFrameBuffer(0),
 	mTexture(0),
 	//mRenderBufferID(0),
-	mBloomMaskFrameBuffer(0),
-	mBloomMaskTexture(0),
-	mBloomMaskRenderBuffer(0),
-	mBloomBlurHorizontalFrameBuffer(0),
-	mBloomBlurHorizontalTexture(0),
-	mBloomBlurVerticalFrameBuffer(0),
-	mBloomBlurVerticalTexture(0),
+	//mBloomMaskFrameBuffer(0),
+	//mBloomMaskTexture(0),
+	//mBloomMaskRenderBuffer(0),
+	//mBloomBlurHorizontalFrameBuffer(0),
+	//mBloomBlurHorizontalTexture(0),
+	//mBloomBlurVerticalFrameBuffer(0),
+	//mBloomBlurVerticalTexture(0),
 	mTextureUnit(static_cast<int>(TextureUnit::FrameBuffer))
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
@@ -113,79 +113,79 @@ FrameBuffer::FrameBuffer(int width, int height, int subsamples) :
 
 
 
-	// Bloom mask frame buffer (downsized by 1/2)
-	glGenFramebuffers(1, &mBloomMaskFrameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, mBloomMaskFrameBuffer);
-	glGenTextures(1, &mBloomMaskTexture);
-	glBindTexture(GL_TEXTURE_2D, mBloomMaskTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width / 2, height / 2, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mBloomMaskTexture, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//// Bloom mask frame buffer (downsized by 1/2)
+	//glGenFramebuffers(1, &mBloomMaskFrameBuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, mBloomMaskFrameBuffer);
+	//glGenTextures(1, &mBloomMaskTexture);
+	//glBindTexture(GL_TEXTURE_2D, mBloomMaskTexture);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width / 2, height / 2, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mBloomMaskTexture, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
-	//// Create a renderbuffer object for depth and stencil attachment (downsized by 1/2)
-	//glGenRenderbuffers(1, &mBloomMaskRenderBuffer);
-	//glBindRenderbuffer(GL_RENDERBUFFER, mBloomMaskRenderBuffer);
-	//// Create a depth and stencil render buffer object
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width / 2, height / 2);
-	//// Attatch render buffer object
-	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mBloomMaskRenderBuffer);
+	////// Create a renderbuffer object for depth and stencil attachment (downsized by 1/2)
+	////glGenRenderbuffers(1, &mBloomMaskRenderBuffer);
+	////glBindRenderbuffer(GL_RENDERBUFFER, mBloomMaskRenderBuffer);
+	////// Create a depth and stencil render buffer object
+	////glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width / 2, height / 2);
+	////// Attatch render buffer object
+	////glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mBloomMaskRenderBuffer);
 
-	// Check for frame buffer's completion
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Framebuffer is not complete!" << std::endl;
-	}
+	//// Check for frame buffer's completion
+	//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	//{
+	//	std::cout << "Framebuffer is not complete!" << std::endl;
+	//}
 
-	// Bind back to the default framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//// Bind back to the default framebuffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	// Bloom horizontal blur frame buffer
-	glGenFramebuffers(1, &mBloomBlurHorizontalFrameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurHorizontalFrameBuffer);
-	glGenTextures(1, &mBloomBlurHorizontalTexture);
-	glBindTexture(GL_TEXTURE_2D, mBloomBlurHorizontalTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width / 4, height / 4, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mBloomBlurHorizontalTexture, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	// Check for frame buffer's completion
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Framebuffer is not complete!" << std::endl;
-	}
+	//// Bloom horizontal blur frame buffer
+	//glGenFramebuffers(1, &mBloomBlurHorizontalFrameBuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurHorizontalFrameBuffer);
+	//glGenTextures(1, &mBloomBlurHorizontalTexture);
+	//glBindTexture(GL_TEXTURE_2D, mBloomBlurHorizontalTexture);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width / 4, height / 4, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mBloomBlurHorizontalTexture, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//// Check for frame buffer's completion
+	//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	//{
+	//	std::cout << "Framebuffer is not complete!" << std::endl;
+	//}
 
-	// Bind back to the default framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//// Bind back to the default framebuffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 
-	// Bloom vertical blur frame buffer
-	glGenFramebuffers(1, &mBloomBlurVerticalFrameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurVerticalFrameBuffer);
-	glGenTextures(1, &mBloomBlurVerticalTexture);
-	glBindTexture(GL_TEXTURE_2D, mBloomBlurVerticalTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width / 4, height / 4, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mBloomBlurVerticalTexture, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	// Check for frame buffer's completion
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Framebuffer is not complete!" << std::endl;
-	}
+	//// Bloom vertical blur frame buffer
+	//glGenFramebuffers(1, &mBloomBlurVerticalFrameBuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurVerticalFrameBuffer);
+	//glGenTextures(1, &mBloomBlurVerticalTexture);
+	//glBindTexture(GL_TEXTURE_2D, mBloomBlurVerticalTexture);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width / 4, height / 4, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mBloomBlurVerticalTexture, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//// Check for frame buffer's completion
+	//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	//{
+	//	std::cout << "Framebuffer is not complete!" << std::endl;
+	//}
 
-	// Bind back to the default framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//// Bind back to the default framebuffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 FrameBuffer::~FrameBuffer()
@@ -202,18 +202,18 @@ FrameBuffer::~FrameBuffer()
 	glDeleteTextures(1, &mTexture);
 	//glDeleteRenderbuffers(1, &mRenderBuffer);
 
-	glDeleteFramebuffers(1, &mBloomMaskFrameBuffer);
-	glDeleteTextures(1, &mBloomMaskTexture);
-	glDeleteRenderbuffers(1, &mBloomMaskRenderBuffer);
+	//glDeleteFramebuffers(1, &mBloomMaskFrameBuffer);
+	//glDeleteTextures(1, &mBloomMaskTexture);
+	//glDeleteRenderbuffers(1, &mBloomMaskRenderBuffer);
 
-	glDeleteFramebuffers(1, &mBloomBlurHorizontalFrameBuffer);
-	glDeleteTextures(1, &mBloomBlurHorizontalTexture);
+	//glDeleteFramebuffers(1, &mBloomBlurHorizontalFrameBuffer);
+	//glDeleteTextures(1, &mBloomBlurHorizontalTexture);
 
-	glDeleteFramebuffers(1, &mBloomBlurVerticalFrameBuffer);
-	glDeleteTextures(1, &mBloomBlurVerticalTexture);
+	//glDeleteFramebuffers(1, &mBloomBlurVerticalFrameBuffer);
+	//glDeleteTextures(1, &mBloomBlurVerticalTexture);
 }
 
-void FrameBuffer::SetActive()
+void FrameBuffer::SetActive() const
 {
 	// Draw scene as normal in the multisampled buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, mMSAAFrameBuffer);
@@ -232,47 +232,48 @@ void FrameBuffer::End(int width, int height)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFrameBuffer);
 	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-	// Bind to bloom mask frame buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, mBloomMaskFrameBuffer);
-	// change viewport to accomodate the downsampled buffer (1/2 size)
-	glViewport(0, 0, width / 2, height / 2);
-	Draw(width, height, mAssetManager->LoadShader("bloomMask"), mTexture);
+	//// Bind to bloom mask frame buffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, mBloomMaskFrameBuffer);
+	//// change viewport to accomodate the downsampled buffer (1/2 size)
+	//glViewport(0, 0, width / 2, height / 2);
+	//Draw(width, height, mAssetManager->LoadShader("bloomMask"), mTexture);
 
-	// Bind to bloom horizontal blur frame buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurHorizontalFrameBuffer);
-	// change viewport to accomodate the downsampled buffer (1/4 size)
-	glViewport(0, 0, width / 4, height / 4);
-	// Blur gaussian horizontal blur
-	Draw(width, height, mAssetManager->LoadShader("bloomBlurHorizontal"), mBloomMaskTexture);
+	//// Bind to bloom horizontal blur frame buffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurHorizontalFrameBuffer);
+	//// change viewport to accomodate the downsampled buffer (1/4 size)
+	//glViewport(0, 0, width / 4, height / 4);
+	//// Blur gaussian horizontal blur
+	//Draw(width, height, mAssetManager->LoadShader("bloomBlurHorizontal"), mBloomMaskTexture);
 
-	// Bind to bloom vertical blur frame buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurVerticalFrameBuffer);
-	// change viewport to accomodate the downsampled buffer (1/4 size)
-	glViewport(0, 0, width / 4, height / 4);
-	// Blur gaussian vertical blur
-	Draw(width, height, mAssetManager->LoadShader("bloomBlurVertical"), mBloomBlurHorizontalTexture);
+	//// Bind to bloom vertical blur frame buffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, mBloomBlurVerticalFrameBuffer);
+	//// change viewport to accomodate the downsampled buffer (1/4 size)
+	//glViewport(0, 0, width / 4, height / 4);
+	//// Blur gaussian vertical blur
+	//Draw(width, height, mAssetManager->LoadShader("bloomBlurVertical"), mBloomBlurHorizontalTexture);
 
 	// Bind back to default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// Reset viewport size
 	glViewport(0, 0, width, height);
-	// Draw to the screen and finish with hdr and gamma correction
 
-	Shader* shader = mAssetManager->LoadShader("hdrGamma");
+
+	// Draw to the screen and finish with hdr and gamma correction
+	//Shader* shader = mAssetManager->LoadShader("hdrGamma");
 
 	// Disable depth test so screen quad isn't discarded
 	glDisable(GL_DEPTH_TEST);
 
-	shader->SetActive();
+	mShader->SetActive();
 
-	shader->SetInt("screenTexture", mTextureUnit);
+	mShader->SetInt("screenTexture", mTextureUnit);
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, mTexture);
 
-	int blurUnit = mTextureUnit + 3;
-	shader->SetInt("blurTexture", blurUnit);
-	glActiveTexture(GL_TEXTURE0 + blurUnit);
-	glBindTexture(GL_TEXTURE_2D, mBloomBlurVerticalTexture);
+	//int blurUnit = mTextureUnit + 3;
+	//mShader->SetInt("blurTexture", blurUnit);
+	//glActiveTexture(GL_TEXTURE0 + blurUnit);
+	//glBindTexture(GL_TEXTURE_2D, mBloomBlurVerticalTexture);
 
 
 	mVertexBuffer->Draw();
@@ -293,10 +294,7 @@ void FrameBuffer::Draw(int width, int height, Shader* shader, int texture)
 	// Activate texture unit
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 	glBindTexture(GL_TEXTURE_2D, texture);
-
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 	mVertexBuffer->Draw();
 

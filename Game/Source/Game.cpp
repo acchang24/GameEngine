@@ -70,7 +70,7 @@ Game::Game() :
 	//mContext(nullptr),
 	mAssetManager(nullptr),
 	mCamera(nullptr),
-	mFrameBuffer(nullptr),
+	//mFrameBuffer(nullptr),
 	mSkybox(nullptr),
 	mLights(nullptr),
 	mShadowMap(nullptr),
@@ -314,8 +314,10 @@ bool Game::Init()
 	hdrGammaShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
-	mFrameBuffer = new FrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES);
-	mFrameBuffer->SetShader(copyScreenShader);
+	mRenderer->SetFrameBufferShader(mRenderer->GetMainFrameBuffer(), hdrGammaShader);
+
+	//mFrameBuffer = new FrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES);
+	//mFrameBuffer->SetShader(hdrGammaShader);
 
 	// Skybox
 	std::vector<std::string> faceNames
@@ -559,7 +561,7 @@ void Game::Shutdown()
 
 	delete mCamera;
 
-	delete mFrameBuffer;
+	//delete mFrameBuffer;
 
 	delete mSkybox;
 
@@ -804,10 +806,13 @@ void Game::Render()
 
 	mLights->SetActive();
 
-	// Specify color to clear the screen
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	// Clear the color buffer, depth buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//// Specify color to clear the screen
+	//glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	//// Clear the color buffer, depth buffer
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+	mRenderer->BeginFrame();
 
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
@@ -830,14 +835,14 @@ void Game::Render()
 		////PROFILE_SCOPE(RENDER_NORMAL_SCENE);
 
 		//// Uncomment this to draw to offscreen frame buffer instead
-		mFrameBuffer->SetActive();
+		//mFrameBuffer->SetActive();
 		
 
 		//// Render scene as normal
 		RenderScene();
 
-		//// Uncomment this if using off screen frame buffer
-		mFrameBuffer->End(WINDOW_WIDTH, WINDOW_HEIGHT);
+		////// Uncomment this if using off screen frame buffer
+		//mFrameBuffer->End(WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 	//glViewport(0, 0, windowWidth, windowHeight);
