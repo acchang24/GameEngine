@@ -15,6 +15,8 @@ public:
 	// De-allocates any resources from SDL
 	void Shutdown();
 
+	void EndFrame();
+
 	// Static function that triggers everytime the window is resized.
 	static int ResizeWindowEventWatcher(void* data, SDL_Event* event);
 

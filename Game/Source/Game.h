@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
 
+class Renderer3D;
 class Shader;
 class Texture;
 class Entity;
@@ -58,11 +59,13 @@ private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
 
-	// SDL window used for the game
-	SDL_Window* mWindow;
+	Renderer3D* mRenderer;
 
-	// OpenGL context
-	SDL_GLContext mContext;
+	//// SDL window used for the game
+	//SDL_Window* mWindow;
+
+	//// OpenGL context
+	//SDL_GLContext mContext;
 
 	// Pointer to a (static) asset manager
 	AssetManager* mAssetManager;

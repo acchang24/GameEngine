@@ -18,6 +18,7 @@
 #include "Graphics/MaterialCubeMap.h"
 #include "Graphics/Mesh.h"
 #include "Graphics/Model.h"
+#include "Graphics/Renderer3D.h"
 #include "Graphics/Shader.h"
 #include "Graphics/ShadowMap.h"
 #include "Graphics/Skybox.h"
@@ -45,27 +46,28 @@ int SUB_SAMPLES = 4;
 int VSYNC = 1;
 const char* TITLE = "Game";
 
-// Static function that triggers everytime the window is resized.
-static int ResizeWindowEventWatcher(void* data, SDL_Event* event) 
-{
-	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) 
-	{
-		SDL_Window* win = SDL_GetWindowFromID(event->window.windowID);
-		if (win == data) 
-		{
-			SDL_GetWindowSize(win, &WINDOW_WIDTH, &WINDOW_HEIGHT);
-			printf("Window width: %i, Window height: %i\n", WINDOW_WIDTH, WINDOW_HEIGHT);
-			glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-			Camera::SetProjection(static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT));
-		}
-	}
-	return 0;
-}
+//// Static function that triggers everytime the window is resized.
+//static int ResizeWindowEventWatcher(void* data, SDL_Event* event) 
+//{
+//	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) 
+//	{
+//		SDL_Window* win = SDL_GetWindowFromID(event->window.windowID);
+//		if (win == data) 
+//		{
+//			SDL_GetWindowSize(win, &WINDOW_WIDTH, &WINDOW_HEIGHT);
+//			printf("Window width: %i, Window height: %i\n", WINDOW_WIDTH, WINDOW_HEIGHT);
+//			glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+//			Camera::SetProjection(static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT));
+//		}
+//	}
+//	return 0;
+//}
 
 Game::Game() :
 	mPrevKeyInputs(),
-	mWindow(nullptr),
-	mContext(nullptr),
+	mRenderer(nullptr),
+	//mWindow(nullptr),
+	//mContext(nullptr),
 	mAssetManager(nullptr),
 	mCamera(nullptr),
 	mFrameBuffer(nullptr),
@@ -93,121 +95,124 @@ bool Game::Init()
 	mJobManager = JobManager::Get();
 	mJobManager->Begin();
 
-	// Inititialize SDL for video and audio, and check if successful
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
-	{
-		std::cout << "Could not initialize SDL: " << SDL_GetError() << "\n";
-		return false;
-	}
+	mRenderer = Renderer3D::Get();
+	mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, SDL_TRUE, "Game");
 
-	// Load default OpenGL library
-	SDL_GL_LoadLibrary(NULL);
+	//// Inititialize SDL for video and audio, and check if successful
+	//if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+	//{
+	//	std::cout << "Could not initialize SDL: " << SDL_GetError() << "\n";
+	//	return false;
+	//}
 
-	// Set OpenGL attributes
-	// Use core OpenGL profile
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	// Tell OpenGL to use hardware acceleration
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	// Specify OpenGL 4.5 context
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-	// Enable double buffering
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	// Request a color buffer with 8 bits per RGBA channel
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	// Request a depth buffer with 24 bits
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	// Multisampling
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, SUB_SAMPLES);
+	//// Load default OpenGL library
+	//SDL_GL_LoadLibrary(NULL);
 
-	// Create the window
-	if (IS_FULLSCREEN)
-	{
-		mWindow = SDL_CreateWindow(
-			TITLE,
-			SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED,
-			0,
-			0,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP
-		);
-	}
-	else
-	{
-		mWindow = SDL_CreateWindow(
-			TITLE,
-			SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED,
-			WINDOW_WIDTH,
-			WINDOW_HEIGHT,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-		);
-	}
+	//// Set OpenGL attributes
+	//// Use core OpenGL profile
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	//// Tell OpenGL to use hardware acceleration
+	//SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	//// Specify OpenGL 4.5 context
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	//// Enable double buffering
+	//SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	//// Request a color buffer with 8 bits per RGBA channel
+	//SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	//SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	//// Request a depth buffer with 24 bits
+	//SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	//// Multisampling
+	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, SUB_SAMPLES);
 
-	// Check if window creation was successful
-	if (!mWindow)
-	{
-		std::cout << "Failed to create a window " << SDL_GetError() << "\n";
-		return false;
-	}
+	//// Create the window
+	//if (IS_FULLSCREEN)
+	//{
+	//	mWindow = SDL_CreateWindow(
+	//		TITLE,
+	//		SDL_WINDOWPOS_UNDEFINED,
+	//		SDL_WINDOWPOS_UNDEFINED,
+	//		0,
+	//		0,
+	//		SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP
+	//	);
+	//}
+	//else
+	//{
+	//	mWindow = SDL_CreateWindow(
+	//		TITLE,
+	//		SDL_WINDOWPOS_CENTERED,
+	//		SDL_WINDOWPOS_CENTERED,
+	//		WINDOW_WIDTH,
+	//		WINDOW_HEIGHT,
+	//		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+	//	);
+	//}
 
-	// Create OpenGL context using the new window
-	mContext = SDL_GL_CreateContext(mWindow);
+	//// Check if window creation was successful
+	//if (!mWindow)
+	//{
+	//	std::cout << "Failed to create a window " << SDL_GetError() << "\n";
+	//	return false;
+	//}
 
-	if (mContext == NULL)
-	{
-		std::cout << "Failed to create an OpenGL context " << SDL_GetError() << "\n";
-		return false;
-	}
+	//// Create OpenGL context using the new window
+	//mContext = SDL_GL_CreateContext(mWindow);
 
-	// Obtain API function pointers for OpenGL/Initialize GLAD
-	gladLoadGLLoader(SDL_GL_GetProcAddress);
+	//if (mContext == NULL)
+	//{
+	//	std::cout << "Failed to create an OpenGL context " << SDL_GetError() << "\n";
+	//	return false;
+	//}
 
-	std::cout << "OpenGL loaded\n";
-	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
-	std::cout << "Graphics: " << glGetString(GL_RENDERER) << "\n";
-	std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
+	//// Obtain API function pointers for OpenGL/Initialize GLAD
+	//gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-	// Enable v-sync by default
-	SDL_GL_SetSwapInterval(VSYNC);
+	//std::cout << "OpenGL loaded\n";
+	//std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+	//std::cout << "Graphics: " << glGetString(GL_RENDERER) << "\n";
+	//std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
 
-	// Enable relative mouse mode
-	SDL_SetRelativeMouseMode(mMouseCaptured);
-	// Clear any saved values
-	SDL_GetRelativeMouseState(nullptr, nullptr);
-	
-	// Callback function for when window is resized
-	SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
+	//// Enable v-sync by default
+	//SDL_GL_SetSwapInterval(VSYNC);
 
-	// Enable z-buffering (depth testing)
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
+	//// Enable relative mouse mode
+	//SDL_SetRelativeMouseMode(mMouseCaptured);
+	//// Clear any saved values
+	//SDL_GetRelativeMouseState(nullptr, nullptr);
+	//
+	//// Callback function for when window is resized
+	//SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
 
-	// Enable face culling
-	glEnable(GL_CULL_FACE);
+	//// Enable z-buffering (depth testing)
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LESS);
 
-	// Enable anti-aliasing
-	glEnable(GL_MULTISAMPLE);
+	//// Enable face culling
+	//glEnable(GL_CULL_FACE);
 
-	//// Enable blending
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//// Enable anti-aliasing
+	//glEnable(GL_MULTISAMPLE);
 
-	// Set viewport
-	if (IS_FULLSCREEN)
-	{
-		SDL_DisplayMode dm{};
+	////// Enable blending
+	////glEnable(GL_BLEND);
+	////glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		SDL_GetDesktopDisplayMode(0, &dm);
+	//// Set viewport
+	//if (IS_FULLSCREEN)
+	//{
+	//	SDL_DisplayMode dm{};
 
-		WINDOW_WIDTH = dm.w;
-		WINDOW_HEIGHT = dm.h;
-	}
-	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	//	SDL_GetDesktopDisplayMode(0, &dm);
+
+	//	WINDOW_WIDTH = dm.w;
+	//	WINDOW_HEIGHT = dm.h;
+	//}
+	//glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	
 
 
@@ -538,12 +543,13 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
-	// Delete the OpenGL context
-	SDL_GL_DeleteContext(mContext);
-	// Destroy the window
-	SDL_DestroyWindow(mWindow);
-	// Quit SDL
-	SDL_Quit();
+	mRenderer->Shutdown();
+	//// Delete the OpenGL context
+	//SDL_GL_DeleteContext(mContext);
+	//// Destroy the window
+	//SDL_DestroyWindow(mWindow);
+	//// Quit SDL
+	//SDL_Quit();
 
 	for (auto e : mEntities)
 	{
@@ -836,8 +842,9 @@ void Game::Render()
 	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 	//glViewport(0, 0, windowWidth, windowHeight);
 
-	// Swap the buffers
-	SDL_GL_SwapWindow(mWindow);
+	mRenderer->EndFrame();
+	//// Swap the buffers
+	//SDL_GL_SwapWindow(mWindow);
 }
 
 void Game::RenderScene()

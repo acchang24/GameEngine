@@ -23,7 +23,7 @@ Renderer3D::Renderer3D() :
 
 Renderer3D::~Renderer3D()
 {
-	std::cout << "Delete Renderer3D\n";
+	std::cout << "Deleted Renderer3D\n";
 }
 
 Renderer3D* Renderer3D::Get()
@@ -164,12 +164,19 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 
 void Renderer3D::Shutdown()
 {
+	std::cout << "Shutting down Renderer3D\n";
 	// Delete the OpenGL context
 	SDL_GL_DeleteContext(mContext);
 	// Destroy the window
 	SDL_DestroyWindow(mWindow);
 	// Quit SDL
 	SDL_Quit();
+}
+
+void Renderer3D::EndFrame()
+{
+	// Swap the buffers
+	SDL_GL_SwapWindow(mWindow);
 }
 
 int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
