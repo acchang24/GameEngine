@@ -30,10 +30,10 @@ public:
 	// buffers.
 	// @param - int for the screen's width
 	// @param - int for the screen's height
-	void End(int width, int height);
+	void End();
 
 	// Draws the frame buffer's off screen quad
-	void Draw(int width, int height, Shader* shader, int texture);
+	void Draw(int texture);
 
 	// Gets the frame buffer's shader
 	// @return - Shader* for the frame buffer's shader
@@ -67,12 +67,12 @@ private:
 	// Render buffer for depth and stencil attatchments as a reference
 	unsigned int mRenderBuffer;
 
-	//// Frame buffer used for bloom mask
-	//unsigned int mBloomMaskFrameBuffer;
-	//// Bloom mask texture downsized by 1/2 that masks off dark spots and shows only bright areas
-	//unsigned int mBloomMaskTexture;
-	//// Bloom mask render buffer
-	//unsigned int mBloomMaskRenderBuffer;
+	// Frame buffer used for bloom mask
+	unsigned int mBloomMaskFrameBuffer;
+	// Bloom mask texture downsized by 1/2 that masks off dark spots and shows only bright areas
+	unsigned int mBloomMaskTexture;
+	// Bloom mask render buffer
+	unsigned int mBloomMaskRenderBuffer;
 
 	//unsigned int mBloomBlurHorizontalFrameBuffer;
 	//unsigned int mBloomBlurHorizontalTexture;
@@ -82,4 +82,7 @@ private:
 
 	// Int for the frame buffer's texture unit, this is initialized to 11 in the initializer list
 	int mTextureUnit;
+
+	int mWidth;
+	int mHeight;
 };

@@ -193,7 +193,7 @@ void Renderer3D::BeginFrame()
 void Renderer3D::EndFrame()
 {
 	//// Uncomment this if using off screen frame buffer
-	mMainFrameBuffer->End(s_WindowWidth, s_WindowHeight);
+	mMainFrameBuffer->End();
 
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
