@@ -89,7 +89,7 @@ void FrameBufferMultiSampled::SetActive() const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void FrameBufferMultiSampled::End(unsigned int texture)
+void FrameBufferMultiSampled::Draw(unsigned int texture)
 {
 	// Bind back to default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

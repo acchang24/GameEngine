@@ -19,8 +19,22 @@ public:
 	// De-allocates any resources from SDL
 	void Shutdown();
 
+	// Checks for window resize, clears the screen, and clears the color and depth buffer bits
+	void ClearBuffers();
 
-	void BeginFrame();
+	// Set draw calls to an offscreen frame buffer. Use this for post-processing.
+	// This will set the main multisampled frame buffer to active, and all draw
+	// calls will be made to the frame buffers. Any mesh rendering should be drawn
+	// after this is called in the Game class.
+	void SetFrameBuffer();
+
+	// Draws to any frame buffers used. This will first blit the main multisampled frame buffer
+	// to its non multisampled one. Any additional draws to other frame buffers will happen after.
+	// This will end with the main multisampled frame buffer being drawn to the default frame buffer.
+	// This should be called after any mesh rendering draw calls finish in the Game class.
+	void DrawFrameBuffers();
+
+	// Swap the buffers and present to the screen
 	void EndFrame();
 
 	// Creates a frame buffer for the renderer to use
@@ -41,9 +55,6 @@ public:
 
 	// Static function that triggers everytime the window is resized.
 	static int ResizeWindowEventWatcher(void* data, SDL_Event* event);
-
-	// Toggles capturing the mouse in the window
-	static void ToggleMouseCapture();
 
 	// Resizes all the frame buffers to the new dimensions
 	void ResizeFrameBuffers();

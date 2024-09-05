@@ -3,17 +3,18 @@
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
 
+class AssetManager;
+class Camera;
+class Entity;
+class JobManager;
+class Lights;
 class Renderer3D;
 class Shader;
-class Texture;
-class Entity;
-class Camera;
-class AssetManager;
-class Skybox;
-class Lights;
 class ShadowMap;
-class JobManager;
+class Skybox;
+class Texture;
 
+// Game class handles all of the game logic. Game specific code should be added to this class
 class Game
 {
 public:
@@ -24,15 +25,22 @@ public:
 	// @return - Returns true if successfully initialized, false if not.
 	bool Init();
 
-	// De-allocates any resources and end the game.
+	// De-allocates any resources and ends the game.
 	void Shutdown();
 
-	// Runs the main game loop.
+	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
+	bool LoadGameData();
+
+	// Runs the main game loop. This will process any user inputs, 
+	// updates the game, and renders an output to the screen
 	void Run();
 
 	// Processes any keyboard, mouse, or controller inputs.
 	// Typically called near the beginning of the render loop.
 	void ProcessInput();
+
+	// Processes and handles any mouse movement, clicks, and scrolls
+	void ProcessMouseInput();
 
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames
@@ -45,8 +53,6 @@ public:
 
 	void RenderScene(Shader* shader);
 
-	void ProcessMouseInput();
-
 	// Adds an entity to the game's vector of entities
 	// @param - Entity* for the new entity
 	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
@@ -58,10 +64,14 @@ private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
 
+	// Renderer for graphics output
 	Renderer3D* mRenderer;
 
-	// Pointer to a (static) asset manager
+	// Pointer to a static asset manager
 	AssetManager* mAssetManager;
+
+	// Pointer to a static JobManager
+	JobManager* mJobManager;
 
 	// The game's camera
 	Camera* mCamera;
@@ -75,20 +85,20 @@ private:
 	// ShadowMap for shadows
 	ShadowMap* mShadowMap;
 
-	// Pointer to a static JobManager
-	JobManager* mJobManager;
-
+	// Mouse x-axis movement
 	double mMousePosX;
+	// Mouse y-axis movement
 	double mMousePosY;
-
-	bool mFirstMouse;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;
 
+	// HDR toggle
 	bool hdr;
 
+	// Bloom toggle
 	bool bloom;
 
+	// SDL_bool for if the mouse is captured by the screen
 	SDL_bool mMouseCaptured;
 };

@@ -2,6 +2,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
+class AssetManager;
 class Entity;
 
 // Game class handles all of the game logic. Game specific code should be added to the class
@@ -15,22 +16,22 @@ public:
 	// @return - Returns true if successfully initialized, false if not.
 	bool Init();
 
-	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
-	// Enable any OpenGL functionality at the end
-	bool SetupOpenGL();
+	// De-allocates any resources and ends the game.
+	void Shutdown();
 
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
 	bool LoadGameData();
 
-	// De-allocates any resources and ends the game.
-	void Shutdown();
-
-	// Runs the main game loop.
+	// Runs the main game loop. This will process any user inputs, 
+	// updates the game, and renders an output to the screen
 	void Run();
 
 	// Processes any keyboard, mouse, or controller inputs.
 	// Typically called near the beginning of the render loop.
 	void ProcessInput();
+
+	// Processes and handles any mouse movement, clicks, and scrolls
+	void ProcessMouseInput();
 	
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames
@@ -39,24 +40,31 @@ public:
 	// Sets all the buffers, swap chain, textures, vertex array objects, and renders to screen
 	void Render();
 
-private:
-	// std::vector of game entities
-	std::vector<Entity*> mEntities;
+	// Adds an entity to the game's vector of entities
+	// @param - Entity* for the new entity
+	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
 
+private:
 	// Array of previous key inputs to see if they are pressed or not
 	bool mPrevKeyInputs[256];
 
-	// SDL window used for the game
-	SDL_Window* mWindow;
+	// std::vector of game entities
+	std::vector<Entity*> mEntities;
 
-	// OpenGL context
-	SDL_GLContext mContext;
+	// Renderer for graphics output
+	// TODO: Add a pointer to a Renderer2D or Renderer3D here
 
-	// Game's mouse position along X-axis
+	// Pointer to a static asset manager
+	AssetManager* mAssetManager;
+
+	// Mouse x-axis movement
 	double mMousePosX;
-	// Game's mouse position along Y-axis
+	// Mouse y-axis movement
 	double mMousePosY;
 
-	// Bool for the games's running state
+	// Bool to check if the game is running.
 	bool mIsRunning;
+
+	// SDL_bool for if the mouse is captured by the screen
+	SDL_bool mMouseCaptured;
 };

@@ -5,6 +5,7 @@
 class Random
 {
 public:
+	// Initializes a Mersenne Twister 19937 pseudo-random number generator
 	static void Init();
 
 	// Seed the generator with a specified int

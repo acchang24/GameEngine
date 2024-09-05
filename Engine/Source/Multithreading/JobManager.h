@@ -45,7 +45,7 @@ public:
 		std::thread* mThread;
 	};
 
-	// Loops through workers array and calls Worker::Begin() on each worker
+	// Starts the job manager by looping through workers array and calls Worker::Begin() on each worker
 	void Begin();
 
 	// Sets the shutdown signal and loops through workers array and calls Worker::End() on each worker
@@ -59,7 +59,8 @@ public:
 	// Tells this thread to wait until the jobs are finished
 	void WaitForJobs();
 
-	// Getter for JobManager instance
+	// Returns the instance of an JobManager
+	// @return - JobManager* for the instance of an JobManager
 	static JobManager* Get();
 
 private:

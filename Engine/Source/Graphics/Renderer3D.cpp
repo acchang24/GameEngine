@@ -9,8 +9,6 @@
 static int s_WindowWidth;
 // Window height
 static int s_WindowHeight;
-// SDL_bool for if the mouse is captured within the renderer's window
-static SDL_bool s_MouseCaptured;
 // Bool for whenever the window is resized
 static bool s_Resized = false;
 
@@ -26,7 +24,6 @@ Renderer3D::Renderer3D() :
 	mVSync(1),
 	mIsFullScreen(false)
 {
-
 }
 
 Renderer3D::~Renderer3D()
@@ -48,7 +45,6 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mNumSubsamples = subsamples;
 	mVSync = vsync;
 	mIsFullScreen = fullscreen;
-	s_MouseCaptured = mouseCaptured;
 	mWindowTitle = title;
 
 	// Inititialize SDL for video and audio, and check if successful
@@ -134,7 +130,7 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	SDL_GL_SetSwapInterval(mVSync);
 
 	// Enable relative mouse mode
-	SDL_SetRelativeMouseMode(s_MouseCaptured);
+	SDL_SetRelativeMouseMode(mouseCaptured);
 	// Clear any saved values
 	SDL_GetRelativeMouseState(nullptr, nullptr);
 
@@ -192,7 +188,7 @@ void Renderer3D::Shutdown()
 	delete mBloomBlurVerticalFrameBuffer;
 }
 
-void Renderer3D::BeginFrame()
+void Renderer3D::ClearBuffers()
 {
 	if (s_Resized)
 	{
@@ -203,24 +199,29 @@ void Renderer3D::BeginFrame()
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	// Clear the color buffer, depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
+void Renderer3D::SetFrameBuffer()
+{
 	mMainFrameBuffer->SetActive();
 }
 
-void Renderer3D::EndFrame()
+void Renderer3D::DrawFrameBuffers()
 {
 	mMainFrameBuffer->BlitBuffers();
 
 	// Use the blitted texture and mask off dark spots
-	mBloomMaskFrameBuffer->End(mMainFrameBuffer->GetTexture());
+	mBloomMaskFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Use the masked off texture and blur horizontally
-	mBloomBlurHorizontalFrameBuffer->End(mBloomMaskFrameBuffer->GetTexture());
+	mBloomBlurHorizontalFrameBuffer->Draw(mBloomMaskFrameBuffer->GetTexture());
 	// Use the horizontally blurred texture to blur vertically
-	mBloomBlurVerticalFrameBuffer->End(mBloomBlurHorizontalFrameBuffer->GetTexture());
+	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
 	// Uses the blitted texture and the blurred texture to additively blend them for final image
-	mMainFrameBuffer->End(mBloomBlurVerticalFrameBuffer->GetTexture());
+	mMainFrameBuffer->Draw(mBloomBlurVerticalFrameBuffer->GetTexture());
+}
 
-	// Swap the buffers
+void Renderer3D::EndFrame()
+{
 	SDL_GL_SwapWindow(mWindow);
 }
 
@@ -255,23 +256,6 @@ int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
 		}
 	}
 	return 0;
-}
-
-void Renderer3D::ToggleMouseCapture()
-{
-	if (s_MouseCaptured == SDL_TRUE)
-	{
-		s_MouseCaptured = SDL_FALSE;
-	}
-	else
-	{
-		s_MouseCaptured = SDL_TRUE;
-	}
-
-	// Enable relative mouse mode
-	SDL_SetRelativeMouseMode(s_MouseCaptured);
-	// Clear any saved values
-	SDL_GetRelativeMouseState(nullptr, nullptr);
 }
 
 void Renderer3D::ResizeFrameBuffers()

@@ -29,12 +29,9 @@ public:
 	// this call.
 	virtual void SetActive() const;
 
-	// Binds this frame then adjusts the viewport so it matches this framebuffer's size.
+	// Binds this framebuffer then adjusts the viewport so it matches the framebuffer's size.
 	// It then disables depth test, sets the shader to active, and draws to the framebuffer.
-	virtual void End(unsigned int texture);
-
-	// Draws the frame buffer's off screen quad
-	void Draw(int texture);
+	virtual void Draw(unsigned int texture);
 
 	// Gets the frame buffer's shader
 	// @return - Shader* for the frame buffer's shader
@@ -44,14 +41,9 @@ public:
 	// @param - Shader* for the new shader
 	void SetShader(Shader* s) { mShader = s; }
 
-	unsigned int GetFrameBufferObjectID() const { return mFrameBuffer; }
-
 	// Returns the offscreen color attachment texture
 	// @return - unsigned int for the id of the color attachment texture
 	unsigned int GetTexture() const { return mTexture; }
-
-	int GetWidth() const { return mWidth; }
-	int GetHeight() const { return mHeight; }
 
 protected:
 	// The shader used to help draw the frame buffer's quad

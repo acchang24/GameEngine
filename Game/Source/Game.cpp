@@ -52,14 +52,13 @@ Game::Game() :
 	mPrevKeyInputs(),
 	mRenderer(nullptr),
 	mAssetManager(nullptr),
+	mJobManager(nullptr),
 	mCamera(nullptr),
 	mSkybox(nullptr),
 	mLights(nullptr),
 	mShadowMap(nullptr),
-	mJobManager(nullptr),
 	mMousePosX(0),
 	mMousePosY(0),
-	mFirstMouse(true),
 	mIsRunning(true),
 	hdr(false),
 	bloom(false),
@@ -73,14 +72,13 @@ Game::~Game()
 
 bool Game::Init()
 {
-	// Generate random seed
 	Random::Init();
 
 	mJobManager = JobManager::Get();
 	mJobManager->Begin();
 
 	mRenderer = Renderer3D::Get();
-	mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, SDL_TRUE, "Game");
+	mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, mMouseCaptured, "Game");
 
 	mAssetManager = AssetManager::Get();
 
@@ -432,6 +430,11 @@ void Game::Shutdown()
 	mAssetManager = nullptr;
 }
 
+bool Game::LoadGameData()
+{
+	return true;
+}
+
 void Game::Run()
 {
 	std::chrono::high_resolution_clock::time_point frameStart = std::chrono::high_resolution_clock::now();
@@ -470,7 +473,10 @@ void Game::ProcessInput()
 		}
 	}
 
-	ProcessMouseInput();
+	if (mMouseCaptured == SDL_TRUE)
+	{
+		ProcessMouseInput();
+	}
 
 	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
 
@@ -539,6 +545,8 @@ void Game::ProcessInput()
 		if (mMouseCaptured == SDL_TRUE)
 		{
 			mMouseCaptured = SDL_FALSE;
+			mMousePosX = 0;
+			mMousePosY = 0;
 		}
 		else
 		{
@@ -641,6 +649,16 @@ void Game::ProcessInput()
 	mPrevKeyInputs[SDL_SCANCODE_M] = keyboardState[SDL_SCANCODE_M];
 }
 
+void Game::ProcessMouseInput()
+{
+	// Calculate mouse movement
+	int x = 0;
+	int y = 0;
+	SDL_GetRelativeMouseState(&x, &y);
+	mMousePosX = x * MOUSE_SENSITIVITY;
+	mMousePosY = -y * MOUSE_SENSITIVITY;
+}
+
 void Game::Update(float deltaTime)
 {
 	PROFILE_SCOPE(UPDATE);
@@ -663,7 +681,9 @@ void Game::Render()
 
 	mLights->SetActive();
 
-	mRenderer->BeginFrame();
+	mRenderer->ClearBuffers();
+
+	mRenderer->SetFrameBuffer();
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
@@ -686,6 +706,7 @@ void Game::Render()
 		RenderScene();
 
 	}
+	mRenderer->DrawFrameBuffers();
 	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 	//glViewport(0, 0, windowWidth, windowHeight);
 
@@ -712,22 +733,4 @@ void Game::RenderScene(Shader* shader)
 	}
 
 	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
-}
-
-void Game::ProcessMouseInput()
-{
-	if (mFirstMouse)
-	{
-		std::cout << mMousePosX << " " << mMousePosY << "\n";
-		mMousePosX = 0.0;
-		mMousePosY = 0.0;
-		mFirstMouse = false;
-	}
-
-	// Calculate mouse movement
-	int x = 0;
-	int y = 0;
-	SDL_GetRelativeMouseState(&x, &y);
-	mMousePosX = x * MOUSE_SENSITIVITY;
-	mMousePosY = -y * MOUSE_SENSITIVITY;
 }

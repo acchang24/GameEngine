@@ -100,7 +100,7 @@ void FrameBuffer::SetActive() const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void FrameBuffer::End(unsigned int texture)
+void FrameBuffer::Draw(unsigned int texture)
 {
 	// Bind/draw to this framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
@@ -116,27 +116,7 @@ void FrameBuffer::End(unsigned int texture)
 
 	// Activate texture unit
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
-
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	mVertexBuffer->Draw();
-
-	// Enable depth test again
-	glEnable(GL_DEPTH_TEST);
-}
-
-void FrameBuffer::Draw(int texture)
-{
-	// Disable depth test so screen quad isn't discarded
-	glDisable(GL_DEPTH_TEST);
-
-	mShader->SetActive();
-
-	mShader->SetInt("screenTexture", mTextureUnit);
-
-	// Activate texture unit
-	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
-
+	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	mVertexBuffer->Draw();
