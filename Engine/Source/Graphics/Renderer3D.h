@@ -26,13 +26,17 @@ public:
 	// Creates a frame buffer for the renderer to use
 	// @param - int for the width of the frame buffer
 	// @param - int for the height of the frame buffer
-	// @param - int for the number of subsamples used for anti-aliasing
-	// @param - bool for if the framebuffer uses multi-sample
-	// @return - FrameBuffer* for the newly created framebuffer
 	FrameBuffer* CreateFrameBuffer(int width, int height);
 
+	// Creates a multisampled frame buffer for the renderer to use
+	// @param - int for the width of the frame buffer
+	// @param - int for the height of the frame buffer
+	// @param - int for the number of subsamples used for anti-aliasing
 	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples);
 
+	// Sets a framebuffer's shader
+	// @param - FrameBuffer* for the target framebuffer
+	// @param - Shader* the shader to set for the framebuffer
 	void SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader);
 
 	// Static function that triggers everytime the window is resized.
@@ -41,14 +45,15 @@ public:
 	// Toggles capturing the mouse in the window
 	static void ToggleMouseCapture();
 
+	// Resizes all the frame buffers to the new dimensions
+	void ResizeFrameBuffers();
+
 	// Retrieves the main frame buffer
 	// @return - FrameBuffer* for the main frame buffer
 	FrameBufferMultiSampled* GetMainFrameBuffer() { return mMainFrameBuffer; }
 	FrameBuffer* GetBloomMaskFrameBuffer() { return mBloomMaskFrameBuffer; }
 	FrameBuffer* GetBloomBlurHorizontalFrameBuffer() { return mBloomBlurHorizontalFrameBuffer; }
 	FrameBuffer* GetBloomBlurVerticalFrameBuffer() { return mBloomBlurVerticalFrameBuffer; }
-	FrameBufferMultiSampled* GetResizeMultiSampledFrameBuffer() { return mResizeMultiSampledFrameBuffer;  }
-	FrameBuffer* GetResizeFrameBuffer() { return mResizeFrameBuffer; }
 
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
@@ -56,7 +61,6 @@ public:
 	// Sets the number of subsamples used for anti-aliasing
 	// @param - int for the number of subsamples
 	void SetNumSubsamples(int subsamples) { mNumSubsamples = subsamples; }
-
 
 private:
 	Renderer3D();
@@ -66,12 +70,9 @@ private:
 	// and use CreateFrameBuffers() to generate a new one.
 	// Add a specific getter for any new framebuffer created.
 	FrameBufferMultiSampled* mMainFrameBuffer;
-
 	FrameBuffer* mBloomMaskFrameBuffer;
 	FrameBuffer* mBloomBlurHorizontalFrameBuffer;
 	FrameBuffer* mBloomBlurVerticalFrameBuffer;
-	FrameBufferMultiSampled* mResizeMultiSampledFrameBuffer;
-	FrameBuffer* mResizeFrameBuffer;
 	
 	// SDL window used for the game
 	SDL_Window* mWindow;

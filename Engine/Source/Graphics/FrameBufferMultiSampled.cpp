@@ -22,6 +22,14 @@ FrameBufferMultiSampled::~FrameBufferMultiSampled()
 
 void FrameBufferMultiSampled::Load(int width, int height, int subsamples)
 {
+	mWidth = width;
+	mHeight = height;
+
+	if (mFrameBuffer == 0 && mTexture == 0 && mRenderBuffer == 0)
+	{
+		FrameBuffer::Load(width, height);
+	}
+
 	// Create MSAA framebuffer
 	glGenFramebuffers(1, &mMSAAFrameBuffer);
 	// bind the buffer

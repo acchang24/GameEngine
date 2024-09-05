@@ -42,6 +42,9 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::Load(int width, int height)
 {
+	mWidth = width;
+	mHeight = height;
+
 	// Create a frame buffer object with non multisampled texture attachment
 	glGenFramebuffers(1, &mFrameBuffer);
 	// bind the frame buffer object

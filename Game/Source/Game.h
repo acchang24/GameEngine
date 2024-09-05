@@ -66,9 +66,6 @@ private:
 	// The game's camera
 	Camera* mCamera;
 
-	// Frame buffer
-	//FrameBuffer* mFrameBuffer;
-
 	// Skybox
 	Skybox* mSkybox;
 

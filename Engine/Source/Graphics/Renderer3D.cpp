@@ -11,14 +11,14 @@ static int s_WindowWidth;
 static int s_WindowHeight;
 // SDL_bool for if the mouse is captured within the renderer's window
 static SDL_bool s_MouseCaptured;
+// Bool for whenever the window is resized
+static bool s_Resized = false;
 
 Renderer3D::Renderer3D() :
 	mMainFrameBuffer(nullptr),
 	mBloomMaskFrameBuffer(nullptr),
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
-	mResizeMultiSampledFrameBuffer(nullptr),
-	mResizeFrameBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -172,8 +172,6 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth / 2, s_WindowHeight / 2);
 	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
 	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
-	mResizeMultiSampledFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples);
-	mResizeFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight);
 
 	return true;
 }
@@ -192,12 +190,15 @@ void Renderer3D::Shutdown()
 	delete mBloomMaskFrameBuffer;
 	delete mBloomBlurHorizontalFrameBuffer;
 	delete mBloomBlurVerticalFrameBuffer;
-	delete mResizeMultiSampledFrameBuffer;
-	delete mResizeFrameBuffer;
 }
 
 void Renderer3D::BeginFrame()
 {
+	if (s_Resized)
+	{
+		ResizeFrameBuffers();
+	}
+
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	// Clear the color buffer, depth buffer
@@ -249,6 +250,8 @@ int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
 			printf("Window width: %i, Window height: %i\n", s_WindowWidth, s_WindowHeight);
 			glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 			Camera::SetProjection(static_cast<float>(s_WindowWidth) / static_cast<float>(s_WindowHeight));
+
+			s_Resized = true;
 		}
 	}
 	return 0;
@@ -269,4 +272,29 @@ void Renderer3D::ToggleMouseCapture()
 	SDL_SetRelativeMouseMode(s_MouseCaptured);
 	// Clear any saved values
 	SDL_GetRelativeMouseState(nullptr, nullptr);
+}
+
+void Renderer3D::ResizeFrameBuffers()
+{
+	// Unload main framebuffer
+	mMainFrameBuffer->Unload();
+	// Load new frame buffer size
+	mMainFrameBuffer->Load(s_WindowWidth, s_WindowHeight, mNumSubsamples);
+
+	// Unload old frame buffer
+	mBloomMaskFrameBuffer->Unload();
+	// Load new frame buffer size
+	mBloomMaskFrameBuffer->Load(s_WindowWidth / 2, s_WindowHeight / 2);
+
+	// Unload old frame buffer
+	mBloomBlurHorizontalFrameBuffer->Unload();
+	// Load new frame buffer size
+	mBloomBlurHorizontalFrameBuffer->Load(s_WindowWidth / 4, s_WindowHeight / 4);
+
+	// Unload old frame buffer
+	mBloomBlurVerticalFrameBuffer->Unload();
+	// Load new frame buffer size
+	mBloomBlurVerticalFrameBuffer->Load(s_WindowWidth / 4, s_WindowHeight / 4);
+
+	s_Resized = false;
 }

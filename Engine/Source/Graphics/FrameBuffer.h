@@ -44,9 +44,14 @@ public:
 	// @param - Shader* for the new shader
 	void SetShader(Shader* s) { mShader = s; }
 
+	unsigned int GetFrameBufferObjectID() const { return mFrameBuffer; }
+
 	// Returns the offscreen color attachment texture
 	// @return - unsigned int for the id of the color attachment texture
 	unsigned int GetTexture() const { return mTexture; }
+
+	int GetWidth() const { return mWidth; }
+	int GetHeight() const { return mHeight; }
 
 protected:
 	// The shader used to help draw the frame buffer's quad
