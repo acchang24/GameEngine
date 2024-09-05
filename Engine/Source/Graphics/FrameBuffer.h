@@ -13,22 +13,24 @@ public:
 	// FrameBuffer constructor
 	// @param - int for the screen's width
 	// @param - int for the screen's height
-	// @param - int for the number of subsamples for anti aliasing
 	FrameBuffer(int width, int height);
 	virtual ~FrameBuffer();
+
+	// Generates a new frame buffer
+	// @param - int for the framebuffer's width
+	// @param - int for the framebuffer's height
+	void Load(int width, int height);
+	// Deletes the framebuffer, texture, and renderbuffer references
+	virtual void Unload();
 
 	// Starts the frame buffer by binding this frame buffer object
 	// as the current target. This is called right before clearing buffers
 	// in the main render loop. Any renders should be done as normal after
 	// this call.
 	virtual void SetActive() const;
-	// Binds the frame buffer to the default one, then
-	// disables the depth test, clears any relevant buffers,
-	// draws the frame buffer, and enable depth test back again.
-	// This is called at the end of the render loop, before swapping
-	// buffers.
-	// @param - int for the screen's width
-	// @param - int for the screen's height
+
+	// Binds this frame then adjusts the viewport so it matches this framebuffer's size.
+	// It then disables depth test, sets the shader to active, and draws to the framebuffer.
 	virtual void End(unsigned int texture);
 
 	// Draws the frame buffer's off screen quad
@@ -42,6 +44,8 @@ public:
 	// @param - Shader* for the new shader
 	void SetShader(Shader* s) { mShader = s; }
 
+	// Returns the offscreen color attachment texture
+	// @return - unsigned int for the id of the color attachment texture
 	unsigned int GetTexture() const { return mTexture; }
 
 protected:

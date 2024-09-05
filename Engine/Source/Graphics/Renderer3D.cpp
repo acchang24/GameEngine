@@ -17,6 +17,8 @@ Renderer3D::Renderer3D() :
 	mBloomMaskFrameBuffer(nullptr),
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
+	mResizeMultiSampledFrameBuffer(nullptr),
+	mResizeFrameBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -170,6 +172,8 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth / 2, s_WindowHeight / 2);
 	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
 	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
+	mResizeMultiSampledFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples);
+	mResizeFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight);
 
 	return true;
 }
@@ -188,6 +192,8 @@ void Renderer3D::Shutdown()
 	delete mBloomMaskFrameBuffer;
 	delete mBloomBlurHorizontalFrameBuffer;
 	delete mBloomBlurVerticalFrameBuffer;
+	delete mResizeMultiSampledFrameBuffer;
+	delete mResizeFrameBuffer;
 }
 
 void Renderer3D::BeginFrame()

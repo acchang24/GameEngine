@@ -28,6 +28,20 @@ FrameBuffer::FrameBuffer(int width, int height) :
 	};
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
+	Load(width, height);
+}
+
+FrameBuffer::~FrameBuffer()
+{
+	std::cout << "Delete framebuffer" << std::endl;
+
+	delete mVertexBuffer;
+
+	Unload();
+}
+
+void FrameBuffer::Load(int width, int height)
+{
 	// Create a frame buffer object with non multisampled texture attachment
 	glGenFramebuffers(1, &mFrameBuffer);
 	// bind the frame buffer object
@@ -56,7 +70,7 @@ FrameBuffer::FrameBuffer(int width, int height) :
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBuffer);
 
 	// Check for frame buffer's completion
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		std::cout << "Framebuffer is not complete!" << std::endl;
 	}
@@ -64,15 +78,15 @@ FrameBuffer::FrameBuffer(int width, int height) :
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-FrameBuffer::~FrameBuffer()
+void FrameBuffer::Unload()
 {
-	std::cout << "Delete framebuffer" << std::endl;
-
-	delete mVertexBuffer;
-
 	glDeleteFramebuffers(1, &mFrameBuffer);
 	glDeleteTextures(1, &mTexture);
 	glDeleteRenderbuffers(1, &mRenderBuffer);
+
+	mFrameBuffer = 0;
+	mTexture = 0;
+	mRenderBuffer = 0;
 }
 
 void FrameBuffer::SetActive() const

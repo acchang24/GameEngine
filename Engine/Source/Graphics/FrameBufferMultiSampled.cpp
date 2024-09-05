@@ -5,7 +5,22 @@
 #include "VertexBuffer.h"
 
 FrameBufferMultiSampled::FrameBufferMultiSampled(int width, int height, int subsamples) :
-	FrameBuffer(width, height)
+	FrameBuffer(width, height),
+	mMSAAFrameBuffer(0),
+	mTextureMultiSampled(0),
+	mRenderBufferMultiSampled(0)
+{
+	Load(width, height, subsamples);
+}
+
+FrameBufferMultiSampled::~FrameBufferMultiSampled()
+{
+	std::cout << "Delete framebuffer multisampled" << std::endl;
+	
+	Unload();
+}
+
+void FrameBufferMultiSampled::Load(int width, int height, int subsamples)
 {
 	// Create MSAA framebuffer
 	glGenFramebuffers(1, &mMSAAFrameBuffer);
@@ -45,12 +60,17 @@ FrameBufferMultiSampled::FrameBufferMultiSampled(int width, int height, int subs
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-FrameBufferMultiSampled::~FrameBufferMultiSampled()
+void FrameBufferMultiSampled::Unload()
 {
-	std::cout << "Delete framebuffer multisampled" << std::endl;
+	FrameBuffer::Unload();
+
 	glDeleteFramebuffers(1, &mMSAAFrameBuffer);
 	glDeleteTextures(1, &mTextureMultiSampled);
 	glDeleteRenderbuffers(1, &mRenderBufferMultiSampled);
+
+	mMSAAFrameBuffer = 0;
+	mTextureMultiSampled = 0;
+	mRenderBufferMultiSampled = 0;
 }
 
 void FrameBufferMultiSampled::SetActive() const
@@ -73,10 +93,12 @@ void FrameBufferMultiSampled::End(unsigned int texture)
 
 	mShader->SetActive();
 
+	// Bind the normal texture (everything that is drawn to the screen)
 	mShader->SetInt("screenTexture", mTextureUnit);
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, mTexture);
 
+	// Bind the blur texture (texture used for post-processing)
 	int blurUnit = mTextureUnit + 3;
 	mShader->SetInt("blurTexture", blurUnit);
 	glActiveTexture(GL_TEXTURE0 + blurUnit);
