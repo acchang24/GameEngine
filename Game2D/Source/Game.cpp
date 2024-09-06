@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "Entity/Entity3D.h"
+#include "Graphics/Renderer2D.h"
 #include "MemoryManager/AssetManager.h"
 #include "Util/Random.h"
 
@@ -16,11 +17,12 @@ const char* TITLE = "Game";
 
 Game::Game() :
 	mPrevKeyInputs(),
+	mRenderer(nullptr),
 	mAssetManager(nullptr),
 	mMousePosX(0),
 	mMousePosY(0),
 	mIsRunning(true),
-	mMouseCaptured(SDL_FALSE) // TODO: Set this to SDL_TRUE if the game window captures the mouse
+	mMouseCaptured(SDL_FALSE)
 {
 }
 
@@ -32,7 +34,8 @@ bool Game::Init()
 {
 	Random::Init();
 
-	// TODO: Initialize the renderer here
+	mRenderer = Renderer2D::Get();
+	mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FULLSCREEN, mMouseCaptured, "Game");
 
 	mAssetManager = AssetManager::Get();
 
@@ -46,7 +49,7 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
-	// TODO: Call Shutdown() on the Renderer here
+	mRenderer->Shutdown();
 
 	for (auto e : mEntities)
 	{
@@ -235,8 +238,7 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
-	// TODO: Have the renderer call ClearBuffers()
+	mRenderer->ClearBuffers();
 
-	// TODO: Have the renderer call EndFrame()
-
+	mRenderer->EndFrame();
 }

@@ -40,7 +40,7 @@ glm::vec3 pos(0.0f);
 glm::vec3 lightDir(-0.05f, -1.0f, -0.2f);
 float dist = 650.0f;
 
-bool IS_FULLSCREEN = false;
+bool IS_FULLSCREEN = true;
 int WINDOW_WIDTH = 1280;
 int WINDOW_HEIGHT = 720;
 double MOUSE_SENSITIVITY = 0.05;
@@ -491,10 +491,7 @@ void Game::ProcessInput()
 		}
 	}
 
-	if (mMouseCaptured == SDL_TRUE)
-	{
-		ProcessMouseInput(mouseButtonDown, mouseButtonUp, scrollDir);
-	}
+	ProcessMouseInput(mouseButtonDown, mouseButtonUp, scrollDir);
 
 	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
 
@@ -761,12 +758,15 @@ void Game::ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll)
 		std::cout << "Scroll Down\n";
 	}
 
-	// Calculate mouse movement
-	int x = 0;
-	int y = 0;
-	SDL_GetRelativeMouseState(&x, &y);
-	mMousePosX = x * MOUSE_SENSITIVITY;
-	mMousePosY = -y * MOUSE_SENSITIVITY;
+	if (mMouseCaptured == SDL_TRUE)
+	{
+		// Calculate mouse movement
+		int x = 0;
+		int y = 0;
+		SDL_GetRelativeMouseState(&x, &y);
+		mMousePosX = x * MOUSE_SENSITIVITY;
+		mMousePosY = -y * MOUSE_SENSITIVITY;
+	}
 }
 
 void Game::Update(float deltaTime)

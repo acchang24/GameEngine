@@ -102,8 +102,8 @@ void Renderer2D::Shutdown()
 
 void Renderer2D::ClearBuffers()
 {
-	// Set the render draw color to black
-	SDL_SetRenderDrawColor(m2dRenderer, 0, 0, 0, 255);
+	// Set the render draw color to gray
+	SDL_SetRenderDrawColor(m2dRenderer, 35, 35, 35, 255);
 
 	// Clear the backbuffer with SDL_RenderClear
 	SDL_RenderClear(m2dRenderer);
