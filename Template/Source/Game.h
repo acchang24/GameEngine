@@ -31,7 +31,10 @@ public:
 	void ProcessInput();
 
 	// Processes and handles any mouse movement, clicks, and scrolls
-	void ProcessMouseInput();
+	// @param - Uint8 for click down button
+	// @param - Uint8 for click release button
+	// @param - Sint32 for scroll direction
+	void ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll);
 	
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames

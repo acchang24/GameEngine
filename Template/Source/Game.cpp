@@ -34,6 +34,7 @@ bool Game::Init()
 
 	// TODO: Initialize the renderer here
 
+
 	mAssetManager = AssetManager::Get();
 
 	if (!LoadGameData())
@@ -87,19 +88,38 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
-	// Check to see when user quits the game
+	Uint8 mouseButtonDown = 0;
+	Uint8 mouseButtonUp = 0;
+	Sint32 scrollDir = 0;
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
 		{
 		case SDL_QUIT:
+			// Check to see when user quits the game
 			mIsRunning = false;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			// Mouse click down
+			mouseButtonDown = event.button.button;
+			break;
+		case SDL_MOUSEBUTTONUP:
+			// Mouse click release
+			mouseButtonUp = event.button.button;
+			break;
+		case SDL_MOUSEWHEEL:
+			// Mouse wheel scroll
+			scrollDir = event.wheel.y;
 			break;
 		}
 	}
 
-	ProcessMouseInput();
+	if (mMouseCaptured == SDL_TRUE)
+	{
+		ProcessMouseInput(mouseButtonDown, mouseButtonUp, scrollDir);
+	}
 
 	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
 
@@ -109,8 +129,98 @@ void Game::ProcessInput()
 	}
 }
 
-void Game::ProcessMouseInput()
+void Game::ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll)
 {
+	// Single left click
+	if (buttonDown == SDL_BUTTON_LEFT)
+	{
+		std::cout << "Left Click\n";
+	}
+	// Single right click
+	if (buttonDown == SDL_BUTTON_RIGHT)
+	{
+		std::cout << "Right Click\n";
+	}
+	// Single scroll wheel click (mouse 3 click)
+	if (buttonDown == SDL_BUTTON_MIDDLE)
+	{
+		std::cout << "Scroll Click\n";
+	}
+	// Single mouse 4 click
+	if (buttonDown == SDL_BUTTON_X1)
+	{
+		std::cout << "Mouse 4 Click\n";
+	}
+	// Single mouse 5 click
+	if (buttonDown == SDL_BUTTON_X2)
+	{
+		std::cout << "Mouse 5 Click\n";
+	}
+
+	Uint8 mouse_state = SDL_GetMouseState(NULL, NULL);
+	// Left click hold
+	if (mouse_state & SDL_BUTTON_LMASK)
+	{
+		std::cout << "Left Click hold\n";
+	}
+	// Right click hold
+	if (mouse_state & SDL_BUTTON_RMASK)
+	{
+		std::cout << "Right Click hold\n";
+	}
+	// Scroll click hold
+	if (mouse_state & SDL_BUTTON_MMASK)
+	{
+		std::cout << "Scroll Click hold\n";
+	}
+	// Mouse 4 click hold
+	if (mouse_state & SDL_BUTTON_X1MASK)
+	{
+		std::cout << "Mouse 4 Click hold\n";
+	}
+	// Mouse 5 click hold
+	if (mouse_state & SDL_BUTTON_X2MASK)
+	{
+		std::cout << "Mouse 5 Click hold\n";
+	}
+
+	// Left click release
+	if (buttonUp == SDL_BUTTON_LEFT)
+	{
+		std::cout << "Left Click Release\n";
+	}
+	// Right click release
+	if (buttonUp == SDL_BUTTON_RIGHT)
+	{
+		std::cout << "Right Click Release\n";
+	}
+	// Scroll click release
+	if (buttonUp == SDL_BUTTON_MIDDLE)
+	{
+		std::cout << "Scroll Click Release\n";
+	}
+	// Mouse 4 click release
+	if (buttonUp == SDL_BUTTON_X1)
+	{
+		std::cout << "Mouse 4 Click Release\n";
+	}
+	// Mouse 5 click release
+	if (buttonUp == SDL_BUTTON_X2)
+	{
+		std::cout << "Mouse 5 Click Release\n";
+	}
+
+	// Scroll wheel up
+	if (scroll >= 1)
+	{
+		std::cout << "Scroll Up\n";
+	}
+	// Scroll wheel down
+	if (scroll <= -1)
+	{
+		std::cout << "Scroll Down\n";
+	}
+
 	// Calculate mouse movement
 	int x = 0;
 	int y = 0;
