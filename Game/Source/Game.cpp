@@ -411,11 +411,7 @@ void Game::Shutdown()
 	mRenderer->Shutdown();
 	mRenderer = nullptr;
 
-	for (auto e : mEntities)
-	{
-		delete e;
-	}
-	mEntities.clear();
+	UnloadGameData();
 
 	delete mCamera;
 
@@ -435,6 +431,15 @@ void Game::Shutdown()
 bool Game::LoadGameData()
 {
 	return true;
+}
+
+void Game::UnloadGameData()
+{
+	for (auto e : mEntities)
+	{
+		delete e;
+	}
+	mEntities.clear();
 }
 
 void Game::Run()
@@ -843,4 +848,17 @@ void Game::RenderScene(Shader* shader)
 	}
 
 	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
+}
+
+void Game::RemoveGameEntity(Entity* e)
+{
+	auto iter = std::find(mEntities.begin(), mEntities.end(), e);
+	if (iter != mEntities.end())
+	{
+		// Swap to end of vector and pop off
+		auto iter2 = mEntities.end() - 1;
+		std::iter_swap(iter, iter2);
+		delete e;
+		mEntities.pop_back();
+	}
 }

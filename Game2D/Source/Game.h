@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <vector>
 #include <SDL2/SDL.h>
 
@@ -22,6 +23,9 @@ public:
 
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
 	bool LoadGameData();
+
+	// Deletes all entities, sounds, levels, etc
+	void UnloadGameData();
 
 	// Runs the main game loop. This will process any user inputs, 
 	// updates the game, and renders an output to the screen
@@ -47,6 +51,10 @@ public:
 	// Adds an entity to the game's vector of entities
 	// @param - Entity* for the new entity
 	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
+
+	// Removes an entity from the game's vector of entities, and deletes that entity from memory
+	// @param - Entity* for the entity to remove
+	void RemoveGameEntity(Entity* e);
 
 private:
 	// Array of previous key inputs to see if they are pressed or not

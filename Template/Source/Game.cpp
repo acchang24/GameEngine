@@ -48,11 +48,7 @@ void Game::Shutdown()
 {
 	// TODO: Call Shutdown() on the Renderer here
 
-	for (auto e : mEntities)
-	{
-		delete e;
-	}
-	mEntities.clear();
+	UnloadGameData();
 
 	mAssetManager->Shutdown();
 	mAssetManager = nullptr;
@@ -63,6 +59,15 @@ bool Game::LoadGameData()
 	// TODO: LOAD GAME SPECIFIC ASSETS HERE
 
 	return true;
+}
+
+void Game::UnloadGameData()
+{
+	for (auto e : mEntities)
+	{
+		delete e;
+	}
+	mEntities.clear();
 }
 
 void Game::Run()
@@ -239,4 +244,17 @@ void Game::Render()
 
 	// TODO: Have the renderer call EndFrame()
 
+}
+
+void Game::RemoveGameEntity(Entity* e)
+{
+	auto iter = std::find(mEntities.begin(), mEntities.end(), e);
+	if (iter != mEntities.end())
+	{
+		// Swap to end of vector and pop off
+		auto iter2 = mEntities.end() - 1;
+		std::iter_swap(iter, iter2);
+		delete e;
+		mEntities.pop_back();
+	}
 }
