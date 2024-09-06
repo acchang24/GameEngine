@@ -15,6 +15,12 @@ public:
 	// De-allocates any resources from SDL
 	void Shutdown();
 
+	// Checks for window resize, clears the screen, and clears the color and depth buffer bits
+	void ClearBuffers();
+
+	// Swap the buffers and present to the screen
+	void EndFrame();
+
 private:
 	Renderer2D();
 	~Renderer2D();

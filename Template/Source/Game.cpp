@@ -34,7 +34,6 @@ bool Game::Init()
 
 	// TODO: Initialize the renderer here
 
-
 	mAssetManager = AssetManager::Get();
 
 	if (!LoadGameData())
@@ -239,5 +238,8 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
-	
+	// TODO: Have the renderer call ClearBuffers()
+
+	// TODO: Have the renderer call EndFrame()
+
 }

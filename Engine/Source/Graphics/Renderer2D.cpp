@@ -1,5 +1,6 @@
 #include "Renderer2D.h"
 #include <iostream>
+#include <SDL2/SDL_image.h>
 
 // Window width
 static int s_WindowWidth;
@@ -81,15 +82,34 @@ bool Renderer2D::Init(int width, int height, bool fullscreen, SDL_bool mouseCapt
 		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
 	);
 
+	// Initizlize SDL Image with IMG_Init
+	IMG_Init(IMG_INIT_PNG);
+
 	return true;
 }
 
 void Renderer2D::Shutdown()
 {
+	// IMG_Quit
+	IMG_Quit();
 	// Destroy the renderer
 	SDL_DestroyRenderer(mRenderer);
 	// Destroy the window
 	SDL_DestroyWindow(mWindow);
 	// Quit SDL
 	SDL_Quit();
+}
+
+void Renderer2D::ClearBuffers()
+{
+	// Set the render draw color to black
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
+
+	// Clear the backbuffer with SDL_RenderClear
+	SDL_RenderClear(mRenderer);
+}
+
+void Renderer2D::EndFrame()
+{
+	SDL_RenderPresent(mRenderer);
 }

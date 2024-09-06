@@ -16,5 +16,5 @@ if(WIN32)
 	# Link assimp library to engine
 	target_link_libraries(engine assimp-vc142-mtd)
 	# Link SDL library to engine
-	target_link_libraries(engine SDL2 SDL2main)
+	target_link_libraries(engine SDL2 SDL2main SDL2_image)
 endif()
