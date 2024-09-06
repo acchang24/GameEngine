@@ -29,7 +29,7 @@ private:
 	SDL_Window* mWindow;
 
 	// SDL renderer for 2D graphics
-	SDL_Renderer* mRenderer;
+	SDL_Renderer* m2dRenderer;
 
 	// Title used for the window
 	const char* mWindowTitle;

@@ -11,7 +11,7 @@ static bool s_Resized = false;
 
 Renderer2D::Renderer2D() :
 	mWindow(nullptr),
-	mRenderer(nullptr),
+	m2dRenderer(nullptr),
 	mWindowTitle(),
 	mIsFullScreen(false)
 {
@@ -76,7 +76,7 @@ bool Renderer2D::Init(int width, int height, bool fullscreen, SDL_bool mouseCapt
 
 
 	// Create the renderer
-	mRenderer = SDL_CreateRenderer(
+	m2dRenderer = SDL_CreateRenderer(
 		mWindow,
 		-1,
 		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
@@ -93,7 +93,7 @@ void Renderer2D::Shutdown()
 	// IMG_Quit
 	IMG_Quit();
 	// Destroy the renderer
-	SDL_DestroyRenderer(mRenderer);
+	SDL_DestroyRenderer(m2dRenderer);
 	// Destroy the window
 	SDL_DestroyWindow(mWindow);
 	// Quit SDL
@@ -103,13 +103,13 @@ void Renderer2D::Shutdown()
 void Renderer2D::ClearBuffers()
 {
 	// Set the render draw color to black
-	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(m2dRenderer, 0, 0, 0, 255);
 
 	// Clear the backbuffer with SDL_RenderClear
-	SDL_RenderClear(mRenderer);
+	SDL_RenderClear(m2dRenderer);
 }
 
 void Renderer2D::EndFrame()
 {
-	SDL_RenderPresent(mRenderer);
+	SDL_RenderPresent(m2dRenderer);
 }
