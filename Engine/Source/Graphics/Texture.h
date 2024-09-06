@@ -22,7 +22,8 @@ enum class TextureUnit
 // The Texture class helps load image files with the
 // stb_image loader and saves image details. All texture
 // objects are referenced with an integer and provides
-// functions to help set currently bound texture.
+// functions to help set currently bound texture. These are textures 
+// used for texture mapping in 3D. Do not use this for 2D sprites.
 class Texture
 {
 public:
