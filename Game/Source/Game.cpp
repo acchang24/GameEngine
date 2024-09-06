@@ -40,7 +40,7 @@ glm::vec3 pos(0.0f);
 glm::vec3 lightDir(-0.05f, -1.0f, -0.2f);
 float dist = 650.0f;
 
-bool IS_FULLSCREEN = true;
+bool IS_FULLSCREEN = false;
 int WINDOW_WIDTH = 1280;
 int WINDOW_HEIGHT = 720;
 double MOUSE_SENSITIVITY = 0.05;
