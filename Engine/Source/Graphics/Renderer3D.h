@@ -14,7 +14,14 @@ public:
 
 	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
 	// Enable any OpenGL functionality at the end
-	bool Init(int width, int height, int subsamples, int vsync, bool fullscreen, SDL_bool mouseCaptured,const char* title);
+	// @param - int for the window width
+	// @param - int for the window height
+	// @param - int for the number of subsamples used for anti-aliasing
+	// @param - int for if the renderer uses vsync
+	// @param - bool for if the screen is full screen
+	// @param - SDL_bool for if the mouse is captured by the window
+	// @param - const char* for the game window title
+	bool Init(int width, int height, int subsamples, int vsync, bool fullscreen, SDL_bool mouseCaptured, const char* title);
 
 	// De-allocates any resources from SDL
 	void Shutdown();
