@@ -11,13 +11,13 @@ Entity::Entity() :
 
 Entity::~Entity()
 {
+	std::cout << "Deleted entity\n";
+
 	for (auto c : mComponents)
 	{
 		delete c;
 	}
 	mComponents.clear();
-
-	std::cout << "Deleted entity at " << this << "\n";
 }
 
 void Entity::ProcessInput(const Uint8* keyState)

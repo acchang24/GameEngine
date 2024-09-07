@@ -148,7 +148,7 @@ SDL_Texture* Renderer2D::LoadSpriteTexture(const std::string& filename)
 		SDL_Surface* surface = IMG_Load(filename.c_str());
 		if (!surface)
 		{
-			std::cout << "Could not load the sprite texture file << " << filename << "\n";
+			std::cout << "Could not load the sprite texture file: " << filename << "\n";
 			return nullptr;
 		}
 		// Convert surface to SDL_Texture

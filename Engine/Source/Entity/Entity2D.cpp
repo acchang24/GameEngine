@@ -7,7 +7,7 @@ Entity2D::Entity2D(SDL_Renderer* renderer) :
 	mRenderer(renderer),
 	mSprite(nullptr),
 	mPosition(glm::vec2(0.0f, 0.0f)),
-	mScale(glm::vec2(0.0f, 0.0f))
+	mScale(glm::vec2(1.0f, 1.0f))
 {
 }
 

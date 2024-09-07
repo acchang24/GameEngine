@@ -10,7 +10,7 @@ Component::Component(Entity* owner) :
 
 Component::~Component()
 {
-	std::cout << "Deleted component at " << this << "\n";
+	std::cout << "Deleted component\n";
 }
 
 void Component::ProcessInput(const Uint8* keyState)

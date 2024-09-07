@@ -2,7 +2,8 @@
 #include <chrono>
 #include <iostream>
 #include <glad/glad.h>
-#include "Entity/Entity3D.h"
+#include "Components/SpriteComponent.h"
+#include "Entity/Entity2D.h"
 #include "Graphics/Renderer2D.h"
 #include "MemoryManager/AssetManager.h"
 #include "Util/Random.h"
@@ -59,7 +60,10 @@ void Game::Shutdown()
 
 bool Game::LoadGameData()
 {
-	// TODO: LOAD GAME SPECIFIC ASSETS HERE
+	Entity2D* background = new Entity2D(mRenderer->GetSdlRenderer());
+	background->SetPosition(glm::vec2(static_cast<float>(WINDOW_WIDTH / 2), static_cast<float>(WINDOW_HEIGHT / 2)));
+	SpriteComponent* backgroundSprite = new SpriteComponent(background, mRenderer, "Assets/Stars.png", 99);
+	AddGameEntity(background);
 
 	return true;
 }
