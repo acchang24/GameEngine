@@ -8,6 +8,7 @@
 #include "Graphics/Renderer2D.h"
 #include "MemoryManager/AssetManager.h"
 #include "Util/Random.h"
+#include "Ship.h"
 
 bool IS_FULLSCREEN = false;
 int WINDOW_WIDTH = 1280;
@@ -61,10 +62,16 @@ void Game::Shutdown()
 
 bool Game::LoadGameData()
 {
+	// Background
 	Entity2D* background = new Entity2D();
 	background->SetPosition(glm::vec2(static_cast<float>(WINDOW_WIDTH / 2), static_cast<float>(WINDOW_HEIGHT / 2)));
 	BackgroundSpriteComponent* backgroundSprite = new BackgroundSpriteComponent(background, mRenderer, "Assets/Stars.png", 99);
 	AddGameEntity(background);
+
+	// Ship
+	Ship* ship = new Ship(mRenderer);
+	ship->SetPosition(glm::vec2(static_cast<float>(WINDOW_WIDTH / 2), static_cast<float>(WINDOW_HEIGHT / 2)));
+	AddGameEntity(ship);
 
 	return true;
 }
