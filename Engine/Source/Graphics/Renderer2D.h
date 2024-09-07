@@ -21,6 +21,9 @@ public:
 	// Swap the buffers and present to the screen
 	void EndFrame();
 
+	// Gets the SDL renderer
+	SDL_Renderer* GetSdlRenderer() { return m2dRenderer; }
+
 private:
 	Renderer2D();
 	~Renderer2D();
