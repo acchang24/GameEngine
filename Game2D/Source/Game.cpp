@@ -245,6 +245,8 @@ void Game::Render()
 {
 	mRenderer->ClearBuffers();
 
+	mRenderer->Draw();
+
 	mRenderer->EndFrame();
 }
 

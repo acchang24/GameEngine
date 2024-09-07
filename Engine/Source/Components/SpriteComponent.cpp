@@ -3,8 +3,9 @@
 #include <glm/glm.hpp>
 #include "../Entity/Entity.h"
 #include "../Entity/Entity2D.h"
+#include "../Graphics/Renderer2D.h"
 
-SpriteComponent::SpriteComponent(Entity* owner, int drawOrder) :
+SpriteComponent::SpriteComponent(Entity* owner, Renderer2D* renderer, const std::string& filename, int drawOrder) :
 	Component(owner),
 	mTexture(nullptr),
 	mDrawOrder(drawOrder),
@@ -12,7 +13,11 @@ SpriteComponent::SpriteComponent(Entity* owner, int drawOrder) :
 	mHeight(0),
 	mIsVisible(true)
 {
+	SDL_Texture* spriteTexture = renderer->LoadSpriteTexture(filename);
 
+	SetTexture(spriteTexture);
+
+	renderer->AddSprite(this);
 }
 
 SpriteComponent::~SpriteComponent()

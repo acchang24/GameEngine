@@ -1,6 +1,9 @@
 #include "Renderer2D.h"
+#include <algorithm>
 #include <iostream>
 #include <SDL2/SDL_image.h>
+#include "../Components/SpriteComponent.h"
+#include "../Entity/Entity2D.h"
 
 // Window width
 static int s_WindowWidth;
@@ -20,6 +23,12 @@ Renderer2D::Renderer2D() :
 Renderer2D::~Renderer2D()
 {
 	std::cout << "Deleted Renderer2D\n";
+
+	// SDL_DestroyTexuture on all the saved textures
+	for (const auto& file : mSpriteTextureMap)
+	{
+		SDL_DestroyTexture(mSpriteTextureMap[file.first]);
+	}
 }
 
 Renderer2D* Renderer2D::Get()
@@ -109,7 +118,71 @@ void Renderer2D::ClearBuffers()
 	SDL_RenderClear(m2dRenderer);
 }
 
+void Renderer2D::Draw()
+{
+	for (auto s : mSprites)
+	{
+		if (s->IsVisible())
+		{
+			s->Draw(m2dRenderer, static_cast<Entity2D*>(s->GetEntity()));
+		}
+	}
+}
+
 void Renderer2D::EndFrame()
 {
 	SDL_RenderPresent(m2dRenderer);
+}
+
+SDL_Texture* Renderer2D::LoadSpriteTexture(const std::string& filename)
+{
+	SDL_Texture* texture = nullptr;
+
+	if (mSpriteTextureMap.find(filename) != mSpriteTextureMap.end())
+	{
+		texture = mSpriteTextureMap[filename];
+	}
+	else
+	{
+		// Load the texture using IMG_Load
+		SDL_Surface* surface = IMG_Load(filename.c_str());
+		if (!surface)
+		{
+			std::cout << "Could not load the sprite texture file << " << filename << "\n";
+			return nullptr;
+		}
+		// Convert surface to SDL_Texture
+		texture = SDL_CreateTextureFromSurface(m2dRenderer, surface);
+
+		// Free the SDL_Surface
+		SDL_FreeSurface(surface);
+
+		// Add to map
+		mSpriteTextureMap[filename] = texture;
+	}
+
+	return texture;
+}
+
+void Renderer2D::AddSprite(SpriteComponent* sprite)
+{
+	mSprites.emplace_back(sprite);
+
+	// Sort by draw order
+	std::sort(mSprites.begin(), mSprites.end(),
+		[](SpriteComponent* a, SpriteComponent* b) {
+			return a->GetDrawOrder() < b->GetDrawOrder();
+		});
+}
+
+void Renderer2D::RemoveSprite(SpriteComponent* sprite)
+{
+	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+	if (iter != mSprites.end())
+	{
+		// Swap to end of vector and pop off
+		auto iter2 = mSprites.end() - 1;
+		std::iter_swap(iter, iter2);
+		mSprites.pop_back();
+	}
 }

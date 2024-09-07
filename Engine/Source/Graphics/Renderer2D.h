@@ -1,5 +1,10 @@
 #pragma once
+#include <string>
+#include <unordered_map>
+#include <vector>
 #include <SDL2/SDL.h>
+
+class SpriteComponent;
 
 class Renderer2D
 {
@@ -18,6 +23,9 @@ public:
 	// Checks for window resize, clears the screen, and clears the color and depth buffer bits
 	void ClearBuffers();
 
+	// Draws the sprites to the screen
+	void Draw();
+
 	// Swap the buffers and present to the screen
 	void EndFrame();
 
@@ -25,9 +33,29 @@ public:
 	// @return - SDL_Renderer* for the 2D sdl renderer
 	SDL_Renderer* GetSdlRenderer() { return m2dRenderer; }
 
+	// Loads a sprite texture given a file name. First checks to see if it
+	// is already loaded in the mSpriteTextureMap. If it is there, simply load
+	// that sprite texture. If not, it will load the image using SDL and adds to sprite map
+	// @param - const std::string& for the file name
+	SDL_Texture* LoadSpriteTexture(const std::string& fileName);
+
+	// Adds a sprite texture and to the sorted vector of sprites
+	// @param - SpriteComponent* for the new sprite to add
+	void AddSprite(SpriteComponent* sprite);
+
+	// Removes a sprite texture from the sorted vector of sprites
+	// @param - SpriteComponent* for the sprite to remove
+	void RemoveSprite(SpriteComponent* sprite);
+
 private:
 	Renderer2D();
 	~Renderer2D();
+
+	// Map of all sprite textures
+	std::unordered_map<std::string, SDL_Texture*> mSpriteTextureMap;
+
+	// Vector of all sprites (components) sorted by draw order
+	std::vector<SpriteComponent*> mSprites;
 
 	// SDL window used for the game
 	SDL_Window* mWindow;

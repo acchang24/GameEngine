@@ -1,17 +1,23 @@
 #pragma once
 #include "Component.h"
+#include <string>
 #include <SDL2/SDL.h>
 
 class Entity;
 class Entity2D;
+class Renderer2D;
 
 class SpriteComponent : public Component 
 {
 public:
-	// SpriteComponent constructor
+	// SpriteComponent constructor:
+	// Creates an SDL sprite texture and adds it to the Renderer2D
+	// map of sprites as well as its vector of sprites sorted by draw order
 	// @param - Entity* to save a pointer to the component's entity
+	// @param - Renderer2D* for the renderer
+	// @param - const std::string& for the sprite texture's file name
 	// @param - int for the draw order
-	SpriteComponent(Entity* owner, int drawOrder = 100);
+	SpriteComponent(Entity* owner, Renderer2D* renderer, const std::string& filename, int drawOrder = 100);
 	~SpriteComponent();
 
 	// Overridable draw function that draws a sprite to the screen
