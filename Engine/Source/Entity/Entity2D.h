@@ -1,16 +1,12 @@
 #pragma once
 #include "Entity.h"
 #include <GLM/glm.hpp>
-#include <SDL2/SDL.h>
-
-class SpriteComponent;
 
 class Entity2D : public Entity
 {
 public:
 	// Entity2D constructor
-	// @param - SDL_Renderer* for the 2D renderer
-	Entity2D(SDL_Renderer* renderer);
+	Entity2D();
 	~Entity2D();
 
 	// Override of ProcessInput for entity
@@ -27,7 +23,7 @@ public:
 	virtual void OnUpdate(float deltaTime);
 
 	// Draw function for 2D entities
-	void Draw() override;
+	//void Draw() override;
 
 	// Gets the entity's position
 	// @return - const glm::vec2& for the entity's position
@@ -50,12 +46,6 @@ public:
 	void SetScale(float scale) { mScale.x = scale; mScale.y = scale; }
 
 private:
-	// Pointer to a 2D SDL renderer
-	SDL_Renderer* mRenderer;
-
-	// Entity's 2D sprite
-	SpriteComponent* mSprite;
-
 	// Entity's position
 	glm::vec2 mPosition;
 

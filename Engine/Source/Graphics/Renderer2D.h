@@ -47,6 +47,9 @@ public:
 	// @param - SpriteComponent* for the sprite to remove
 	void RemoveSprite(SpriteComponent* sprite);
 
+	static int GetWidth();
+	static int GetHeight();
+
 private:
 	Renderer2D();
 	~Renderer2D();

@@ -12,6 +12,16 @@ static int s_WindowHeight;
 // Bool for whenever the window is resized
 static bool s_Resized = false;
 
+int Renderer2D::GetWidth()
+{
+	return s_WindowWidth;
+}
+
+int Renderer2D::GetHeight()
+{
+	return s_WindowHeight;
+}
+
 Renderer2D::Renderer2D() :
 	mWindow(nullptr),
 	m2dRenderer(nullptr),
@@ -124,7 +134,7 @@ void Renderer2D::Draw()
 	{
 		if (s->IsVisible())
 		{
-			s->Draw(m2dRenderer, static_cast<Entity2D*>(s->GetEntity()));
+			s->Draw(this, static_cast<Entity2D*>(s->GetEntity()));
 		}
 	}
 }

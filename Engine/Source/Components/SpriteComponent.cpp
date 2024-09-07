@@ -25,7 +25,7 @@ SpriteComponent::~SpriteComponent()
 	std::cout << "Delete SpriteComponent\n";
 }
 
-void SpriteComponent::Draw(SDL_Renderer* renderer, Entity2D* owner)
+void SpriteComponent::Draw(Renderer2D* renderer, Entity2D* owner)
 {
 	if (mTexture)
 	{
@@ -38,7 +38,7 @@ void SpriteComponent::Draw(SDL_Renderer* renderer, Entity2D* owner)
 
 		// Draw (have to convert angle from radians to degrees, and clockwise to counter)
 		SDL_RenderCopyEx(
-			renderer,
+			renderer->GetSdlRenderer(),
 			mTexture,
 			nullptr,
 			&r,

@@ -23,7 +23,7 @@ public:
 	// Overridable draw function that draws a sprite to the screen
 	// @param - SDL_Renderer* for the renderer
 	// @param - Entity2D* for the owner
-	virtual void Draw(SDL_Renderer* renderer, Entity2D* owner);
+	virtual void Draw(Renderer2D* renderer, Entity2D* owner);
 
 	// Sets the texture to draw for this sprite
 	virtual void SetTexture(SDL_Texture* texture);

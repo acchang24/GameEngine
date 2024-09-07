@@ -60,7 +60,7 @@ void Game::Shutdown()
 
 bool Game::LoadGameData()
 {
-	Entity2D* background = new Entity2D(mRenderer->GetSdlRenderer());
+	Entity2D* background = new Entity2D();
 	background->SetPosition(glm::vec2(static_cast<float>(WINDOW_WIDTH / 2), static_cast<float>(WINDOW_HEIGHT / 2)));
 	SpriteComponent* backgroundSprite = new SpriteComponent(background, mRenderer, "Assets/Stars.png", 99);
 	AddGameEntity(background);

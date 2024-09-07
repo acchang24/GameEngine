@@ -2,10 +2,8 @@
 #include <iostream>
 #include "../Components/SpriteComponent.h"
 
-Entity2D::Entity2D(SDL_Renderer* renderer) :
+Entity2D::Entity2D() :
 	Entity(),
-	mRenderer(renderer),
-	mSprite(nullptr),
 	mPosition(glm::vec2(0.0f, 0.0f)),
 	mScale(glm::vec2(1.0f, 1.0f))
 {
@@ -37,12 +35,4 @@ void Entity2D::Update(float deltaTime)
 
 void Entity2D::OnUpdate(float deltaTime)
 {
-}
-
-void Entity2D::Draw()
-{
-	if (mSprite)
-	{
-		mSprite->Draw(mRenderer, this);
-	}
 }
