@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 class Entity;
+class Entity2D;
 
 class SpriteComponent : public Component 
 {
@@ -15,7 +16,8 @@ public:
 
 	// Overridable draw function that draws a sprite to the screen
 	// @param - SDL_Renderer* for the renderer
-	virtual void Draw(SDL_Renderer* renderer);
+	// @param - Entity2D* for the owner
+	virtual void Draw(SDL_Renderer* renderer, Entity2D* owner);
 
 	// Sets the texture to draw for this sprite
 	virtual void SetTexture(SDL_Texture* texture);
@@ -23,12 +25,15 @@ public:
 	// Gets the draw order for this sprite
 	// @return - int for the draw order
 	int GetDrawOrder() const { return mDrawOrder; }
+
 	// Gets the sprites's width
 	// @return - int for the sprite's width
 	int GetWidth() const { return mWidth; }
+
 	// Gets the sprites's height
 	// @return - int for the sprite's height
 	int GetHeight() const { return mHeight; }
+
 	// Sees if this sprite is visible
 	// @return - bool for if the sprite is visible
 	bool IsVisible() const { return mIsVisible; }
