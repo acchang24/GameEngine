@@ -12,6 +12,22 @@ static int s_WindowHeight;
 // Bool for whenever the window is resized
 static bool s_Resized = false;
 
+int Renderer2D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
+{
+	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED)
+	{
+		SDL_Window* win = SDL_GetWindowFromID(event->window.windowID);
+		if (win == data)
+		{
+			SDL_GetWindowSize(win, &s_WindowWidth, &s_WindowHeight);
+			printf("Window width: %i, Window height: %i\n", s_WindowWidth, s_WindowHeight);
+
+			s_Resized = true;
+		}
+	}
+	return 0;
+}
+
 int Renderer2D::GetWidth()
 {
 	return s_WindowWidth;
@@ -103,6 +119,9 @@ bool Renderer2D::Init(int width, int height, bool fullscreen, SDL_bool mouseCapt
 
 	// Initizlize SDL Image with IMG_Init
 	IMG_Init(IMG_INIT_PNG);
+
+	// Callback function for when window is resized
+	SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
 
 	return true;
 }

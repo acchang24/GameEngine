@@ -47,6 +47,9 @@ public:
 	// @param - SpriteComponent* for the sprite to remove
 	void RemoveSprite(SpriteComponent* sprite);
 
+	// Static function that triggers everytime the window is resized.
+	static int ResizeWindowEventWatcher(void* data, SDL_Event* event);
+
 	static int GetWidth();
 	static int GetHeight();
 
