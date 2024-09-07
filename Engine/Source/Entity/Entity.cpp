@@ -3,7 +3,8 @@
 #include "../Components/Component.h"
 
 Entity::Entity() :
-	mState(EntityState::Active)
+	mState(EntityState::Active),
+	mRotation(0.0f)
 {
 
 }

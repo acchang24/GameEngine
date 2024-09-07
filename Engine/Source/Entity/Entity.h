@@ -54,12 +54,20 @@ public:
 	}
 
 	// Gets the entity's state
-	// @return - const EntityState& for the entity's state
-	const EntityState& GetEntityState() const { return mState; }
+	// @return - EntityState for the entity's state
+	EntityState GetEntityState() const { return mState; }
+
+	// Gets the entity's rotation as a float value
+	// @return - float for the rotation
+	float GetRotation() const { return mRotation; }
 
 	// Sets the entity's state
-	// @param - EnttityState for the entity's new state
+	// @param - EntityState for the entity's new state
 	void SetEntityState(EntityState state) { mState = state; }
+
+	// Sets the entity's single float value rotation
+	// @param - float for the new rotation
+	void SetRotation(float rotation) { mRotation = rotation; }
 
 protected:
 	// Vector of components the entity uses
@@ -67,4 +75,7 @@ protected:
 
 	// Entity's state
 	EntityState mState;
+
+	// Entity's rotation in radians as a float
+	float mRotation;
 };
