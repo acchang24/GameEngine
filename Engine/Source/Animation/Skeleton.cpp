@@ -20,7 +20,7 @@ Skeleton::~Skeleton()
 
 	mAnimations.clear();
 
-	std::cout << "Deleted skeleton at " << this << "\n";
+	std::cout << "Deleted skeleton\n";
 }
 
 Skeleton::Skeleton(Skeleton& other) :

@@ -48,7 +48,7 @@ public:
 	// @param - bool for if the sprite is visible
 	void SetIsVisible(bool visible) { mIsVisible = visible; }
 
-private:
+protected:
 	// SDL texture to draw
 	SDL_Texture* mTexture;
 
