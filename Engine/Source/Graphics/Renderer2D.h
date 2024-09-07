@@ -22,6 +22,7 @@ public:
 	void EndFrame();
 
 	// Gets the SDL renderer
+	// @return - SDL_Renderer* for the 2D sdl renderer
 	SDL_Renderer* GetSdlRenderer() { return m2dRenderer; }
 
 private:
