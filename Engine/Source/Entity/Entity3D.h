@@ -61,18 +61,31 @@ public:
 	// Gets the entity's model matrix
 	// @return - const glm::mat4& for the entity's model matrix
 	const glm::mat4& GetModelMatrix() const { return mModelMatrix; }
+
+	// Gets the Entity's quaternion rotation
+	// @return - const glm::quat& for the rotation as a quaternion
+	const glm::quat& GetQuatRotation() const { return mQuatRotation; }
+
 	// Gets the entity's position
 	// @return - const glm::vec3& for the entity's position
 	const glm::vec3& GetPosition() const { return mPosition; }
+
 	// Gets the entity's scale
 	// @return - const glm::vec3& for the entity's scale
 	const glm::vec3& GetScale() const { return mScale; }
+
+	// Gets the entity's model
+	// @return - Model* for the entity's 3D model
+	Model* GetModel() { return mModel; }
+
 	// Gets the entity's yaw rotation
 	// @return - float for the entity's yaw rotation
 	float GetYaw() const { return mYaw; }
+
 	// Gets the entity's pitch rotation
 	// @return - float for the entity's pitch rotation
 	float GetPitch() const { return mPitch; }
+
 	// Gets the entity's roll rotation
 	// @return - float for the entity's roll rotation
 	float GetRoll() const { return mRoll; }
@@ -80,15 +93,23 @@ public:
 	// Set the entity's model matrix
 	// @param - const glm::mat4& for the new model matrix
 	void SetModelMatrix(const glm::mat4& m) { mModelMatrix = m; }
+
+	// Sets the entity's rotation as a quaternion
+	// @param - const glm::quat& for the new rotation
+	void SetQuatRotation(const glm::quat& rotation) { mQuatRotation = rotation; }
+
 	// Set the entity's position
 	// @param - const glm::vec3& for the new position
 	void SetPosition(const glm::vec3& pos) { mPosition = pos; }
+
 	// Set the entity's scale (using vector 3)
 	// @param - const glm::vec3& for the new scale
 	void SetScale(const glm::vec3& scale) { mScale = scale; }
+
 	// Set the entity's scale (using single float value)
 	// @param - float for the new scale
 	void SetScale(float scale) { mScale = glm::vec3(scale, scale, scale); }
+
 	// Set the entity's yaw rotation
 	// @param - float for the new yaw rotation
 	void SetYaw(float yaw)
@@ -97,8 +118,9 @@ public:
 
 		glm::quat newRotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		mRotation = newRotation * mRotation;
+		mQuatRotation = newRotation * mQuatRotation;
 	}
+
 	// Set the entity's pitch rotation
 	// @param - float for the new pitch rotation
 	void SetPitch(float pitch)
@@ -107,8 +129,9 @@ public:
 
 		glm::quat newRotation = glm::angleAxis(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
 
-		mRotation = newRotation * mRotation;
+		mQuatRotation = newRotation * mQuatRotation;
 	}
+
 	// Set the entity's roll rotation
 	// @param - float for the new roll rotation
 	void SetRoll(float roll)
@@ -117,16 +140,12 @@ public:
 
 		glm::quat newRotation = glm::angleAxis(glm::radians(roll), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		mRotation = newRotation * mRotation;
+		mQuatRotation = newRotation * mQuatRotation;
 	}
 
-	void SetRotation(const glm::quat& rotation) { mRotation = rotation; }
-
+	// Sets if this entity is skinned or not (if model has animations)
+	// @param - bool for if the entity is skinned
 	void SetIsSkinned(bool skin) { mIsSkinned = skin; }
-
-	const glm::quat& GetRotation() const { return mRotation; }
-
-	Model* GetModel() { return mModel; }
 
 protected:
 	// Job to update the Entity3D's model matrix on a separate thread
@@ -148,7 +167,8 @@ protected:
 	// Model matrix to transform this entity from model space to world space
 	glm::mat4 mModelMatrix;
 
-	glm::quat mRotation;
+	// The entity's rotation represented as a quaternion
+	glm::quat mQuatRotation;
 
 	// Entity's position
 	glm::vec3 mPosition;
@@ -164,8 +184,10 @@ protected:
 
 	// Yaw rotation
 	float mYaw;
+
 	// Pitch rotation
 	float mPitch;
+
 	// Roll rotation
 	float mRoll;
 

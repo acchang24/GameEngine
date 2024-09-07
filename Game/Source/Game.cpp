@@ -310,7 +310,7 @@ bool Game::Init()
 	squidward->SetYaw(-90.0f);
 	squidward->SetPitch(45.0f);
 	squidward->SetRoll(20.0f);
-	glm::quat rot = squidward->GetRotation();
+	glm::quat rot = squidward->GetQuatRotation();
 	glm::vec3 euler = glm::eulerAngles(rot);
 
 	std::cout << "pitch: " << glm::degrees(euler.x) << " yaw: " << glm::degrees(euler.y) << " roll: " << glm::degrees(euler.z) << "\n";
@@ -320,10 +320,10 @@ bool Game::Init()
 	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f)); 
 	squidward2->SetScale(0.35f);
 	glm::quat newRot = glm::quat(glm::vec3(glm::radians(45.0f), glm::radians(-90.0f), glm::radians(20.0f)));
-	squidward2->SetRotation(newRot);
+	squidward2->SetQuatRotation(newRot);
 	AddGameEntity(squidward2);
 
-	glm::quat rot3 = squidward2->GetRotation();
+	glm::quat rot3 = squidward2->GetQuatRotation();
 	glm::vec3 euler2 = glm::eulerAngles(rot3);
 	std::cout << "pitch: " << glm::degrees(euler2.x) << " yaw: " << glm::degrees(euler2.y) << " roll: " << glm::degrees(euler2.z) << "\n";
 	glm::vec3 euler3 = glm::eulerAngles(newRot);

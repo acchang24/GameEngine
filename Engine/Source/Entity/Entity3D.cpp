@@ -12,7 +12,7 @@ Entity3D::Entity3D() :
 	Entity(),
 	mUpdateModelMatrixJob(this),
 	mModelMatrix(glm::mat4(1.0f)),
-	mRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
+	mQuatRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mModel(nullptr),
@@ -28,7 +28,7 @@ Entity3D::Entity3D(const std::string& fileName):
 	Entity(),
 	mUpdateModelMatrixJob(this),
 	mModelMatrix(glm::mat4(1.0f)),
-	mRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
+	mQuatRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mModel(nullptr),
@@ -145,7 +145,7 @@ void Entity3D::CalculateWorldTransform()
 
 	glm::mat4 translate = glm::translate(model, mPosition);
 
-	glm::mat4 rotation = glm::toMat4(mRotation);
+	glm::mat4 rotation = glm::toMat4(mQuatRotation);
 
 	// Euler angles
 	//glm::mat4 rotation = glm::rotate(model, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
