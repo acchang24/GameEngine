@@ -2,8 +2,9 @@
 #include <iostream>
 #include "../Components/SpriteComponent.h"
 
-Entity2D::Entity2D() :
+Entity2D::Entity2D(Renderer2D* renderer) :
 	Entity(),
+	mRenderer(renderer),
 	mPosition(glm::vec2(0.0f, 0.0f)),
 	mScale(glm::vec2(1.0f, 1.0f))
 {

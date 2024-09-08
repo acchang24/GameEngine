@@ -2,11 +2,13 @@
 #include "Entity.h"
 #include <GLM/glm.hpp>
 
+class Renderer2D;
+
 class Entity2D : public Entity
 {
 public:
 	// Entity2D constructor
-	Entity2D();
+	Entity2D(Renderer2D* renderer);
 	~Entity2D();
 
 	// Override of ProcessInput for entity
@@ -45,7 +47,9 @@ public:
 	// @param - float for the new scale
 	void SetScale(float scale) { mScale.x = scale; mScale.y = scale; }
 
-private:
+protected:
+	Renderer2D* mRenderer;
+
 	// Entity's position
 	glm::vec2 mPosition;
 

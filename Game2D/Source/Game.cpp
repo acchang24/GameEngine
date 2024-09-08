@@ -63,7 +63,7 @@ void Game::Shutdown()
 bool Game::LoadGameData()
 {
 	// Background
-	Entity2D* background = new Entity2D();
+	Entity2D* background = new Entity2D(mRenderer);
 	background->SetPosition(glm::vec2(static_cast<float>(WINDOW_WIDTH / 2), static_cast<float>(WINDOW_HEIGHT / 2)));
 	BackgroundSpriteComponent* backgroundSprite = new BackgroundSpriteComponent(background, mRenderer, "Assets/Stars.png", 99);
 	AddGameEntity(background);
@@ -142,6 +142,11 @@ void Game::ProcessInput()
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 	{
 		mIsRunning = false;
+	}
+
+	for (auto e : mEntities)
+	{
+		e->ProcessInput(keyboardState);
 	}
 }
 
