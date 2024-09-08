@@ -37,3 +37,8 @@ void Entity2D::Update(float deltaTime)
 void Entity2D::OnUpdate(float deltaTime)
 {
 }
+
+glm::vec2 Entity2D::GetForward() const
+{
+	return glm::vec2(glm::cos(mRotation), glm::sin(mRotation));
+}

@@ -47,6 +47,10 @@ public:
 	// @param - float for the new scale
 	void SetScale(float scale) { mScale.x = scale; mScale.y = scale; }
 
+	// Gets the Entity's 2d forward based of its rotation in radians
+	// @return - glm::vec2 for the entity's forward
+	glm::vec2 GetForward() const;
+
 protected:
 	Renderer2D* mRenderer;
 
