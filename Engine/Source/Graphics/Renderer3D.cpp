@@ -169,10 +169,10 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Set the new viewport
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
-	mMainFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples);
-	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth / 2, s_WindowHeight / 2);
-	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
-	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
+	mMainFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples, "main_multisampled");
+	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth / 2, s_WindowHeight / 2, "bloom_mask");
+	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4, "bloom_blur_horizontal");
+	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4, "bloom_blur_vertical");
 
 	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	mSkeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
@@ -236,14 +236,34 @@ void Renderer3D::EndFrame()
 	SDL_GL_SwapWindow(mWindow);
 }
 
-FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height)
+FrameBuffer* Renderer3D::GetFrameBuffer(const std::string& name)
 {
-	return new FrameBuffer(width, height);
+	FrameBuffer* buffer = nullptr;
+
+	if (mFrameBuffers.find(name) != mFrameBuffers.end())
+	{
+		buffer = mFrameBuffers[name];
+	}
+
+	return buffer;
 }
 
-FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int width, int height, int subsamples)
+FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, const std::string& name)
 {
-	return new FrameBufferMultiSampled(width, height, subsamples);
+	FrameBuffer* framebuffer = new FrameBuffer(width, height);
+
+	mFrameBuffers[name] = framebuffer;
+
+	return framebuffer;
+}
+
+FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int width, int height, int subsamples, const std::string& name)
+{
+	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(width, height, subsamples);
+
+	mFrameBuffers[name] = framebuffer;
+
+	return framebuffer;
 }
 
 void Renderer3D::SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader)

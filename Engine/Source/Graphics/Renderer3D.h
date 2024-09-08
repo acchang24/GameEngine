@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <unordered_map>
 #include <SDL2/SDL.h>
 
 class FrameBuffer;
@@ -45,16 +47,22 @@ public:
 	// Swap the buffers and present to the screen
 	void EndFrame();
 
+	// Gets the framebuffer by name in the framebuffer map
+	// @param - const std::string& for the name of the desired frame buffer
+	FrameBuffer* GetFrameBuffer(const std::string& name);
+
 	// Creates a frame buffer for the renderer to use
 	// @param - int for the width of the frame buffer
 	// @param - int for the height of the frame buffer
-	FrameBuffer* CreateFrameBuffer(int width, int height);
+	// @param - const std::string& for the name of the frame buffer
+	FrameBuffer* CreateFrameBuffer(int width, int height, const std::string& name);
 
 	// Creates a multisampled frame buffer for the renderer to use
 	// @param - int for the width of the frame buffer
 	// @param - int for the height of the frame buffer
 	// @param - int for the number of subsamples used for anti-aliasing
-	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples);
+	// @param - const std::string& for the name of the frame buffer
+	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples, const std::string& name);
 
 	// Sets a framebuffer's shader
 	// @param - FrameBuffer* for the target framebuffer
@@ -97,6 +105,9 @@ public:
 private:
 	Renderer3D();
 	~Renderer3D();
+
+	// Map of frame buffers used by the renderer
+	std::unordered_map<std::string, FrameBuffer*> mFrameBuffers;
 
 	// Framebuffers - Add any additional framebuffers here if needed
 	// and use CreateFrameBuffers() to generate a new one.
