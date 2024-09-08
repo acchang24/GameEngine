@@ -4,6 +4,7 @@
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
+class UniformBuffer;
 
 class Renderer3D
 {
@@ -66,12 +67,21 @@ public:
 	// Resizes all the frame buffers to the new dimensions
 	void ResizeFrameBuffers();
 
+	// Link shader's uniform block to a uniform's binding point
+	// @param - UniformBuffer* for the uniform buffer
+	// @param - Shader* to link the buffer
+	void LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader);
+
 	// Retrieves the main frame buffer
 	// @return - FrameBuffer* for the main frame buffer
 	FrameBufferMultiSampled* GetMainFrameBuffer() { return mMainFrameBuffer; }
 	FrameBuffer* GetBloomMaskFrameBuffer() { return mBloomMaskFrameBuffer; }
 	FrameBuffer* GetBloomBlurHorizontalFrameBuffer() { return mBloomBlurHorizontalFrameBuffer; }
 	FrameBuffer* GetBloomBlurVerticalFrameBuffer() { return mBloomBlurVerticalFrameBuffer; }
+
+	// Gets the UniformBuffer for materials
+	// @return - UniformBuffer* for the material buffer
+	UniformBuffer* GetMaterialBuffer() { return mMaterialBuffer; }
 
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
@@ -92,6 +102,9 @@ private:
 	FrameBuffer* mBloomBlurHorizontalFrameBuffer;
 	FrameBuffer* mBloomBlurVerticalFrameBuffer;
 	
+	// A uniform buffer for passing Material data
+	UniformBuffer* mMaterialBuffer;
+
 	// SDL window used for the game
 	SDL_Window* mWindow;
 

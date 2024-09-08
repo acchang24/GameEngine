@@ -4,6 +4,8 @@
 #include "Camera.h"
 #include "FrameBuffer.h"
 #include "FrameBufferMultiSampled.h"
+#include "Material.h"
+#include "UniformBuffer.h"
 
 // Window width
 static int s_WindowWidth;
@@ -17,6 +19,7 @@ Renderer3D::Renderer3D() :
 	mBloomMaskFrameBuffer(nullptr),
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
+	mMaterialBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -169,6 +172,8 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
 	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
 
+	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+
 	return true;
 }
 
@@ -186,6 +191,8 @@ void Renderer3D::Shutdown()
 	delete mBloomMaskFrameBuffer;
 	delete mBloomBlurHorizontalFrameBuffer;
 	delete mBloomBlurVerticalFrameBuffer;
+
+	delete mMaterialBuffer;
 }
 
 void Renderer3D::ClearBuffers()
@@ -281,4 +288,9 @@ void Renderer3D::ResizeFrameBuffers()
 	mBloomBlurVerticalFrameBuffer->Load(s_WindowWidth / 4, s_WindowHeight / 4);
 
 	s_Resized = false;
+}
+
+void Renderer3D::LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader)
+{
+	buffer->LinkShader(shader);
 }
