@@ -83,6 +83,10 @@ public:
 	// @return - UniformBuffer* for the material buffer
 	UniformBuffer* GetMaterialBuffer() { return mMaterialBuffer; }
 
+	// Gets the UniformBuffer for skeleton
+	// @return - UniformBuffer* for the skeleton buffer
+	UniformBuffer* GetSkeletonBuffer() { return mSkeletonBuffer; }
+
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
 	int GetNumSubsamples() const { return mNumSubsamples; }
@@ -104,6 +108,9 @@ private:
 	
 	// A uniform buffer for passing Material data
 	UniformBuffer* mMaterialBuffer;
+
+	// A uniform buffer for passing Skeleton data
+	UniformBuffer* mSkeletonBuffer;
 
 	// SDL window used for the game
 	SDL_Window* mWindow;

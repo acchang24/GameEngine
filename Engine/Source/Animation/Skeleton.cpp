@@ -1,13 +1,13 @@
 #include "Skeleton.h"
 #include <iostream>
+#include "../Graphics/Renderer3D.h"
 #include "../Util/AssimpGLMHelper.h"
-#include "../MemoryManager/AssetManager.h"
 #include "Bone.h"
 
 Skeleton::Skeleton() :
 	mSkeletonConsts({}),
 	mJob(this),
-	mSkeletonBuffer(AssetManager::Get()->LoadBuffer("SkeletonBuffer")),
+	mSkeletonBuffer(Renderer3D::Get()->GetSkeletonBuffer()),
 	mCurrentAnimation(nullptr),
 	mCurrentTime(0.0f),
 	mNumBones(0)

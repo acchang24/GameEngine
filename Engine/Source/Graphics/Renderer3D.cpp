@@ -1,6 +1,7 @@
 #include "Renderer3D.h"
 #include <iostream>
 #include <glad/glad.h>
+#include "../Animation/Skeleton.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
 #include "FrameBufferMultiSampled.h"
@@ -20,6 +21,7 @@ Renderer3D::Renderer3D() :
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
 	mMaterialBuffer(nullptr),
+	mSkeletonBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -173,6 +175,7 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4);
 
 	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+	mSkeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 
 	return true;
 }
@@ -193,6 +196,7 @@ void Renderer3D::Shutdown()
 	delete mBloomBlurVerticalFrameBuffer;
 
 	delete mMaterialBuffer;
+	delete mSkeletonBuffer;
 }
 
 void Renderer3D::ClearBuffers()

@@ -129,17 +129,9 @@ bool Game::Init()
 	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), instanceShader);
 	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), textureShader);
 
-
-	//UniformBuffer* materialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
-	//materialBuffer->LinkShader(phongShader);
-	//materialBuffer->LinkShader(instanceShader);
-	//materialBuffer->LinkShader(textureShader);
-	//mAssetManager->SaveBuffer("MaterialBuffer", materialBuffer);
-
-	UniformBuffer* skeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
-	skeletonBuffer->LinkShader(skinnedShader);
-	skeletonBuffer->LinkShader(shadowDepthShader);
-	mAssetManager->SaveBuffer("SkeletonBuffer", skeletonBuffer);
+	// Link shader uniform blocks for the skeleton buffer
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), skinnedShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), shadowDepthShader);
 
 	Material* lightSphereMaterial = new Material();
 	lightSphereMaterial->SetShader(textureShader);
