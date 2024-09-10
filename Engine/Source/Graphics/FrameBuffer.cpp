@@ -6,15 +6,15 @@
 #include "VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 
-FrameBuffer::FrameBuffer(int width, int height) :
+FrameBuffer::FrameBuffer(int windowWidth, int windowHeight) :
 	mShader(nullptr),
 	mVertexBuffer(nullptr),
 	mFrameBuffer(0),
 	mTexture(0),
 	mRenderBuffer(0),
 	mTextureUnit(static_cast<int>(TextureUnit::FrameBuffer)),
-	mWidth(width),
-	mHeight(height)
+	mWidth(windowWidth),
+	mHeight(windowHeight)
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
 	VertexScreenQuad quadVertices[] = {
@@ -28,7 +28,7 @@ FrameBuffer::FrameBuffer(int width, int height) :
 	};
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
-	Load(width, height);
+	Load(mWidth, mHeight);
 }
 
 FrameBuffer::~FrameBuffer()
@@ -40,10 +40,11 @@ FrameBuffer::~FrameBuffer()
 	Unload();
 }
 
-void FrameBuffer::Load(int width, int height)
+void FrameBuffer::Load(int windowWidth, int windowHeight)
 {
-	mWidth = width;
-	mHeight = height;
+	// Re-adjust the width/height to new window width/height
+	mWidth = windowWidth;
+	mHeight = windowHeight;
 
 	// Create a frame buffer object with non multisampled texture attachment
 	glGenFramebuffers(1, &mFrameBuffer);
@@ -55,7 +56,7 @@ void FrameBuffer::Load(int width, int height)
 	// bind the texture
 	glBindTexture(GL_TEXTURE_2D, mTexture);
 	// Create the image (use floating point for HDR/tone mapping)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, mWidth, mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	// Set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -68,7 +69,7 @@ void FrameBuffer::Load(int width, int height)
 	glGenRenderbuffers(1, &mRenderBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, mRenderBuffer);
 	// Create a depth and stencil render buffer object
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWidth, mHeight);
 	// Attatch render buffer object
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBuffer);
 

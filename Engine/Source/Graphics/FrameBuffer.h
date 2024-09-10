@@ -11,15 +11,15 @@ class FrameBuffer
 {
 public:
 	// FrameBuffer constructor
-	// @param - int for the screen's width
-	// @param - int for the screen's height
-	FrameBuffer(int width, int height);
+	// @param - int for the screen/window's width
+	// @param - int for the screen/window's height
+	FrameBuffer(int windowWidth, int windowHeight);
 	virtual ~FrameBuffer();
 
 	// Generates a new frame buffer
-	// @param - int for the framebuffer's width
-	// @param - int for the framebuffer's height
-	void Load(int width, int height);
+	// @param - int for the screen/window's width
+	// @param - int for the screen/window's height
+	void Load(int windowWidth, int windowHeight);
 	// Deletes the framebuffer, texture, and renderbuffer references
 	virtual void Unload();
 

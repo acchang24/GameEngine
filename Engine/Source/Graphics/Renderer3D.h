@@ -52,17 +52,17 @@ public:
 	FrameBuffer* GetFrameBuffer(const std::string& name);
 
 	// Creates a frame buffer for the renderer to use
-	// @param - int for the width of the frame buffer
-	// @param - int for the height of the frame buffer
+	// @param - int for the width of the screen/window
+	// @param - int for the height of the screen/window
 	// @param - const std::string& for the name of the frame buffer
-	FrameBuffer* CreateFrameBuffer(int width, int height, const std::string& name);
+	FrameBuffer* CreateFrameBuffer(int screenWidth, int screenHeight, const std::string& name);
 
 	// Creates a multisampled frame buffer for the renderer to use
-	// @param - int for the width of the frame buffer
-	// @param - int for the height of the frame buffer
+	// @param - int for the width of the screen/window
+	// @param - int for the height of the screen/window
 	// @param - int for the number of subsamples used for anti-aliasing
 	// @param - const std::string& for the name of the frame buffer
-	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples, const std::string& name);
+	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, const std::string& name);
 
 	// Sets a framebuffer's shader
 	// @param - FrameBuffer* for the target framebuffer

@@ -4,13 +4,13 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 
-FrameBufferMultiSampled::FrameBufferMultiSampled(int width, int height, int subsamples) :
-	FrameBuffer(width, height),
+FrameBufferMultiSampled::FrameBufferMultiSampled(int windowWidth, int windowHeight, int subsamples) :
+	FrameBuffer(windowWidth, windowHeight),
 	mMSAAFrameBuffer(0),
 	mTextureMultiSampled(0),
 	mRenderBufferMultiSampled(0)
 {
-	Load(width, height, subsamples);
+	Load(mWidth, mHeight, subsamples);
 }
 
 FrameBufferMultiSampled::~FrameBufferMultiSampled()
@@ -20,14 +20,15 @@ FrameBufferMultiSampled::~FrameBufferMultiSampled()
 	Unload();
 }
 
-void FrameBufferMultiSampled::Load(int width, int height, int subsamples)
+void FrameBufferMultiSampled::Load(int windowWidth, int windowHeight, int subsamples)
 {
-	mWidth = width;
-	mHeight = height;
+	// Re-adjust the width/height to new screen width/height
+	mWidth = windowWidth;
+	mHeight = windowHeight;
 
 	if (mFrameBuffer == 0 && mTexture == 0 && mRenderBuffer == 0)
 	{
-		FrameBuffer::Load(width, height);
+		FrameBuffer::Load(mWidth, mHeight);
 	}
 
 	// Create MSAA framebuffer
@@ -40,7 +41,7 @@ void FrameBufferMultiSampled::Load(int width, int height, int subsamples)
 	// bind the texture
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, mTextureMultiSampled);
 	// Create the image (use floating point value for HDR/tone mapping)
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, subsamples, GL_RGB16F, width, height, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, subsamples, GL_RGB16F, mWidth, mHeight, GL_TRUE);
 	// Bind offscreen texture to framebuffer:
 	// - target: the frame buffer type to target
 	// - attachment: type of attachment to attach, this case color
@@ -54,7 +55,7 @@ void FrameBufferMultiSampled::Load(int width, int height, int subsamples)
 	glGenRenderbuffers(1, &mRenderBufferMultiSampled);
 	glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferMultiSampled);
 	// Create a depth and stencil render buffer object
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, subsamples, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, subsamples, GL_DEPTH24_STENCIL8, mWidth, mHeight);
 	// Attach render buffer object
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBufferMultiSampled);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);

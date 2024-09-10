@@ -8,17 +8,17 @@ class FrameBufferMultiSampled : public FrameBuffer
 {
 public:
 	// FrameBufferMultiSampled constructor
-	// @param - int for the screen's width
-	// @param - int for the screen's height
+	// @param - int for the screen/window's width
+	// @param - int for the screen/window's height
 	// @param - int for the number of subsamples used for anti-aliasing
-	FrameBufferMultiSampled(int width, int height, int subsamples);
+	FrameBufferMultiSampled(int windowWidth, int windowHeight, int subsamples);
 	~FrameBufferMultiSampled();
 
 	// Generates a new multi-sampled framebuffer
-	// @param - int for the framebuffer's width
-	// @param - int for the framebuffer's height
+	// @param - int for the screen/window's width
+	// @param - int for the screen/window's height
 	// @param - int for the number of subsamples used for anti-aliasing
-	void Load(int width, int height, int subsamples);
+	void Load(int windowWidth, int windowHeight, int subsamples);
 	// Deletes the framebuffer, texture, and renderbuffer references as well as its parent's references
 	void Unload() override;
 
