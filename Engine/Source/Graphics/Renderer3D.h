@@ -36,7 +36,8 @@ public:
 	// This will set the main multisampled frame buffer to active, and all draw
 	// calls will be made to the frame buffers. Any mesh rendering should be drawn
 	// after this is called in the Game class.
-	void SetFrameBuffer();
+	// @param - FrameBuffer* for the framebuffer to set active
+	void SetFrameBuffer(FrameBuffer* framebuffer);
 
 	// Draws to any frame buffers used. This will first blit the main multisampled frame buffer
 	// to its non multisampled one. Any additional draws to other frame buffers will happen after.

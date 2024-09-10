@@ -90,6 +90,9 @@ void FrameBufferMultiSampled::SetActive() const
 
 	// Clear the color buffer, depth buffer for this frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Reset viewport size to this frame buffer's dimensions
+	glViewport(0, 0, mWidth, mHeight);
 }
 
 void FrameBufferMultiSampled::Draw(unsigned int texture)

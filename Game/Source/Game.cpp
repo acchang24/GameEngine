@@ -796,7 +796,7 @@ void Game::Render()
 
 	mRenderer->ClearBuffers();
 
-	mRenderer->SetFrameBuffer();
+	mRenderer->SetFrameBuffer(mRenderer->GetFrameBuffer("main_multisampled"));
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 

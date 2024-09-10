@@ -208,13 +208,17 @@ void Renderer3D::ClearBuffers()
 
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	// Clear the color buffer, depth buffer
+
+	// Clear the color buffer, depth buffer for default frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer3D::SetFrameBuffer()
+void Renderer3D::SetFrameBuffer(FrameBuffer* framebuffer)
 {
-	mMainFrameBuffer->SetActive();
+	//mMainFrameBuffer->SetActive();
+
+	framebuffer->SetActive();
+
 }
 
 void Renderer3D::DrawFrameBuffers()
@@ -222,10 +226,13 @@ void Renderer3D::DrawFrameBuffers()
 	mMainFrameBuffer->BlitBuffers();
 
 	// Use the blitted texture and mask off dark spots
+	mBloomMaskFrameBuffer->SetActive();
 	mBloomMaskFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Use the masked off texture and blur horizontally
+	mBloomBlurHorizontalFrameBuffer->SetActive();
 	mBloomBlurHorizontalFrameBuffer->Draw(mBloomMaskFrameBuffer->GetTexture());
 	// Use the horizontally blurred texture to blur vertically
+	mBloomBlurVerticalFrameBuffer->SetActive();
 	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
 	// Uses the blitted texture and the blurred texture to additively blend them for final image
 	mMainFrameBuffer->Draw(mBloomBlurVerticalFrameBuffer->GetTexture());
