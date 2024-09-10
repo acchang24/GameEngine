@@ -107,13 +107,7 @@ void FrameBuffer::SetActive() const
 }
 
 void FrameBuffer::Draw(unsigned int texture)
-{
-	//// Bind/draw to this framebuffer
-	//glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
-
-	//// Adjust the viewport to the framebuffer's size
-	//glViewport(0, 0, mWidth, mHeight);
-	
+{	
 	// Disable depth test so screen quad isn't discarded
 	glDisable(GL_DEPTH_TEST);
 

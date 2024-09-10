@@ -169,6 +169,10 @@ bool Game::Init()
 	bloomBlurVerticalShader->SetFloat("height", static_cast<float>(WINDOW_HEIGHT / 4));
 	mAssetManager->SaveShader("bloomBlurVertical", bloomBlurVerticalShader);
 
+	Shader* bloomBlendShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlend.frag");
+	mAssetManager->SaveShader("bloomBlend", bloomBlendShader);
+
+
 	Shader* hdrGammaShader = new Shader("Shaders/screen.vert", "Shaders/hdrGamma.frag");
 	hdrGammaShader->SetActive();
 	hdrGammaShader->SetFloat("exposure", 1.0f);
@@ -180,6 +184,7 @@ bool Game::Init()
 	mRenderer->SetFrameBufferShader(mRenderer->GetBloomMaskFrameBuffer(), bloomMaskShader);
 	mRenderer->SetFrameBufferShader(mRenderer->GetBloomBlurHorizontalFrameBuffer(), bloomBlurHorizontalShader);
 	mRenderer->SetFrameBufferShader(mRenderer->GetBloomBlurVerticalFrameBuffer(), bloomBlurVerticalShader);
+	mRenderer->SetFrameBufferShader(mRenderer->GetFrameBuffer("bloom_blend"), bloomBlendShader);
 
 	// Skybox
 	std::vector<std::string> faceNames
@@ -580,6 +585,7 @@ void Game::ProcessInput()
 
 	// HDR/Exposure
 	Shader* shader = mAssetManager->LoadShader("hdrGamma");
+	Shader* bloomAdd = mAssetManager->LoadShader("bloomBlend");
 
 	// Toggle hdr
 	if (keyboardState[SDL_SCANCODE_H] && !mPrevKeyInputs[SDL_SCANCODE_H])
@@ -593,8 +599,8 @@ void Game::ProcessInput()
 	{
 		bloom = !bloom;
 
-		shader->SetActive();
-		shader->SetBool("bloom", bloom);
+		bloomAdd->SetActive();
+		bloomAdd->SetBool("bloom", bloom);
 	}
 	// Exposure levels
 	if (keyboardState[SDL_SCANCODE_0])

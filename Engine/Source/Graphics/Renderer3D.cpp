@@ -6,6 +6,7 @@
 #include "FrameBuffer.h"
 #include "FrameBufferMultiSampled.h"
 #include "Material.h"
+#include "Shader.h"
 #include "UniformBuffer.h"
 
 // Window width
@@ -20,6 +21,7 @@ Renderer3D::Renderer3D() :
 	mBloomMaskFrameBuffer(nullptr),
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
+	mBloomBlendFrameBuffer(nullptr),
 	mMaterialBuffer(nullptr),
 	mSkeletonBuffer(nullptr),
 	mWindow(nullptr),
@@ -173,6 +175,7 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_mask", 0.5f);
 	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blur_horizontal", 0.25f);
 	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blur_vertical", 0.25f);
+	mBloomBlendFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blend");
 
 	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	mSkeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
@@ -194,6 +197,7 @@ void Renderer3D::Shutdown()
 	delete mBloomMaskFrameBuffer;
 	delete mBloomBlurHorizontalFrameBuffer;
 	delete mBloomBlurVerticalFrameBuffer;
+	delete mBloomBlendFrameBuffer;
 
 	delete mMaterialBuffer;
 	delete mSkeletonBuffer;
@@ -246,9 +250,13 @@ void Renderer3D::DrawFrameBuffers()
 	// Use the horizontally blurred texture to blur vertically
 	mBloomBlurVerticalFrameBuffer->SetActive();
 	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
-	// Uses the blitted texture and the blurred texture to additively blend them for final image
+	// Uses the blitted texture and the blurred texture to additively blend them
+	mBloomBlendFrameBuffer->SetActive();
+	CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureUnit::FrameBuffer));
+	mBloomBlendFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
+	// Draw the final image
 	SetDefaultFrameBuffer();
-	mMainFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
+	mMainFrameBuffer->Draw(mBloomBlendFrameBuffer->GetTexture());
 }
 
 void Renderer3D::EndFrame()
@@ -289,6 +297,22 @@ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWid
 void Renderer3D::SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader)
 {
 	frameBuffer->SetShader(shader);
+}
+
+void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit)
+{
+	shader->SetActive();
+
+	// Bind the normal texture (everything that is drawn to the screen)
+	shader->SetInt("screenTexture", textureUnit);
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	// Bind the blur texture (texture used for post-processing)
+	int blurUnit = textureUnit + 3;
+	shader->SetInt("blurTexture", blurUnit);
+	glActiveTexture(GL_TEXTURE0 + blurUnit);
+	glBindTexture(GL_TEXTURE_2D, texture2);
 }
 
 int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)

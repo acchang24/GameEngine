@@ -76,6 +76,13 @@ public:
 	// @param - Shader* the shader to set for the framebuffer
 	void SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader);
 
+	// Sets up a shader so that two textures can be additively blended together
+	// @param - Shader* to set active
+	// @param - unsigned int for a reference to the first texture
+	// @param - unsigned int for a reference to the second texture
+	// @param - int for the texture unit to activate
+	void CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit);
+
 	// Static function that triggers everytime the window is resized.
 	static int ResizeWindowEventWatcher(void* data, SDL_Event* event);
 
@@ -123,7 +130,8 @@ private:
 	FrameBuffer* mBloomMaskFrameBuffer;
 	FrameBuffer* mBloomBlurHorizontalFrameBuffer;
 	FrameBuffer* mBloomBlurVerticalFrameBuffer;
-	
+	FrameBuffer* mBloomBlendFrameBuffer;
+
 	// A uniform buffer for passing Material data
 	UniformBuffer* mMaterialBuffer;
 
