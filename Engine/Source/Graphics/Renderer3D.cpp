@@ -221,6 +221,18 @@ void Renderer3D::SetFrameBuffer(FrameBuffer* framebuffer)
 
 }
 
+void Renderer3D::SetDefaultFrameBuffer() const
+{
+	// Bind back to default frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Clear the color buffer, depth buffer for this frame buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Reset viewport size to this frame buffer's dimensions
+	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
+}
+
 void Renderer3D::DrawFrameBuffers()
 {
 	mMainFrameBuffer->BlitBuffers();
@@ -235,7 +247,8 @@ void Renderer3D::DrawFrameBuffers()
 	mBloomBlurVerticalFrameBuffer->SetActive();
 	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
 	// Uses the blitted texture and the blurred texture to additively blend them for final image
-	mMainFrameBuffer->Draw(mBloomBlurVerticalFrameBuffer->GetTexture());
+	SetDefaultFrameBuffer();
+	mMainFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 }
 
 void Renderer3D::EndFrame()

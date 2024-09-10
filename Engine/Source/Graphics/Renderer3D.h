@@ -39,6 +39,8 @@ public:
 	// @param - FrameBuffer* for the framebuffer to set active
 	void SetFrameBuffer(FrameBuffer* framebuffer);
 
+	void SetDefaultFrameBuffer() const;
+
 	// Draws to any frame buffers used. This will first blit the main multisampled frame buffer
 	// to its non multisampled one. Any additional draws to other frame buffers will happen after.
 	// This will end with the main multisampled frame buffer being drawn to the default frame buffer.

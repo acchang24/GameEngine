@@ -97,10 +97,10 @@ void FrameBufferMultiSampled::SetActive() const
 
 void FrameBufferMultiSampled::Draw(unsigned int texture)
 {
-	// Bind back to default frame buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	// Reset viewport size
-	glViewport(0, 0, mWidth, mHeight);
+	//// Bind back to default frame buffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//// Reset viewport size
+	//glViewport(0, 0, mWidth, mHeight);
 
 	// Disable depth test so screen quad isn't discarded
 	glDisable(GL_DEPTH_TEST);
@@ -110,13 +110,13 @@ void FrameBufferMultiSampled::Draw(unsigned int texture)
 	// Bind the normal texture (everything that is drawn to the screen)
 	mShader->SetInt("screenTexture", mTextureUnit);
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
-	glBindTexture(GL_TEXTURE_2D, mTexture);
-
-	// Bind the blur texture (texture used for post-processing)
-	int blurUnit = mTextureUnit + 3;
-	mShader->SetInt("blurTexture", blurUnit);
-	glActiveTexture(GL_TEXTURE0 + blurUnit);
 	glBindTexture(GL_TEXTURE_2D, texture);
+
+	//// Bind the blur texture (texture used for post-processing)
+	//int blurUnit = mTextureUnit + 3;
+	//mShader->SetInt("blurTexture", blurUnit);
+	//glActiveTexture(GL_TEXTURE0 + blurUnit);
+	//glBindTexture(GL_TEXTURE_2D, texture);
 
 	mVertexBuffer->Draw();
 
