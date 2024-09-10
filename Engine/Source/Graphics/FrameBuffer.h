@@ -31,7 +31,8 @@ public:
 	virtual void SetActive() const;
 
 	// Binds this framebuffer then adjusts the viewport so it matches the framebuffer's size.
-	// It then disables depth test, sets the shader to active, and draws to the framebuffer.
+	// It then disables depth test, sets the shader to active, and draws to the framebuffer using 
+	// the specified texture.
 	virtual void Draw(unsigned int texture);
 
 	// Gets the frame buffer's shader

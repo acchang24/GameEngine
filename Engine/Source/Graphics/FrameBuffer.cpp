@@ -107,6 +107,7 @@ void FrameBuffer::Draw(unsigned int texture)
 {
 	// Bind/draw to this framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
+
 	// Adjust the viewport to the framebuffer's size
 	glViewport(0, 0, mWidth, mHeight);
 	

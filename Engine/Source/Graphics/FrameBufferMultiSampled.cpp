@@ -88,6 +88,7 @@ void FrameBufferMultiSampled::SetActive() const
 	// Draw scene in the multisampled buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, mMSAAFrameBuffer);
 
+	// Clear the color buffer, depth buffer for this frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
