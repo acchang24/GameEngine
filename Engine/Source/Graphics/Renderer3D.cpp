@@ -170,9 +170,9 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
 	mMainFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples, "main_multisampled");
-	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth / 2, s_WindowHeight / 2, "bloom_mask");
-	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4, "bloom_blur_horizontal");
-	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth / 4, s_WindowHeight / 4, "bloom_blur_vertical");
+	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_mask", 0.5f);
+	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blur_horizontal", 0.25f);
+	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blur_vertical", 0.25f);
 
 	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	mSkeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
@@ -291,25 +291,21 @@ int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
 
 void Renderer3D::ResizeFrameBuffers()
 {
-	// Unload main framebuffer
-	mMainFrameBuffer->Unload();
-	// Load new frame buffer size
-	mMainFrameBuffer->Load(s_WindowWidth, s_WindowHeight, mNumSubsamples);
+	for (auto& fb : mFrameBuffers)
+	{
+		FrameBuffer* frameBuffer = fb.second;
+		frameBuffer->Unload();
 
-	// Unload old frame buffer
-	mBloomMaskFrameBuffer->Unload();
-	// Load new frame buffer size
-	mBloomMaskFrameBuffer->Load(s_WindowWidth / 2, s_WindowHeight / 2);
-
-	// Unload old frame buffer
-	mBloomBlurHorizontalFrameBuffer->Unload();
-	// Load new frame buffer size
-	mBloomBlurHorizontalFrameBuffer->Load(s_WindowWidth / 4, s_WindowHeight / 4);
-
-	// Unload old frame buffer
-	mBloomBlurVerticalFrameBuffer->Unload();
-	// Load new frame buffer size
-	mBloomBlurVerticalFrameBuffer->Load(s_WindowWidth / 4, s_WindowHeight / 4);
+		FrameBufferMultiSampled* multiSampledFrameBuffer = dynamic_cast<FrameBufferMultiSampled*>(frameBuffer);
+		if(multiSampledFrameBuffer)
+		{
+			multiSampledFrameBuffer->Load(s_WindowWidth, s_WindowHeight, mNumSubsamples);
+		}
+		else
+		{
+			fb.second->Load(s_WindowWidth, s_WindowHeight);
+		}
+	}
 
 	s_Resized = false;
 }

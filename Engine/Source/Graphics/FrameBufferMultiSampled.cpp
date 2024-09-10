@@ -10,7 +10,7 @@ FrameBufferMultiSampled::FrameBufferMultiSampled(int windowWidth, int windowHeig
 	mTextureMultiSampled(0),
 	mRenderBufferMultiSampled(0)
 {
-	Load(mWidth, mHeight, subsamples);
+	Load(windowWidth, windowHeight, subsamples);
 }
 
 FrameBufferMultiSampled::~FrameBufferMultiSampled()
@@ -22,9 +22,10 @@ FrameBufferMultiSampled::~FrameBufferMultiSampled()
 
 void FrameBufferMultiSampled::Load(int windowWidth, int windowHeight, int subsamples)
 {
-	// Re-adjust the width/height to new screen width/height
-	mWidth = windowWidth;
-	mHeight = windowHeight;
+	// Re-adjust the width/height of the framebuffer to the new window width/height
+	// and based of frame buffer size (this is in case of a window resize)
+	mWidth = windowWidth * mSize;
+	mHeight = windowHeight * mSize;
 
 	if (mFrameBuffer == 0 && mTexture == 0 && mRenderBuffer == 0)
 	{

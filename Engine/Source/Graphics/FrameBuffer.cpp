@@ -13,8 +13,8 @@ FrameBuffer::FrameBuffer(int windowWidth, int windowHeight, float size) :
 	mTexture(0),
 	mRenderBuffer(0),
 	mTextureUnit(static_cast<int>(TextureUnit::FrameBuffer)),
-	mWidth(windowWidth),
-	mHeight(windowHeight),
+	mWidth(windowWidth * size),
+	mHeight(windowHeight * size),
 	mSize(size)
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
@@ -29,7 +29,7 @@ FrameBuffer::FrameBuffer(int windowWidth, int windowHeight, float size) :
 	};
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
-	Load(mWidth, mHeight);
+	Load(windowWidth, windowHeight);
 }
 
 FrameBuffer::~FrameBuffer()
@@ -43,9 +43,10 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::Load(int windowWidth, int windowHeight)
 {
-	// Re-adjust the width/height to new window width/height
-	mWidth = windowWidth;
-	mHeight = windowHeight;
+	// Re-adjust the width/height of the framebuffer to the new window width/height
+	// and based of frame buffer size (this is in case of a window resize)
+	mWidth = windowWidth * mSize;
+	mHeight = windowHeight * mSize;
 
 	// Create a frame buffer object with non multisampled texture attachment
 	glGenFramebuffers(1, &mFrameBuffer);
