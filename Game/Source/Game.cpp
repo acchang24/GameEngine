@@ -175,14 +175,14 @@ bool Game::Init()
 	mAssetManager->SaveShader("bloomBlurVertical", bloomBlurVerticalShader);
 
 	Shader* bloomBlendShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlend.frag");
+	bloomBlendShader->SetActive();
+	bloomBlendShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("bloomBlend", bloomBlendShader);
-
 
 	Shader* hdrGammaShader = new Shader("Shaders/screen.vert", "Shaders/hdrGamma.frag");
 	hdrGammaShader->SetActive();
 	hdrGammaShader->SetFloat("exposure", 1.0f);
 	hdrGammaShader->SetBool("hdr", hdr);
-	hdrGammaShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
 	int width = mRenderer->GetWidth();
