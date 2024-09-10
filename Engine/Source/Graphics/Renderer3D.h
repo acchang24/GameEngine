@@ -32,20 +32,8 @@ public:
 	// Checks for window resize, clears the screen, and clears the color and depth buffer bits
 	void ClearBuffers();
 
-	// Set draw calls to an offscreen frame buffer. Use this for post-processing.
-	// This will set the main multisampled frame buffer to active, and all draw
-	// calls will be made to the frame buffers. Any mesh rendering should be drawn
-	// after this is called in the Game class.
-	// @param - FrameBuffer* for the framebuffer to set active
-	void SetFrameBuffer(FrameBuffer* framebuffer);
-
+	// Sets back to the default frame buffer, clears its color/depth buffers and resets the viewport
 	void SetDefaultFrameBuffer() const;
-
-	// Draws to any frame buffers used. This will first blit the main multisampled frame buffer
-	// to its non multisampled one. Any additional draws to other frame buffers will happen after.
-	// This will end with the main multisampled frame buffer being drawn to the default frame buffer.
-	// This should be called after any mesh rendering draw calls finish in the Game class.
-	void DrawFrameBuffers();
 
 	// Swap the buffers and present to the screen
 	void EndFrame();
@@ -71,11 +59,6 @@ public:
 	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
 	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, const std::string& name, float size = 1.0f);
 
-	// Sets a framebuffer's shader
-	// @param - FrameBuffer* for the target framebuffer
-	// @param - Shader* the shader to set for the framebuffer
-	void SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader);
-
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active
 	// @param - unsigned int for a reference to the first texture
@@ -94,13 +77,6 @@ public:
 	// @param - Shader* to link the buffer
 	void LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader);
 
-	// Retrieves the main frame buffer
-	// @return - FrameBuffer* for the main frame buffer
-	FrameBufferMultiSampled* GetMainFrameBuffer() { return mMainFrameBuffer; }
-	FrameBuffer* GetBloomMaskFrameBuffer() { return mBloomMaskFrameBuffer; }
-	FrameBuffer* GetBloomBlurHorizontalFrameBuffer() { return mBloomBlurHorizontalFrameBuffer; }
-	FrameBuffer* GetBloomBlurVerticalFrameBuffer() { return mBloomBlurVerticalFrameBuffer; }
-
 	// Gets the UniformBuffer for materials
 	// @return - UniformBuffer* for the material buffer
 	UniformBuffer* GetMaterialBuffer() { return mMaterialBuffer; }
@@ -112,9 +88,18 @@ public:
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
 	int GetNumSubsamples() const { return mNumSubsamples; }
+
 	// Sets the number of subsamples used for anti-aliasing
 	// @param - int for the number of subsamples
 	void SetNumSubsamples(int subsamples) { mNumSubsamples = subsamples; }
+
+	// Gets the window's width
+	// @return - int for the width
+	static int GetWidth();
+
+	// Gets the window's height
+	// @return - int for the height
+	static int GetHeight();
 
 private:
 	Renderer3D();
@@ -122,15 +107,6 @@ private:
 
 	// Map of frame buffers used by the renderer
 	std::unordered_map<std::string, FrameBuffer*> mFrameBuffers;
-
-	// Framebuffers - Add any additional framebuffers here if needed
-	// and use CreateFrameBuffers() to generate a new one.
-	// Add a specific getter for any new framebuffer created.
-	FrameBufferMultiSampled* mMainFrameBuffer;
-	FrameBuffer* mBloomMaskFrameBuffer;
-	FrameBuffer* mBloomBlurHorizontalFrameBuffer;
-	FrameBuffer* mBloomBlurVerticalFrameBuffer;
-	FrameBuffer* mBloomBlendFrameBuffer;
 
 	// A uniform buffer for passing Material data
 	UniformBuffer* mMaterialBuffer;

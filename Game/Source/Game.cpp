@@ -180,11 +180,19 @@ bool Game::Init()
 	hdrGammaShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
-	mRenderer->SetFrameBufferShader(static_cast<FrameBufferMultiSampled*>(mRenderer->GetMainFrameBuffer()), hdrGammaShader);
-	mRenderer->SetFrameBufferShader(mRenderer->GetBloomMaskFrameBuffer(), bloomMaskShader);
-	mRenderer->SetFrameBufferShader(mRenderer->GetBloomBlurHorizontalFrameBuffer(), bloomBlurHorizontalShader);
-	mRenderer->SetFrameBufferShader(mRenderer->GetBloomBlurVerticalFrameBuffer(), bloomBlurVerticalShader);
-	mRenderer->SetFrameBufferShader(mRenderer->GetFrameBuffer("bloom_blend"), bloomBlendShader);
+	int width = mRenderer->GetWidth();
+	int height = mRenderer->GetHeight();
+	int sub = mRenderer->GetNumSubsamples();
+	FrameBufferMultiSampled* mainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, sub, "main_multisampled");
+	FrameBuffer* bloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_mask", 0.5f);
+	FrameBuffer* bloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_horizontal", 0.25f);
+	FrameBuffer* bloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_vertical", 0.25f);
+	FrameBuffer* bloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blend");
+	mainFrameBuffer->SetShader(hdrGammaShader);
+	bloomMaskFrameBuffer->SetShader(bloomMaskShader);
+	bloomBlurHorizontalFrameBuffer->SetShader(bloomBlurHorizontalShader);
+	bloomBlurVerticalFrameBuffer->SetShader(bloomBlurVerticalShader);
+	bloomBlendFrameBuffer->SetShader(bloomBlendShader);
 
 	// Skybox
 	std::vector<std::string> faceNames
@@ -802,7 +810,9 @@ void Game::Render()
 
 	mRenderer->ClearBuffers();
 
-	mRenderer->SetFrameBuffer(mRenderer->GetFrameBuffer("main_multisampled"));
+	// Draw to main multisampled frame buffer
+	FrameBufferMultiSampled* mainFrameBuffer = static_cast<FrameBufferMultiSampled*>(mRenderer->GetFrameBuffer("main_multisampled"));
+	mainFrameBuffer->SetActive();
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
@@ -825,7 +835,35 @@ void Game::Render()
 		RenderScene();
 
 	}
-	mRenderer->DrawFrameBuffers();
+	//mRenderer->DrawFrameBuffers();
+	
+	mainFrameBuffer->BlitBuffers();
+	// Use the blitted texture and mask off dark spots
+	FrameBuffer* bloomMaskFrameBuffer = mRenderer->GetFrameBuffer("bloom_mask");
+	bloomMaskFrameBuffer->SetActive();
+	bloomMaskFrameBuffer->Draw(mainFrameBuffer->GetTexture());
+	// Use the masked off texture and blur horizontally
+	FrameBuffer* bloomBlurHorizontalFrameBuffer = mRenderer->GetFrameBuffer("bloom_blur_horizontal");
+	bloomBlurHorizontalFrameBuffer->SetActive();
+	bloomBlurHorizontalFrameBuffer->GetShader()->SetFloat("width", static_cast<float>(mRenderer->GetWidth() / 4));
+	bloomBlurHorizontalFrameBuffer->Draw(bloomMaskFrameBuffer->GetTexture());
+	// Use the horizontally blurred texture to blur vertically
+	FrameBuffer* bloomBlurVerticalFrameBuffer = mRenderer->GetFrameBuffer("bloom_blur_vertical");
+	bloomBlurVerticalFrameBuffer->SetActive();
+	bloomBlurVerticalFrameBuffer->GetShader()->SetFloat("height", static_cast<float>(mRenderer->GetHeight() / 4));
+	bloomBlurVerticalFrameBuffer->Draw(bloomBlurHorizontalFrameBuffer->GetTexture());
+	// Uses the blitted texture and the blurred texture to additively blend them
+	FrameBuffer* bloomBlendFrameBuffer = mRenderer->GetFrameBuffer("bloom_blend");
+	bloomBlendFrameBuffer->SetActive();
+	mRenderer->CreateBlend(bloomBlendFrameBuffer->GetShader(), mainFrameBuffer->GetTexture(), bloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureUnit::FrameBuffer));
+	bloomBlendFrameBuffer->Draw(mainFrameBuffer->GetTexture());
+	// Draw the final image
+	mRenderer->SetDefaultFrameBuffer();
+	// Set the main frame buffer's shader active here (since SetDefaultFrameBuffer() does not activate a shader)
+	mainFrameBuffer->GetShader()->SetActive();
+	mainFrameBuffer->Draw(bloomBlendFrameBuffer->GetTexture());
+
+
 	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 	//glViewport(0, 0, windowWidth, windowHeight);
 

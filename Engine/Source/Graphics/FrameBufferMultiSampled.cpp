@@ -83,7 +83,7 @@ void FrameBufferMultiSampled::Unload()
 	mRenderBufferMultiSampled = 0;
 }
 
-void FrameBufferMultiSampled::SetActive() const
+void FrameBufferMultiSampled::SetActive()
 {
 	// Draw scene in the multisampled buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, mMSAAFrameBuffer);
@@ -93,6 +93,9 @@ void FrameBufferMultiSampled::SetActive() const
 
 	// Reset viewport size to this frame buffer's dimensions
 	glViewport(0, 0, mWidth, mHeight);
+
+	// Set shader active
+	mShader->SetActive();
 }
 
 void FrameBufferMultiSampled::BlitBuffers()

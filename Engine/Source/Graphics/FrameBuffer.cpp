@@ -95,7 +95,7 @@ void FrameBuffer::Unload()
 	mRenderBuffer = 0;
 }
 
-void FrameBuffer::SetActive() const
+void FrameBuffer::SetActive()
 {
 	// Bind to this frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBuffer);
@@ -104,6 +104,9 @@ void FrameBuffer::SetActive() const
 
 	// Adjust the viewport to the framebuffer's size
 	glViewport(0, 0, mWidth, mHeight);
+
+	// Set shader active
+	mShader->SetActive();
 }
 
 void FrameBuffer::Draw(unsigned int texture)
@@ -111,12 +114,12 @@ void FrameBuffer::Draw(unsigned int texture)
 	// Disable depth test so screen quad isn't discarded
 	glDisable(GL_DEPTH_TEST);
 
-	mShader->SetActive();
-
+	// Set the texture sampler
 	mShader->SetInt("screenTexture", mTextureUnit);
 
 	// Activate texture unit
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
+
 	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, texture);
 

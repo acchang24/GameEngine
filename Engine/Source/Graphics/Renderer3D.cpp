@@ -16,12 +16,17 @@ static int s_WindowHeight;
 // Bool for whenever the window is resized
 static bool s_Resized = false;
 
+int Renderer3D::GetWidth()
+{
+	return s_WindowWidth;
+}
+
+int Renderer3D::GetHeight()
+{
+	return s_WindowHeight;
+}
+
 Renderer3D::Renderer3D() :
-	mMainFrameBuffer(nullptr),
-	mBloomMaskFrameBuffer(nullptr),
-	mBloomBlurHorizontalFrameBuffer(nullptr),
-	mBloomBlurVerticalFrameBuffer(nullptr),
-	mBloomBlendFrameBuffer(nullptr),
 	mMaterialBuffer(nullptr),
 	mSkeletonBuffer(nullptr),
 	mWindow(nullptr),
@@ -171,12 +176,6 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Set the new viewport
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
-	mMainFrameBuffer = CreateMultiSampledFrameBuffer(s_WindowWidth, s_WindowHeight, mNumSubsamples, "main_multisampled");
-	mBloomMaskFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_mask", 0.5f);
-	mBloomBlurHorizontalFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blur_horizontal", 0.25f);
-	mBloomBlurVerticalFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blur_vertical", 0.25f);
-	mBloomBlendFrameBuffer = CreateFrameBuffer(s_WindowWidth, s_WindowHeight, "bloom_blend");
-
 	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	mSkeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 
@@ -193,11 +192,10 @@ void Renderer3D::Shutdown()
 	// Quit SDL
 	SDL_Quit();
 
-	delete mMainFrameBuffer;
-	delete mBloomMaskFrameBuffer;
-	delete mBloomBlurHorizontalFrameBuffer;
-	delete mBloomBlurVerticalFrameBuffer;
-	delete mBloomBlendFrameBuffer;
+	for (auto& fb : mFrameBuffers)
+	{
+		delete fb.second;
+	}
 
 	delete mMaterialBuffer;
 	delete mSkeletonBuffer;
@@ -217,14 +215,6 @@ void Renderer3D::ClearBuffers()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer3D::SetFrameBuffer(FrameBuffer* framebuffer)
-{
-	//mMainFrameBuffer->SetActive();
-
-	framebuffer->SetActive();
-
-}
-
 void Renderer3D::SetDefaultFrameBuffer() const
 {
 	// Bind back to default frame buffer
@@ -235,28 +225,6 @@ void Renderer3D::SetDefaultFrameBuffer() const
 
 	// Reset viewport size to this frame buffer's dimensions
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
-}
-
-void Renderer3D::DrawFrameBuffers()
-{
-	mMainFrameBuffer->BlitBuffers();
-
-	// Use the blitted texture and mask off dark spots
-	mBloomMaskFrameBuffer->SetActive();
-	mBloomMaskFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
-	// Use the masked off texture and blur horizontally
-	mBloomBlurHorizontalFrameBuffer->SetActive();
-	mBloomBlurHorizontalFrameBuffer->Draw(mBloomMaskFrameBuffer->GetTexture());
-	// Use the horizontally blurred texture to blur vertically
-	mBloomBlurVerticalFrameBuffer->SetActive();
-	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
-	// Uses the blitted texture and the blurred texture to additively blend them
-	mBloomBlendFrameBuffer->SetActive();
-	CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureUnit::FrameBuffer));
-	mBloomBlendFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
-	// Draw the final image
-	SetDefaultFrameBuffer();
-	mMainFrameBuffer->Draw(mBloomBlendFrameBuffer->GetTexture());
 }
 
 void Renderer3D::EndFrame()
@@ -294,21 +262,16 @@ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWid
 	return framebuffer;
 }
 
-void Renderer3D::SetFrameBufferShader(FrameBuffer* frameBuffer, Shader* shader)
-{
-	frameBuffer->SetShader(shader);
-}
-
 void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit)
 {
 	shader->SetActive();
 
-	// Bind the normal texture (everything that is drawn to the screen)
+	// Bind the 1st texture
 	shader->SetInt("screenTexture", textureUnit);
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 
-	// Bind the blur texture (texture used for post-processing)
+	// Bind the 2nd texture
 	int blurUnit = textureUnit + 3;
 	shader->SetInt("blurTexture", blurUnit);
 	glActiveTexture(GL_TEXTURE0 + blurUnit);

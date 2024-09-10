@@ -21,14 +21,13 @@ public:
 	// @param - int for the screen/window's width
 	// @param - int for the screen/window's height
 	void Load(int windowWidth, int windowHeight);
+
 	// Deletes the framebuffer, texture, and renderbuffer references
 	virtual void Unload();
 
-	// Starts the frame buffer by binding this frame buffer object
-	// as the current target. This is called right before clearing buffers
-	// in the main render loop. Any renders should be done as normal after
-	// this call.
-	virtual void SetActive() const;
+	// Binding to this frame buffer object, clears its color and depth buffers, and readjusts the viewport
+	// so that it matches the frame buffer's dimensions. It then sets the shader to active
+	virtual void SetActive();
 
 	// Binds this framebuffer then adjusts the viewport so it matches the framebuffer's size.
 	// It then disables depth test, sets the shader to active, and draws to the framebuffer using 
@@ -56,8 +55,10 @@ protected:
 
 	// Frame buffer object as a reference id
 	unsigned int mFrameBuffer;
+
 	// The offscreen color attachment texture created after blitting the multisample texture
 	unsigned int mTexture;
+
 	// Render buffer for depth and stencil attatchments as a reference
 	unsigned int mRenderBuffer;
 
