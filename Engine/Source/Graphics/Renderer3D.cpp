@@ -248,18 +248,18 @@ FrameBuffer* Renderer3D::GetFrameBuffer(const std::string& name)
 	return buffer;
 }
 
-FrameBuffer* Renderer3D::CreateFrameBuffer(int screenWidth, int screenHeight, const std::string& name)
+FrameBuffer* Renderer3D::CreateFrameBuffer(int screenWidth, int screenHeight, const std::string& name, float size)
 {
-	FrameBuffer* framebuffer = new FrameBuffer(screenWidth, screenHeight);
+	FrameBuffer* framebuffer = new FrameBuffer(screenWidth, screenHeight, size);
 
 	mFrameBuffers[name] = framebuffer;
 
 	return framebuffer;
 }
 
-FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, const std::string& name)
+FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, const std::string& name, float size)
 {
-	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(screenWidth, screenHeight, subsamples);
+	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(screenWidth, screenHeight, subsamples, size);
 
 	mFrameBuffers[name] = framebuffer;
 

@@ -13,7 +13,8 @@ public:
 	// FrameBuffer constructor
 	// @param - int for the screen/window's width
 	// @param - int for the screen/window's height
-	FrameBuffer(int windowWidth, int windowHeight);
+	// @param - float for the frame buffer's size
+	FrameBuffer(int windowWidth, int windowHeight, float size);
 	virtual ~FrameBuffer();
 
 	// Generates a new frame buffer
@@ -67,4 +68,8 @@ protected:
 
 	// Framebuffer's height
 	int mHeight;
+
+	// Frame buffer's size relative to screen
+	// E.g. - use 0.5f for a frame buffer that is half of the screen/window size
+	float mSize;
 };

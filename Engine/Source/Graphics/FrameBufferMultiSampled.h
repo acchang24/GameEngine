@@ -11,7 +11,8 @@ public:
 	// @param - int for the screen/window's width
 	// @param - int for the screen/window's height
 	// @param - int for the number of subsamples used for anti-aliasing
-	FrameBufferMultiSampled(int windowWidth, int windowHeight, int subsamples);
+	// @param - float for the frame buffer's size
+	FrameBufferMultiSampled(int windowWidth, int windowHeight, int subsamples, float size);
 	~FrameBufferMultiSampled();
 
 	// Generates a new multi-sampled framebuffer

@@ -6,7 +6,7 @@
 #include "VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 
-FrameBuffer::FrameBuffer(int windowWidth, int windowHeight) :
+FrameBuffer::FrameBuffer(int windowWidth, int windowHeight, float size) :
 	mShader(nullptr),
 	mVertexBuffer(nullptr),
 	mFrameBuffer(0),
@@ -14,7 +14,8 @@ FrameBuffer::FrameBuffer(int windowWidth, int windowHeight) :
 	mRenderBuffer(0),
 	mTextureUnit(static_cast<int>(TextureUnit::FrameBuffer)),
 	mWidth(windowWidth),
-	mHeight(windowHeight)
+	mHeight(windowHeight),
+	mSize(size)
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
 	VertexScreenQuad quadVertices[] = {
