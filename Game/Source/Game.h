@@ -7,6 +7,8 @@
 class AssetManager;
 class Camera;
 class Entity;
+class FrameBuffer;
+class FrameBufferMultiSampled;
 class JobManager;
 class Lights;
 class Renderer3D;
@@ -83,6 +85,17 @@ private:
 
 	// Pointer to a static JobManager
 	JobManager* mJobManager;
+
+	// The main multi sampled frame buffer
+	FrameBufferMultiSampled* mMainFrameBuffer;
+	// Frame buffer for bloom masking
+	FrameBuffer* mBloomMaskFrameBuffer;
+	// Frame buffer for horizontal blurring
+	FrameBuffer* mBloomBlurHorizontalFrameBuffer;
+	// Frame buffer for vertical blurring
+	FrameBuffer* mBloomBlurVerticalFrameBuffer;
+	// Frame buffer for bloom blending
+	FrameBuffer* mBloomBlendFrameBuffer;
 
 	// The game's camera
 	Camera* mCamera;

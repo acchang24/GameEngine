@@ -54,6 +54,11 @@ Game::Game() :
 	mAssetManager(nullptr),
 	mJobManager(nullptr),
 	mCamera(nullptr),
+	mMainFrameBuffer(nullptr),
+	mBloomMaskFrameBuffer(nullptr),
+	mBloomBlurHorizontalFrameBuffer(nullptr),
+	mBloomBlurVerticalFrameBuffer(nullptr),
+	mBloomBlendFrameBuffer(nullptr),
 	mSkybox(nullptr),
 	mLights(nullptr),
 	mShadowMap(nullptr),
@@ -182,17 +187,16 @@ bool Game::Init()
 
 	int width = mRenderer->GetWidth();
 	int height = mRenderer->GetHeight();
-	int sub = mRenderer->GetNumSubsamples();
-	FrameBufferMultiSampled* mainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, sub, "main_multisampled");
-	FrameBuffer* bloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_mask", 0.5f);
-	FrameBuffer* bloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_horizontal", 0.25f);
-	FrameBuffer* bloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_vertical", 0.25f);
-	FrameBuffer* bloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blend");
-	mainFrameBuffer->SetShader(hdrGammaShader);
-	bloomMaskFrameBuffer->SetShader(bloomMaskShader);
-	bloomBlurHorizontalFrameBuffer->SetShader(bloomBlurHorizontalShader);
-	bloomBlurVerticalFrameBuffer->SetShader(bloomBlurVerticalShader);
-	bloomBlendFrameBuffer->SetShader(bloomBlendShader);
+	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples(), "main_multisampled");
+	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_mask", 0.5f);
+	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_horizontal", 0.25f);
+	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_vertical", 0.25f);
+	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blend");
+	mMainFrameBuffer->SetShader(hdrGammaShader);
+	mBloomMaskFrameBuffer->SetShader(bloomMaskShader);
+	mBloomBlurHorizontalFrameBuffer->SetShader(bloomBlurHorizontalShader);
+	mBloomBlurVerticalFrameBuffer->SetShader(bloomBlurVerticalShader);
+	mBloomBlendFrameBuffer->SetShader(bloomBlendShader);
 
 	// Skybox
 	std::vector<std::string> faceNames
@@ -811,8 +815,7 @@ void Game::Render()
 	mRenderer->ClearBuffers();
 
 	// Draw to main multisampled frame buffer
-	FrameBufferMultiSampled* mainFrameBuffer = static_cast<FrameBufferMultiSampled*>(mRenderer->GetFrameBuffer("main_multisampled"));
-	mainFrameBuffer->SetActive();
+	mMainFrameBuffer->SetActive();
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
@@ -835,33 +838,28 @@ void Game::Render()
 		RenderScene();
 
 	}
-	//mRenderer->DrawFrameBuffers();
 	
-	mainFrameBuffer->BlitBuffers();
-	// Use the blitted texture and mask off dark spots
-	FrameBuffer* bloomMaskFrameBuffer = mRenderer->GetFrameBuffer("bloom_mask");
-	bloomMaskFrameBuffer->SetActive();
-	bloomMaskFrameBuffer->Draw(mainFrameBuffer->GetTexture());
-	// Use the masked off texture and blur horizontally
-	FrameBuffer* bloomBlurHorizontalFrameBuffer = mRenderer->GetFrameBuffer("bloom_blur_horizontal");
-	bloomBlurHorizontalFrameBuffer->SetActive();
-	bloomBlurHorizontalFrameBuffer->GetShader()->SetFloat("width", static_cast<float>(mRenderer->GetWidth() / 4));
-	bloomBlurHorizontalFrameBuffer->Draw(bloomMaskFrameBuffer->GetTexture());
-	// Use the horizontally blurred texture to blur vertically
-	FrameBuffer* bloomBlurVerticalFrameBuffer = mRenderer->GetFrameBuffer("bloom_blur_vertical");
-	bloomBlurVerticalFrameBuffer->SetActive();
-	bloomBlurVerticalFrameBuffer->GetShader()->SetFloat("height", static_cast<float>(mRenderer->GetHeight() / 4));
-	bloomBlurVerticalFrameBuffer->Draw(bloomBlurHorizontalFrameBuffer->GetTexture());
-	// Uses the blitted texture and the blurred texture to additively blend them
-	FrameBuffer* bloomBlendFrameBuffer = mRenderer->GetFrameBuffer("bloom_blend");
-	bloomBlendFrameBuffer->SetActive();
-	mRenderer->CreateBlend(bloomBlendFrameBuffer->GetShader(), mainFrameBuffer->GetTexture(), bloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureUnit::FrameBuffer));
-	bloomBlendFrameBuffer->Draw(mainFrameBuffer->GetTexture());
+	mMainFrameBuffer->BlitBuffers();
+	// Use the multisampled texture and mask off dark spots
+	mBloomMaskFrameBuffer->SetActive();
+	mBloomMaskFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
+	// Use the masked off texture and blur horizontally and readjust shader width
+	mBloomBlurHorizontalFrameBuffer->SetActive();
+	mBloomBlurHorizontalFrameBuffer->GetShader()->SetFloat("width", static_cast<float>(mRenderer->GetWidth() / 4));
+	mBloomBlurHorizontalFrameBuffer->Draw(mBloomMaskFrameBuffer->GetTexture());
+	// Use the horizontally blurred texture to blur vertically to create the blurred image and readjust shader height
+	mBloomBlurVerticalFrameBuffer->SetActive();
+	mBloomBlurVerticalFrameBuffer->GetShader()->SetFloat("height", static_cast<float>(mRenderer->GetHeight() / 4));
+	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
+	// Use the multisampled texture and the blurred texture to additively blend them
+	mBloomBlendFrameBuffer->SetActive();
+	mRenderer->CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureUnit::FrameBuffer));
+	mBloomBlendFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Draw the final image
 	mRenderer->SetDefaultFrameBuffer();
-	// Set the main frame buffer's shader active here (since SetDefaultFrameBuffer() does not activate a shader)
-	mainFrameBuffer->GetShader()->SetActive();
-	mainFrameBuffer->Draw(bloomBlendFrameBuffer->GetTexture());
+	// Set the main frame buffer's shader active here (since SetDefaultFrameBuffer() does not activate a shader) and add HDR/gamma correction
+	mMainFrameBuffer->GetShader()->SetActive();
+	mMainFrameBuffer->Draw(mBloomBlendFrameBuffer->GetTexture());
 
 
 	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
