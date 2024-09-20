@@ -5,7 +5,7 @@
 #include "Components/SpriteComponent.h"
 #include "Components/BackgroundSpriteComponent.h"
 #include "Entity/Entity2D.h"
-#include "Graphics/Renderer2D.h"
+#include "Graphics/Renderer3D.h"
 #include "MemoryManager/AssetManager.h"
 #include "Util/Random.h"
 #include "Ship.h"
@@ -37,8 +37,8 @@ bool Game::Init()
 {
 	Random::Init();
 
-	mRenderer = Renderer2D::Get();
-	mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, IS_FULLSCREEN, mMouseCaptured, "Game");
+	mRenderer = Renderer3D::Get();
+	mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, mMouseCaptured, "Asteroids");
 
 	mAssetManager = AssetManager::Get();
 
@@ -262,7 +262,7 @@ void Game::Render()
 {
 	mRenderer->ClearBuffers();
 
-	mRenderer->Draw();
+	//mRenderer->Draw();
 
 	mRenderer->EndFrame();
 }

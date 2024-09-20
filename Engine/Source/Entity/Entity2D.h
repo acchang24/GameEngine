@@ -2,13 +2,13 @@
 #include "Entity.h"
 #include <GLM/glm.hpp>
 
-class Renderer2D;
+class Renderer3D;
 
 class Entity2D : public Entity
 {
 public:
 	// Entity2D constructor
-	Entity2D(Renderer2D* renderer);
+	Entity2D(Renderer3D* renderer);
 	~Entity2D();
 
 	// Override of ProcessInput for entity
@@ -52,7 +52,7 @@ public:
 	glm::vec2 GetForward() const;
 
 protected:
-	Renderer2D* mRenderer;
+	Renderer3D* mRenderer;
 
 	// Entity's position
 	glm::vec2 mPosition;

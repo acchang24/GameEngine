@@ -1,14 +1,14 @@
 #pragma once
 #include "Entity/Entity2D.h"
 
-class Renderer2D;
+class Renderer3D;
 class MoveComponent;
 class SpriteComponent;
 
 class Ship : public Entity2D
 {
 public:
-	Ship(Renderer2D* renderer);
+	Ship(Renderer3D* renderer);
 
 	void OnProcessInput(const Uint8* keyState) override;
 
