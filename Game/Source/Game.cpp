@@ -33,12 +33,12 @@
 #include "Util/Random.h"
 
 
-float size = 250.0f;
+float size = 30.0f;
 float near = 1.0f;
-float far = 750.0f;
+float far = 40.0f;
 glm::vec3 pos(0.0f);
 glm::vec3 lightDir(-0.05f, -1.0f, -0.2f);
-float dist = 650.0f;
+float dist = 10.0f;
 
 bool IS_FULLSCREEN = false;
 int WINDOW_WIDTH = 1280;
@@ -296,7 +296,7 @@ bool Game::Init()
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
-	sponza->SetScale(0.1);
+	sponza->SetScale(0.125);
 	sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
 
@@ -814,24 +814,27 @@ void Game::Render()
 
 	mRenderer->ClearBuffers();
 
-	// Draw to main multisampled frame buffer
-	mMainFrameBuffer->SetActive();
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
-		//std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
+		std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
 
 		// Render to shadow map
-		//mShadowMap->SetActive(size, near, far, pos);
-		//RenderScene(mShadowMap->GetShader());
+		mShadowMap->SetActive(size, near, far, pos);
+		RenderScene(mShadowMap->GetShader());
 
 		// Render the shadow map
-		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("shadowDebug"));
-		//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
+		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight(), mAssetManager->LoadShader("shadowDebug"));
+		mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
 
 		// End shadow render pass
-		//mShadowMap->End(windowWidth, windowHeight, mAssetManager->LoadShader("phong"));
+		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight(), mAssetManager->LoadShader("phong"));
+		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight(), mAssetManager->LoadShader("skinned"));
 	}
+
+	// Draw to main multisampled frame buffer
+	mMainFrameBuffer->SetActive();
+
 	{
 		////PROFILE_SCOPE(RENDER_NORMAL_SCENE);
 		//// Render scene as normal
@@ -863,7 +866,7 @@ void Game::Render()
 
 
 	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
-	//glViewport(0, 0, windowWidth, windowHeight);
+	//glViewport(0, 0, mRenderer->GetWidth(), mRenderer->GetHeight());
 
 	mRenderer->EndFrame();
 }

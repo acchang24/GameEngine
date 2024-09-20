@@ -159,9 +159,9 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Enable anti-aliasing
 	glEnable(GL_MULTISAMPLE);
 
-	//// Enable blending
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Set viewport
 	if (mIsFullScreen)
