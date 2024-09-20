@@ -4,9 +4,9 @@
 #include <SDL2/SDL.h>
 #include "Components/MoveComponent.h"
 #include "Components/SpriteComponent.h"
-#include "Graphics/Renderer3D.h"
+#include "Graphics/Renderer2D.h"
 
-Ship::Ship(Renderer3D* renderer) :
+Ship::Ship(Renderer2D* renderer) :
 	Entity2D(renderer),
 	mMove(new MoveComponent(this)),
 	mShipSprite(new SpriteComponent(this, renderer, "Assets/Ship.png"))
@@ -19,7 +19,7 @@ void Ship::OnProcessInput(const Uint8* keyState)
 	float angularSpeed = 0.0f;
 	float speed = 0.0f;
 
-	//mShipSprite->SetTexture(mRenderer->LoadSpriteTexture("Assets/Ship.png"));
+	mShipSprite->SetTexture(mRenderer->LoadSpriteTexture("Assets/Ship.png"));
 
 	if (keyState[SDL_SCANCODE_UP] || keyState[SDL_SCANCODE_W])
 	{
@@ -40,12 +40,12 @@ void Ship::OnProcessInput(const Uint8* keyState)
 
 	if (speed != 0.0f)
 	{
-		//mShipSprite->SetTexture(mRenderer->LoadSpriteTexture("Assets/ShipThrust.png"));
+		mShipSprite->SetTexture(mRenderer->LoadSpriteTexture("Assets/ShipThrust.png"));
 	}
 
 	glm::vec2 p = GetPosition();
 	glm::vec2 f = GetForward();
-	//std::cout << p.x << " " << p.y << " " << f.x << " " << f.y << "\n";
+	std::cout << p.x << " " << p.y << " " << f.x << " " << f.y << "\n";
 
 	mMove->SetAngularSpeed(angularSpeed);
 	mMove->SetForwardSpeed(speed);

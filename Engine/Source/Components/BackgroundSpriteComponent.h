@@ -9,13 +9,13 @@ public:
 	// @param - Renderer2D* for the renderer
 	// @param - const std::string& for the sprite texture's file name
 	// @param - int for the draw order
-	BackgroundSpriteComponent(Entity* owner, Renderer3D* renderer, const std::string& filename, int drawOrder = 100);
+	BackgroundSpriteComponent(Entity* owner, Renderer2D* renderer, const std::string& filename, int drawOrder = 100);
 	~BackgroundSpriteComponent();
 
 	// Override draw function that draws a backgtound sprite to the screen
 	// @param - SDL_Renderer* for the renderer
 	// @param - Entity2D* for the owner
-	void Draw(Renderer3D* renderer, Entity2D* owner) override;
+	void Draw(Renderer2D* renderer, Entity2D* owner) override;
 
 private:
 };

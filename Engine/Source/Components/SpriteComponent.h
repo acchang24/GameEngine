@@ -5,7 +5,7 @@
 
 class Entity;
 class Entity2D;
-class Renderer3D;
+class Renderer2D;
 
 class SpriteComponent : public Component 
 {
@@ -17,13 +17,13 @@ public:
 	// @param - Renderer2D* for the renderer
 	// @param - const std::string& for the sprite texture's file name
 	// @param - int for the draw order
-	SpriteComponent(Entity* owner, Renderer3D* renderer, const std::string& filename, int drawOrder = 100);
+	SpriteComponent(Entity* owner, Renderer2D* renderer, const std::string& filename, int drawOrder = 100);
 	~SpriteComponent();
 
 	// Overridable draw function that draws a sprite to the screen
 	// @param - SDL_Renderer* for the renderer
 	// @param - Entity2D* for the owner
-	virtual void Draw(Renderer3D* renderer, Entity2D* owner);
+	virtual void Draw(Renderer2D* renderer, Entity2D* owner);
 
 	// Sets the texture to draw for this sprite
 	virtual void SetTexture(SDL_Texture* texture);

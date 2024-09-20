@@ -153,7 +153,7 @@ void Renderer2D::Draw()
 	{
 		if (s->IsVisible())
 		{
-			//s->Draw(this, static_cast<Entity2D*>(s->GetEntity()));
+			s->Draw(this, static_cast<Entity2D*>(s->GetEntity()));
 		}
 	}
 }

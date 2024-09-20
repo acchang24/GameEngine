@@ -5,7 +5,7 @@
 
 class AssetManager;
 class Entity;
-class Renderer3D;
+class Renderer2D;
 
 // Game class handles all of the game logic. Game specific code should be added to the class
 class Game
@@ -64,7 +64,7 @@ private:
 	std::vector<Entity*> mEntities;
 
 	// Renderer for graphics output
-	Renderer3D* mRenderer;
+	Renderer2D* mRenderer;
 
 	// Pointer to a static asset manager
 	AssetManager* mAssetManager;
