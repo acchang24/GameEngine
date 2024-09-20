@@ -817,7 +817,7 @@ void Game::Render()
 	{
 		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
-		std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
+		//std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
 
 		// Render to shadow map
 		mShadowMap->SetActive(size, near, far, pos);
