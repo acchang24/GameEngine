@@ -372,14 +372,19 @@ bool Game::Init()
 	
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 	glm::vec3 lightPosition = lightDir * -dist;
-	mShadowMap = new ShadowMap(lightPosition);
+	mShadowMap = new ShadowMap();
 	mShadowMap->SetShader(shadowDepthShader);
 	pos = lightPosition;
+	UniformBuffer* shadowBuffer = mShadowMap->GetShadowBuffer();
+	shadowBuffer->LinkShader(phongShader);
+	shadowBuffer->LinkShader(skinnedShader);
+	shadowBuffer->LinkShader(shadowDepthShader);
 
 	// Allocate lights in the scene
 	mLights = new Lights();
 	UniformBuffer* lightBuffer = mLights->GetLightBuffer();
 	lightBuffer->LinkShader(phongShader);
+	lightBuffer->LinkShader(skinnedShader);
 	lightBuffer->LinkShader(instanceShader);
 
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -820,16 +825,13 @@ void Game::Render()
 		//std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
 
 		// Render to shadow map
-		mShadowMap->SetActive(size, near, far, pos);
+		mShadowMap->SetActive(size, near, far, pos, glm::vec3(0.0f, 0.0f, 0.0f));
 		RenderScene(mShadowMap->GetShader());
 
-		// Render the shadow map
-		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight(), mAssetManager->LoadShader("shadowDebug"));
-		mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
-
 		// End shadow render pass
-		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight(), mAssetManager->LoadShader("phong"));
-		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight(), mAssetManager->LoadShader("skinned"));
+		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight());
+		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("phong"));
+		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("skinned"));
 	}
 
 	// Draw to main multisampled frame buffer
@@ -865,8 +867,8 @@ void Game::Render()
 	mMainFrameBuffer->Draw(mBloomBlendFrameBuffer->GetTexture());
 
 
-	//mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
-	//glViewport(0, 0, mRenderer->GetWidth(), mRenderer->GetHeight());
+	mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
+	glViewport(0, 0, mRenderer->GetWidth(), mRenderer->GetHeight());
 
 	mRenderer->EndFrame();
 }

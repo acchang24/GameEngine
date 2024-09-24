@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
+#include "Texture.h"
+#include "UniformBuffer.h"
 #include "VertexBuffer.h"
 
 const unsigned int SHADOW_WIDTH = 8560;
@@ -11,11 +13,12 @@ const unsigned int SHADOW_HEIGHT = 8560;
 float shadowNearPlane = 1.0f;
 float shadowFarPlane = 1000.0f;
 
-ShadowMap::ShadowMap(const glm::vec3& pos) :
-	mLightSpace(glm::mat4(1.0f)),
-	mLightPos(pos),
+ShadowMap::ShadowMap() :
+	mShadowConsts({}),
 	mShader(nullptr),
 	mVertexBuffer(nullptr),
+	mShadowBuffer(new UniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
+	mTextureUnit(static_cast<int>(TextureUnit::Shadow)),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0)
 {
@@ -62,21 +65,25 @@ ShadowMap::~ShadowMap()
 
 	delete mVertexBuffer;
 
+	delete mShadowBuffer;
+
 	glDeleteFramebuffers(1, &mShadowMapFrameBuffer);
 
 	glDeleteTextures(1, &mShadowMap);
 }
 
-void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& pos)
+void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& pos, const glm::vec3& target)
 {
+	shadowNearPlane = near;
+	shadowFarPlane = far;
+
 	// Render the depth of a scene to a texture (from the light's perspective)
 	glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, near, far);
-	glm::mat4 lightView = glm::lookAt(pos, glm::vec3(0.0f, 0.0f, 0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(pos, target,  glm::vec3(0.0f, 1.0f, 0.0f));
 	
-	mLightSpace = lightProjection * lightView;
+	mShadowConsts.lightSpace = lightProjection * lightView;
 
-	mShader->SetActive();
-	mShader->SetMat4("lightSpace", mLightSpace);
+	mShadowBuffer->UpdateBufferData(&mShadowConsts);
 
 	// First pass will render to shadow map
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
@@ -85,8 +92,6 @@ void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& po
 	glBindFramebuffer(GL_FRAMEBUFFER, mShadowMapFrameBuffer);
 	// Clear depth buffer
 	glClear(GL_DEPTH_BUFFER_BIT);
-
-	//glCullFace(GL_FRONT);
 }
 
 void ShadowMap::DrawDebug(Shader* s)
@@ -95,27 +100,26 @@ void ShadowMap::DrawDebug(Shader* s)
 	s->SetActive();
 	s->SetFloat("nearPlane", shadowNearPlane);
 	s->SetFloat("farPlane", shadowFarPlane);
-	s->SetInt("depthMap", 13);
-	glActiveTexture(GL_TEXTURE13);
+	s->SetInt("depthMap", mTextureUnit);
+	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, mShadowMap);
 
 	mVertexBuffer->Draw();
 }
 
-void ShadowMap::End(int width, int height, Shader* s)
+void ShadowMap::End(int width, int height) const
 {
-	//glCullFace(GL_BACK);
-
 	// Bind back to default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// Set viewport back to screen's width and height
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
+void ShadowMap::BindShadowMapToShader(Shader* s) const
+{
 	s->SetActive();
-	s->SetMat4("lightSpace", mLightSpace);
-
-	s->SetInt("shadowMap", 13);
-	glActiveTexture(GL_TEXTURE13);
+	s->SetInt("shadowMap", mTextureUnit);
+	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, mShadowMap);
 }

@@ -4,10 +4,10 @@
 // Enum class for the different types of textures
 enum class TextureType
 {
-	Diffuse, // Normal texture
+	Diffuse, // Color texture
 	Specular, // Specular maps
 	Emission, // Emission maps
-	Normal,
+	Normal, // Normal maps
 };
 
 // Enum class for texture units
@@ -16,7 +16,7 @@ enum class TextureUnit
 	Default = 0, // Default texture unit, no texture should be applied to this unit
 	FrameBuffer = 11, // Texture unit 11 is used to sample a texture created from a frame buffer
 	CubeMap = 12, // Texture unit 12 is used to sample from a cube map
-
+	Shadow = 13, // Texture unit 13 is used to sample from a directional shadow/depth map
 };
 
 // The Texture class helps load image files with the

@@ -34,10 +34,14 @@ layout (std140, binding = 3) uniform SkeletonBuffer
 	mat4 boneMatrices[MAX_BONES];
 };
 
+// Uniform buffer for light space matrix for shadow map's light perspective
+layout (std140, binding = 4) uniform ShadowBuffer
+{
+	mat4 lightSpace;
+};
+
 // Model matrix uniform
 uniform mat4 model;
-// Matrix for light's perspective
-uniform mat4 lightSpace;
 
 // Specify a vec3 normal output to fragment shader
 out vec3 normal;
@@ -85,7 +89,7 @@ void main()
 
 	// Multiply the vertex's position attribute with the model matrix 
     // to transform to world space coordinates and use it for the fragment's position
-	fragPos = vec3(model * vec4(position, 1.0));
+	fragPos = vec3(model * vec4(totalPosition.xyz, 1.0));
 
 	viewPosition = viewPos;
 

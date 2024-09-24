@@ -19,10 +19,14 @@ layout (std140, binding = 3) uniform SkeletonBuffer
 	mat4 boneMatrices[MAX_BONES];
 };
 
+// Uniform buffer for light space matrix for shadow map's light perspective
+layout (std140, binding = 4) uniform ShadowBuffer
+{
+	mat4 lightSpace;
+};
+
 // Model matrix uniform
 uniform mat4 model;
-
-uniform mat4 lightSpace;
 
 uniform bool isSkinned;
 
