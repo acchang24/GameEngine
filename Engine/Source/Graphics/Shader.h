@@ -14,24 +14,26 @@ public:
 	// Shader constructor takes the vertex and fragment shader files and
 	// reads them into strings. It then compiles them into an OpenGL program
 	// object, saving the reference into the mShaderID variable.
-	// @param - const std::string& for the vertex shader name/file path
-	// @param - const std::string& for the fragment shader name/file path
-	Shader(const std::string& vertexFile, const std::string& fragmentFile);
+	// @param - const char* for the vertex shader name/file path
+	// @param - const char* for the fragment shader name/file path
+    // @param - const char* for the geometry shader name/file path (defaults to nullptr)
+	Shader(const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	~Shader();
 
 	// Reads a shader file's code line by line, saving it into a string.
+    // @param - const char* for the shader's file name
 	// @return - const std::string containing the shader code
-	const std::string ReadShaderFile(const std::string& shaderFileName);
+    const std::string ReadShaderFile(const char* shaderFileName) const;
 
-	// Compiles both the vertex and fragment shaders and links them into
-	// a program object that can be referenced by mShaderID
-    // @param - const char* for the vertex code
-    // @param - const char* for the fragment code
-	void CompileShaders(const char* vertexCode, const char* fragmentCode);
+	// Compiles a shader using a string that contains the shader code 
+    // and links it into a program object that can be referenced by mShaderID
+    // @param - const char* for the shader code
+    // @param - GLenum for the shader type
+	unsigned int CompileShader(const char* shaderCode, GLenum type) const;
 
 	// Sets this shader program as the active one with glUseProgram
 	// Every shader/rendering call will use this program object and its shaders
-	void SetActive() { glUseProgram(mShaderID); }
+	void SetActive() const { glUseProgram(mShaderID); }
 
 	// Getter for the shader program's id
     // @return - unsigned int for the shader's id
