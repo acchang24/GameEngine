@@ -423,6 +423,9 @@ bool Game::Init()
 	camBuffer->LinkShader(instanceShader);
 	camBuffer->UpdateBufferData(&mCamera->GetCameraConsts());
 
+	// Since all ShaderProgram objects are attached to a Shader object, it's safe to de-allocate them here
+	mAssetManager->ClearShaderPrograms();
+
 	return true;
 }
 

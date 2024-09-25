@@ -7,23 +7,27 @@ AssetManager::AssetManager() :
 	mMaterialCache(new Cache<Material>(this)),
 	mMeshCache(new Cache<Mesh>(this)),
 	mModelCache(new Cache<Model>(this)),
-	mAnimationCache(new Cache<Animation>(this))
+	mAnimationCache(new Cache<Animation>(this)),
+	mShaderProgramCache(new Cache<ShaderProgram>(this))
 {
 }
 
 AssetManager::~AssetManager()
 {
-	std::cout << "Delete asset manager" << std::endl;
+	std::cout << "Deleted asset manager\n";
 }
 
 void AssetManager::Shutdown()
 {
+	std::cout << "Shutdown asset manager\n";
+
 	delete mShaderCache;
 	delete mTextureCache;
 	delete mMaterialCache;
 	delete mMeshCache;
 	delete mModelCache;
 	delete mAnimationCache;
+	delete mShaderProgramCache;
 
 	mShaderCache = nullptr;
 	mTextureCache = nullptr;
@@ -31,6 +35,7 @@ void AssetManager::Shutdown()
 	mMeshCache = nullptr;
 	mModelCache = nullptr;
 	mAnimationCache = nullptr;
+	mShaderProgramCache = nullptr;
 }
 
 void AssetManager::Clear()
@@ -41,6 +46,7 @@ void AssetManager::Clear()
 	mMeshCache->Clear();
 	mModelCache->Clear();
 	mAnimationCache->Clear();
+	mShaderProgramCache->Clear();
 }
 
 AssetManager* AssetManager::Get()

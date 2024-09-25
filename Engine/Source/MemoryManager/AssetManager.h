@@ -1,6 +1,7 @@
 #pragma once
 #include "Cache.h"
 #include "../Graphics/Shader.h"
+#include "../Graphics/ShaderProgram.h"
 #include "../Graphics/Texture.h"
 #include "../Graphics/Material.h"
 #include "../Graphics/UniformBuffer.h"
@@ -102,6 +103,17 @@ public:
 	// Clears each element from the animation cache map
 	void ClearAnimations() { mAnimationCache->Clear(); }
 
+	// Saves a ShaderProgram into the shader program cache's map
+	// @param - const std::string& for the shader's file name
+	// @param - ShaderProgram* for the shader program to save
+	void SaveShaderProgram(const std::string& shaderFileName, ShaderProgram* program) { mShaderProgramCache->StoreCache(shaderFileName, program); }
+	// Retrieves a ShaderProgram from the shader program cache's map
+	// @param - const std::string& for the shader file name
+	// @return - ShaderProgram* for the desired shader program
+	ShaderProgram* LoadShaderProgram(const std::string& shaderFileName) { return mShaderProgramCache->Get(shaderFileName); }
+	// Clears each element from the shader program cache map
+	void ClearShaderPrograms() { mShaderProgramCache->Clear(); }
+
 private:
 	AssetManager();
 	~AssetManager();
@@ -123,4 +135,7 @@ private:
 
 	// Animation cache
 	Cache<Animation>* mAnimationCache;
+
+	// ShaderProgram cache
+	Cache<ShaderProgram>* mShaderProgramCache;
 };
