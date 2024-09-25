@@ -12,6 +12,7 @@ struct TextureSamplers
     sampler2D specular1;
 	sampler2D emission1;
 	sampler2D normal1;
+	sampler2D shadow1;
 };
 
 // Struct to define light data
@@ -87,8 +88,6 @@ layout (std140, binding = 2) uniform MaterialBuffer
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
 
-uniform sampler2D shadowMap;
-
 // Final vector4 fragment color output
 out vec4 fragColor;
 
@@ -104,7 +103,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    float closestDepth = texture(textureSamplers.shadow1, projCoords.xy).r; 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
 
@@ -113,12 +112,12 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
     // PCF
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    vec2 texelSize = 1.0 / textureSize(textureSamplers.shadow1, 0);
     for(int x = -1; x <= 1; ++x)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            float pcfDepth = texture(textureSamplers.shadow1, projCoords.xy + vec2(x, y) * texelSize).r; 
             shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
         }    
     }

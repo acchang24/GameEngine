@@ -576,7 +576,8 @@ void Game::ProcessInput()
 	// Toggle the main directional light
 	if (keyboardState[SDL_SCANCODE_SPACE] && !mPrevKeyInputs[SDL_SCANCODE_SPACE])
 	{
-		mLights->GetLights().directionalLight[0].data.isEnabled = !mLights->GetLights().directionalLight[0].data.isEnabled;
+		bool light = mLights->GetLights().directionalLight[0].data.isEnabled;
+		mLights->GetLights().directionalLight[0].data.isEnabled = !light;
 	}
 
 	// Capture mouse
@@ -820,7 +821,7 @@ void Game::Render()
 	mRenderer->ClearBuffers();
 
 	{
-		//PROFILE_SCOPE(RENDER_SHADOW_MAP);
+		PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
 		//std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
 
@@ -837,12 +838,8 @@ void Game::Render()
 	// Draw to main multisampled frame buffer
 	mMainFrameBuffer->SetActive();
 
-	{
-		////PROFILE_SCOPE(RENDER_NORMAL_SCENE);
-		//// Render scene as normal
-		RenderScene();
-
-	}
+	// Render scene as normal
+	RenderScene();
 	
 	mMainFrameBuffer->BlitBuffers();
 	// Use the multisampled texture and mask off dark spots

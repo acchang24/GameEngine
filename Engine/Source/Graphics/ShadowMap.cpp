@@ -18,9 +18,9 @@ ShadowMap::ShadowMap() :
 	mShader(nullptr),
 	mVertexBuffer(nullptr),
 	mShadowBuffer(new UniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
-	mTextureUnit(static_cast<int>(TextureUnit::Shadow)),
 	mShadowMapFrameBuffer(0),
-	mShadowMap(0)
+	mShadowMap(0),
+	mTextureUnit(static_cast<int>(TextureUnit::Shadow))
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
 	VertexScreenQuad quadVertices[] = {
@@ -61,7 +61,7 @@ ShadowMap::ShadowMap() :
 
 ShadowMap::~ShadowMap()
 {
-	std::cout << "Delete shadow map" << std::endl;
+	std::cout << "Delete shadow map\n";
 
 	delete mVertexBuffer;
 
@@ -77,14 +77,6 @@ void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& po
 	shadowNearPlane = near;
 	shadowFarPlane = far;
 
-	// Render the depth of a scene to a texture (from the light's perspective)
-	glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, near, far);
-	glm::mat4 lightView = glm::lookAt(pos, target,  glm::vec3(0.0f, 1.0f, 0.0f));
-	
-	mShadowConsts.lightSpace = lightProjection * lightView;
-
-	mShadowBuffer->UpdateBufferData(&mShadowConsts);
-
 	// First pass will render to shadow map
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 
@@ -92,6 +84,17 @@ void ShadowMap::SetActive(float size, float near, float far, const glm::vec3& po
 	glBindFramebuffer(GL_FRAMEBUFFER, mShadowMapFrameBuffer);
 	// Clear depth buffer
 	glClear(GL_DEPTH_BUFFER_BIT);
+
+	// Create an othographic projection for a directional shadow from the light's perspective
+	glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, near, far);
+	// Create a look at
+	glm::mat4 lightView = glm::lookAt(pos, target, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Multiply the new view and projection to create the light space transform matrix
+	mShadowConsts.lightSpace = lightProjection * lightView;
+
+	// Update the light shadow buffer's data with the new light space matrix
+	mShadowBuffer->UpdateBufferData(&mShadowConsts);
 }
 
 void ShadowMap::DrawDebug(Shader* s)
@@ -119,7 +122,7 @@ void ShadowMap::End(int width, int height) const
 void ShadowMap::BindShadowMapToShader(Shader* s) const
 {
 	s->SetActive();
-	s->SetInt("shadowMap", mTextureUnit);
+	s->SetInt("textureSamplers.shadow1", mTextureUnit);
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, mShadowMap);
 }
