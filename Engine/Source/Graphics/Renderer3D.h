@@ -7,6 +7,7 @@ class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
 class UniformBuffer;
+class VertexBuffer;
 
 class Renderer3D
 {
@@ -77,6 +78,10 @@ public:
 	// @param - Shader* to link the buffer
 	void LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader);
 
+	// Gets the vertex buffer to draw a screen quad
+	// @return - VertexBuffer* for the vertex buffer
+	VertexBuffer* GetVertexBuffer() { return mVertexBuffer; }
+
 	// Gets the UniformBuffer for materials
 	// @return - UniformBuffer* for the material buffer
 	UniformBuffer* GetMaterialBuffer() { return mMaterialBuffer; }
@@ -107,6 +112,9 @@ private:
 
 	// Map of frame buffers used by the renderer
 	std::unordered_map<std::string, FrameBuffer*> mFrameBuffers;
+
+	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
+	VertexBuffer* mVertexBuffer;
 
 	// A uniform buffer for passing Material data
 	UniformBuffer* mMaterialBuffer;

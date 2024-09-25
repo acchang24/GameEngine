@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "UniformBuffer.h"
+#include "VertexBuffer.h"
 
 // Window width
 static int s_WindowWidth;
@@ -27,6 +28,7 @@ int Renderer3D::GetHeight()
 }
 
 Renderer3D::Renderer3D() :
+	mVertexBuffer(nullptr),
 	mMaterialBuffer(nullptr),
 	mSkeletonBuffer(nullptr),
 	mWindow(nullptr),
@@ -176,7 +178,21 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Set the new viewport
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
+
+	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
+	VertexScreenQuad quadVertices[] = {
+		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
+		glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
+
+		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
+		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f,  1.0f), glm::vec2(1.0f, 1.0f)
+	};
+	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
+
 	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+
 	mSkeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 
 	return true;
@@ -197,6 +213,7 @@ void Renderer3D::Shutdown()
 		delete fb.second;
 	}
 
+	delete mVertexBuffer;
 	delete mMaterialBuffer;
 	delete mSkeletonBuffer;
 }

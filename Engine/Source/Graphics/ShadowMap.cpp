@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Renderer3D.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "UniformBuffer.h"
@@ -16,25 +17,12 @@ float shadowFarPlane = 1000.0f;
 ShadowMap::ShadowMap() :
 	mShadowConsts({}),
 	mShader(nullptr),
-	mVertexBuffer(nullptr),
+	mVertexBuffer(Renderer3D::Get()->GetVertexBuffer()),
 	mShadowBuffer(new UniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0),
 	mTextureUnit(static_cast<int>(TextureUnit::Shadow))
 {
-	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
-	VertexScreenQuad quadVertices[] = {
-		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
-		glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f),
-		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
-
-		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
-		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
-		glm::vec2(1.0f,  1.0f), glm::vec2(1.0f, 1.0f)
-	};
-	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
-
-
 	// Create a framebuffer object
 	glGenFramebuffers(1, &mShadowMapFrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, mShadowMapFrameBuffer);
@@ -62,8 +50,6 @@ ShadowMap::ShadowMap() :
 ShadowMap::~ShadowMap()
 {
 	std::cout << "Delete shadow map\n";
-
-	delete mVertexBuffer;
 
 	delete mShadowBuffer;
 
