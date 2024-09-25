@@ -30,7 +30,7 @@ Model::Model(const std::string& fileName, Entity3D* entity) :
 
 Model::~Model()
 {
-	std::cout << "Delete model" << std::endl;
+	std::cout << "Deleted model: " << mDirectory << "\n";
 
 	mMaterialMap.clear();
 }
@@ -45,12 +45,14 @@ void Model::MakeInstance(unsigned int numInstances)
 
 bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 {
+	std::cout << "Loading model: " << fileName << "\n";
+
 	Assimp::Importer import;
-	const aiScene * scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace);
+	const aiScene* scene = import.ReadFile(fileName, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::cout << "ERROR ASSIMP parsing the object's file:: " << import.GetErrorString() << std::endl;
+		std::cout << "ERROR ASSIMP parsing the object's file:: " << import.GetErrorString() << "\n";
 		return false;
 	}
 
@@ -59,6 +61,8 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 	if (scene->HasAnimations())
 	{
 		entity->SetIsSkinned(true);
+
+		std::cout << "Loading animation for: " << fileName << "\n";
 
 		// Create a new animation component for this model
 		mSkeleton = new Skeleton();
@@ -108,6 +112,8 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 	AssetManager* am = AssetManager::Get();
 
 	std::string meshName = mesh->mName.C_Str();
+
+	std::cout << "Loading mesh: " << meshName << "\n";
 
 	// Check to see if mesh has already been loaded
 	Mesh* newMesh = am->LoadMesh(meshName);
@@ -196,7 +202,7 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 				// Create a new material if it's not in the asset manager
 				if (!mat)
 				{
-					std::cout << name << " " << mesh->mMaterialIndex << std::endl;
+					std::cout << "Loading material: " << name << " " << mesh->mMaterialIndex << "\n";
 					++mNumMaterials;
 					mat = new Material();
 					mat->SetShader(am->LoadShader("phong"));
@@ -261,6 +267,8 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 		{
 			path = mDirectory + (str.C_Str());
 
+			std::cout << "Loading texture: " << path << "\n";
+
 			// See if texture is already loaded
 			Texture* t = am->LoadTexture(path);
 			if (!t)
@@ -284,7 +292,6 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 					break;
 				}
 				material->AddTexture(texture);
-				am->SaveTexture(path, texture);
 				++mNumTextures;
 			}
 			else

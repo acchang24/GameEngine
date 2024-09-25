@@ -41,9 +41,6 @@ public:
 	Shader* LoadShader(const std::string& shaderName) { return mShaderCache->Get(shaderName); }
 	// Clears each element from the shader cache's map
 	void ClearShaders() { mShaderCache->Clear(); }
-	// Gets the asset manager's shader cache
-	// @return - Cache<Shader>* for the pointer to the shader cache
-	Cache<Shader>* GetShaderCache() { return mShaderCache; }
 
 	// Saves a texture into the texture cache's map
 	// @param - const std::string& for the texture's name.
@@ -55,9 +52,6 @@ public:
 	Texture* LoadTexture(const std::string& textureName) { return mTextureCache->Get(textureName); }
 	// Clears each element from the texture cache's map
 	void ClearTextures() { mShaderCache->Clear(); }
-	// Gets the asset manager's texture cache
-	// @return - Cache<Texture>* for the pointer to the texture cache
-	Cache<Texture>* GetTextureCache() { return mTextureCache; }
 
 	// Saves a material into the material cache's map
 	// @param - const std::string& for the material's name

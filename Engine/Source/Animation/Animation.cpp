@@ -32,7 +32,7 @@ Animation::~Animation()
 	}
 	mBones.clear();
 
-	std::cout << "Deleted animation\n";
+	std::cout << "Deleted animation: " << mName << "\n";
 }
 
 void Animation::ReadNodeHeirarchy(AnimNode& curr, const aiNode* src, std::unordered_map<std::string, BoneData>& boneData)

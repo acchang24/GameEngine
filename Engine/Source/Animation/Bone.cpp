@@ -15,7 +15,7 @@ Bone::Bone(const std::string& name, int id, const glm::mat4& offset) :
 
 Bone::~Bone()
 {
-	std::cout << "Deleted bone\n";
+	std::cout << "Deleted bone: " << mName << "\n";
 }
 
 void Bone::ReadKeyFrames(const aiNodeAnim* channel)

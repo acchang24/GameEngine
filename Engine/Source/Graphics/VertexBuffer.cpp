@@ -48,7 +48,7 @@ VertexBuffer::VertexBuffer(const void* vertices, const void* indices, size_t ver
 
 VertexBuffer::~VertexBuffer()
 {
-	std::cout << "Delete vertex arrays and vertex/index buffers" << std::endl;
+	std::cout << "Delete vertex arrays and vertex/index buffers: " << mVaoID << "\n";
 	// De-allocate all resources
 	glDeleteVertexArrays(1, &mVaoID);
 	glDeleteBuffers(1, &mVertexBufferID);

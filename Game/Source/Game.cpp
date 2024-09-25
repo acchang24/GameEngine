@@ -100,14 +100,6 @@ bool Game::Init()
 	Texture* wallTexture = new Texture("Assets/brickwall.jpg", TextureType::Diffuse);
 	Texture* wallNormalTexture = new Texture("Assets/brickwall_normal.jpg", TextureType::Normal);
 
-	mAssetManager->SaveTexture("Assets/matrix.jpg", texture);
-	mAssetManager->SaveTexture("Assets/container2.png", texture3);
-	mAssetManager->SaveTexture("Assets/container2_specular.png", texture4);
-	mAssetManager->SaveTexture("Assets/lightSphere.png", lightSphereTexture);
-	mAssetManager->SaveTexture("Assets/wood.png", woodTexture);
-	mAssetManager->SaveTexture("Assets/brickwall.jpg", wallTexture);
-	mAssetManager->SaveTexture("Assets/brickwall_normal.jpg", wallNormalTexture);
-
 	Shader* colorShader = new Shader("Shaders/color.vert", "Shaders/color.frag");
 	mAssetManager->SaveShader("color", colorShader);
 

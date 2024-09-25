@@ -43,6 +43,8 @@ void Skeleton::LoadBoneData(const aiMesh* mesh)
 	{
 		boneName = mesh->mBones[i]->mName.C_Str();
 
+		std::cout << "Loading animation bone: " << boneName << "\n";
+
 		if (mBoneDataMap.find(boneName) == mBoneDataMap.end())
 		{
 			BoneData newBone = {};

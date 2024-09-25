@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "stb_image.h"
+#include "../MemoryManager/AssetManager.h"
 
 Texture::Texture(const std::string& textureFile, TextureType type) :
 	mName(textureFile),
@@ -40,17 +41,6 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 			internalFormat = dataFormat;
 		}
 
-		//if (mNumChannels == 4)
-		//{
-		//	dataFormat = GL_RGBA;
-		//	wrap = GL_CLAMP_TO_EDGE;
-		//}
-		//else if(mNumChannels == 3)
-		//{
-		//	dataFormat = GL_RGB;
-		//	wrap = GL_REPEAT;
-		//}
-
 		// Set the texture's wrapping parameters
 		// GL_REPEAT: The default behavior. Repeats the texture image.
 		// GL_MIRRORED_REPEAT: Same as GL_REPEAT but mirrors the image with each repeat
@@ -82,16 +72,19 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 	}
 	else
 	{
-		std::cout << "Failed to load texture" << std::endl;
+		std::cout << "Failed to load texture\n";
 	}
 
 	// Free image data
 	stbi_image_free(data);
+
+	// Save texture to asset manager
+	AssetManager::Get()->SaveTexture(textureFile, this);
 }
 
 Texture::~Texture()
 {
-	std::cout << "Delete texture" << std::endl;
+	std::cout << "Deleted texture " << mName << "\n";
 	glDeleteTextures(1, &mTextureID);
 	mTextureID = 0;
 	mWidth = 0;
