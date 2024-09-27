@@ -33,26 +33,38 @@ public:
 	// @param - const std::string& for the file name
 	// @param - Entity3D* for the model's entity
 	bool LoadModel(const std::string& fileName, Entity3D* entity);
+
 	// Recursively goes through the scene's nodes and loads any meshes
 	// @param - aiNode*
 	// @param - const aiScene*
 	// @param - Skeleton* if there is a skeleton for this model
 	void ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton);
+
 	// Takes an assimp mesh and store it in our own Mesh object.
 	// It then appends that mesh to the entity's vector of meshes.
 	// @param - aiMesh*
 	// @param - const aiScene*
 	// @param - Skeleton* if there is a skeleton for this model
 	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton);
+
+	// Loads a mesh's materials
+	// @param - aiMesh*
+	// @param - const aiScene*
+	// @param - Skeleton* if there is a skeleton for this model
+	// @param - AssetManager* to save the model's materials
+	Material* LoadMaterial(const aiScene* scene, aiMesh* mesh, Skeleton* skeleton, AssetManager* am);
+
 	// Loads the textures of the material
 	// @param - aiMaterial*
 	// @param - aiTextureType
 	// @param - Material* for the material
+	// @param - AssetManager* to save the model's textures
 	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am);
 
 	// Adds a mesh to the model's vector of meshes
 	// @param - Mesh* for the new mesh
 	void AddMesh(Mesh* m) { mMeshes.emplace_back(m); }
+
 	// Gets the model's vector of meshes (can change data)
 	// @return - std::vector<Mesh*>& for the vector of meshes
 	std::vector<Mesh*>& GetMeshes() { return mMeshes; }
@@ -66,8 +78,13 @@ public:
 	// @param - const glm::mat4& for the model matrix
 	void Draw(const glm::mat4& model);
 
+	// Loops through each mesh and calls Mesh::Draw() using specified shader
+	// @param - const glm::mat4& for the model matrix
+	// @param - Shader* to use
 	void Draw(Shader* s, const glm::mat4& model);
 
+	// Gets the model's skeleton
+	// @return - Skeleton* for the model's skeleton
 	Skeleton* GetSkeleton() { return mSkeleton; }
 
 private:
@@ -86,8 +103,10 @@ private:
 
 	// Number of meshes
 	size_t mNumMeshes;
+
 	// Number of materials
 	size_t mNumMaterials;
+
 	// Number of textures
 	size_t mNumTextures;
 };

@@ -185,53 +185,8 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 			}
 		}
 
-		// Load materials
-		Material* mat = nullptr;
-		++mNumMeshes;
-		if (mesh->mMaterialIndex >= 0)
-		{
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			std::string name = material->GetName().C_Str();
-
-			// If the material index is not in the entity's material map, create a new material
-			if (mMaterialMap.find(name) == mMaterialMap.end())
-			{
-				// Check to see if it's in the asset manager map
-				mat = am->LoadMaterial(name);
-
-				// Create a new material if it's not in the asset manager
-				if (!mat)
-				{
-					std::cout << "Loading material: " << name << " " << mesh->mMaterialIndex << "\n";
-					++mNumMaterials;
-					mat = new Material();
-					mat->SetShader(am->LoadShader("phong"));
-					if (skeleton)
-					{
-						mat->SetShader(am->LoadShader("skinned"));
-					}
-
-					mMaterialMap[name] = mat;
-					// Diffuse textures
-					LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat, am);
-					// Specular textures
-					LoadMaterialTextures(material, aiTextureType_SPECULAR, mat, am);
-					// Emissive textures
-					LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat, am);
-					// Normal textures
-					LoadMaterialTextures(material, aiTextureType_NORMALS, mat, am);
-
-					// Height maps
-
-					am->SaveMaterial(name, mat);
-				}
-			}
-			else
-			{
-				// use the material from the material map instead
-				mat = mMaterialMap[name];
-			}
-		}
+		// Load material
+		Material* mat = LoadMaterial(scene, mesh, skeleton, am);
 
 		// Add bone id and weights to vertex if there is a skeletal animation
 		if (skeleton)
@@ -244,6 +199,8 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 
 		newMesh = new Mesh(vb, mat);
 
+		++mNumMeshes;
+
 		am->SaveMesh(meshName, newMesh);
 	}
 
@@ -254,6 +211,47 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 	}
 
 	return newMesh;
+}
+
+Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, Skeleton* skeleton, AssetManager* am)
+{
+	if (mesh->mMaterialIndex >= 0)
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		std::string name = material->GetName().C_Str();
+
+		// Check to see if it's in the asset manager map
+		Material* mat = am->LoadMaterial(name);
+
+		// Create a new material if it's not in the asset manager
+		if (!mat)
+		{
+			std::cout << "Loading material: " << name << " " << mesh->mMaterialIndex << "\n";
+			++mNumMaterials;
+			mat = new Material();
+			mat->SetShader(am->LoadShader("phong"));
+			if (skeleton)
+			{
+				mat->SetShader(am->LoadShader("skinned"));
+			}
+
+			mMaterialMap[name] = mat;
+			// Diffuse textures
+			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat, am);
+			// Specular textures
+			LoadMaterialTextures(material, aiTextureType_SPECULAR, mat, am);
+			// Emissive textures
+			LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat, am);
+			// Normal textures
+			LoadMaterialTextures(material, aiTextureType_NORMALS, mat, am);
+
+			am->SaveMaterial(name, mat);
+		}
+
+		return mat;
+	}
+
+	return nullptr;
 }
 
 void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am)
@@ -273,32 +271,31 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 			Texture* t = am->LoadTexture(path);
 			if (!t)
 			{
-				// Create the new texture
-				Texture* texture = nullptr;
+				// Create the new texture based on type
+				TextureType type{};
 
 				switch (aiTextureType)
 				{
 				case aiTextureType_DIFFUSE:
-					texture = new Texture(path, TextureType::Diffuse);
+					type = TextureType::Diffuse;
 					break;
 				case aiTextureType_SPECULAR:
-					texture = new Texture(path, TextureType::Specular);
+					type = TextureType::Specular;
 					break;
 				case aiTextureType_EMISSIVE:
-					texture = new Texture(path, TextureType::Emission);
+					type = TextureType::Emission;
 					break;
 				case aiTextureType_NORMALS:
-					texture = new Texture(path, TextureType::Normal);
+					type = TextureType::Normal;
 					break;
 				}
-				material->AddTexture(texture);
+
+				t = new Texture(path, type);
+
 				++mNumTextures;
 			}
-			else
-			{
-				// use the cached texture from AssetManager
-				material->AddTexture(t);
-			}
+			// Add the texture to the material
+			material->AddTexture(t);
 		}
 	}
 }
