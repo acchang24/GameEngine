@@ -17,6 +17,7 @@ enum class TextureUnit
 	FrameBuffer = 11, // Texture unit 11 is used to sample a texture created from a frame buffer
 	CubeMap = 12, // Texture unit 12 is used to sample from a cube map
 	Shadow = 13, // Texture unit 13 is used to sample from a directional shadow/depth map
+	PointShadow = 14 // Texture unit 14 is used to sample from a cube map for a point shadow/depth map
 };
 
 // The Texture class helps load image files with the

@@ -121,6 +121,9 @@ bool Game::Init()
 	Shader* shadowDebugShader = new Shader("Shaders/screen.vert", "Shaders/Shadow/shadowDebug.frag");
 	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
 
+	Shader* pointShadowDepthShader = new Shader("Shaders/Shadow/pointShadowDepth.vert", "Shaders/Shadow/pointShadowDepth.frag", "Shaders/Shadow/pointShadowDepth.geom");
+	mAssetManager->SaveShader("pointShadowDepth", pointShadowDepthShader);
+
 	// Link shader uniform blocks for the material buffer
 	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), phongShader);
 	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), instanceShader);

@@ -1,4 +1,10 @@
 #pragma once
+#include <glm/glm.hpp>
+
+struct PointShadowMapConsts
+{
+	glm::mat4 shadowTransforms[6];
+};
 
 class PointShadowMap
 {
@@ -12,4 +18,7 @@ private:
 
 	// Cube map used for point shadows
 	unsigned int mPointShadowMap;
+
+	// PointShadow texture unit
+	int mTextureUnit;
 };

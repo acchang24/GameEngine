@@ -1,13 +1,15 @@
 #include "PointShadowMap.h"
 #include <iostream>
 #include <glad/glad.h>
+#include "Texture.h"
 
 const unsigned int SHADOW_WIDTH = 8560;
 const unsigned int SHADOW_HEIGHT = 8560;
 
 PointShadowMap::PointShadowMap() :
 	mPointShadowMapFrameBuffer(0),
-	mPointShadowMap(0)
+	mPointShadowMap(0),
+	mTextureUnit(static_cast<int>(TextureUnit::PointShadow))
 {
 	glGenTextures(1, &mPointShadowMap);
 
