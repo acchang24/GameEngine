@@ -278,12 +278,16 @@ bool Game::Init()
 		glm::vec3(10.0f, -4.0f, -15.0f) 
 	};
 
+
+	float time = 0.1f;
 	for (size_t i = 0; i < 11; ++i)
 	{
 		Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
 		vampire->SetScale(0.05f);
 		vampire->SetPosition(vampirePositions[i]);
 		AddGameEntity(vampire);
+
+		vampires.emplace_back(vampire);
 	}
 
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
@@ -673,6 +677,47 @@ void Game::ProcessInput()
 	{
 		dist += 10.0f;
 		pos = (lightDir * -dist);
+	}
+
+	if (keyboardState[SDL_SCANCODE_KP_0])
+	{
+		vampires[0]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_1])
+	{
+		vampires[1]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_2])
+	{
+		vampires[2]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_3])
+	{
+		vampires[3]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_4])
+	{
+		vampires[4]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_5])
+	{
+		vampires[5]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_6])
+	{
+		vampires[6]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_7])
+	{
+		vampires[7]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_8])
+	{
+		vampires[8]->GetModel()->GetSkeleton()->SetTime(0.0f);
+	}
+	if (keyboardState[SDL_SCANCODE_KP_9])
+	{
+		vampires[9]->GetModel()->GetSkeleton()->SetTime(0.0f);
 	}
 
 	// Save previous key inputs

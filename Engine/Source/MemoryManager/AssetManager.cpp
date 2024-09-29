@@ -25,7 +25,8 @@ void AssetManager::Shutdown()
 	delete mTextureCache;
 	delete mMaterialCache;
 	delete mMeshCache;
-	delete mModelCache;
+	//delete mModelCache;
+	mModelCache->GetAssetMap().clear();
 	delete mAnimationCache;
 	delete mShaderProgramCache;
 
@@ -44,7 +45,8 @@ void AssetManager::Clear()
 	mTextureCache->Clear();
 	mMaterialCache->Clear();
 	mMeshCache->Clear();
-	mModelCache->Clear();
+	//mModelCache->Clear();
+	mModelCache->GetAssetMap().clear();
 	mAnimationCache->Clear();
 	mShaderProgramCache->Clear();
 }

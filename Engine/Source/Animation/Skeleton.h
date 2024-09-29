@@ -87,6 +87,8 @@ public:
 		mCurrentTime = 0.0f;
 	}
 
+	void SetTime(float time) { mCurrentTime = time; }
+
 private:
 	// Job to update bone matrices on a separate thread
 	class UpdateBoneJob : public JobManager::Job

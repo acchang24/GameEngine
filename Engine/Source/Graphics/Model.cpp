@@ -35,6 +35,17 @@ Model::~Model()
 	mMaterialMap.clear();
 }
 
+Model::Model(Model& other) :
+	mMeshes(other.mMeshes),
+	mMaterialMap(other.mMaterialMap),
+	mDirectory(other.mDirectory),
+	mSkeleton(nullptr),
+	mNumMeshes(other.mNumMeshes),
+	mNumMaterials(other.mNumMaterials),
+	mNumTextures(other.mNumTextures)
+{
+}
+
 void Model::MakeInstance(unsigned int numInstances)
 {
 	for (auto m : mMeshes)

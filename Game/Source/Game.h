@@ -97,6 +97,8 @@ private:
 	// Frame buffer for bloom blending
 	FrameBuffer* mBloomBlendFrameBuffer;
 
+	std::vector<class Entity3D*> vampires;
+
 	// The game's camera
 	Camera* mCamera;
 
