@@ -126,6 +126,12 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 
 	std::cout << "Loading mesh: " << meshName << "\n";
 
+	// Load skeletal bone data if it exists
+	if (skeleton)
+	{
+		skeleton->LoadBoneData(mesh);
+	}
+
 	// Check to see if mesh has already been loaded
 	Mesh* newMesh = am->LoadMesh(meshName);
 
@@ -213,12 +219,6 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 		++mNumMeshes;
 
 		am->SaveMesh(meshName, newMesh);
-	}
-
-	// Load skeletal bone data
-	if (skeleton)
-	{
-		skeleton->LoadBoneData(mesh);
 	}
 
 	return newMesh;
