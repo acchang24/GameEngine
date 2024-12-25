@@ -1,6 +1,5 @@
 #pragma once
-#include <string>
-#include <unordered_map>
+#include <vector>
 #include <SDL2/SDL.h>
 
 class FrameBuffer;
@@ -12,8 +11,8 @@ class VertexBuffer;
 class Renderer3D
 {
 public:
-	// Returns the instance of an Renderer3D
-	// @return - Renderer3D* for the instance of an Renderer3D
+	// Returns an instance of an Renderer3D (singleton)
+	// @return - Renderer3D* (pointer to the instance)
 	static Renderer3D* Get();
 
 	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
@@ -30,7 +29,8 @@ public:
 	// De-allocates any resources from SDL
 	void Shutdown();
 
-	// Checks for window resize, clears the screen, and clears the color and depth buffer bits
+	// Checks for window resize. If true, then resize all the frame buffers.
+	// Clears the screen, and clears the color and depth buffer bits
 	void ClearBuffers();
 
 	// Sets back to the default frame buffer, clears its color/depth buffers and resets the viewport
@@ -39,26 +39,20 @@ public:
 	// Swap the buffers and present to the screen
 	void EndFrame();
 
-	// Gets the framebuffer by name in the framebuffer map
-	// @param - const std::string& for the name of the desired frame buffer
-	FrameBuffer* GetFrameBuffer(const std::string& name);
-
 	// Creates a frame buffer for the renderer to use
 	// @param - int for the width of the screen/window
 	// @param - int for the height of the screen/window
-	// @param - const std::string& for the name of the frame buffer
 	// @param - float for the frame buffer's size 
 	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	FrameBuffer* CreateFrameBuffer(int screenWidth, int screenHeight, const std::string& name, float size = 1.0f);
+	FrameBuffer* CreateFrameBuffer(int screenWidth, int screenHeight, float size = 1.0f);
 
 	// Creates a multisampled frame buffer for the renderer to use
 	// @param - int for the width of the screen/window
 	// @param - int for the height of the screen/window
 	// @param - int for the number of subsamples used for anti-aliasing
-	// @param - const std::string& for the name of the frame buffer
 	// @param - float for the frame buffer's size 
 	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, const std::string& name, float size = 1.0f);
+	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, float size = 1.0f);
 
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active
@@ -67,7 +61,17 @@ public:
 	// @param - int for the texture unit to activate
 	void CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit);
 
+	// Gets the window's width
+	// @return - int for the width
+	static int GetWidth();
+
+	// Gets the window's height
+	// @return - int for the height
+	static int GetHeight();
+
 	// Static function that triggers everytime the window is resized.
+	// This resizes the viewport as well as the camera's projection matrix
+	// given the new dimensions
 	static int ResizeWindowEventWatcher(void* data, SDL_Event* event);
 
 	// Resizes all the frame buffers to the new dimensions
@@ -98,20 +102,12 @@ public:
 	// @param - int for the number of subsamples
 	void SetNumSubsamples(int subsamples) { mNumSubsamples = subsamples; }
 
-	// Gets the window's width
-	// @return - int for the width
-	static int GetWidth();
-
-	// Gets the window's height
-	// @return - int for the height
-	static int GetHeight();
-
 private:
 	Renderer3D();
 	~Renderer3D();
 
-	// Map of frame buffers used by the renderer
-	std::unordered_map<std::string, FrameBuffer*> mFrameBuffers;
+	// Vector of frame buffers used by the renderer
+	std::vector<FrameBuffer*> mFrameBuffers;
 
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;

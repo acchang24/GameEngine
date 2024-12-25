@@ -33,12 +33,12 @@ public:
 	// @param - unsigned int for the number of instances to render
 	void MakeInstance(unsigned int numInstances);
 
-	// Sets the VAO as active, then draws based on if it has indices or not
+	// Sets the VAO as active, then draws the vertices, based on if it has indices or not
 	void Draw();
 
 	// Binds the Vertex Array Object, setting this VAO as the current one.
 	// This is set BEFORE every time the vertices are being drawn.
-	void SetActive() { glBindVertexArray(mVaoID); }
+	void SetActive() { glBindVertexArray(mVaoID); } const
 
 	unsigned int GetID() const { return mVaoID; }
 	unsigned int GetVertexBufferId() const { return mVertexBufferID; }
@@ -56,8 +56,10 @@ private:
 	// Reference ID for the index buffer (element buffer object)
 	unsigned int mIndexBufferID;
 
+	// Number of instances (used for instanced rendering)
 	unsigned int mNumInstances;
 
+	// Index of the last Vertex Attribute Pointer position
 	size_t mLastAttribIndex;
 
 	// Number of vertices
@@ -69,5 +71,6 @@ private:
 	// Bool for if the vertex array uses index based drawing
 	bool mDrawIndexed;
 
+	// Bool for if the vertex array draws using instanced rendering
 	bool mDrawInstanced;
 };

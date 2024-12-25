@@ -17,34 +17,6 @@ static int s_WindowHeight;
 // Bool for whenever the window is resized
 static bool s_Resized = false;
 
-int Renderer3D::GetWidth()
-{
-	return s_WindowWidth;
-}
-
-int Renderer3D::GetHeight()
-{
-	return s_WindowHeight;
-}
-
-Renderer3D::Renderer3D() :
-	mVertexBuffer(nullptr),
-	mMaterialBuffer(nullptr),
-	mSkeletonBuffer(nullptr),
-	mWindow(nullptr),
-	mContext(nullptr),
-	mWindowTitle(),
-	mNumSubsamples(0),
-	mVSync(1),
-	mIsFullScreen(false)
-{
-}
-
-Renderer3D::~Renderer3D()
-{
-	std::cout << "Deleted Renderer3D\n";
-}
-
 Renderer3D* Renderer3D::Get()
 {
 	static Renderer3D s_Renderer3D;
@@ -208,10 +180,11 @@ void Renderer3D::Shutdown()
 	// Quit SDL
 	SDL_Quit();
 
-	for (auto& fb : mFrameBuffers)
+	for (auto fb : mFrameBuffers)
 	{
-		delete fb.second;
+		delete fb;
 	}
+	mFrameBuffers.clear();
 
 	delete mVertexBuffer;
 	delete mMaterialBuffer;
@@ -249,32 +222,20 @@ void Renderer3D::EndFrame()
 	SDL_GL_SwapWindow(mWindow);
 }
 
-FrameBuffer* Renderer3D::GetFrameBuffer(const std::string& name)
-{
-	FrameBuffer* buffer = nullptr;
-
-	if (mFrameBuffers.find(name) != mFrameBuffers.end())
-	{
-		buffer = mFrameBuffers[name];
-	}
-
-	return buffer;
-}
-
-FrameBuffer* Renderer3D::CreateFrameBuffer(int screenWidth, int screenHeight, const std::string& name, float size)
+FrameBuffer* Renderer3D::CreateFrameBuffer(int screenWidth, int screenHeight, float size)
 {
 	FrameBuffer* framebuffer = new FrameBuffer(screenWidth, screenHeight, size);
 
-	mFrameBuffers[name] = framebuffer;
+	mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
 
-FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, const std::string& name, float size)
+FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, float size)
 {
 	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(screenWidth, screenHeight, subsamples, size);
 
-	mFrameBuffers[name] = framebuffer;
+	mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
@@ -295,7 +256,17 @@ void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int
 	glBindTexture(GL_TEXTURE_2D, texture2);
 }
 
-int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
+int Renderer3D::GetWidth() /* STATIC */
+{
+	return s_WindowWidth;
+}
+
+int Renderer3D::GetHeight() /* STATIC */
+{
+	return s_WindowHeight;
+}
+
+int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event) /* STATIC */
 {
 	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED)
 	{
@@ -315,19 +286,18 @@ int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
 
 void Renderer3D::ResizeFrameBuffers()
 {
-	for (auto& fb : mFrameBuffers)
+	for (auto fb : mFrameBuffers)
 	{
-		FrameBuffer* frameBuffer = fb.second;
-		frameBuffer->Unload();
+		fb->Unload();
 
-		FrameBufferMultiSampled* multiSampledFrameBuffer = dynamic_cast<FrameBufferMultiSampled*>(frameBuffer);
+		FrameBufferMultiSampled* multiSampledFrameBuffer = dynamic_cast<FrameBufferMultiSampled*>(fb);
 		if(multiSampledFrameBuffer)
 		{
 			multiSampledFrameBuffer->Load(s_WindowWidth, s_WindowHeight, mNumSubsamples);
 		}
 		else
 		{
-			fb.second->Load(s_WindowWidth, s_WindowHeight);
+			fb->Load(s_WindowWidth, s_WindowHeight);
 		}
 	}
 
@@ -337,4 +307,22 @@ void Renderer3D::ResizeFrameBuffers()
 void Renderer3D::LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader)
 {
 	buffer->LinkShader(shader);
+}
+
+Renderer3D::Renderer3D() :
+	mVertexBuffer(nullptr),
+	mMaterialBuffer(nullptr),
+	mSkeletonBuffer(nullptr),
+	mWindow(nullptr),
+	mContext(nullptr),
+	mWindowTitle(),
+	mNumSubsamples(0),
+	mVSync(1),
+	mIsFullScreen(false)
+{
+}
+
+Renderer3D::~Renderer3D()
+{
+	std::cout << "Deleted Renderer3D\n";
 }

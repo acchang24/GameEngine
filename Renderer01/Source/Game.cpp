@@ -12,12 +12,12 @@
 #include "MemoryManager/AssetManager.h"
 #include "Util/Random.h"
 
-bool IS_FULLSCREEN = false;
-int WINDOW_WIDTH = 1280;
-int WINDOW_HEIGHT = 720;
-double MOUSE_SENSITIVITY = 0.05;
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
-int VSYNC = 1;
+int VSYNC = 4;
+double MOUSE_SENSITIVITY = 0.05;
+bool IS_FULLSCREEN = false;
 const char* TITLE = "Renderer01";
 
 Game::Game() :
@@ -58,8 +58,6 @@ void Game::Shutdown()
 {
 	delete mVertexBuffer;
 
-	delete mShader;
-
 	mRenderer->Shutdown();
 
 	UnloadGameData();
@@ -79,6 +77,9 @@ bool Game::LoadGameData()
 	mVertexBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, 3, 0, VertexLayout::VertexColor);
 
 	mShader = new Shader("Shaders/color.vert", "Shaders/color.frag");
+	mAssetManager->SaveShader("color", mShader);
+
+	mAssetManager->ClearShaderPrograms();
 
 	return true;
 }

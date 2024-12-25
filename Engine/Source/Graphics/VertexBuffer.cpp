@@ -53,12 +53,6 @@ VertexBuffer::~VertexBuffer()
 	glDeleteVertexArrays(1, &mVaoID);
 	glDeleteBuffers(1, &mVertexBufferID);
 	glDeleteBuffers(1, &mIndexBufferID);
-
-	mVaoID = 0;
-	mVertexBufferID = 0;
-	mIndexBufferID = 0;
-	mVertexCount = 0;
-	mIndexCount = 0;
 }
 
 void VertexBuffer::SetVertexAttributePointers(VertexLayout layout)

@@ -32,7 +32,6 @@
 #include "Profiler/Profiler.h"
 #include "Util/Random.h"
 
-
 float size = 30.0f;
 float near = 1.0f;
 float far = 40.0f;
@@ -40,12 +39,12 @@ glm::vec3 pos(0.0f);
 glm::vec3 lightDir(-0.05f, -1.0f, -0.2f);
 float dist = 10.0f;
 
-bool IS_FULLSCREEN = false;
-int WINDOW_WIDTH = 1280;
-int WINDOW_HEIGHT = 720;
-double MOUSE_SENSITIVITY = 0.05;
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
-int VSYNC = 1;
+int VSYNC = 4;
+double MOUSE_SENSITIVITY = 0.05;
+bool IS_FULLSCREEN = false;
 const char* TITLE = "Game";
 
 Game::Game() :
@@ -182,11 +181,11 @@ bool Game::Init()
 
 	int width = mRenderer->GetWidth();
 	int height = mRenderer->GetHeight();
-	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples(), "main_multisampled");
-	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_mask", 0.5f);
-	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_horizontal", 0.25f);
-	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blur_vertical", 0.25f);
-	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height, "bloom_blend");
+	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples());
+	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.5f);
+	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
+	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
+	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height);
 	mMainFrameBuffer->SetShader(hdrGammaShader);
 	mBloomMaskFrameBuffer->SetShader(bloomMaskShader);
 	mBloomBlurHorizontalFrameBuffer->SetShader(bloomBlurHorizontalShader);
