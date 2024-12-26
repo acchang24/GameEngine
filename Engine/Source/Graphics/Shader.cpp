@@ -56,7 +56,7 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile, const char* geo
 
 Shader::~Shader()
 {
-    std::cout << "Deleted shader " << mShaderID << "\n";
+    std::cout << "Deleted shader: " << mShaderID << "\n";
     glDeleteProgram(mShaderID);
     mShaderID = 0;
 }

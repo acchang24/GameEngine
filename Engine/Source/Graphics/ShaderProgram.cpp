@@ -15,7 +15,7 @@ ShaderProgram::ShaderProgram(const std::string& shaderFile, GLenum type) :
 
 ShaderProgram::~ShaderProgram()
 {
-    std::cout << "Deleted shader program " << mShaderID << "\n";
+    std::cout << "Deleted shader program: " << mShaderID << "\n";
 	glDeleteShader(mShaderID);
 }
 

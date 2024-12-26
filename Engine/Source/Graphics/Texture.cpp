@@ -84,15 +84,11 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 
 Texture::~Texture()
 {
-	std::cout << "Deleted texture " << mName << "\n";
+	std::cout << "Deleted texture: \"" << mName << "\"\n";
 	glDeleteTextures(1, &mTextureID);
-	mTextureID = 0;
-	mWidth = 0;
-	mHeight = 0;
-	mNumChannels = 0;
 }
 
-void Texture::SetActive()
+void Texture::SetActive() const
 {
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 }

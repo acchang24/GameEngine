@@ -7,6 +7,7 @@
 #include "Entity/Entity3D.h"
 #include "Graphics/Renderer3D.h"
 #include "Graphics/Shader.h"
+#include "Graphics/Texture.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
 #include "MemoryManager/AssetManager.h"
@@ -24,6 +25,7 @@ Game::Game() :
 	mPrevKeyInputs(),
 	mVertexBuffer(nullptr),
 	mShader(nullptr),
+	mWallTexture(nullptr),
 	mRenderer(nullptr),
 	mAssetManager(nullptr),
 	mMousePosX(0),
@@ -68,16 +70,23 @@ void Game::Shutdown()
 
 bool Game::LoadGameData()
 {
-	VertexColor vertices[] = {
-		glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		glm::vec3(0.0f,  0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f),
+	VertexTexture vertices[] = {
+		glm::vec3(0.5f, 0.5f, 0.0f), glm::vec2(1.0f, 1.0f),
+		glm::vec3(0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f),
+		glm::vec3(-0.5f,  -0.5f, 0.0f), glm::vec2(0.0f, 0.0f),
+		glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec2(0.0f, 1.0f),
+	};
+	unsigned int indices[] = {
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
 	};
 
-	mVertexBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, 3, 0, VertexLayout::VertexColor);
+	mVertexBuffer = new VertexBuffer(vertices, indices, sizeof(vertices), sizeof(indices), sizeof(vertices) / sizeof(VertexTexture), sizeof(indices) / sizeof(unsigned int), VertexLayout::VertexTexture);
 
-	mShader = new Shader("Shaders/color.vert", "Shaders/color.frag");
+	mShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
 	mAssetManager->SaveShader("color", mShader);
+
+	mWallTexture = new Texture("Assets/Textures/wall.jpg", TextureType::Diffuse);
 
 	mAssetManager->ClearShaderPrograms();
 
@@ -249,6 +258,8 @@ void Game::Render()
 	mRenderer->ClearBuffers();
 
 	mShader->SetActive();
+
+	mWallTexture->SetActive();
 
 	mVertexBuffer->Draw();
 

@@ -12,8 +12,9 @@
 // defines the vertex values.
 enum class VertexLayout
 {
-	VertexPos, // VertexPos just contains vec3 position
+	VertexPos, // VertexPos position
 	VertexColor, // VertexColor contains position and color
+	VertexTexture, // VertexTexture contains position and texture(uv)
 	Vertex, // Vertex contains position, normal, texture(uv), tangent, bitangent, bone ids, and bone weights
 	VertexSimple, // Vertex contains position, normal, and texture(uv) coordinates
 	VertexScreenQuad // VertexScreenQuad contains position and texutre coordinates (used for frame buffers)
@@ -30,6 +31,12 @@ struct VertexColor
 {
 	glm::vec3 pos;
 	glm::vec4 color;
+};
+
+struct VertexTexture
+{
+	glm::vec3 pos;
+	glm::vec2 uv;
 };
 
 struct Vertex
@@ -86,6 +93,18 @@ static int VertexColorAttribPointer()
 	// vertex color
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor), (void*)offsetof(VertexColor, color));
+
+	return 2;
+}
+
+static int VertexTextureAttribPointer()
+{
+	// vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexTexture), (void*)(0));
+	// vertex color
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexTexture), (void*)offsetof(VertexTexture, uv));
 
 	return 2;
 }

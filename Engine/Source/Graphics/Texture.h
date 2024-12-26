@@ -36,7 +36,7 @@ public:
 	~Texture();
 
 	// Binds the texture as the current one
-	void SetActive();
+	void SetActive() const;
 
 	// Getter for the texture's ID
 	// @return - unsinged int mTextureID;

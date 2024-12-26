@@ -65,6 +65,9 @@ void VertexBuffer::SetVertexAttributePointers(VertexLayout layout)
 	case VertexLayout::VertexColor:
 		mLastAttribIndex = VertexColorAttribPointer();
 		break;
+	case VertexLayout::VertexTexture:
+		mLastAttribIndex = VertexTextureAttribPointer();
+		break;
 	case VertexLayout::Vertex:
 		mLastAttribIndex = VertexAttribPointer();
 		break;
@@ -104,7 +107,7 @@ void VertexBuffer::MakeInstance(unsigned int numInstances)
 	glBindVertexArray(0);
 }
 
-void VertexBuffer::Draw()
+void VertexBuffer::Draw() const
 {
 	SetActive();
 

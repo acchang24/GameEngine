@@ -34,11 +34,11 @@ public:
 	void MakeInstance(unsigned int numInstances);
 
 	// Sets the VAO as active, then draws the vertices, based on if it has indices or not
-	void Draw();
+	void Draw() const;
 
 	// Binds the Vertex Array Object, setting this VAO as the current one.
 	// This is set BEFORE every time the vertices are being drawn.
-	void SetActive() { glBindVertexArray(mVaoID); } const
+	void SetActive() const { glBindVertexArray(mVaoID); }
 
 	unsigned int GetID() const { return mVaoID; }
 	unsigned int GetVertexBufferId() const { return mVertexBufferID; }

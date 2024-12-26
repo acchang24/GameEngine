@@ -6,6 +6,7 @@ class AssetManager;
 class Entity;
 class Renderer3D;
 class Shader;
+class Texture;
 class VertexBuffer;
 
 // Game class handles all of the game logic. Game specific code should be added to the class
@@ -69,6 +70,9 @@ private:
 
 	// Shader for triangle
 	Shader* mShader;
+
+	// Texture for wall
+	Texture* mWallTexture;
 
 	// Renderer for graphics output
 	Renderer3D* mRenderer;
