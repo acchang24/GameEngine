@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
 
 class AssetManager;
 class Entity;
@@ -79,6 +81,10 @@ private:
 
 	// Pointer to a static asset manager
 	AssetManager* mAssetManager;
+
+	glm::mat4 mModel;
+
+	float mTimer;
 
 	// Mouse x-axis movement
 	double mMousePosX;

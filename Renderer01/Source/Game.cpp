@@ -3,7 +3,6 @@
 #include <chrono>
 #include <iostream>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
 #include "Entity/Entity3D.h"
 #include "Graphics/Renderer3D.h"
 #include "Graphics/Shader.h"
@@ -28,6 +27,8 @@ Game::Game() :
 	mWallTexture(nullptr),
 	mRenderer(nullptr),
 	mAssetManager(nullptr),
+	mModel(glm::mat4(1.0f)),
+	mTimer(0.0f),
 	mMousePosX(0),
 	mMousePosY(0),
 	mIsRunning(true),
@@ -86,7 +87,7 @@ bool Game::LoadGameData()
 	mShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
 	mAssetManager->SaveShader("color", mShader);
 
-	mWallTexture = new Texture("Assets/Textures/wall.jpg", TextureType::Diffuse);
+	mWallTexture = new Texture("Assets/Textures/wood.png", TextureType::Diffuse);
 
 	mAssetManager->ClearShaderPrograms();
 
@@ -247,6 +248,13 @@ void Game::ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll)
 
 void Game::Update(float deltaTime)
 {
+	mTimer += deltaTime;
+
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+	trans = glm::rotate(trans, mTimer, glm::vec3(0.0f, 0.0f, 1.0f));
+	mModel = trans;
+
 	for (auto e : mEntities)
 	{
 		e->Update(deltaTime);
@@ -258,6 +266,7 @@ void Game::Render()
 	mRenderer->ClearBuffers();
 
 	mShader->SetActive();
+	mShader->SetMat4("model", mModel);
 
 	mWallTexture->SetActive();
 

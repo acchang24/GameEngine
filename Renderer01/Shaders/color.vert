@@ -9,9 +9,12 @@ layout (location = 1) in vec4 inColor;
 // Specify a vec4 color output to the fragment shader
 out vec4 vertexColor;
 
+// Model matrix uniform
+uniform mat4 model;
+
 void main()
 {
-	gl_Position = vec4(inPosition, 1.0);
+	gl_Position = model * vec4(inPosition, 1.0);
 
 	// Set the output color for fragment shader
 	vertexColor = inColor;

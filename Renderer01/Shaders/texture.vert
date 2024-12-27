@@ -9,9 +9,12 @@ layout (location = 1) in vec2 inUV;
 // Specify vec2 uv coordinate output for fragment shader
 out vec2 textureUV;
 
+// Model matrix uniform
+uniform mat4 model;
+
 void main()
 {
-	gl_Position = vec4(inPosition, 1.0);
+	gl_Position = model * vec4(inPosition, 1.0);
 
 	textureUV = inUV;
 }
