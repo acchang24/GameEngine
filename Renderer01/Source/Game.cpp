@@ -11,13 +11,14 @@
 #include "Graphics/VertexLayouts.h"
 #include "MemoryManager/AssetManager.h"
 #include "Util/Random.h"
+#include "Profiler/Profiler.h"
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
-int VSYNC = 4;
+int VSYNC = 1;
 double MOUSE_SENSITIVITY = 0.05;
-bool IS_FULLSCREEN = false;
+bool IS_FULLSCREEN = true;
 const char* TITLE = "Renderer01";
 
 Game::Game() :
@@ -109,6 +110,10 @@ void Game::Run()
 
 	while (mIsRunning)
 	{
+		Profiler::Get()->ResetAll();
+
+		PROFILE_SCOPE(GAME_LOOP);
+
 		// Calculate delta time
 		std::chrono::high_resolution_clock::time_point frameEnd = std::chrono::high_resolution_clock::now();
 		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count());
@@ -248,6 +253,8 @@ void Game::ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll)
 
 void Game::Update(float deltaTime)
 {
+	PROFILE_SCOPE(UPDATE);
+
 	mTimer += deltaTime;
 
 	glm::mat4 trans = glm::mat4(1.0f);
@@ -263,6 +270,8 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
+	PROFILE_SCOPE(RENDER);
+
 	mRenderer->ClearBuffers();
 
 	mShader->SetActive();

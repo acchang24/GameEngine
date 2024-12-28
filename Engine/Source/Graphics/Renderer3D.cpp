@@ -67,12 +67,19 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Create the window
 	if (mIsFullScreen)
 	{
+		// Get the display's dimensions
+		SDL_DisplayMode dm{};
+		SDL_GetDesktopDisplayMode(0, &dm);
+		// Set new window width and height
+		s_WindowWidth = dm.w;
+		s_WindowHeight = dm.h;
+
 		mWindow = SDL_CreateWindow(
 			mWindowTitle,
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			0,
-			0,
+			s_WindowWidth,
+			s_WindowHeight,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP
 		);
 	}
@@ -137,17 +144,7 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Set viewport
-	if (mIsFullScreen)
-	{
-		SDL_DisplayMode dm{};
-
-		SDL_GetDesktopDisplayMode(0, &dm);
-
-		s_WindowWidth = dm.w;
-		s_WindowHeight = dm.h;
-	}
-	// Set the new viewport
+	// Set viewport using the window width and height
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
 
