@@ -4,9 +4,11 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "Entity/Entity3D.h"
+#include "Graphics/Camera.h"
 #include "Graphics/Renderer3D.h"
 #include "Graphics/Shader.h"
 #include "Graphics/Texture.h"
+#include "Graphics/UniformBuffer.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
 #include "MemoryManager/AssetManager.h"
@@ -18,11 +20,12 @@ const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
 int VSYNC = 1;
 double MOUSE_SENSITIVITY = 0.05;
-bool IS_FULLSCREEN = true;
+bool IS_FULLSCREEN = false;
 const char* TITLE = "Renderer01";
 
 Game::Game() :
 	mPrevKeyInputs(),
+	mCamera(nullptr),
 	mVertexBuffer(nullptr),
 	mShader(nullptr),
 	mWallTexture(nullptr),
@@ -33,7 +36,7 @@ Game::Game() :
 	mMousePosX(0),
 	mMousePosY(0),
 	mIsRunning(true),
-	mMouseCaptured(SDL_FALSE)
+	mMouseCaptured(SDL_TRUE)
 {
 }
 
@@ -50,6 +53,9 @@ bool Game::Init()
 
 	mAssetManager = AssetManager::Get();
 
+	mCamera = new Camera();
+	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+
 	if (!LoadGameData())
 	{
 		return false;
@@ -60,6 +66,8 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
+	delete mCamera;
+
 	delete mVertexBuffer;
 
 	mRenderer->Shutdown();
@@ -243,17 +251,22 @@ void Game::ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll)
 	{
 	}
 
-	// Calculate mouse movement
-	int x = 0;
-	int y = 0;
-	SDL_GetRelativeMouseState(&x, &y);
-	mMousePosX = x * MOUSE_SENSITIVITY;
-	mMousePosY = -y * MOUSE_SENSITIVITY;
+	if (mMouseCaptured == SDL_TRUE)
+	{
+		// Calculate mouse movement
+		int x = 0;
+		int y = 0;
+		SDL_GetRelativeMouseState(&x, &y);
+		mMousePosX = x * MOUSE_SENSITIVITY;
+		mMousePosY = -y * MOUSE_SENSITIVITY;
+	}
 }
 
 void Game::Update(float deltaTime)
 {
 	PROFILE_SCOPE(UPDATE);
+
+	mCamera->Update(deltaTime, mMousePosX, mMousePosY);
 
 	mTimer += deltaTime;
 
@@ -271,6 +284,8 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
+
+	mCamera->SetActive();
 
 	mRenderer->ClearBuffers();
 

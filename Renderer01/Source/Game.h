@@ -5,6 +5,7 @@
 #include <glm/matrix.hpp>
 
 class AssetManager;
+class Camera;
 class Entity;
 class Renderer3D;
 class Shader;
@@ -69,6 +70,8 @@ private:
 
 	// Vertex Buffer
 	VertexBuffer* mVertexBuffer;
+
+	Camera* mCamera;
 
 	// Shader for triangle
 	Shader* mShader;
