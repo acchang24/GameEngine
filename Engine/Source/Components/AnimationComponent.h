@@ -30,6 +30,10 @@ public:
 	// Updates the skeleton buffer with the final bone matrices array
 	void UpdateSkeletonBuffer() { mSkeleton->UpdateSkeletonBuffer(); }
 
+	// Gets the skeleton associated with this component
+	// @return - Skeleton* for the skeleton
+	Skeleton* GetSkeleton() { return mSkeleton; }
+
 private:
 	// The skeleton used for this animation component
 	Skeleton* mSkeleton;

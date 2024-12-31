@@ -17,10 +17,10 @@
 #include "../Components/AnimationComponent.h"
 
 Model::Model(const std::string& fileName, Entity3D* entity) :
-	mSkeleton(nullptr),
 	mNumMeshes(0),
 	mNumMaterials(0),
-	mNumTextures(0)
+	mNumTextures(0),
+	mHasSkeleton(false)
 {
 	if (LoadModel(fileName, entity))
 	{
@@ -33,17 +33,6 @@ Model::~Model()
 	std::cout << "Deleted model: " << mDirectory << "\n";
 
 	mMaterialMap.clear();
-}
-
-Model::Model(Model& other) :
-	mMeshes(other.mMeshes),
-	mMaterialMap(other.mMaterialMap),
-	mDirectory(other.mDirectory),
-	mSkeleton(nullptr),
-	mNumMeshes(other.mNumMeshes),
-	mNumMaterials(other.mNumMaterials),
-	mNumTextures(other.mNumTextures)
-{
 }
 
 void Model::MakeInstance(unsigned int numInstances)
@@ -69,25 +58,34 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 
 	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
 
+	Skeleton* newSkeleton = nullptr;
 	if (scene->HasAnimations())
 	{
 		entity->SetIsSkinned(true);
 
 		std::cout << "Loading animation for: " << fileName << "\n";
 
+		mHasSkeleton = true;
+
 		// Create a new animation component for this model
-		mSkeleton = new Skeleton();
-		AnimationComponent* animComp = new AnimationComponent(entity, mSkeleton);
+		newSkeleton = new Skeleton();
+		AssetManager::Get()->SaveSkeleton(fileName, newSkeleton);
 	}
 
-	ProcessNodes(scene->mRootNode, scene, mSkeleton);
+	ProcessNodes(scene->mRootNode, scene, newSkeleton);
 
 	for (int i = 0; i < scene->mNumAnimations; ++i)
 	{
 		std::string animName = scene->mAnimations[i]->mName.C_Str();
-		Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, mSkeleton);
+		Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, newSkeleton);
 		AssetManager::Get()->SaveAnimation(animName, newAnim);
-		mSkeleton->SetAnimation(newAnim);
+		newSkeleton->SetAnimation(newAnim);
+	}
+
+	if (newSkeleton)
+	{
+		Skeleton* skeleton = new Skeleton(*newSkeleton);
+		AnimationComponent* animComp = new AnimationComponent(entity, skeleton);
 	}
 
 	return true;

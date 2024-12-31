@@ -45,16 +45,14 @@ Entity3D::Entity3D(const std::string& fileName):
 	if (model)
 	{
 		// Copy new model
-		mModel = new Model(*model);
+		mModel = model;
 
 		// Check if it has a skeleton
-		Skeleton* skeleton = model->GetSkeleton();
-		if (skeleton)
+		if (model->HasSkeleton())
 		{
 			mIsSkinned = true;
-			// Copy new skeleton and set model's skeleton
-			Skeleton* newSkeleton = new Skeleton(*skeleton);
-			mModel->SetSkeleton(newSkeleton);
+			// Copy new skeleton and set create an animation component for this entity
+			Skeleton* newSkeleton = new Skeleton(*am->LoadSkeleton(fileName));
 			AnimationComponent* animComp = new AnimationComponent(this, newSkeleton);
 		}
 	}
@@ -69,8 +67,6 @@ Entity3D::~Entity3D()
 	glDeleteBuffers(1, &mInstanceBuffer);
 
 	std::cout << "Deleted entity 3D\n";
-
-	delete mModel;
 }
 
 void Entity3D::MakeInstance(unsigned int numInstances, const void* data)

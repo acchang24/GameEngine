@@ -282,7 +282,7 @@ bool Game::Init()
 
 
 	float time = 0.1f;
-	for (size_t i = 0; i < 11; ++i)
+	for (size_t i = 0; i < 10; ++i)
 	{
 		Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
 		vampire->SetScale(0.05f);
@@ -683,43 +683,44 @@ void Game::ProcessInput()
 
 	if (keyboardState[SDL_SCANCODE_KP_0])
 	{
-		vampires[0]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[0]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+			//GetModel()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_1])
 	{
-		vampires[1]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[1]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_2])
 	{
-		vampires[2]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[2]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_3])
 	{
-		vampires[3]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[3]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_4])
 	{
-		vampires[4]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[4]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_5])
 	{
-		vampires[5]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[5]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_6])
 	{
-		vampires[6]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[6]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_7])
 	{
-		vampires[7]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[7]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_8])
 	{
-		vampires[8]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[8]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_9])
 	{
-		vampires[9]->GetModel()->GetSkeleton()->SetTime(0.0f);
+		vampires[9]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
 	}
 
 	// Save previous key inputs

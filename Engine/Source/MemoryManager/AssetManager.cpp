@@ -8,6 +8,7 @@ AssetManager::AssetManager() :
 	mMeshCache(new Cache<Mesh>(this)),
 	mModelCache(new Cache<Model>(this)),
 	mAnimationCache(new Cache<Animation>(this)),
+	mSkeletonCache(new Cache<Skeleton>(this)),
 	mShaderProgramCache(new Cache<ShaderProgram>(this))
 {
 }
@@ -25,9 +26,9 @@ void AssetManager::Shutdown()
 	delete mTextureCache;
 	delete mMaterialCache;
 	delete mMeshCache;
-	//delete mModelCache;
-	mModelCache->GetAssetMap().clear();
+	delete mModelCache;
 	delete mAnimationCache;
+	delete mSkeletonCache;
 	delete mShaderProgramCache;
 
 	mShaderCache = nullptr;
@@ -36,6 +37,7 @@ void AssetManager::Shutdown()
 	mMeshCache = nullptr;
 	mModelCache = nullptr;
 	mAnimationCache = nullptr;
+	mSkeletonCache = nullptr;
 	mShaderProgramCache = nullptr;
 }
 
@@ -45,9 +47,9 @@ void AssetManager::Clear()
 	mTextureCache->Clear();
 	mMaterialCache->Clear();
 	mMeshCache->Clear();
-	//mModelCache->Clear();
-	mModelCache->GetAssetMap().clear();
+	mModelCache->Clear();
 	mAnimationCache->Clear();
+	mSkeletonCache->Clear();
 	mShaderProgramCache->Clear();
 }
 

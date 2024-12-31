@@ -1,5 +1,7 @@
 #pragma once
 #include "Cache.h"
+#include "../Animation/Animation.h"
+#include "../Animation/Skeleton.h"
 #include "../Graphics/Shader.h"
 #include "../Graphics/ShaderProgram.h"
 #include "../Graphics/Texture.h"
@@ -7,7 +9,6 @@
 #include "../Graphics/UniformBuffer.h"
 #include "../Graphics/Mesh.h"
 #include "../Graphics/Model.h"
-#include "../Animation/Animation.h"
 
 // The AssetManager is a singleton class that helps load assets on demand
 // and cache them so that subsequent loads will return the cached asset
@@ -97,6 +98,17 @@ public:
 	// Clears each element from the animation cache map
 	void ClearAnimations() { mAnimationCache->Clear(); }
 
+	// Saves an skeleton into the skeleton cache's map
+	// @param - const std::string& for the skeleton's name
+	// @param - Skeleton* for the skeleton to save
+	void SaveSkeleton(const std::string& skeletonName, Skeleton* skeleton) { mSkeletonCache->StoreCache(skeletonName, skeleton); }
+	// Retrieves an skeleton from the skeleton cache's map
+	// @param - const std::string& for the skeleton's name
+	// @return - Skeleton* for the desired skeleton retrieved from the skeleton cache map
+	Skeleton* LoadSkeleton(const std::string& skeletonName) { return mSkeletonCache->Get(skeletonName); }
+	// Clears each element from the skeleton cache map
+	void ClearSkeletons() { mSkeletonCache->Clear(); }
+
 	// Saves a ShaderProgram into the shader program cache's map
 	// @param - const std::string& for the shader's file name
 	// @param - ShaderProgram* for the shader program to save
@@ -129,6 +141,9 @@ private:
 
 	// Animation cache
 	Cache<Animation>* mAnimationCache;
+
+	// Skeleton cache
+	Cache<Skeleton>* mSkeletonCache;
 
 	// ShaderProgram cache
 	Cache<ShaderProgram>* mShaderProgramCache;

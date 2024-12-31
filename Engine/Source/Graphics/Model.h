@@ -21,7 +21,6 @@ public:
 	// @param - Entity3D* for the model's entity
 	Model(const std::string& fileName, Entity3D* entity);
 	~Model();
-	Model(Model& other);
 
 	// Makes this an instanced model so that multiple instances of the same
 	// vertices can be rendered with one draw function call. This generates 
@@ -84,13 +83,7 @@ public:
 	// @param - Shader* to use
 	void Draw(Shader* s, const glm::mat4& model);
 
-	// Gets the model's skeleton
-	// @return - Skeleton* for the model's skeleton
-	Skeleton* GetSkeleton() { return mSkeleton; }
-
-	// Sets the model's skeleton
-	// @return - Skeleton* for the model's skeleton
-	void SetSkeleton(Skeleton* skeleton) { mSkeleton = skeleton; }
+	bool HasSkeleton() const { return mHasSkeleton; }
 
 private:
 	// Model's vector of meshes
@@ -103,9 +96,6 @@ private:
 	// The model's file directory/name
 	std::string mDirectory;
 
-	// Model's skeleton, if it has one
-	Skeleton* mSkeleton;
-
 	// Number of meshes
 	size_t mNumMeshes;
 
@@ -114,4 +104,7 @@ private:
 
 	// Number of textures
 	size_t mNumTextures;
+
+	// Bool for if this model has a skeleton
+	bool mHasSkeleton;
 };
