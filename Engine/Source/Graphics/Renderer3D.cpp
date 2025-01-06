@@ -135,7 +135,7 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	glDepthFunc(GL_LESS);
 
 	// Enable face culling
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
 	// Enable anti-aliasing
 	glEnable(GL_MULTISAMPLE);
