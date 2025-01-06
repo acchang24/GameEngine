@@ -10,33 +10,18 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile, const char* geo
     // Create a shader program and save the ID reference into mShaderID
     mShaderID = glCreateProgram();
 
-    AssetManager* am = AssetManager::Get();
-
-    // Load vertex shader
-    ShaderProgram* vertexProgram = am->LoadShaderProgram(vertexFile);
-    if (!vertexProgram)
-    {
-        vertexProgram = new ShaderProgram(vertexFile, GL_VERTEX_SHADER);
-    }
+    // Load and attach vertex shader
+    ShaderProgram* vertexProgram = AssetManager::LoadShaderProgram(vertexFile);
     glAttachShader(mShaderID, vertexProgram->GetShaderID());
 
-    // Load fragment shader
-    ShaderProgram* fragmentProgram = am->LoadShaderProgram(fragmentFile);
-    if (!fragmentProgram)
-    {
-        fragmentProgram = new ShaderProgram(fragmentFile, GL_FRAGMENT_SHADER);
-    }
+    // Load and attach fragment shader
+    ShaderProgram* fragmentProgram = AssetManager::LoadShaderProgram(fragmentFile);
     glAttachShader(mShaderID, fragmentProgram->GetShaderID());
 
-    // Load geometry shader if it exists
+    // Load and attach geometry shader if it exists
     if (geometryFile != nullptr)
     {
-        ShaderProgram* geometryProgram = am->LoadShaderProgram(geometryFile);
-
-        if (!geometryProgram)
-        {
-            geometryProgram = new ShaderProgram(geometryFile, GL_GEOMETRY_SHADER);
-        }
+        ShaderProgram* geometryProgram = AssetManager::LoadShaderProgram(geometryFile);
         glAttachShader(mShaderID, geometryProgram->GetShaderID());
     }
 

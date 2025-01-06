@@ -113,12 +113,16 @@ public:
 	// @param - const std::string& for the shader's file name
 	// @param - ShaderProgram* for the shader program to save
 	void SaveShaderProgram(const std::string& shaderFileName, ShaderProgram* program) { mShaderProgramCache->StoreCache(shaderFileName, program); }
-	// Retrieves a ShaderProgram from the shader program cache's map
+	// Retrieves a ShaderProgram from the shader program cache's map if it exists.
+	// If not, it will create a new ShaderProgram and save it into the map
 	// @param - const std::string& for the shader file name
 	// @return - ShaderProgram* for the desired shader program
-	ShaderProgram* LoadShaderProgram(const std::string& shaderFileName) { return mShaderProgramCache->Get(shaderFileName); }
+	static ShaderProgram* LoadShaderProgram(const std::string& shaderFileName);
 	// Clears each element from the shader program cache map
 	void ClearShaderPrograms() { mShaderProgramCache->Clear(); }
+	// Deletes a shader program by name
+	// @param - const std::string& for the shader file name
+	void DeleteShaderProgram(const std::string& shaderFileName) { mShaderProgramCache->Delete(shaderFileName); }
 
 private:
 	AssetManager();

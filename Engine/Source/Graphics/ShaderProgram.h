@@ -14,8 +14,12 @@ public:
 	// will save to the AssetManager's map of ShaderPrograms
 	// @param - const char* for the shader's file name
 	// @return - const std::string containing the shader code
-	ShaderProgram(const std::string& shaderFile, GLenum type);
+	ShaderProgram(const std::string& shaderFile);
 	~ShaderProgram();
+
+	// Loads the shader type based off of file extension
+	// @param - const std::string& for the shader's file name
+	GLenum LoadType(const std::string& shaderFile);
 
 	// Reads a shader file's code line by line, saving it into a string.
 	// @param - const char* for the shader's file name
@@ -33,6 +37,9 @@ public:
 	unsigned int GetShaderID() const { return mShaderID; }
 
 private:
+	// Type of the shader (vertex, fragment, geometry, etc)
+	GLenum mType;
+
 	// Shader program's code parsed and saved as a string
 	std::string mCode;
 

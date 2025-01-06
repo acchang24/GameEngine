@@ -3,9 +3,10 @@
 #include <iostream>
 #include "../MemoryManager/AssetManager.h"
 
-ShaderProgram::ShaderProgram(const std::string& shaderFile, GLenum type) :
+ShaderProgram::ShaderProgram(const std::string& shaderFile) :
+    mType(LoadType(shaderFile)),
 	mCode(ReadShaderFile(shaderFile.c_str())),
-	mShaderID(CompileShader(mCode.c_str(), type))
+	mShaderID(CompileShader(mCode.c_str(), mType))
 {
     if (!mCode.empty() && mShaderID != 0)
     {
@@ -17,6 +18,28 @@ ShaderProgram::~ShaderProgram()
 {
     std::cout << "Deleted shader program: " << mShaderID << "\n";
 	glDeleteShader(mShaderID);
+}
+
+GLenum ShaderProgram::LoadType(const std::string& shaderFile)
+{
+    std::string extension = shaderFile.substr(shaderFile.find_last_of('.'));
+
+    GLenum type{};
+
+    if (extension == ".vert")
+    {
+        type = GL_VERTEX_SHADER;
+    }
+    else if (extension == ".frag")
+    {
+        type = GL_FRAGMENT_SHADER;
+    }
+    else if (extension == ".geom")
+    {
+        type = GL_GEOMETRY_SHADER;
+    }
+
+    return type;
 }
 
 const std::string ShaderProgram::ReadShaderFile(const char* shaderFileName) const

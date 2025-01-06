@@ -42,9 +42,11 @@ public:
 	// @return - T* for the templated data
 	T* Get(const std::string& name)
 	{
-		if (mAssetMap.find(name) != mAssetMap.end())
+		auto iter = mAssetMap.find(name);
+
+		if (iter != mAssetMap.end())
 		{
-			return mAssetMap[name];
+			return iter->second;
 		}
 		return nullptr;
 	}
@@ -57,6 +59,18 @@ public:
 			delete a.second;
 		}
 		mAssetMap.clear();
+	}
+
+	// Removes an asset by name, and free the memory
+	// @param - const std::string& for the asset name
+	void Delete(const std::string& name)
+	{
+		auto iter = mAssetMap.find(name);
+		if (iter != mAssetMap.end())
+		{
+			delete iter->second;
+			mAssetMap.erase(iter);
+		}
 	}
 
 	// Gets the asset map as a reference (data can change)

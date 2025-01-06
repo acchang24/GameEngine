@@ -59,3 +59,18 @@ AssetManager* AssetManager::Get()
 
 	return &s_AssetManager;
 }
+
+ShaderProgram* AssetManager::LoadShaderProgram(const std::string& shaderFileName)
+{
+	AssetManager* am = AssetManager::Get();
+
+	ShaderProgram* shaderProgram = am->mShaderProgramCache->Get(shaderFileName);
+
+	if (!shaderProgram)
+	{
+		shaderProgram = new ShaderProgram(shaderFileName);
+		am->SaveShaderProgram(shaderFileName, shaderProgram);
+	}
+
+	return shaderProgram;
+}
