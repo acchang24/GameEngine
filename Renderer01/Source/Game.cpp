@@ -96,7 +96,8 @@ bool Game::LoadGameData()
 	mShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
 	mAssetManager->SaveShader("color", mShader);
 
-	mWallTexture = new Texture("Assets/Textures/wood.png", TextureType::Diffuse);
+	mWallTexture = AssetManager::LoadTexture("Assets/Textures/wood.png");
+	mWallTexture->SetType(TextureType::Diffuse);
 
 	mAssetManager->ClearShaderPrograms();
 
@@ -292,7 +293,7 @@ void Game::Render()
 	mShader->SetActive();
 	mShader->SetMat4("model", mModel);
 
-	mWallTexture->SetActive();
+	mWallTexture->BindTexture();
 
 	mVertexBuffer->Draw();
 

@@ -30,15 +30,6 @@ void AssetManager::Shutdown()
 	delete mAnimationCache;
 	delete mSkeletonCache;
 	delete mShaderProgramCache;
-
-	mShaderCache = nullptr;
-	mTextureCache = nullptr;
-	mMaterialCache = nullptr;
-	mMeshCache = nullptr;
-	mModelCache = nullptr;
-	mAnimationCache = nullptr;
-	mSkeletonCache = nullptr;
-	mShaderProgramCache = nullptr;
 }
 
 void AssetManager::Clear()
@@ -58,6 +49,21 @@ AssetManager* AssetManager::Get()
 	static AssetManager s_AssetManager;
 
 	return &s_AssetManager;
+}
+
+Texture* AssetManager::LoadTexture(const std::string& textureFileName)
+{
+	AssetManager* am = AssetManager::Get();
+
+	Texture* texture = am->mTextureCache->Get(textureFileName);
+
+	if (!texture)
+	{
+		texture = new Texture(textureFileName);
+		am->SaveTexture(textureFileName, texture);
+	}
+
+	return texture;
 }
 
 ShaderProgram* AssetManager::LoadShaderProgram(const std::string& shaderFileName)

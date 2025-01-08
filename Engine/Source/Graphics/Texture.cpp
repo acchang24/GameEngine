@@ -4,30 +4,42 @@
 #include "stb_image.h"
 #include "../MemoryManager/AssetManager.h"
 
-Texture::Texture(const std::string& textureFile, TextureType type) :
+Texture::Texture(const std::string& textureFile) :
 	mName(textureFile),
 	mTextureID(0),
 	mWidth(0),
 	mHeight(0),
 	mNumChannels(0),
-	mType(type)
+	mType(TextureType::None)
 {
 	// Create texture object
 	glGenTextures(1, &mTextureID);
+}
 
-	// Bind it to so any subsequent texture commands will use the currently bound texture
-	// Binding after activating a texture unit will bind the texture to that unit
-	// There is a minimum of 16 texture units to use (GL_TEXTURE0 to GL_TEXTURE15)
+Texture::~Texture()
+{
+	std::cout << "Deleted texture: \"" << mName << "\"\n";
+	glDeleteTextures(1, &mTextureID);
+}
+
+void Texture::BindTexture() const
+{
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
+}
 
-	// Load/Generate a texture
-	// Tell stb_image.h to flip loaded textures on the y axis
-	stbi_set_flip_vertically_on_load(true);
+void Texture::SetType(TextureType type) 
+{ 
+	mType = type; 
+
+	LoadTexture();
+}
+
+void Texture::LoadTexture()
+{
+	BindTexture();
 
 	// Load in texture file with stbi_load:
-	// - Takes the location of the image file
-	// - width, height, and number of color channels as ints
-	unsigned char* data = stbi_load(textureFile.c_str(), &mWidth, &mHeight, &mNumChannels, 4);
+	unsigned char* data = stbi_load(mName.c_str(), &mWidth, &mHeight, &mNumChannels, 4);
 
 	if (data)
 	{
@@ -77,18 +89,4 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 
 	// Free image data
 	stbi_image_free(data);
-
-	// Save texture to asset manager
-	AssetManager::Get()->SaveTexture(textureFile, this);
-}
-
-Texture::~Texture()
-{
-	std::cout << "Deleted texture: \"" << mName << "\"\n";
-	glDeleteTextures(1, &mTextureID);
-}
-
-void Texture::SetActive() const
-{
-	glBindTexture(GL_TEXTURE_2D, mTextureID);
 }

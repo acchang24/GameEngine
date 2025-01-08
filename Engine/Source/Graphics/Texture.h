@@ -8,6 +8,7 @@ enum class TextureType
 	Specular, // Specular maps
 	Emission, // Emission maps
 	Normal, // Normal maps
+	None,
 };
 
 // Enum class for texture units
@@ -32,11 +33,13 @@ public:
 	// and creates an OpenGl texture object
 	// @param - const std::string& for the texture file name
 	// @param - TextureType for the type used for the texture
-	Texture(const std::string& textureFile, TextureType type);
+	Texture(const std::string& textureFile);
 	~Texture();
 
-	// Binds the texture as the current one
-	void SetActive() const;
+	// Bind it to so any subsequent texture commands will use the currently bound texture
+	// Binding after activating a texture unit will bind the texture to that unit
+	// There is a minimum of 16 texture units to use (GL_TEXTURE0 to GL_TEXTURE15)
+	void BindTexture() const;
 
 	// Getter for the texture's ID
 	// @return - unsinged int mTextureID;
@@ -46,11 +49,15 @@ public:
 	// @return - TextureType mType
 	TextureType GetType() const { return mType; }
 
-	// Setter for the texture type
+	// Setter for the texture type, then loads/generates the texture based on the type
 	// @param - TextureType for the texture type
-	void SetType(TextureType type) { mType = type; }
+	void SetType(TextureType type);
 
 private:
+	// Binds a texture and uses stbi to load a texture based off the texture's file name.
+	// Then the texture and mipmaps are generated based off of texture type
+	void LoadTexture();
+
 	// Texture name (file path to the texture)
 	std::string mName;
 

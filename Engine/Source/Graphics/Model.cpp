@@ -276,33 +276,30 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 
 			std::cout << "Loading texture: " << path << "\n";
 
-			// See if texture is already loaded
-			Texture* t = am->LoadTexture(path);
-			if (!t)
+			// Load the texture
+			Texture* t = AssetManager::LoadTexture(path);
+			
+			// Set the texture's type
+			TextureType type = TextureType::None;
+			switch (aiTextureType)
 			{
-				// Create the new texture based on type
-				TextureType type{};
-
-				switch (aiTextureType)
-				{
-				case aiTextureType_DIFFUSE:
-					type = TextureType::Diffuse;
-					break;
-				case aiTextureType_SPECULAR:
-					type = TextureType::Specular;
-					break;
-				case aiTextureType_EMISSIVE:
-					type = TextureType::Emission;
-					break;
-				case aiTextureType_NORMALS:
-					type = TextureType::Normal;
-					break;
-				}
-
-				t = new Texture(path, type);
-
-				++mNumTextures;
+			case aiTextureType_DIFFUSE:
+				type = TextureType::Diffuse;
+				break;
+			case aiTextureType_SPECULAR:
+				type = TextureType::Specular;
+				break;
+			case aiTextureType_EMISSIVE:
+				type = TextureType::Emission;
+				break;
+			case aiTextureType_NORMALS:
+				type = TextureType::Normal;
+				break;
 			}
+			t->SetType(type);
+
+			++mNumTextures;
+			
 			// Add the texture to the material
 			material->AddTexture(t);
 		}

@@ -91,13 +91,20 @@ bool Game::Init()
 
 	PROFILE_SCOPE(LOAD_DATA);
 
-	Texture* texture = new Texture("Assets/matrix.jpg", TextureType::Emission);
-	Texture* texture3 = new Texture("Assets/container2.png", TextureType::Diffuse);
-	Texture* texture4 = new Texture("Assets/container2_specular.png", TextureType::Specular);
-	Texture* lightSphereTexture = new Texture("Assets/lightSphere.png", TextureType::Diffuse);
-	Texture* woodTexture = new Texture("Assets/wood.png", TextureType::Diffuse);
-	Texture* wallTexture = new Texture("Assets/brickwall.jpg", TextureType::Diffuse);
-	Texture* wallNormalTexture = new Texture("Assets/brickwall_normal.jpg", TextureType::Normal);
+	Texture* texture = AssetManager::LoadTexture("Assets/matrix.jpg");
+	texture->SetType(TextureType::Emission);
+	Texture* texture3 = AssetManager::LoadTexture("Assets/container2.png");
+	texture3->SetType(TextureType::Diffuse);
+	Texture* texture4 = AssetManager::LoadTexture("Assets/container2_specular.png");
+	texture4->SetType(TextureType::Specular);
+	Texture* lightSphereTexture = AssetManager::LoadTexture("Assets/lightSphere.png");
+	lightSphereTexture->SetType(TextureType::Diffuse);
+	Texture* woodTexture = AssetManager::LoadTexture("Assets/wood.png");
+	woodTexture->SetType(TextureType::Diffuse);
+	Texture* wallTexture = AssetManager::LoadTexture("Assets/brickwall.jpg");
+	wallTexture->SetType(TextureType::Diffuse);
+	Texture* wallNormalTexture = AssetManager::LoadTexture("Assets/brickwall_normal.jpg");
+	wallNormalTexture->SetType(TextureType::Normal);
 
 	Shader* colorShader = new Shader("Shaders/color.vert", "Shaders/color.frag");
 	mAssetManager->SaveShader("color", colorShader);
@@ -226,9 +233,9 @@ bool Game::Init()
 	refractiveMat->SetShader(refractiveShader);
 	mAssetManager->SaveMaterial("refraction", refractiveMat);
 
-	glUseProgram(0);
 
-	//Texture* rockTexture = new Texture("Assets/models/rock/rock.png", TextureType::Diffuse);
+	//Texture* rockTexture = AssetManager::LoadTexture("Assets/models/rock/rock.png");
+	//rockTexture->SetType(TextureType::Diffuse);
 	//mAssetManager->SaveTexture("rock", rockTexture);
 
 	//// Set model matrices for 10000 instances of a rock model
@@ -430,7 +437,6 @@ bool Game::Init()
 void Game::Shutdown()
 {
 	mRenderer->Shutdown();
-	mRenderer = nullptr;
 
 	UnloadGameData();
 
@@ -443,10 +449,8 @@ void Game::Shutdown()
 	delete mShadowMap;
 
 	mJobManager->End();
-	mJobManager = nullptr;
 
 	mAssetManager->Shutdown();
-	mAssetManager = nullptr;
 }
 
 bool Game::LoadGameData()

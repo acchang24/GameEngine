@@ -46,11 +46,13 @@ public:
 	// Saves a texture into the texture cache's map
 	// @param - const std::string& for the texture's name.
 	// @param - Texture* for the texture that is being saved. 
-	void SaveTexture(const std::string& textureName, Texture* texture) { mTextureCache->StoreCache(textureName, texture); }
-	// Retrieves a texture from the texture cache's map
-	// @param - const std::string& for the texture's name.
-	// @return - Texture* for the desired texture retrieved from the texture cache map
-	Texture* LoadTexture(const std::string& textureName) { return mTextureCache->Get(textureName); }
+	void SaveTexture(const std::string& textureFileName, Texture* texture) { mTextureCache->StoreCache(textureFileName, texture); }
+	// Retrieves a texture from the texture cache's map if it exists.
+	// If not, it will load/create a new texture and save it into the map.
+	// Make sure to call Texture::SetType() right after if loading texture for the first time
+	// @param - const std::string& for the texture name
+	// @return - Texture* for the desired texture
+	static Texture* LoadTexture(const std::string& textureFileName);
 	// Clears each element from the texture cache's map
 	void ClearTextures() { mShaderCache->Clear(); }
 
@@ -114,7 +116,7 @@ public:
 	// @param - ShaderProgram* for the shader program to save
 	void SaveShaderProgram(const std::string& shaderFileName, ShaderProgram* program) { mShaderProgramCache->StoreCache(shaderFileName, program); }
 	// Retrieves a ShaderProgram from the shader program cache's map if it exists.
-	// If not, it will create a new ShaderProgram and save it into the map
+	// If not, it will load/create a new ShaderProgram and save it into the map
 	// @param - const std::string& for the shader file name
 	// @return - ShaderProgram* for the desired shader program
 	static ShaderProgram* LoadShaderProgram(const std::string& shaderFileName);

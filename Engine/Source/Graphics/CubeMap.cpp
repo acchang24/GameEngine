@@ -44,6 +44,9 @@ CubeMap::CubeMap(const std::vector<std::string>& textureFaces) :
 		// Free image data
 		stbi_image_free(data);
 	}
+
+	// Go back to flipping vertically on y axis (for other textures)
+	stbi_set_flip_vertically_on_load(true);
 }
 
 CubeMap::~CubeMap()

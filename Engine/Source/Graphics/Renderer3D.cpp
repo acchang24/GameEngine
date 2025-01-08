@@ -7,6 +7,7 @@
 #include "FrameBufferMultiSampled.h"
 #include "Material.h"
 #include "Shader.h"
+#include "stb_image.h"
 #include "UniformBuffer.h"
 #include "VertexBuffer.h"
 
@@ -118,6 +119,9 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
 	std::cout << "Graphics: " << glGetString(GL_RENDERER) << "\n";
 	std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
+
+	// Tell stb_image.h to flip loaded textures on the y axis (by default)
+	stbi_set_flip_vertically_on_load(false);
 
 	// Enable v-sync by default
 	SDL_GL_SetSwapInterval(mVSync);

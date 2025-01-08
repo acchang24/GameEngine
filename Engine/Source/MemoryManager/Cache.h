@@ -22,7 +22,6 @@ public:
 	{
 		std::cout << "Delete cache" << std::endl;
 		Clear();
-		mManager = nullptr;
 	}
 
 	// StoreCache takes in a key and value pair and stores them
