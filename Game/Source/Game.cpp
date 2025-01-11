@@ -49,18 +49,18 @@ const char* TITLE = "Game";
 
 Game::Game() :
 	mPrevKeyInputs(),
-	mRenderer(nullptr),
-	mAssetManager(nullptr),
-	mJobManager(nullptr),
+	mRenderer(Renderer3D::Get()),
+	mAssetManager(AssetManager::Get()),
+	mJobManager(JobManager::Get()),
 	mCamera(nullptr),
+	mLights(nullptr),
+	mShadowMap(nullptr),
+	mSkybox(nullptr),
 	mMainFrameBuffer(nullptr),
 	mBloomMaskFrameBuffer(nullptr),
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
 	mBloomBlendFrameBuffer(nullptr),
-	mSkybox(nullptr),
-	mLights(nullptr),
-	mShadowMap(nullptr),
 	mMousePosX(0),
 	mMousePosY(0),
 	mIsRunning(true),
@@ -78,34 +78,55 @@ bool Game::Init()
 {
 	Random::Init();
 
-	mJobManager = JobManager::Get();
 	mJobManager->Begin();
 
-	mRenderer = Renderer3D::Get();
-	mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, mMouseCaptured, "Game");
-
-	mAssetManager = AssetManager::Get();
+	if (false == mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, mMouseCaptured, "Game"))
+	{
+		return false;
+	}
 
 	mCamera = new Camera();
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
+	mLights = new Lights();
+
+	mShadowMap = new ShadowMap();
+
 	PROFILE_SCOPE(LOAD_DATA);
 
-	Texture* texture = AssetManager::LoadTexture("Assets/matrix.jpg");
-	texture->SetType(TextureType::Emission);
-	Texture* texture3 = AssetManager::LoadTexture("Assets/container2.png");
-	texture3->SetType(TextureType::Diffuse);
-	Texture* texture4 = AssetManager::LoadTexture("Assets/container2_specular.png");
-	texture4->SetType(TextureType::Specular);
-	Texture* lightSphereTexture = AssetManager::LoadTexture("Assets/lightSphere.png");
-	lightSphereTexture->SetType(TextureType::Diffuse);
-	Texture* woodTexture = AssetManager::LoadTexture("Assets/wood.png");
-	woodTexture->SetType(TextureType::Diffuse);
-	Texture* wallTexture = AssetManager::LoadTexture("Assets/brickwall.jpg");
-	wallTexture->SetType(TextureType::Diffuse);
-	Texture* wallNormalTexture = AssetManager::LoadTexture("Assets/brickwall_normal.jpg");
-	wallNormalTexture->SetType(TextureType::Normal);
+	LoadShaders();
 
+	LoadGameData();
+
+	return true;
+}
+
+void Game::Shutdown()
+{
+	mRenderer->Shutdown();
+
+	UnloadGameData();
+
+	delete mCamera;
+
+	delete mSkybox;
+
+	delete mLights;
+
+	delete mShadowMap;
+
+	mJobManager->End();
+
+	mAssetManager->Shutdown();
+}
+
+void Game::LoadShaders()
+{
+
+}
+
+void Game::LoadGameData()
+{
 	Shader* colorShader = new Shader("Shaders/color.vert", "Shaders/color.frag");
 	mAssetManager->SaveShader("color", colorShader);
 
@@ -129,20 +150,6 @@ bool Game::Init()
 
 	Shader* pointShadowDepthShader = new Shader("Shaders/Shadow/pointShadowDepth.vert", "Shaders/Shadow/pointShadowDepth.frag", "Shaders/Shadow/pointShadowDepth.geom");
 	mAssetManager->SaveShader("pointShadowDepth", pointShadowDepthShader);
-
-	// Link shader uniform blocks for the material buffer
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), phongShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), instanceShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), textureShader);
-
-	// Link shader uniform blocks for the skeleton buffer
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), skinnedShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), shadowDepthShader);
-
-	Material* lightSphereMaterial = new Material();
-	lightSphereMaterial->SetShader(textureShader);
-	lightSphereMaterial->AddTexture(lightSphereTexture);
-	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
 
 	//Shader* invertedColorShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/invertedColor.frag");
 	//mAssetManager->SaveShader("invertedColor", invertedColorShader);
@@ -186,18 +193,60 @@ bool Game::Init()
 	hdrGammaShader->SetBool("hdr", hdr);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
-	int width = mRenderer->GetWidth();
-	int height = mRenderer->GetHeight();
-	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples());
-	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.5f);
-	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
-	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
-	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height);
-	mMainFrameBuffer->SetShader(hdrGammaShader);
-	mBloomMaskFrameBuffer->SetShader(bloomMaskShader);
-	mBloomBlurHorizontalFrameBuffer->SetShader(bloomBlurHorizontalShader);
-	mBloomBlurVerticalFrameBuffer->SetShader(bloomBlurVerticalShader);
-	mBloomBlendFrameBuffer->SetShader(bloomBlendShader);
+	Shader* reflectiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
+	reflectiveShader->SetActive();
+	reflectiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
+	mAssetManager->SaveShader("reflection", reflectiveShader);
+
+	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
+	refractiveShader->SetActive();
+	refractiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
+	mAssetManager->SaveShader("refraction", refractiveShader);
+
+	// Link shader uniform blocks for the material buffer
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), phongShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), instanceShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), textureShader);
+
+	// Link shader uniform blocks for the skeleton buffer
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), skinnedShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), shadowDepthShader);
+
+	// Link shaders to light uniform buffer
+	UniformBuffer* lightBuffer = mLights->GetLightBuffer();
+	lightBuffer->LinkShader(phongShader);
+	lightBuffer->LinkShader(skinnedShader);
+	lightBuffer->LinkShader(instanceShader);
+
+	// Link shaders to camera's uniform buffer
+	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
+	camBuffer->LinkShader(phongShader);
+	camBuffer->LinkShader(colorShader);
+	camBuffer->LinkShader(reflectiveShader);
+	camBuffer->LinkShader(refractiveShader);
+	camBuffer->LinkShader(textureShader);
+	camBuffer->LinkShader(instanceShader);
+	camBuffer->UpdateBufferData(&mCamera->GetCameraConsts());
+
+	Texture* texture = AssetManager::LoadTexture("Assets/matrix.jpg");
+	texture->SetType(TextureType::Emission);
+	Texture* texture3 = AssetManager::LoadTexture("Assets/container2.png");
+	texture3->SetType(TextureType::Diffuse);
+	Texture* texture4 = AssetManager::LoadTexture("Assets/container2_specular.png");
+	texture4->SetType(TextureType::Specular);
+	Texture* lightSphereTexture = AssetManager::LoadTexture("Assets/lightSphere.png");
+	lightSphereTexture->SetType(TextureType::Diffuse);
+	Texture* woodTexture = AssetManager::LoadTexture("Assets/wood.png");
+	woodTexture->SetType(TextureType::Diffuse);
+	Texture* wallTexture = AssetManager::LoadTexture("Assets/brickwall.jpg");
+	wallTexture->SetType(TextureType::Diffuse);
+	Texture* wallNormalTexture = AssetManager::LoadTexture("Assets/brickwall_normal.jpg");
+	wallNormalTexture->SetType(TextureType::Normal);
+
+	Material* lightSphereMaterial = new Material();
+	lightSphereMaterial->SetShader(textureShader);
+	lightSphereMaterial->AddTexture(lightSphereTexture);
+	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
 
 	// Skybox
 	std::vector<std::string> faceNames
@@ -210,28 +259,29 @@ bool Game::Init()
 		"Assets/skyboxes/skybox1/back.jpg"
 	};
 	mSkybox = new Skybox(faceNames);
-
 	CubeMap* sky = mSkybox->GetCubeMap();
-
-	Shader* reflectiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
-	reflectiveShader->SetActive();
-	reflectiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
-	mAssetManager->SaveShader("reflection", reflectiveShader);
-
 	MaterialCubeMap* reflectiveMat = new MaterialCubeMap();
 	reflectiveMat->SetCubeMap(sky);
 	reflectiveMat->SetShader(reflectiveShader);
 	mAssetManager->SaveMaterial("reflection", reflectiveMat);
 
-	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
-	refractiveShader->SetActive();
-	refractiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
-	mAssetManager->SaveShader("refraction", refractiveShader);
-
 	MaterialCubeMap* refractiveMat = new MaterialCubeMap();
 	refractiveMat->SetCubeMap(sky);
 	refractiveMat->SetShader(refractiveShader);
 	mAssetManager->SaveMaterial("refraction", refractiveMat);
+
+	int width = mRenderer->GetWidth();
+	int height = mRenderer->GetHeight();
+	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples());
+	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.5f);
+	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
+	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
+	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height);
+	mMainFrameBuffer->SetShader(hdrGammaShader);
+	mBloomMaskFrameBuffer->SetShader(bloomMaskShader);
+	mBloomBlurHorizontalFrameBuffer->SetShader(bloomBlurHorizontalShader);
+	mBloomBlurVerticalFrameBuffer->SetShader(bloomBlurVerticalShader);
+	mBloomBlendFrameBuffer->SetShader(bloomBlendShader);
 
 
 	//Texture* rockTexture = AssetManager::LoadTexture("Assets/models/rock/rock.png");
@@ -278,13 +328,13 @@ bool Game::Init()
 
 	//delete[] rockMatrices;
 
-	std::vector<glm::vec3> vampirePositions = { 
+	std::vector<glm::vec3> vampirePositions = {
 		glm::vec3(0.0f, -4.0f, 0.0f), glm::vec3(10.0f, -4.0f, 0.0f),
 		glm::vec3(-10.0f, -4.0f, 0.0f), glm::vec3(10.0f, -4.0f, 10.0f),
 		glm::vec3(10.0f, -4.0f, -10.0f), glm::vec3(20.0f, -4.0f, 0.0f),
 		glm::vec3(-15.0f, -4.0f, 0.0f), glm::vec3(15.0f, -4.0f, 0.0f),
 		glm::vec3(10.0f, -4.0f, 15.0f), glm::vec3(10.0f, -4.0f, -15.0f),
-		glm::vec3(10.0f, -4.0f, -15.0f) 
+		glm::vec3(10.0f, -4.0f, -15.0f)
 	};
 
 
@@ -337,7 +387,7 @@ bool Game::Init()
 	glm::quat rot2 = glm::quat(euler);
 
 	Entity3D* squidward2 = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
-	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f)); 
+	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f));
 	squidward2->SetScale(0.35f);
 	glm::quat newRot = glm::quat(glm::vec3(glm::radians(45.0f), glm::radians(-90.0f), glm::radians(20.0f)));
 	squidward2->SetQuatRotation(newRot);
@@ -355,7 +405,7 @@ bool Game::Init()
 	//m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
 	AddGameEntity(squidward);
-	
+
 	//Material* woodMat = new Material();
 	//woodMat->AddTexture(woodTexture);
 	//woodMat->SetShader(phongShader);
@@ -374,23 +424,15 @@ bool Game::Init()
 	//cube2->SetMaterial(woodMat);
 	//AddGameEntity(cube2);
 
-	
+
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 	glm::vec3 lightPosition = lightDir * -dist;
-	mShadowMap = new ShadowMap();
 	mShadowMap->SetShader(shadowDepthShader);
 	pos = lightPosition;
 	UniformBuffer* shadowBuffer = mShadowMap->GetShadowBuffer();
 	shadowBuffer->LinkShader(phongShader);
 	shadowBuffer->LinkShader(skinnedShader);
 	shadowBuffer->LinkShader(shadowDepthShader);
-
-	// Allocate lights in the scene
-	mLights = new Lights();
-	UniformBuffer* lightBuffer = mLights->GetLightBuffer();
-	lightBuffer->LinkShader(phongShader);
-	lightBuffer->LinkShader(skinnedShader);
-	lightBuffer->LinkShader(instanceShader);
 
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->data.usesShadow = true;
@@ -418,44 +460,8 @@ bool Game::Init()
 	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -120.0f));
 	AddGameEntity(lightSphere3);
 
-	// Link shaders to camera's uniform buffer
-	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
-	camBuffer->LinkShader(phongShader);
-	camBuffer->LinkShader(colorShader);
-	camBuffer->LinkShader(reflectiveShader);
-	camBuffer->LinkShader(refractiveShader);
-	camBuffer->LinkShader(textureShader);
-	camBuffer->LinkShader(instanceShader);
-	camBuffer->UpdateBufferData(&mCamera->GetCameraConsts());
-
 	// Since all ShaderProgram objects are attached to a Shader object, it's safe to de-allocate them here
 	mAssetManager->ClearShaderPrograms();
-
-	return true;
-}
-
-void Game::Shutdown()
-{
-	mRenderer->Shutdown();
-
-	UnloadGameData();
-
-	delete mCamera;
-
-	delete mSkybox;
-
-	delete mLights;
-
-	delete mShadowMap;
-
-	mJobManager->End();
-
-	mAssetManager->Shutdown();
-}
-
-bool Game::LoadGameData()
-{
-	return true;
 }
 
 void Game::UnloadGameData()

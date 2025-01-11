@@ -31,8 +31,11 @@ public:
 	// De-allocates any resources and ends the game.
 	void Shutdown();
 
+	// Loads any shaders used for the game
+	void LoadShaders();
+
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
-	bool LoadGameData();
+	void LoadGameData();
 
 	// Deletes all entities, sounds, levels, etc
 	void UnloadGameData();
@@ -86,6 +89,18 @@ private:
 	// Pointer to a static JobManager
 	JobManager* mJobManager;
 
+	// The game's camera
+	Camera* mCamera;
+
+	// Use lighting
+	Lights* mLights;
+
+	// ShadowMap for shadows
+	ShadowMap* mShadowMap;
+
+	// Skybox
+	Skybox* mSkybox;
+
 	// The main multi sampled frame buffer
 	FrameBufferMultiSampled* mMainFrameBuffer;
 	// Frame buffer for bloom masking
@@ -98,18 +113,6 @@ private:
 	FrameBuffer* mBloomBlendFrameBuffer;
 
 	std::vector<class Entity3D*> vampires;
-
-	// The game's camera
-	Camera* mCamera;
-
-	// Skybox
-	Skybox* mSkybox;
-
-	// Use lighting
-	Lights* mLights;
-
-	// ShadowMap for shadows
-	ShadowMap* mShadowMap;
 
 	// Mouse x-axis movement
 	double mMousePosX;
