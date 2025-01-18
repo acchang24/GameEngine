@@ -2,9 +2,11 @@
 #include <iostream>
 #include <fstream>
 #include "../MemoryManager/AssetManager.h"
+#include "Renderer3D.h"
 #include "ShaderProgram.h"
 
-Shader::Shader(const char* vertexFile, const char* fragmentFile, const char* geometryFile) :
+Shader::Shader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile) :
+    mName(name),
 	mShaderID(0)
 {
     // Create a shader program and save the ID reference into mShaderID
@@ -37,26 +39,10 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile, const char* geo
         glGetProgramInfoLog(mShaderID, 512, NULL, infoLog);
         std::cout << "Shader program creation failed\n" << infoLog << "\n";
     }
-
-    //GLint blocks = 0;
-    //glGetProgramiv(mShaderID, GL_ACTIVE_UNIFORM_BLOCKS, &blocks);
-
-    //std::vector<std::string> names;
-    //names.reserve(blocks);
-
-    //for (int i = 0; i < blocks; ++i)
-    //{
-    //    GLint nameLen;
-    //    glGetActiveUniformBlockiv(mShaderID, i, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLen);
-
-
-    //    char* test = new char[nameLen];
-    //    glGetActiveUniformBlockName(mShaderID, i, nameLen, NULL, test);
-    //    std::string test2 = test;
-    //    delete[] test;
-
-    //    std::cout << glGetUniformBlockIndex(mShaderID, test2.c_str()) << " " << test2 << "\n";
-    //}
+    else
+    {
+        LinkShadersToUniformBlocks();
+    }
 }
 
 Shader::~Shader()
@@ -64,4 +50,37 @@ Shader::~Shader()
     std::cout << "Deleted shader: " << mShaderID << "\n";
     glDeleteProgram(mShaderID);
     mShaderID = 0;
+}
+
+void Shader::LinkShadersToUniformBlocks() const
+{
+    GLint numBlocks = 0;
+    // Gets the number of active uniform blocks used by this shader
+    glGetProgramiv(mShaderID, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
+
+    Renderer3D* renderer = Renderer3D::Get();
+
+    for (int i = 0; i < numBlocks; ++i)
+    {
+        GLint nameLen = 0;
+        // Get the length of the uniform block name within the shader
+        glGetActiveUniformBlockiv(mShaderID, i, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLen);
+
+        // Get the name of the uniform block
+        char* name = new char[nameLen];
+        glGetActiveUniformBlockName(mShaderID, i, nameLen, NULL, name);
+        std::string nameString = name;
+        delete[] name;
+
+        // Get the index of the uniform block
+        int uniformBlockindex = glGetUniformBlockIndex(mShaderID, nameString.c_str());
+
+        UniformBuffer* ub = renderer->GetUniformBuffer(nameString);
+
+        if (ub)
+        {
+            // Assign a binding point to the active uniform block
+            glUniformBlockBinding(mShaderID, uniformBlockindex, ub->GetBindingPoint());
+        }
+    }
 }

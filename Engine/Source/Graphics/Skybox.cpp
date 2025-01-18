@@ -62,7 +62,7 @@ Skybox::Skybox(const std::vector<std::string>& faceNames) :
 
     if (!am->LoadShader("skybox"))
     {
-        Shader* skyboxShader = new Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
+        Shader* skyboxShader = new Shader("skybox", "Shaders/skybox.vert", "Shaders/skybox.frag");
         am->SaveShader("skybox", skyboxShader);
         mShader = skyboxShader;
     }

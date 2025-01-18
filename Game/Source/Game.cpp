@@ -127,28 +127,28 @@ void Game::LoadShaders()
 
 void Game::LoadGameData()
 {
-	Shader* colorShader = new Shader("Shaders/color.vert", "Shaders/color.frag");
+	Shader* colorShader = new Shader("color", "Shaders/color.vert", "Shaders/color.frag");
 	mAssetManager->SaveShader("color", colorShader);
 
-	Shader* phongShader = new Shader("Shaders/phong.vert", "Shaders/phong.frag");
+	Shader* phongShader = new Shader("phong", "Shaders/phong.vert", "Shaders/phong.frag");
 	mAssetManager->SaveShader("phong", phongShader);
 
-	Shader* skinnedShader = new Shader("Shaders/Animation/skinned.vert", "Shaders/phong.frag");
+	Shader* skinnedShader = new Shader("skinned", "Shaders/Animation/skinned.vert", "Shaders/phong.frag");
 	mAssetManager->SaveShader("skinned", skinnedShader);
 
-	Shader* textureShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
+	Shader* textureShader = new Shader("texture", "Shaders/texture.vert", "Shaders/texture.frag");
 	mAssetManager->SaveShader("texture", textureShader);
 
-	Shader* instanceShader = new Shader("Shaders/instance.vert", "Shaders/phong.frag");
+	Shader* instanceShader = new Shader("instance", "Shaders/instance.vert", "Shaders/phong.frag");
 	mAssetManager->SaveShader("instance", instanceShader);
 
-	Shader* shadowDepthShader = new Shader("Shaders/Shadow/shadowDepth.vert", "Shaders/Shadow/shadowDepth.frag");
+	Shader* shadowDepthShader = new Shader("shadowDepth", "Shaders/Shadow/shadowDepth.vert", "Shaders/Shadow/shadowDepth.frag");
 	mAssetManager->SaveShader("shadowDepth", shadowDepthShader);
 
-	Shader* shadowDebugShader = new Shader("Shaders/screen.vert", "Shaders/Shadow/shadowDebug.frag");
+	Shader* shadowDebugShader = new Shader("shadowDebug", "Shaders/screen.vert", "Shaders/Shadow/shadowDebug.frag");
 	mAssetManager->SaveShader("shadowDebug", shadowDebugShader);
 
-	Shader* pointShadowDepthShader = new Shader("Shaders/Shadow/pointShadowDepth.vert", "Shaders/Shadow/pointShadowDepth.frag", "Shaders/Shadow/pointShadowDepth.geom");
+	Shader* pointShadowDepthShader = new Shader("pointShadowDepth", "Shaders/Shadow/pointShadowDepth.vert", "Shaders/Shadow/pointShadowDepth.frag", "Shaders/Shadow/pointShadowDepth.geom");
 	mAssetManager->SaveShader("pointShadowDepth", pointShadowDepthShader);
 
 	//Shader* invertedColorShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/invertedColor.frag");
@@ -166,67 +166,43 @@ void Game::LoadGameData()
 	//Shader* edgeDetectKernelShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/edgeDetectKernel.frag");
 	//mAssetManager->SaveShader("edgeDetectKernel", edgeDetectKernelShader);
 
-	Shader* copyScreenShader = new Shader("Shaders/screen.vert", "Shaders/copyScreen.frag");
+	Shader* copyScreenShader = new Shader("copyScreen", "Shaders/screen.vert", "Shaders/copyScreen.frag");
 	mAssetManager->SaveShader("copyScreen", copyScreenShader);
 
-	Shader* bloomMaskShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomMask.frag");
+	Shader* bloomMaskShader = new Shader("bloomMask", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomMask.frag");
 	mAssetManager->SaveShader("bloomMask", bloomMaskShader);
 
-	Shader* bloomBlurHorizontalShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurHorizontal.frag");
+	Shader* bloomBlurHorizontalShader = new Shader("bloomBlurHorizontal", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurHorizontal.frag");
 	bloomBlurHorizontalShader->SetActive();
 	bloomBlurHorizontalShader->SetFloat("width", static_cast<float>(WINDOW_WIDTH / 4));
 	mAssetManager->SaveShader("bloomBlurHorizontal", bloomBlurHorizontalShader);
 
-	Shader* bloomBlurVerticalShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurVertical.frag");
+	Shader* bloomBlurVerticalShader = new Shader("bloomBlurVertical", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurVertical.frag");
 	bloomBlurVerticalShader->SetActive();
 	bloomBlurVerticalShader->SetFloat("height", static_cast<float>(WINDOW_HEIGHT / 4));
 	mAssetManager->SaveShader("bloomBlurVertical", bloomBlurVerticalShader);
 
-	Shader* bloomBlendShader = new Shader("Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlend.frag");
+	Shader* bloomBlendShader = new Shader("bloomBlend", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlend.frag");
 	bloomBlendShader->SetActive();
 	bloomBlendShader->SetBool("bloom", bloom);
 	mAssetManager->SaveShader("bloomBlend", bloomBlendShader);
 
-	Shader* hdrGammaShader = new Shader("Shaders/screen.vert", "Shaders/hdrGamma.frag");
+	Shader* hdrGammaShader = new Shader("hdrGamma", "Shaders/screen.vert", "Shaders/hdrGamma.frag");
 	hdrGammaShader->SetActive();
 	hdrGammaShader->SetFloat("exposure", 1.0f);
 	hdrGammaShader->SetBool("hdr", hdr);
 	mAssetManager->SaveShader("hdrGamma", hdrGammaShader);
 
-	Shader* reflectiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
+	Shader* reflectiveShader = new Shader("reflection", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
 	reflectiveShader->SetActive();
 	reflectiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
 	mAssetManager->SaveShader("reflection", reflectiveShader);
 
-	Shader* refractiveShader = new Shader("Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
+	Shader* refractiveShader = new Shader("refraction", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
 	refractiveShader->SetActive();
 	refractiveShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
 	mAssetManager->SaveShader("refraction", refractiveShader);
 
-	// Link shader uniform blocks for the material buffer
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("MaterialBuffer"), phongShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("MaterialBuffer"), instanceShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("MaterialBuffer"), textureShader);
-
-	// Link shader uniform blocks for the skeleton buffer
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("SkeletonBuffer"), skinnedShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("SkeletonBuffer"), shadowDepthShader);
-
-	// Link shaders to light uniform buffer
-	UniformBuffer* lightBuffer = mLights->GetLightBuffer();
-	lightBuffer->LinkShader(phongShader);
-	lightBuffer->LinkShader(skinnedShader);
-	lightBuffer->LinkShader(instanceShader);
-
-	// Link shaders to camera's uniform buffer
-	UniformBuffer* camBuffer = mCamera->GetCameraBuffer();
-	camBuffer->LinkShader(phongShader);
-	camBuffer->LinkShader(colorShader);
-	camBuffer->LinkShader(reflectiveShader);
-	camBuffer->LinkShader(refractiveShader);
-	camBuffer->LinkShader(textureShader);
-	camBuffer->LinkShader(instanceShader);
-	camBuffer->UpdateBufferData(&mCamera->GetCameraConsts());
 
 	Texture* texture = AssetManager::LoadTexture("Assets/matrix.jpg");
 	texture->SetType(TextureType::Emission);
@@ -430,10 +406,6 @@ void Game::LoadGameData()
 	glm::vec3 lightPosition = lightDir * -dist;
 	mShadowMap->SetShader(shadowDepthShader);
 	pos = lightPosition;
-	UniformBuffer* shadowBuffer = mShadowMap->GetShadowBuffer();
-	shadowBuffer->LinkShader(phongShader);
-	shadowBuffer->LinkShader(skinnedShader);
-	shadowBuffer->LinkShader(shadowDepthShader);
 
 	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->data.usesShadow = true;

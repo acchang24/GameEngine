@@ -33,7 +33,7 @@ void UniformBuffer::LinkShader(Shader* shader)
 	glUniformBlockBinding(shaderID, uniformBlockIndex, mBindingPoint);
 }
 
-void UniformBuffer::UpdateBufferData(const void* data)
+void UniformBuffer::UpdateBufferData(const void* data) const
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, mBufferID);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, mBufferSize, data);

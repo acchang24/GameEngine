@@ -21,8 +21,12 @@ public:
 	// @param - const char* for the vertex shader name/file path
 	// @param - const char* for the fragment shader name/file path
     // @param - const char* for the geometry shader name/file path if it exists (defaults to nullptr)
-	Shader(const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
+	Shader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	~Shader();
+
+    // Finds all the uniform buffers used by this shader and calls glUniformBlockBinding on each one with this shader
+    // to assign a binding point to the active uniform blocks
+    void LinkShadersToUniformBlocks() const;
 
 	// Sets this shader program as the active one with glUseProgram
 	// Every shader/rendering call will use this program object and its shaders
@@ -105,6 +109,8 @@ public:
     }
 
 private:
+    std::string mName;
+
 	// The shader program object's reference ID
 	unsigned int mShaderID;
 };

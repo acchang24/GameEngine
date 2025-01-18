@@ -32,7 +32,9 @@ public:
 
 	// Updates the uniform buffer's data
 	// @param - const void* for the new data
-	void UpdateBufferData(const void* data);
+	void UpdateBufferData(const void* data) const;
+
+	unsigned int GetBindingPoint() const { return mBindingPoint; }
 
 private:
 	// ID reference for the uniform buffer
