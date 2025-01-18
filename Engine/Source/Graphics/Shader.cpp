@@ -42,6 +42,8 @@ Shader::Shader(const std::string& name, const char* vertexFile, const char* frag
     else
     {
         LinkShadersToUniformBlocks();
+
+        AssetManager::Get()->SaveShader(name, this);
     }
 }
 

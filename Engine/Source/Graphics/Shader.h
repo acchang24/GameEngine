@@ -16,8 +16,8 @@ public:
     // on the shader file and its type. The ShaderProgram object will contain
     // a shader id that is used to attach to a program. After attaching all the 
     // shaders, this class will link the program and check if the program was
-    // created successfully
-	// object, saving the reference into the mShaderID variable.
+    // created successfully, saving the reference into the mShaderID variable.
+    // @param - const std::string& for the name of the shader (used to acces through AssetManager)
 	// @param - const char* for the vertex shader name/file path
 	// @param - const char* for the fragment shader name/file path
     // @param - const char* for the geometry shader name/file path if it exists (defaults to nullptr)
