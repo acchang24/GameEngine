@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Renderer3D.h"
 #include "UniformBuffer.h"
 
 const float fov = 45.0f;
@@ -19,7 +20,7 @@ Camera::Camera() :
 	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
 	mRight(glm::normalize(glm::cross(mUp, mForward))),
 	mPanDir(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mCameraBuffer(new UniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer")),
+	mCameraBuffer(Renderer3D::CreateUniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer")),
 	mMode(CameraMode::Fly),
 	mYaw(-90.0f),
 	mPitch(0.0f),
@@ -34,8 +35,6 @@ Camera::Camera() :
 Camera::~Camera()
 {
 	std::cout << "Delete camera" << std::endl;
-
-	delete mCameraBuffer;
 }
 
 void Camera::SetActive()

@@ -1,10 +1,11 @@
 #include "Lights.h"
 #include <iostream>
+#include "Renderer3D.h"
 #include "UniformBuffer.h"
 
 Lights::Lights() :
 	mLightArrays({}),
-	mLightBuffer(new UniformBuffer(sizeof(LightArrays), BufferBindingPoint::Lights, "LightBuffer"))
+	mLightBuffer(Renderer3D::CreateUniformBuffer(sizeof(LightArrays), BufferBindingPoint::Lights, "LightBuffer"))
 {
 
 }
@@ -14,8 +15,6 @@ Lights::~Lights()
 	std::cout << "Delete lights" << std::endl;
 
 	DeAllocateLights();
-
-	delete mLightBuffer;
 }
 
 void Lights::SetActive()

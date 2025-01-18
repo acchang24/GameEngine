@@ -1,4 +1,4 @@
-#include "Shader.h"
+﻿#include "Shader.h"
 #include <iostream>
 #include <fstream>
 #include "../MemoryManager/AssetManager.h"
@@ -37,6 +37,26 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile, const char* geo
         glGetProgramInfoLog(mShaderID, 512, NULL, infoLog);
         std::cout << "Shader program creation failed\n" << infoLog << "\n";
     }
+
+    //GLint blocks = 0;
+    //glGetProgramiv(mShaderID, GL_ACTIVE_UNIFORM_BLOCKS, &blocks);
+
+    //std::vector<std::string> names;
+    //names.reserve(blocks);
+
+    //for (int i = 0; i < blocks; ++i)
+    //{
+    //    GLint nameLen;
+    //    glGetActiveUniformBlockiv(mShaderID, i, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLen);
+
+
+    //    char* test = new char[nameLen];
+    //    glGetActiveUniformBlockName(mShaderID, i, nameLen, NULL, test);
+    //    std::string test2 = test;
+    //    delete[] test;
+
+    //    std::cout << glGetUniformBlockIndex(mShaderID, test2.c_str()) << " " << test2 << "\n";
+    //}
 }
 
 Shader::~Shader()

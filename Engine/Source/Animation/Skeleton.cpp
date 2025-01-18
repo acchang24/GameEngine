@@ -7,7 +7,7 @@
 Skeleton::Skeleton() :
 	mSkeletonConsts({}),
 	mJob(this),
-	mSkeletonBuffer(Renderer3D::Get()->GetSkeletonBuffer()),
+	mSkeletonBuffer(Renderer3D::Get()->GetUniformBuffer("SkeletonBuffer")),
 	mCurrentAnimation(nullptr),
 	mCurrentTime(0.0f),
 	mNumBones(0)

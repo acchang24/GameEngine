@@ -8,7 +8,7 @@
 Material::Material() : 
 	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 16.0f, false, false, false, false }),
 	mShader(nullptr),
-    mMaterialBuffer(Renderer3D::Get()->GetMaterialBuffer())
+    mMaterialBuffer(Renderer3D::Get()->GetUniformBuffer("MaterialBuffer"))
 {
 
 }
@@ -16,7 +16,7 @@ Material::Material() :
 Material::Material(const MaterialColors& mats) :
     mMats(mats),
     mShader(nullptr),
-    mMaterialBuffer(Renderer3D::Get()->GetMaterialBuffer())
+    mMaterialBuffer(Renderer3D::Get()->GetUniformBuffer("MaterialBuffer"))
 {
 
 }

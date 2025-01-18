@@ -1,11 +1,13 @@
 #pragma once
+#include <string>
+#include <unordered_map>
 #include <vector>
 #include <SDL2/SDL.h>
+#include "UniformBuffer.h"
 
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
-class UniformBuffer;
 class VertexBuffer;
 
 class Renderer3D
@@ -39,12 +41,24 @@ public:
 	// Swap the buffers and present to the screen
 	void EndFrame();
 
+	// Creates a uniform buffer and saves it into the renderer's map of uniform buffers
+	// @param - size_t for the buffer's size, or the amount of memory to allocate to the buffer
+	// @param - BufferBindingPoint for the buffer's binding point
+	// @param - const char* for the buffer's name
+	// @return - UniformBuffer* for the newly created buffer
+	static UniformBuffer* CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName);
+
+	// Retrieves a uniform buffer from the renderer's uniform buffer map by name
+	// @param - const std::string& for the uniform buffer name
+	// @return - UniformBuffer* for the desired uniform buffer
+	static UniformBuffer* GetUniformBuffer(const std::string& bufferName);
+
 	// Creates a frame buffer for the renderer to use
 	// @param - int for the width of the screen/window
 	// @param - int for the height of the screen/window
 	// @param - float for the frame buffer's size 
 	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	FrameBuffer* CreateFrameBuffer(int screenWidth, int screenHeight, float size = 1.0f);
+	static FrameBuffer* CreateFrameBuffer(int screenWidth, int screenHeight, float size = 1.0f);
 
 	// Creates a multisampled frame buffer for the renderer to use
 	// @param - int for the width of the screen/window
@@ -52,7 +66,7 @@ public:
 	// @param - int for the number of subsamples used for anti-aliasing
 	// @param - float for the frame buffer's size 
 	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, float size = 1.0f);
+	static FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, float size = 1.0f);
 
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active
@@ -86,14 +100,6 @@ public:
 	// @return - VertexBuffer* for the vertex buffer
 	VertexBuffer* GetVertexBuffer() { return mVertexBuffer; }
 
-	// Gets the UniformBuffer for materials
-	// @return - UniformBuffer* for the material buffer
-	UniformBuffer* GetMaterialBuffer() { return mMaterialBuffer; }
-
-	// Gets the UniformBuffer for skeleton
-	// @return - UniformBuffer* for the skeleton buffer
-	UniformBuffer* GetSkeletonBuffer() { return mSkeletonBuffer; }
-
 	// Gets the number of subsamples used for anti-aliasing
 	// @return - int for the number of subsamples
 	int GetNumSubsamples() const { return mNumSubsamples; }
@@ -103,20 +109,44 @@ public:
 	void SetNumSubsamples(int subsamples) { mNumSubsamples = subsamples; }
 
 private:
+	// FUNCTIONS
 	Renderer3D();
 	~Renderer3D();
+
+	// Inititialize SDL for video and audio, and check if successful
+	// @return - bool for if SDL was loaded successfully
+	bool InitSDL() const;
+
+	// Load default OpenGL library, and sets any OpenGL attributes
+	void LoadOpenGL() const;
+
+	// Creates a window based on if the user wants fullscreen or windowed
+	bool CreateWindow();
+
+	// Creates the OpenGL context using a window
+	bool CreateContext();
+
+	// Obtain API function pointers for OpenGL/Initialize GLAD
+	// and prints OpenGL info to the console
+	void LoadGLAD() const;
+
+	// Loads any additional user based SDL settings
+	// @param - SDL_bool for if the mouse is captured
+	void LoadSdlSettings(SDL_bool mouseCaptured) const;
+
+	// Enable/disable any opengl capabilities
+	void SetOpenGLCapabilities() const;
+
+
+	// MEMBER VARIABLES
+	// Map of uniform buffers
+	std::unordered_map<std::string, UniformBuffer*> mUniformBuffers;
 
 	// Vector of frame buffers used by the renderer
 	std::vector<FrameBuffer*> mFrameBuffers;
 
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;
-
-	// A uniform buffer for passing Material data
-	UniformBuffer* mMaterialBuffer;
-
-	// A uniform buffer for passing Skeleton data
-	UniformBuffer* mSkeletonBuffer;
 
 	// SDL window used for the game
 	SDL_Window* mWindow;

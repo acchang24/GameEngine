@@ -18,7 +18,7 @@ UniformBuffer::UniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint,
 
 UniformBuffer::~UniformBuffer()
 {
-	std::cout << "Delete uniform buffer" << std::endl;
+	std::cout << "Delete uniform buffer: " << mBufferName << std::endl;
 	glDeleteBuffers(1, &mBufferID);
 }
 

@@ -8,7 +8,6 @@
 #include "Material.h"
 #include "Shader.h"
 #include "stb_image.h"
-#include "UniformBuffer.h"
 #include "VertexBuffer.h"
 
 // Window width
@@ -34,17 +33,91 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mIsFullScreen = fullscreen;
 	mWindowTitle = title;
 
-	// Inititialize SDL for video and audio, and check if successful
+	if (InitSDL() == false)
+	{
+		return false;
+	}
+
+	LoadOpenGL();
+
+	if (CreateWindow() == false)
+	{
+		return false;
+	}
+
+	if (CreateContext() == false)
+	{
+		return false;
+	}
+
+	LoadGLAD();
+
+	// Flip loaded textures on the y axis by default
+	stbi_set_flip_vertically_on_load(false);
+
+	LoadSdlSettings(mouseCaptured);
+
+	SetOpenGLCapabilities();
+
+	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
+	VertexScreenQuad quadVertices[] = {
+		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
+		glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
+
+		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
+		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f,  1.0f), glm::vec2(1.0f, 1.0f)
+	};
+	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
+
+	CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+
+	CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
+
+	return true;
+}
+
+void Renderer3D::Shutdown()
+{
+	std::cout << "Shutting down Renderer3D\n";
+	
+	SDL_GL_DeleteContext(mContext);
+	
+	SDL_DestroyWindow(mWindow);
+	
+	SDL_Quit();
+
+	for (auto& ub : mUniformBuffers)
+	{
+		delete ub.second;
+	}
+	mUniformBuffers.clear();
+
+	for (auto fb : mFrameBuffers)
+	{
+		delete fb;
+	}
+	mFrameBuffers.clear();
+
+	delete mVertexBuffer;
+}
+
+bool Renderer3D::InitSDL() const
+{
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
 		std::cout << "Could not initialize SDL: " << SDL_GetError() << "\n";
 		return false;
 	}
 
-	// Load default OpenGL library
+	return true;
+}
+
+void Renderer3D::LoadOpenGL() const
+{
 	SDL_GL_LoadLibrary(NULL);
 
-	// Set OpenGL attributes
 	// Use core OpenGL profile
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	// Tell OpenGL to use hardware acceleration
@@ -64,14 +137,14 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	// Multisampling
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, mNumSubsamples);
+}
 
-	// Create the window
+bool Renderer3D::CreateWindow()
+{
 	if (mIsFullScreen)
 	{
-		// Get the display's dimensions
 		SDL_DisplayMode dm{};
 		SDL_GetDesktopDisplayMode(0, &dm);
-		// Set new window width and height
 		s_WindowWidth = dm.w;
 		s_WindowHeight = dm.h;
 
@@ -96,14 +169,17 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 		);
 	}
 
-	// Check if window creation was successful
 	if (!mWindow)
 	{
 		std::cout << "Failed to create a window " << SDL_GetError() << "\n";
 		return false;
 	}
 
-	// Create OpenGL context using the new window
+	return true;
+}
+
+bool Renderer3D::CreateContext()
+{
 	mContext = SDL_GL_CreateContext(mWindow);
 
 	if (mContext == NULL)
@@ -112,28 +188,35 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 		return false;
 	}
 
-	// Obtain API function pointers for OpenGL/Initialize GLAD
+	return true;
+}
+
+void Renderer3D::LoadGLAD() const
+{
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
 	std::cout << "OpenGL loaded\n";
 	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
 	std::cout << "Graphics: " << glGetString(GL_RENDERER) << "\n";
 	std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
+}
 
-	// Tell stb_image.h to flip loaded textures on the y axis (by default)
-	stbi_set_flip_vertically_on_load(false);
-
-	// Enable v-sync by default
+void Renderer3D::LoadSdlSettings(SDL_bool mouseCaptured) const
+{
+	// Enable v-sync by
 	SDL_GL_SetSwapInterval(mVSync);
 
-	// Enable relative mouse mode
+	// Capture the mouse
 	SDL_SetRelativeMouseMode(mouseCaptured);
 	// Clear any saved values
 	SDL_GetRelativeMouseState(nullptr, nullptr);
 
 	// Callback function for when window is resized
 	SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
+}
 
+void Renderer3D::SetOpenGLCapabilities() const
+{
 	// Enable z-buffering (depth testing)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -150,46 +233,6 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 
 	// Set viewport using the window width and height
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
-
-
-	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
-	VertexScreenQuad quadVertices[] = {
-		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
-		glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f),
-		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
-
-		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
-		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
-		glm::vec2(1.0f,  1.0f), glm::vec2(1.0f, 1.0f)
-	};
-	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
-
-	mMaterialBuffer = new UniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
-
-	mSkeletonBuffer = new UniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
-
-	return true;
-}
-
-void Renderer3D::Shutdown()
-{
-	std::cout << "Shutting down Renderer3D\n";
-	// Delete the OpenGL context
-	SDL_GL_DeleteContext(mContext);
-	// Destroy the window
-	SDL_DestroyWindow(mWindow);
-	// Quit SDL
-	SDL_Quit();
-
-	for (auto fb : mFrameBuffers)
-	{
-		delete fb;
-	}
-	mFrameBuffers.clear();
-
-	delete mVertexBuffer;
-	delete mMaterialBuffer;
-	delete mSkeletonBuffer;
 }
 
 void Renderer3D::ClearBuffers()
@@ -223,20 +266,43 @@ void Renderer3D::EndFrame()
 	SDL_GL_SwapWindow(mWindow);
 }
 
-FrameBuffer* Renderer3D::CreateFrameBuffer(int screenWidth, int screenHeight, float size)
+/* STATIC */ UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName)
+{
+	UniformBuffer* buffer = new UniformBuffer(bufferSize, bindingPoint, bufferName);
+
+	Get()->mUniformBuffers[bufferName] = buffer;
+
+	return buffer;
+}
+
+/* STATIC */ UniformBuffer* Renderer3D::GetUniformBuffer(const std::string& bufferName)
+{
+	std::unordered_map<std::string, UniformBuffer*> buffers = Get()->mUniformBuffers;
+
+	auto iter = buffers.find(bufferName);
+
+	if (iter != buffers.end())
+	{
+		return iter->second;
+	}
+
+	return nullptr;
+}
+
+/* STATIC */ FrameBuffer* Renderer3D::CreateFrameBuffer(int screenWidth, int screenHeight, float size)
 {
 	FrameBuffer* framebuffer = new FrameBuffer(screenWidth, screenHeight, size);
 
-	mFrameBuffers.emplace_back(framebuffer);
+	Get()->mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
 
-FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, float size)
+/* STATIC */ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, float size)
 {
 	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(screenWidth, screenHeight, subsamples, size);
 
-	mFrameBuffers.emplace_back(framebuffer);
+	Get()->mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
@@ -257,17 +323,17 @@ void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int
 	glBindTexture(GL_TEXTURE_2D, texture2);
 }
 
-int Renderer3D::GetWidth() /* STATIC */
+/* STATIC */ int Renderer3D::GetWidth()
 {
 	return s_WindowWidth;
 }
 
-int Renderer3D::GetHeight() /* STATIC */
+/* STATIC */ int Renderer3D::GetHeight()
 {
 	return s_WindowHeight;
 }
 
-int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event) /* STATIC */
+/* STATIC */ int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
 {
 	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED)
 	{
@@ -312,8 +378,6 @@ void Renderer3D::LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader)
 
 Renderer3D::Renderer3D() :
 	mVertexBuffer(nullptr),
-	mMaterialBuffer(nullptr),
-	mSkeletonBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),

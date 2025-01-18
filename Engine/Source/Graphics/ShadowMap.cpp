@@ -18,7 +18,7 @@ ShadowMap::ShadowMap() :
 	mShadowConsts({}),
 	mShader(nullptr),
 	mVertexBuffer(Renderer3D::Get()->GetVertexBuffer()),
-	mShadowBuffer(new UniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
+	mShadowBuffer(Renderer3D::CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0),
 	mTextureUnit(static_cast<int>(TextureUnit::Shadow))
@@ -50,8 +50,6 @@ ShadowMap::ShadowMap() :
 ShadowMap::~ShadowMap()
 {
 	std::cout << "Delete shadow map\n";
-
-	delete mShadowBuffer;
 
 	glDeleteFramebuffers(1, &mShadowMapFrameBuffer);
 

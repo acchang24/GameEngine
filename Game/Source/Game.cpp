@@ -204,13 +204,13 @@ void Game::LoadGameData()
 	mAssetManager->SaveShader("refraction", refractiveShader);
 
 	// Link shader uniform blocks for the material buffer
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), phongShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), instanceShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetMaterialBuffer(), textureShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("MaterialBuffer"), phongShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("MaterialBuffer"), instanceShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("MaterialBuffer"), textureShader);
 
 	// Link shader uniform blocks for the skeleton buffer
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), skinnedShader);
-	mRenderer->LinkShaderToUniformBlock(mRenderer->GetSkeletonBuffer(), shadowDepthShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("SkeletonBuffer"), skinnedShader);
+	mRenderer->LinkShaderToUniformBlock(mRenderer->GetUniformBuffer("SkeletonBuffer"), shadowDepthShader);
 
 	// Link shaders to light uniform buffer
 	UniformBuffer* lightBuffer = mLights->GetLightBuffer();
@@ -283,6 +283,7 @@ void Game::LoadGameData()
 	mBloomBlurVerticalFrameBuffer->SetShader(bloomBlurVerticalShader);
 	mBloomBlendFrameBuffer->SetShader(bloomBlendShader);
 
+	
 
 	//Texture* rockTexture = AssetManager::LoadTexture("Assets/models/rock/rock.png");
 	//rockTexture->SetType(TextureType::Diffuse);
