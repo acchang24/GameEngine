@@ -43,6 +43,9 @@ private:
 	// Shader program's code parsed and saved as a string
 	std::string mCode;
 
+	// Shader program's file path
+	std::string mPath;
+
 	// Shader program's id
 	unsigned int mShaderID;
 };

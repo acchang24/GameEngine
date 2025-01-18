@@ -5,18 +5,15 @@
 
 ShaderProgram::ShaderProgram(const std::string& shaderFile) :
     mType(LoadType(shaderFile)),
-	mCode(ReadShaderFile(shaderFile.c_str())),
+    mCode(ReadShaderFile(shaderFile.c_str())),
+    mPath(shaderFile),
 	mShaderID(CompileShader(mCode.c_str(), mType))
 {
-    if (!mCode.empty() && mShaderID != 0)
-    {
-        AssetManager::Get()->SaveShaderProgram(shaderFile, this);
-    }
 }
 
 ShaderProgram::~ShaderProgram()
 {
-    std::cout << "Deleted shader program: " << mShaderID << "\n";
+    std::cout << "Deleted shader program: \"" << mPath << "\" " << mShaderID << "\n";
 	glDeleteShader(mShaderID);
 }
 
@@ -37,6 +34,10 @@ GLenum ShaderProgram::LoadType(const std::string& shaderFile)
     else if (extension == ".geom")
     {
         type = GL_GEOMETRY_SHADER;
+    }
+    else if (extension == ".comp")
+    {
+        type = GL_COMPUTE_SHADER;
     }
 
     return type;
