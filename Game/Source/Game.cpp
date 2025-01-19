@@ -136,51 +136,31 @@ void Game::Shutdown()
 	mAssetManager->Shutdown();
 }
 
-void Game::LoadShaders()
+void Game::LoadShaders() const
 {
 	Shader* colorShader = new Shader("color", "Shaders/color.vert", "Shaders/color.frag");
-
 	Shader* phongShader = new Shader("phong", "Shaders/phong.vert", "Shaders/phong.frag");
-
 	Shader* skinnedShader = new Shader("skinned", "Shaders/Animation/skinned.vert", "Shaders/phong.frag");
-
 	Shader* textureShader = new Shader("texture", "Shaders/texture.vert", "Shaders/texture.frag");
-
 	Shader* instanceShader = new Shader("instance", "Shaders/instance.vert", "Shaders/phong.frag");
-
 	Shader* shadowDepthShader = new Shader("shadowDepth", "Shaders/Shadow/shadowDepth.vert", "Shaders/Shadow/shadowDepth.frag");
-
 	Shader* shadowDebugShader = new Shader("shadowDebug", "Shaders/screen.vert", "Shaders/Shadow/shadowDebug.frag");
-
 	Shader* pointShadowDepthShader = new Shader("pointShadowDepth", "Shaders/Shadow/pointShadowDepth.vert", "Shaders/Shadow/pointShadowDepth.frag", "Shaders/Shadow/pointShadowDepth.geom");
-
 	//Shader* invertedColorShader = new Shader("invertedColor", "Shaders/screen.vert", "Shaders/Postprocess/invertedColor.frag");
-
 	//Shader* grayScaleShader = new Shader("grayScale", "Shaders/screen.vert", "Shaders/Postprocess/grayScale.frag");
-
 	//Shader* sharpenKernelShader = new Shader("sharpenKernel", "Shaders/screen.vert", "Shaders/Postprocess/sharpenKernel.frag");
-
 	//Shader* blurKernelShader = new Shader("blurKernel", "Shaders/screen.vert", "Shaders/Postprocess/blurKernel.frag");
-
 	//Shader* edgeDetectKernelShader = new Shader("edgeDetectKernel", "Shaders/screen.vert", "Shaders/Postprocess/edgeDetectKernel.frag");
-
 	Shader* copyScreenShader = new Shader("copyScreen", "Shaders/screen.vert", "Shaders/copyScreen.frag");
-
 	Shader* bloomMaskShader = new Shader("bloomMask", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomMask.frag");
-
 	Shader* bloomBlurHorizontalShader = new Shader("bloomBlurHorizontal", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurHorizontal.frag");
-
 	Shader* bloomBlurVerticalShader = new Shader("bloomBlurVertical", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurVertical.frag");
-
 	Shader* bloomBlendShader = new Shader("bloomBlend", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlend.frag");
-
 	Shader* hdrGammaShader = new Shader("hdrGamma", "Shaders/screen.vert", "Shaders/hdrGamma.frag");
 	hdrGammaShader->SetActive();
 	hdrGammaShader->SetBool("hdr", hdr);
 	hdrGammaShader->SetFloat("exposure", 1.0f);
-
 	Shader* reflectiveShader = new Shader("reflection", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
-
 	Shader* refractiveShader = new Shader("refraction", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
 }
 

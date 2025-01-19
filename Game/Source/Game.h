@@ -32,7 +32,7 @@ public:
 	void Shutdown();
 
 	// Loads any shaders used for the game
-	void LoadShaders();
+	void LoadShaders() const;
 
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
 	void LoadGameData();
