@@ -1,5 +1,5 @@
-// Specify OpenGL 4.2 with core functionality
-#version 420 core
+// Specify OpenGL 4.5 with core functionality
+#version 450 core
 
 // Struct to define a different number of texture units
 // Add more samplers to this struct when needed
@@ -10,9 +10,6 @@ struct TextureSamplers
 	sampler2D emission1;
 	sampler2D normal1;
 };
-
-// Input variables from vertex shader call (same name and same type in vertex shader)
-in vec2 textureCoord;
 
 // Uniform buffer for materials
 layout (std140, binding = 2) uniform MaterialBuffer
@@ -27,6 +24,11 @@ layout (std140, binding = 2) uniform MaterialBuffer
 	bool hasNormalTexture;
 };
 
+// Fragmemt shader input
+in VS_OUT {
+	vec2 textureCoord;
+} vs_in;
+
 // Uniform for the 2D texture samplers
 uniform TextureSamplers textureSamplers;
 
@@ -35,5 +37,5 @@ out vec4 fragColor;
 
 void main()
 {
-	fragColor = texture(textureSamplers.diffuse1, textureCoord);
+	fragColor = texture(textureSamplers.diffuse1, vs_in.textureCoord);
 }
