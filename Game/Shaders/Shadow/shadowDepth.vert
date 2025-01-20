@@ -1,5 +1,5 @@
-// Specify OpenGL 4.2 with core functionality
-#version 420 core
+// Specify OpenGL 4.5 with core functionality
+#version 450 core
 
 // Maximum number of bones a model can have
 const int MAX_BONES = 100;

@@ -103,7 +103,7 @@ unsigned int ShaderProgram::CompileShader(const char* shaderCode, GLenum type) c
             typeString = "Geometry";
             break;
         }
-        std::cout << typeString << " shader compilation failed\n" << infoLog << "\n";
+        std::cout << typeString << " shader compilation failed: \"" << mPath << "\"\n" << infoLog << "\n";
     }
 
     return shader;

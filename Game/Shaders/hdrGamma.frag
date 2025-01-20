@@ -1,27 +1,27 @@
-// Specify OpenGL 4.2 with core functionality
-#version 420 core
+// Specify OpenGL 4.5 with core functionality
+#version 450 core
 
-// Vec2 input from vertex shader
-in vec2 textureCoord;
+// Fragment shader input
+in VS_OUT {
+    vec2 textureCoord;
+} fs_in;
 
 // Uniform sampler for the regular framebuffer image
 uniform sampler2D screenTexture;
 // Uniform sampler for the blur framebuffer image
 uniform sampler2D blurTexture;
-
-// Specify a vec4 output
-out vec4 fragColor;
-
 // Toggle hdr
 uniform bool hdr;
-
 // HDR exposure
 uniform float exposure;
+
+// Final fragment color
+out vec4 fragColor;
 
 void main()
 {
     // Normal offscreen texture
-    vec3 color = texture(screenTexture, textureCoord).rgb;
+    vec3 color = texture(screenTexture, fs_in.textureCoord).rgb;
 
     if(hdr)
     {

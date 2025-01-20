@@ -1,8 +1,11 @@
-#version 420 core
+#version 450 core
 
 out vec4 fragColor;
 
-in vec2 textureCoord;
+// Fragment shader input
+in VS_OUT {
+    vec2 textureCoord;
+} fs_in;
 
 uniform sampler2D depthMap;
 uniform float nearPlane;
@@ -17,7 +20,7 @@ float LinearizeDepth(float depth)
 
 void main()
 {             
-    float depthValue = texture(depthMap, textureCoord).r;
+    float depthValue = texture(depthMap, fs_in.textureCoord).r;
     //fragColor = vec4(vec3(LinearizeDepth(depthValue) / farPlane), 1.0); // perspective
     fragColor = vec4(vec3(depthValue), 1.0); // orthographic
 }

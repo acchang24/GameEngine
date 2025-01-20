@@ -1,5 +1,5 @@
 // Specify OpenGL 4.2 with core functionality
-#version 420 core
+#version 450 core
 
 void main()
 {

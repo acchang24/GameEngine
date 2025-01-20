@@ -1,17 +1,20 @@
-// Specify OpenGL 4.2 with core functionality
-#version 420 core
+// Specify OpenGL 4.5 with core functionality
+#version 450 core
 
-// Vec2 input from vertex shader
-in vec2 textureCoord;
+// Fragment shader input
+in VS_OUT {
+    vec2 textureCoord;
+} fs_in;
 
 // Uniform sampler
 uniform sampler2D screenTexture;
 
+// Pixels that are bright
 out vec4 brightColor;
 
 void main()
 {
-    vec3 color = texture(screenTexture, textureCoord).rgb;
+    vec3 color = texture(screenTexture, fs_in.textureCoord).rgb;
 
     // Texture for bright spots
     float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
