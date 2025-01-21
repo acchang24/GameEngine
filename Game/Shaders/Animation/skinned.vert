@@ -1,5 +1,5 @@
-// Specify OpenGL 4.2 with core functionality
-#version 420 core
+// Specify OpenGL 4.5 with core functionality
+#version 450 core
 
 // Maximum number of bones a model can have
 const int MAX_BONES = 100;
@@ -43,18 +43,20 @@ layout (std140, binding = 4) uniform ShadowBuffer
 // Model matrix uniform
 uniform mat4 model;
 
-// Specify a vec3 normal output to fragment shader
-out vec3 normal;
-// Specify a vec2 texture coordinates output to the fragment shader
-out vec2 textureCoord;
-// Specify vec3 for the fragment's position
-out vec3 fragPos;
-// Pass the CameraBuffer's viewPos to fragment shader
-out vec3 viewPosition;
-// fragment's position in light space
-out vec4 fragPosLightSpace;
-// Tangent, Bitangent, Normal matrix for normal mapping
-out mat3 TBN;
+out VS_OUT {
+	// Specify a vec3 normal output to fragment shader
+	vec3 normal;
+	// Specify a vec2 texture coordinates output to the fragment shader
+	vec2 textureCoord;
+	// Specify vec3 for the fragment's position
+	vec3 fragPos;
+	// Pass the CameraBuffer's viewPos to fragment shader
+	vec3 viewPosition;
+	// fragment's position in light space
+	vec4 fragPosLightSpace;
+	// Tangent, Bitangent, Normal matrix for normal mapping
+	mat3 TBN;
+} vs_out;
 
 void main()
 {
@@ -82,21 +84,21 @@ void main()
 
 	// Multiply the vertex's normal attribute with the inverse model matrix
     // to transform to world space coordinates
-    normal = mat3(transpose(inverse(model))) * totalNormal;
+    vs_out.normal = mat3(transpose(inverse(model))) * totalNormal;
 
 	// Set output variable color
-	textureCoord = uv;
+	vs_out.textureCoord = uv;
 
 	// Multiply the vertex's position attribute with the model matrix 
     // to transform to world space coordinates and use it for the fragment's position
-	fragPos = vec3(model * vec4(totalPosition.xyz, 1.0));
+	vs_out.fragPos = vec3(model * vec4(totalPosition.xyz, 1.0));
 
-	viewPosition = viewPos;
+	vs_out.viewPosition = viewPos;
 
-	fragPosLightSpace = lightSpace * vec4(fragPos, 1.0);
+	vs_out.fragPosLightSpace = lightSpace * vec4(vs_out.fragPos, 1.0);
 
 	vec3 T = normalize(vec3(model * vec4(tangent,   0.0)));
 	vec3 B = normalize(vec3(model * vec4(bitangent, 0.0)));
 	vec3 N = normalize(vec3(model * vec4(inNormal,    0.0)));
-	TBN = mat3(T, B, N);
+	vs_out.TBN = mat3(T, B, N);
 }

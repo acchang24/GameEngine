@@ -1,5 +1,5 @@
-// Specify OpenGL 4.2 with core functionality
-#version 420 core
+// Specify OpenGL 4.5 with core functionality
+#version 450 core
 
 #define MAX_LIGHTS 10
 #define MAX_DIR_LIGHTS 1
@@ -56,13 +56,22 @@ struct SpotLight
     float quadratic;
 };
 
-// Input variables from vertex shader call (same name and same type in vertex shader)
-in vec3 normal;
-in vec2 textureCoord;
-in vec3 fragPos;
-in vec3 viewPosition;
-in vec4 fragPosLightSpace;
-in mat3 TBN;
+in VS_OUT {
+	vec3 normal;
+	vec2 textureCoord;
+	vec3 fragPos;
+	vec3 viewPosition;
+	vec4 fragPosLightSpace;
+	mat3 TBN;
+} fs_in;
+
+//// Input variables from vertex shader call (same name and same type in vertex shader)
+//in vec3 normal;
+//in vec2 textureCoord;
+//in vec3 fragPos;
+//in vec3 viewPosition;
+//in vec4 fragPosLightSpace;
+//in mat3 TBN;
 
 // Uniform buffer for lights
 layout (std140, binding = 1) uniform LightBuffer
@@ -135,21 +144,21 @@ void main()
 	vec3 lightResult = vec3(0.0, 0.0, 0.0);
 	
 	// Re-normalize the normal for dot product
-	vec3 norm = normalize(normal);
+	vec3 norm = normalize(fs_in.normal);
 
 	// Use normal map normals
 	if(hasNormalTexture)
 	{
 		// Sample the normal in tangent space
-		norm = texture(textureSamplers.normal1, textureCoord).rgb;
+		norm = texture(textureSamplers.normal1, fs_in.textureCoord).rgb;
 		// map to [0, 1]
 		norm = (norm * 2.0 - 1.0);
 		// transform the normal with TBN matrix and normalize to get new normal vector
-		norm = normalize(TBN * norm);
+		norm = normalize(fs_in.TBN * norm);
 	}
 
 	// Get the view direction from the fragment's position to the view(camera) position
-	vec3 viewDir = normalize(viewPosition - fragPos);
+	vec3 viewDir = normalize(fs_in.viewPosition - fs_in.fragPos);
 
 	// Calculate directional light
 	for(int i = 0; i < MAX_DIR_LIGHTS; ++i)
@@ -165,18 +174,18 @@ void main()
 		// Calculate lighting from point lights
 		if(pointLights[i].data.isEnabled)
 		{
-			lightResult += CalculatePointLight(pointLights[i], norm, viewDir, fragPos);
+			lightResult += CalculatePointLight(pointLights[i], norm, viewDir, fs_in.fragPos);
 		}
 		// Calculate lighting from spot lights
 		if(spotlights[i].data.isEnabled)
 		{
-			lightResult += CalculateSpotLight(spotlights[i], norm, viewDir, fragPos);
+			lightResult += CalculateSpotLight(spotlights[i], norm, viewDir, fs_in.fragPos);
 		}
 	}
 
 	if(hasEmissionTexture)
 	{
-		vec3 emission = texture(textureSamplers.emission1, textureCoord).rgb;
+		vec3 emission = texture(textureSamplers.emission1, fs_in.textureCoord).rgb;
 		lightResult += emission;
 	}
 
@@ -186,7 +195,7 @@ void main()
     if(hasDiffuseTexture)
     {
 		// Sampler colors of a texture with texture function, passing in sampler and coordinates
-        vec4 textureColor = texture(textureSamplers.diffuse1, textureCoord);
+        vec4 textureColor = texture(textureSamplers.diffuse1, fs_in.textureCoord);
 
 		if(textureColor.a < 0.1) 
 		{
@@ -249,7 +258,7 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 	if(hasSpecularTexture)
 	{
 		// Sampler colors of a specular map, passing in sampler and coordinates
-		specularLight *= texture(textureSamplers.specular1, textureCoord).xyz;
+		specularLight *= texture(textureSamplers.specular1, fs_in.textureCoord).xyz;
 	}
 
 	// Combine three lights to get phong lighting
@@ -258,7 +267,7 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 	// Apply shadows for this light
 	if(light.usesShadow)
 	{
-		float shadow = ShadowCalculation(fragPosLightSpace, lightDir, normal);                      
+		float shadow = ShadowCalculation(fs_in.fragPosLightSpace, lightDir, normal);                      
 		vec3 lighting = (ambientLight + (1.0 - shadow) * (diffuseLight + specularLight));
 		return lighting;
 	}
