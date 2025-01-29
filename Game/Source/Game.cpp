@@ -93,13 +93,11 @@ bool Game::Init()
 	mShadowMap = new ShadowMap();
 
 	// Create frame buffers
-	int width = mRenderer->GetWidth();
-	int height = mRenderer->GetHeight();
-	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples());
-	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.5f);
-	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
-	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width, height, 0.25f);
-	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height);
+	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(mRenderer->GetNumSubsamples());
+	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(0.5f);
+	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(0.25f);
+	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(0.25f);
+	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer();
 
 	PROFILE_SCOPE(LOAD_DATA);
 

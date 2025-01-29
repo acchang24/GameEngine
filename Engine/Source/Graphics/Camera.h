@@ -79,10 +79,6 @@ public:
 
 	void Update(float deltaTime, double mouseX, double mouseY);
 
-	double mYaw;
-	double mPitch;
-	double mRoll;
-
 private:
 	// Camera's constants
 	CameraConsts mCamConsts;
@@ -110,6 +106,15 @@ private:
 
 	// Camera's current mode
 	CameraMode mMode;
+
+	// Camera yaw
+	double mYaw;
+
+	// Camera pitch
+	double mPitch;
+
+	// Camera roll
+	double mRoll;
 
 	// Camera's field of view angle
 	float mFOV;

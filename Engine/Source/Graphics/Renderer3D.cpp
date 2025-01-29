@@ -289,18 +289,18 @@ void Renderer3D::EndFrame()
 	return nullptr;
 }
 
-/* STATIC */ FrameBuffer* Renderer3D::CreateFrameBuffer(int screenWidth, int screenHeight, float size)
+/* STATIC */ FrameBuffer* Renderer3D::CreateFrameBuffer(float size)
 {
-	FrameBuffer* framebuffer = new FrameBuffer(screenWidth, screenHeight, size);
+	FrameBuffer* framebuffer = new FrameBuffer(s_WindowWidth, s_WindowHeight, size);
 
 	Get()->mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
 
-/* STATIC */ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int screenWidth, int screenHeight, int subsamples, float size)
+/* STATIC */ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int subsamples, float size)
 {
-	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(screenWidth, screenHeight, subsamples, size);
+	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(s_WindowWidth, s_WindowHeight, subsamples, size);
 
 	Get()->mFrameBuffers.emplace_back(framebuffer);
 
