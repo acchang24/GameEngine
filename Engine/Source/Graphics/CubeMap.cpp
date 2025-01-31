@@ -55,7 +55,7 @@ CubeMap::~CubeMap()
 	glDeleteTextures(1, &mTextureID);
 }
 
-void CubeMap::SetActive(Shader* s)
+void CubeMap::SetActive(Shader* s) const
 {
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	s->SetInt("cubeMap", mTextureUnit);

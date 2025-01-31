@@ -19,7 +19,7 @@ public:
 	// Activates the texture unit used for cube maps, then locates
 	// the appropriate sampler in the shader and binds the cube map's texture.
 	// @param - Shader* to locate the shader's sampler
-	void SetActive(Shader* s);
+	void SetActive(Shader* s) const;
 
 	// Gets the texture id
 	// @return - unsigned int for the texture's id
@@ -29,6 +29,6 @@ private:
 	// Texture ID used for reference
 	unsigned int mTextureID;
 
-	// Int used for texture unit, this is initialized to 12 in the initializer list
+	// Int used for texture unit, this is initialized to TextureType::CubeMap
 	int mTextureUnit;
 };
