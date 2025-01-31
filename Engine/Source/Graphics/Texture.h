@@ -1,20 +1,14 @@
 #pragma once
 #include <string>
 
-// Enum class for the different types of textures
+// Enum class for texture types and its corresponding texture unit
 enum class TextureType
 {
-	Diffuse, // Color texture
-	Specular, // Specular maps
-	Emission, // Emission maps
-	Normal, // Normal maps
-	None,
-};
-
-// Enum class for texture units
-enum class TextureUnit
-{
-	Default = 0, // Default texture unit, no texture should be applied to this unit
+	None = 0, // Default to 0
+	Diffuse = 1, // Texture unit 1 for diffuse color textures
+	Specular = 2, // Texture unit 2 for specular map textures
+	Emission = 3, // Texture unit 3 for emission map textures
+	Normal = 4, // Texture unit 4 for normal map textures
 	FrameBuffer = 11, // Texture unit 11 is used to sample a texture created from a frame buffer
 	CubeMap = 12, // Texture unit 12 is used to sample from a cube map
 	Shadow = 13, // Texture unit 13 is used to sample from a directional shadow/depth map

@@ -21,7 +21,7 @@ ShadowMap::ShadowMap() :
 	mShadowBuffer(Renderer3D::CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0),
-	mTextureUnit(static_cast<int>(TextureUnit::Shadow))
+	mTextureUnit(static_cast<int>(TextureType::Shadow))
 {
 	// Create a framebuffer object
 	glGenFramebuffers(1, &mShadowMapFrameBuffer);

@@ -827,7 +827,7 @@ void Game::Render()
 	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
 	// Use the multisampled texture and the blurred texture to additively blend them
 	mBloomBlendFrameBuffer->SetActive();
-	mRenderer->CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureUnit::FrameBuffer));
+	mRenderer->CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureType::FrameBuffer));
 	mBloomBlendFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Draw the final image
 	mRenderer->SetDefaultFrameBuffer();

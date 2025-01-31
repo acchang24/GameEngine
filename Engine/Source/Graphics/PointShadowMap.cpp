@@ -16,7 +16,7 @@ PointShadowMap::PointShadowMap() :
 	mPointShadowBuffer(new UniformBuffer(sizeof(PointShadowMapConsts), BufferBindingPoint::PointShadow, "PointShadowBuffer")),
 	mPointShadowMapFrameBuffer(0),
 	mPointShadowMap(0),
-	mTextureUnit(static_cast<int>(TextureUnit::PointShadow))
+	mTextureUnit(static_cast<int>(TextureType::PointShadow))
 {
 	glGenTextures(1, &mPointShadowMap);
 

@@ -13,7 +13,7 @@ FrameBuffer::FrameBuffer(int windowWidth, int windowHeight, float size) :
 	mFrameBuffer(0),
 	mTexture(0),
 	mRenderBuffer(0),
-	mTextureUnit(static_cast<int>(TextureUnit::FrameBuffer)),
+	mTextureUnit(static_cast<int>(TextureType::FrameBuffer)),
 	mWidth(windowWidth * size),
 	mHeight(windowHeight * size),
 	mSize(size)

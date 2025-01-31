@@ -71,7 +71,7 @@ Skybox::Skybox(const std::vector<std::string>& faceNames) :
         mShader = am->LoadShader("skybox");
     }
 
-    mShader->SetInt("cubeMap", static_cast<int>(TextureUnit::CubeMap));
+    mShader->SetInt("cubeMap", static_cast<int>(TextureType::CubeMap));
 }
 
 Skybox::~Skybox()

@@ -7,7 +7,7 @@
 
 CubeMap::CubeMap(const std::vector<std::string>& textureFaces) :
 	mTextureID(0),
-	mTextureUnit(static_cast<int>(TextureUnit::CubeMap))
+	mTextureUnit(static_cast<int>(TextureType::CubeMap))
 {
 	// Generate textures and save that id
 	glGenTextures(1, &mTextureID);
