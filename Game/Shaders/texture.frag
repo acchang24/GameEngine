@@ -5,10 +5,10 @@
 // Add more samplers to this struct when needed
 struct TextureSamplers
 {
-    sampler2D diffuse1;
-    sampler2D specular1;
-	sampler2D emission1;
-	sampler2D normal1;
+    sampler2D diffuse;
+    sampler2D specular;
+	sampler2D emission;
+	sampler2D normal;
 };
 
 // Uniform buffer for materials
@@ -37,5 +37,5 @@ out vec4 fragColor;
 
 void main()
 {
-	fragColor = texture(textureSamplers.diffuse1, vs_in.textureCoord);
+	fragColor = texture(textureSamplers.diffuse, vs_in.textureCoord);
 }

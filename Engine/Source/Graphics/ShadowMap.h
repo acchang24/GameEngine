@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <string>
 
 // Struct for shadow map data to be sent to the shaders
 struct ShadowMapConsts
@@ -39,7 +40,8 @@ public:
 
 	// Activates the texture unit to match the shadow map and binds the depth map as the texture within a shader
 	// @param - Shader* to activate
-	void BindShadowMapToShader(Shader* s) const;
+	// @param - const std::string& for the uniform name
+	void BindShadowMapToShader(Shader* s, const std::string& uniformName) const;
 
 	// Gets the frame buffer's shader
 	// @return - Shader* for the frame buffer's shader
@@ -48,8 +50,6 @@ public:
 	// Sets the frame buffer's shader
 	// @param - Shader* for the new shader
 	void SetShader(Shader* s) { mShader = s; }
-
-	UniformBuffer* GetShadowBuffer() { return mShadowBuffer; }
 
 private:
 	// Shadow constants

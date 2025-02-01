@@ -103,10 +103,10 @@ void ShadowMap::End(int width, int height) const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void ShadowMap::BindShadowMapToShader(Shader* s) const
+void ShadowMap::BindShadowMapToShader(Shader* s, const std::string& uniformName) const
 {
 	s->SetActive();
-	s->SetInt("textureSamplers.shadow1", mTextureUnit);
+	s->SetInt(uniformName, mTextureUnit);
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, mShadowMap);
 }

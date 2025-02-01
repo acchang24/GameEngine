@@ -54,15 +54,15 @@ public:
 	static UniformBuffer* GetUniformBuffer(const std::string& bufferName);
 
 	// Creates a frame buffer for the renderer to use
-	// @param - float for the frame buffer's size 
+	// @param - float for the frame buffer's scale relative to the window/screen size 
 	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	static FrameBuffer* CreateFrameBuffer(float size = 1.0f);
+	static FrameBuffer* CreateFrameBuffer(float scale = 1.0f);
 
 	// Creates a multisampled frame buffer for the renderer to use
 	// @param - int for the number of subsamples used for anti-aliasing
-	// @param - float for the frame buffer's size 
+	// @param - float for the frame buffer's scale relative to the window/screen size 
 	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	static FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int subsamples, float size = 1.0f);
+	static FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int subsamples, float scale = 1.0f);
 
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active

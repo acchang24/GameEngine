@@ -8,11 +8,11 @@
 // Add more samplers to this struct when needed
 struct TextureSamplers
 {
-    sampler2D diffuse1;
-    sampler2D specular1;
-	sampler2D emission1;
-	sampler2D normal1;
-	sampler2D shadow1;
+    sampler2D diffuse;
+    sampler2D specular;
+	sampler2D emission;
+	sampler2D normal;
+	sampler2D shadow;
 };
 
 // Struct to define light data
@@ -104,7 +104,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(textureSamplers.shadow1, projCoords.xy).r; 
+    float closestDepth = texture(textureSamplers.shadow, projCoords.xy).r; 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
 
@@ -113,12 +113,12 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
     // PCF
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(textureSamplers.shadow1, 0);
+    vec2 texelSize = 1.0 / textureSize(textureSamplers.shadow, 0);
     for(int x = -1; x <= 1; ++x)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(textureSamplers.shadow1, projCoords.xy + vec2(x, y) * texelSize).r; 
+            float pcfDepth = texture(textureSamplers.shadow, projCoords.xy + vec2(x, y) * texelSize).r; 
             shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
         }    
     }
@@ -142,7 +142,7 @@ void main()
 	if(hasNormalTexture)
 	{
 		// Sample the normal in tangent space
-		norm = texture(textureSamplers.normal1, fs_in.textureCoord).rgb;
+		norm = texture(textureSamplers.normal, fs_in.textureCoord).rgb;
 		// map to [0, 1]
 		norm = (norm * 2.0 - 1.0);
 		// transform the normal with TBN matrix and normalize to get new normal vector
@@ -177,7 +177,7 @@ void main()
 
 	if(hasEmissionTexture)
 	{
-		vec3 emission = texture(textureSamplers.emission1, fs_in.textureCoord).rgb;
+		vec3 emission = texture(textureSamplers.emission, fs_in.textureCoord).rgb;
 		lightResult += emission;
 	}
 
@@ -187,7 +187,7 @@ void main()
     if(hasDiffuseTexture)
     {
 		// Sampler colors of a texture with texture function, passing in sampler and coordinates
-        vec4 textureColor = texture(textureSamplers.diffuse1, fs_in.textureCoord);
+        vec4 textureColor = texture(textureSamplers.diffuse, fs_in.textureCoord);
 
 		if(textureColor.a < 0.1) 
 		{
@@ -250,7 +250,7 @@ vec3 CalculatePhongLighting(LightData light, vec3 lightDir, vec3 normal, vec3 vi
 	if(hasSpecularTexture)
 	{
 		// Sampler colors of a specular map, passing in sampler and coordinates
-		specularLight *= texture(textureSamplers.specular1, fs_in.textureCoord).xyz;
+		specularLight *= texture(textureSamplers.specular, fs_in.textureCoord).xyz;
 	}
 
 	// Combine three lights to get phong lighting

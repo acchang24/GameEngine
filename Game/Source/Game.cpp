@@ -803,8 +803,8 @@ void Game::Render()
 
 		// End shadow render pass
 		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight());
-		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("phong"));
-		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("skinned"));
+		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("phong"), "textureSamplers.shadow");
+		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("skinned"), "textureSamplers.shadow");
 	}
 
 	// Draw to main multisampled frame buffer

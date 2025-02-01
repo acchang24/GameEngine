@@ -32,12 +32,6 @@ void Material::SetActive()
  
     mMaterialBuffer->UpdateBufferData(&mMats);
 
-    unsigned int diffuseNum = 1;
-    unsigned int specularNum = 1;
-    unsigned int emissionNum = 1;
-    unsigned int normalNum = 1;
-
-    std::string number;
     std::string name;
 
     for (size_t i = 0; i < mTextures.size(); ++i)
@@ -46,29 +40,21 @@ void Material::SetActive()
         {
         case TextureType::Diffuse:
             name = "diffuse";
-            number = std::to_string(diffuseNum);
-            ++diffuseNum;
             break;
         case TextureType::Specular:
             name = "specular";
-            number = std::to_string(specularNum);
-            ++specularNum;
             break;
         case TextureType::Emission:
             name = "emission";
-            number = std::to_string(emissionNum);
-            ++emissionNum;
             break;
         case TextureType::Normal:
             name = "normal";
-            number = std::to_string(normalNum);
-            ++normalNum;
             break;
         };
 
         // Activate proper texture unit before binding
         glActiveTexture(GL_TEXTURE0 + i + 1);
-        mShader->SetInt(("textureSamplers." + name + number), i + 1);
+        mShader->SetInt(("textureSamplers." + name), i + 1);
         mTextures[i]->BindTexture();
     }
     glActiveTexture(GL_TEXTURE0);
