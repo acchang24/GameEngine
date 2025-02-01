@@ -65,14 +65,6 @@ in VS_OUT {
 	mat3 TBN;
 } fs_in;
 
-//// Input variables from vertex shader call (same name and same type in vertex shader)
-//in vec3 normal;
-//in vec2 textureCoord;
-//in vec3 fragPos;
-//in vec3 viewPosition;
-//in vec4 fragPosLightSpace;
-//in mat3 TBN;
-
 // Uniform buffer for lights
 layout (std140, binding = 1) uniform LightBuffer
 {
