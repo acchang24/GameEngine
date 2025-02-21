@@ -20,7 +20,6 @@ static bool s_Resized = false;
 Renderer3D* Renderer3D::Get()
 {
 	static Renderer3D s_Renderer3D;
-
 	return &s_Renderer3D;
 }
 
@@ -33,19 +32,19 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mIsFullScreen = fullscreen;
 	mWindowTitle = title;
 
-	if (InitSDL() == false)
+	if (!InitSDL())
 	{
 		return false;
 	}
 
 	LoadOpenGL();
 
-	if (CreateWindow() == false)
+	if (!CreateWindow())
 	{
 		return false;
 	}
 
-	if (CreateContext() == false)
+	if (!CreateContext())
 	{
 		return false;
 	}
@@ -60,7 +59,8 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	SetOpenGLCapabilities();
 
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
-	VertexScreenQuad quadVertices[] = {
+	VertexScreenQuad quadVertices[] = 
+	{
 		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
 		glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f),
 		glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f),
@@ -72,7 +72,6 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
 	CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
-
 	CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 
 	return true;
@@ -101,138 +100,6 @@ void Renderer3D::Shutdown()
 	mFrameBuffers.clear();
 
 	delete mVertexBuffer;
-}
-
-bool Renderer3D::InitSDL() const
-{
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
-	{
-		std::cout << "Could not initialize SDL: " << SDL_GetError() << "\n";
-		return false;
-	}
-
-	return true;
-}
-
-void Renderer3D::LoadOpenGL() const
-{
-	SDL_GL_LoadLibrary(NULL);
-
-	// Use core OpenGL profile
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	// Tell OpenGL to use hardware acceleration
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-	// Specify OpenGL 4.5 context
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-	// Enable double buffering
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	// Request a color buffer with 8 bits per RGBA channel
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	// Request a depth buffer with 24 bits
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	// Multisampling
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, mNumSubsamples);
-}
-
-bool Renderer3D::CreateWindow()
-{
-	if (mIsFullScreen)
-	{
-		SDL_DisplayMode dm{};
-		SDL_GetDesktopDisplayMode(0, &dm);
-		s_WindowWidth = dm.w;
-		s_WindowHeight = dm.h;
-
-		mWindow = SDL_CreateWindow(
-			mWindowTitle,
-			SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED,
-			s_WindowWidth,
-			s_WindowHeight,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP
-		);
-	}
-	else
-	{
-		mWindow = SDL_CreateWindow(
-			mWindowTitle,
-			SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED,
-			s_WindowWidth,
-			s_WindowHeight,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-		);
-	}
-
-	if (!mWindow)
-	{
-		std::cout << "Failed to create a window " << SDL_GetError() << "\n";
-		return false;
-	}
-
-	return true;
-}
-
-bool Renderer3D::CreateContext()
-{
-	mContext = SDL_GL_CreateContext(mWindow);
-
-	if (mContext == NULL)
-	{
-		std::cout << "Failed to create an OpenGL context " << SDL_GetError() << "\n";
-		return false;
-	}
-
-	return true;
-}
-
-void Renderer3D::LoadGLAD() const
-{
-	gladLoadGLLoader(SDL_GL_GetProcAddress);
-
-	std::cout << "OpenGL loaded\n";
-	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
-	std::cout << "Graphics: " << glGetString(GL_RENDERER) << "\n";
-	std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
-}
-
-void Renderer3D::LoadSdlSettings(SDL_bool mouseCaptured) const
-{
-	// Enable v-sync by
-	SDL_GL_SetSwapInterval(mVSync);
-
-	// Capture the mouse
-	SDL_SetRelativeMouseMode(mouseCaptured);
-	// Clear any saved values
-	SDL_GetRelativeMouseState(nullptr, nullptr);
-
-	// Callback function for when window is resized
-	SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
-}
-
-void Renderer3D::SetOpenGLCapabilities() const
-{
-	// Enable z-buffering (depth testing)
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
-	// Enable face culling
-	glEnable(GL_CULL_FACE);
-
-	// Enable anti-aliasing
-	glEnable(GL_MULTISAMPLE);
-
-	// Enable blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Set viewport using the window width and height
-	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 }
 
 void Renderer3D::ClearBuffers()
@@ -371,11 +238,6 @@ void Renderer3D::ResizeFrameBuffers()
 	s_Resized = false;
 }
 
-void Renderer3D::LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader)
-{
-	buffer->LinkShader(shader);
-}
-
 Renderer3D::Renderer3D() :
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
@@ -390,4 +252,125 @@ Renderer3D::Renderer3D() :
 Renderer3D::~Renderer3D()
 {
 	std::cout << "Deleted Renderer3D\n";
+}
+
+bool Renderer3D::InitSDL() const
+{
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+	{
+		std::cout << "Could not initialize SDL: " << SDL_GetError() << "\n";
+		return false;
+	}
+	return true;
+}
+
+void Renderer3D::LoadOpenGL() const
+{
+	SDL_GL_LoadLibrary(NULL);
+
+	// Use core OpenGL profile
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	// Tell OpenGL to use hardware acceleration
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	// Specify OpenGL 4.5 context
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	// Enable double buffering
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	// Request a color buffer with 8 bits per RGBA channel
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	// Request a depth buffer with 24 bits
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	// Enable multisampling
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, mNumSubsamples);
+}
+
+bool Renderer3D::CreateWindow()
+{
+	if (mIsFullScreen)
+	{
+		SDL_DisplayMode dm{};
+		SDL_GetDesktopDisplayMode(0, &dm);
+		s_WindowWidth = dm.w;
+		s_WindowHeight = dm.h;
+
+		mWindow = SDL_CreateWindow(
+			mWindowTitle,
+			SDL_WINDOWPOS_UNDEFINED,
+			SDL_WINDOWPOS_UNDEFINED,
+			s_WindowWidth,
+			s_WindowHeight,
+			SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP
+		);
+	}
+	else
+	{
+		mWindow = SDL_CreateWindow(
+			mWindowTitle,
+			SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED,
+			s_WindowWidth,
+			s_WindowHeight,
+			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+		);
+	}
+	if (!mWindow)
+	{
+		std::cout << "Failed to create a window " << SDL_GetError() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool Renderer3D::CreateContext()
+{
+	mContext = SDL_GL_CreateContext(mWindow);
+	if (mContext == NULL)
+	{
+		std::cout << "Failed to create an OpenGL context " << SDL_GetError() << "\n";
+		return false;
+	}
+	return true;
+}
+
+void Renderer3D::LoadGLAD() const
+{
+	gladLoadGLLoader(SDL_GL_GetProcAddress);
+
+	std::cout << "OpenGL loaded\n";
+	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+	std::cout << "Graphics: " << glGetString(GL_RENDERER) << "\n";
+	std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
+}
+
+void Renderer3D::LoadSdlSettings(SDL_bool mouseCaptured) const
+{
+	// Enable v-sync by
+	SDL_GL_SetSwapInterval(mVSync);
+	// Capture the mouse
+	SDL_SetRelativeMouseMode(mouseCaptured);
+	// Clear any saved values
+	SDL_GetRelativeMouseState(nullptr, nullptr);
+	// Callback function for when window is resized
+	SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
+}
+
+void Renderer3D::SetOpenGLCapabilities() const
+{
+	// Enable z-buffering (depth testing)
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	// Enable face culling
+	glEnable(GL_CULL_FACE);
+	// Enable anti-aliasing
+	glEnable(GL_MULTISAMPLE);
+	// Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// Set viewport using the window width and height
+	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 }

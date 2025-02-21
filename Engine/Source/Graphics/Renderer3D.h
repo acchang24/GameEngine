@@ -18,7 +18,7 @@ public:
 	static Renderer3D* Get();
 
 	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
-	// Enable any OpenGL functionality at the end
+	// Enables any OpenGL functionality at the end
 	// @param - int for the window width
 	// @param - int for the window height
 	// @param - int for the number of subsamples used for anti-aliasing
@@ -26,9 +26,10 @@ public:
 	// @param - bool for if the screen is full screen
 	// @param - SDL_bool for if the mouse is captured by the window
 	// @param - const char* for the game window title
+	// @return - true if the renderer was successfully initialized, false if not
 	bool Init(int width, int height, int subsamples, int vsync, bool fullscreen, SDL_bool mouseCaptured, const char* title);
 
-	// De-allocates any resources from SDL
+	// De-allocates any resources from SDL, and deletes any uniform buffers and frame bufers
 	void Shutdown();
 
 	// Checks for window resize. If true, then resize all the frame buffers.
@@ -45,7 +46,7 @@ public:
 	// @param - size_t for the buffer's size, or the amount of memory to allocate to the buffer
 	// @param - BufferBindingPoint for the buffer's binding point
 	// @param - const char* for the buffer's name
-	// @return - UniformBuffer* for the newly created buffer
+	// @return - UniformBuffer* for the newly created buffer object
 	static UniformBuffer* CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName);
 
 	// Retrieves a uniform buffer from the renderer's uniform buffer map by name
@@ -87,11 +88,6 @@ public:
 	// Resizes all the frame buffers to the new dimensions
 	void ResizeFrameBuffers();
 
-	// Link shader's uniform block to a uniform's binding point
-	// @param - UniformBuffer* for the uniform buffer
-	// @param - Shader* to link the buffer
-	void LinkShaderToUniformBlock(UniformBuffer* buffer, Shader* shader);
-
 	// Gets the vertex buffer to draw a screen quad
 	// @return - VertexBuffer* for the vertex buffer
 	VertexBuffer* GetVertexBuffer() { return mVertexBuffer; }
@@ -110,16 +106,18 @@ private:
 	~Renderer3D();
 
 	// Inititialize SDL for video and audio, and check if successful
-	// @return - bool for if SDL was loaded successfully
+	// @return - true if SDL was loaded successfully
 	bool InitSDL() const;
 
 	// Load default OpenGL library, and sets any OpenGL attributes
 	void LoadOpenGL() const;
 
 	// Creates a window based on if the user wants fullscreen or windowed
+	// @return - true if the window was successfully created
 	bool CreateWindow();
 
 	// Creates the OpenGL context using a window
+	// @return - true if the OpenGL context was successfully created
 	bool CreateContext();
 
 	// Obtain API function pointers for OpenGL/Initialize GLAD

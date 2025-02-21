@@ -80,7 +80,7 @@ bool Game::Init()
 
 	mJobManager->Begin();
 
-	if (false == mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, mMouseCaptured, "Game"))
+	if (!mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, mMouseCaptured, "Game"))
 	{
 		return false;
 	}
