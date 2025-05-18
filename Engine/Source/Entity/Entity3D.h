@@ -155,7 +155,7 @@ protected:
 		UpdateModelMatrixJob(Entity3D* e) : mEntity(e)
 		{}
 		// Override Job::DoIt() to update this entity's model matrix
-		void DoIt() override;
+		void DoJob() override;
 
 	private:
 		Entity3D* mEntity;

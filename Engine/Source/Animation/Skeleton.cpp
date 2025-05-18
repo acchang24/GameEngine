@@ -130,7 +130,7 @@ void Skeleton::CalculateBoneTransform(const AnimNode* node, const glm::mat4& par
 	}
 }
 
-void Skeleton::UpdateBoneJob::DoIt()
+void Skeleton::UpdateBoneJob::DoJob()
 {
 	mSkeleton->CalculateBoneTransform(&mSkeleton->GetCurrentAnimation()->GetRootNode(), mSkeleton->GetCurrentAnimation()->GetGlobalInverseTransform());
 }

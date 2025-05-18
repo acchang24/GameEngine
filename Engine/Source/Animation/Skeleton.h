@@ -97,7 +97,7 @@ private:
 		UpdateBoneJob(Skeleton* s) : mSkeleton(s)
 		{}
 
-		void DoIt() override;
+		void DoJob() override;
 
 	private:
 		Skeleton* mSkeleton;

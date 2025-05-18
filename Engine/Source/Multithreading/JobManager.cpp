@@ -18,53 +18,14 @@ static std::mutex* GetMutex()
 	return &s_JobQueueMutex;
 }
 
-void JobManager::Begin()
-{
-	for (int i = 0; i < NUM_WORKER; ++i)
-	{
-		mWorkers[i].Begin();
-	}
-}
 
-void JobManager::End()
-{
-	s_Shutdown = true;
-	for (int i = 0; i < NUM_WORKER; ++i)
-	{
-		mWorkers[i].End();
-	}
-}
-
-void JobManager::AddJob(Job* job)
-{
-	GetMutex()->lock();
-	s_JobQ.push(job);
-	++s_JobCount;
-	GetMutex()->unlock();
-}
-
-void JobManager::WaitForJobs()
-{
-	while (s_JobCount > 0)
-	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-	}
-}
-
-JobManager* JobManager::Get()
-{
-	static JobManager s_JobManager;
-
-	return &s_JobManager;
-}
-
-JobManager::JobManager()
+JobManager::Worker::Worker() :
+	mThread(nullptr)
 {
 }
 
-JobManager::~JobManager()
+JobManager::Worker::~Worker()
 {
-	std::cout << "Delete job manager" << std::endl;
 }
 
 void JobManager::Worker::Begin()
@@ -94,8 +55,60 @@ void JobManager::Worker::Loop()
 			Job* job = s_JobQ.front();
 			s_JobQ.pop();
 			GetMutex()->unlock();
-			job->DoIt();
+			job->DoJob();
 			--s_JobCount;
 		}
 	}
+}
+
+
+void JobManager::Begin()
+{
+	for (unsigned int i = 0; i < mNumThreads; ++i)
+	{
+		mWorkers[i].Begin();
+	}
+}
+
+void JobManager::End()
+{
+	s_Shutdown = true;
+	for (unsigned int i = 0; i < mNumThreads; ++i)
+	{
+		mWorkers[i].End();
+	}
+}
+
+void JobManager::AddJob(Job* job)
+{
+	GetMutex()->lock();
+	s_JobQ.push(job);
+	++s_JobCount;
+	GetMutex()->unlock();
+}
+
+void JobManager::WaitForJobs()
+{
+	while (s_JobCount > 0)
+	{
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+	}
+}
+
+JobManager* JobManager::Get()
+{
+	static JobManager s_JobManager;
+
+	return &s_JobManager;
+}
+
+JobManager::JobManager() :
+	mNumThreads(std::thread::hardware_concurrency() / 2),
+	mWorkers(new Worker[mNumThreads])
+{
+}
+
+JobManager::~JobManager()
+{
+	std::cout << "Delete job manager" << std::endl;
 }

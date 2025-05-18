@@ -1,11 +1,6 @@
 #pragma once
 #include <thread>
 
-enum 
-{ 
-	NUM_WORKER = 4 
-};
-
 // JobManager is a job multithread system that helps
 // queue jobs on different threads. A job manager has 
 // an array of workers that has its own thread. Each 
@@ -19,7 +14,7 @@ public:
 	{
 	public:
 		// Abstract function to do a job
-		virtual void DoIt() = 0;
+		virtual void DoJob() = 0;
 	private:
 	};
 
@@ -28,6 +23,9 @@ public:
 	class Worker
 	{
 	public:
+		Worker();
+		~Worker();
+
 		// Create a new thread that runs Worker::Loop()
 		void Begin();
 		// Joins the thread and deletes the thread
@@ -67,6 +65,9 @@ private:
 	JobManager();
 	~JobManager();
 
+	// Number of threads/workers available to use
+	unsigned int mNumThreads;
+
 	// Array of workers
-	Worker mWorkers[NUM_WORKER];
+	Worker* mWorkers;
 };
