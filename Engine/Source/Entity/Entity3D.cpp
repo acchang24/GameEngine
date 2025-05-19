@@ -115,9 +115,9 @@ void Entity3D::OnProcessInput(const Uint8* keyState)
 void Entity3D::OnUpdate(float deltaTime)
 {
 	// Update model matrix on seprate thread		
-	//JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
+	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
 	
-	CalculateWorldTransform();
+	//CalculateWorldTransform();
 }
 
 void Entity3D::OnDraw()

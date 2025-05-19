@@ -1,73 +1,68 @@
 #pragma once
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <queue>
 #include <thread>
+#include <vector>
 
-// JobManager is a job multithread system that helps
-// queue jobs on different threads. A job manager has 
-// an array of workers that has its own thread. Each 
-// worker can then check a queue of jobs that can be
-// performed on its respective threads. 
 class JobManager
 {
 public:
-	// Job to describe something for a thread to do
-	class Job
+    class Job
 	{
 	public:
 		// Abstract function to do a job
 		virtual void DoJob() = 0;
+        virtual ~Job() = default;
 	private:
 	};
 
-	// Worker class describes different threads that can 
-	// be used to do a certain job
-	class Worker
-	{
-	public:
-		Worker();
-		~Worker();
+    // Get the instance of the job manager
+    static JobManager* Get();
 
-		// Create a new thread that runs Worker::Loop()
-		void Begin();
-		// Joins the thread and deletes the thread
-		void End();
-		// The worker's thread will loop and check to checks to see if there are any available jobs.
-		// It first locks the job queue with the mutex. It will then pop the 
-		// next job in the queue if there is one and unlocks with mutex.
-		// It then calls Job::DoIt() and decrements the job count. If it is empty
-		// the mutex will unlock the queue and then sleeps waiting for the shutdown signal.
-		// Returns when the shutdown signal is received.
-		static void Loop();
+    // Create and start worker threads running JobManager::WorkerThread()
+    void Begin();
 
-	private:
-		// This worker's thread
-		std::thread* mThread;
-	};
+    // Stop all threads and clean up
+    void End();
 
-	// Starts the job manager by looping through workers array and calls Worker::Begin() on each worker
-	void Begin();
+    // Add a new job to the queue
+    void AddJob(Job* job);
 
-	// Sets the shutdown signal and loops through workers array and calls Worker::End() on each worker
-	void End();
-
-	// Mutex locks job queue so that 1 thread can add a job to the job queue. 
-	// It then increments the job count and the mutex then unlocks the queue.
-	// @param - Job* for a new job
-	void AddJob(Job* job);
-
-	// Tells this thread to wait until the jobs are finished
-	void WaitForJobs();
-
-	// Returns the instance of an JobManager
-	// @return - JobManager* for the instance of an JobManager
-	static JobManager* Get();
+    // Block and wait until all jobs are completed
+    void WaitForJobs();
 
 private:
-	JobManager();
-	~JobManager();
+    JobManager();
+    ~JobManager();
 
-	// Number of threads/workers available to use
-	unsigned int mNumThreads;
+    // Thread loop function that waits for a job in the queue. 
+    // If there is one, it will execute that job and wait for the next one
+    // Each thread will run this while loop until the JobManager object is destroyed
+    void WorkerThread();
 
-	// Array of workers
-	Worker* mWorkers;
+    // Array of threads used for jobs
+    std::vector<std::thread> mThreads;
+    
+    // Queue of jobs (shared resource for all threads)
+    std::queue<Job*> mJobQueue;
+
+    // Mutex to protect access to the job queue across all threads
+    std::mutex mQueueMutex;
+
+    // Condition used to wake up worker threads when a new job is added
+    std::condition_variable mCondition;
+
+    // Condition used by the main thread to wait until all the jobs are completed
+    std::condition_variable mIdleCondition;
+
+    // Bool for when the job manager is running
+    std::atomic<bool> mIsRunning;
+
+    // Number of jobs in the queue
+    unsigned int mNumJobs;
+
+    // Number of threads
+    unsigned int mNumThreads;
 };

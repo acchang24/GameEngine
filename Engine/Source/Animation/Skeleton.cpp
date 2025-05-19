@@ -99,10 +99,10 @@ void Skeleton::UpdateAnimation(float deltaTime)
 		}
 
 		// Updates bone transformations on separate thread
-		//JobManager::Get()->AddJob(&mJob);
+		JobManager::Get()->AddJob(&mJob);
 		
 		// Uncomment this and remove/comment out the JobManager::Get()->AddJob() function the line above to use single thread
-		CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), GetCurrentAnimation()->GetGlobalInverseTransform());
+		//CalculateBoneTransform(&mCurrentAnimation->GetRootNode(), GetCurrentAnimation()->GetGlobalInverseTransform());
 	}
 }
 

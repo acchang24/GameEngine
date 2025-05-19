@@ -779,8 +779,8 @@ void Game::Update(float deltaTime)
 
 	mCamera->Update(deltaTime, mMousePosX, mMousePosY);
 
-	//PROFILE_SCOPE(WAIT_JOBS);
-	//mJobManager->WaitForJobs();
+	PROFILE_SCOPE(WAIT_JOBS);
+	mJobManager->WaitForJobs();
 }
 
 void Game::Render()

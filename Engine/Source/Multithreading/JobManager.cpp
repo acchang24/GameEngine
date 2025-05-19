@@ -1,99 +1,5 @@
 #include "JobManager.h"
 #include <iostream>
-#include <queue>
-#include <mutex>
-#include <atomic>
-
-// Shutdown signal to tell worker threads to quit
-static volatile bool s_Shutdown = false;
-// Queue for jobs
-static std::queue<JobManager::Job*> s_JobQ;
-// Number of jobs
-static std::atomic<int> s_JobCount = 0;
-
-// Mutex to ensure only one thread can access the job queue at a time
-static std::mutex* GetMutex()
-{
-	static std::mutex s_JobQueueMutex;
-	return &s_JobQueueMutex;
-}
-
-
-JobManager::Worker::Worker() :
-	mThread(nullptr)
-{
-}
-
-JobManager::Worker::~Worker()
-{
-}
-
-void JobManager::Worker::Begin()
-{
-	mThread = new std::thread(Loop);
-}
-
-void JobManager::Worker::End()
-{
-	std::cout << "Delete thread" << std::endl;
-	mThread->join();
-	delete mThread;
-}
-
-void JobManager::Worker::Loop()
-{
-	while (s_Shutdown == false)
-	{
-		GetMutex()->lock();
-		if (s_JobQ.empty())
-		{
-			GetMutex()->unlock();
-			std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-		}
-		else
-		{
-			Job* job = s_JobQ.front();
-			s_JobQ.pop();
-			GetMutex()->unlock();
-			job->DoJob();
-			--s_JobCount;
-		}
-	}
-}
-
-
-void JobManager::Begin()
-{
-	for (unsigned int i = 0; i < mNumThreads; ++i)
-	{
-		mWorkers[i].Begin();
-	}
-}
-
-void JobManager::End()
-{
-	s_Shutdown = true;
-	for (unsigned int i = 0; i < mNumThreads; ++i)
-	{
-		mWorkers[i].End();
-	}
-}
-
-void JobManager::AddJob(Job* job)
-{
-	GetMutex()->lock();
-	s_JobQ.push(job);
-	++s_JobCount;
-	GetMutex()->unlock();
-}
-
-void JobManager::WaitForJobs()
-{
-	while (s_JobCount > 0)
-	{
-		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-	}
-}
 
 JobManager* JobManager::Get()
 {
@@ -102,13 +8,107 @@ JobManager* JobManager::Get()
 	return &s_JobManager;
 }
 
-JobManager::JobManager() :
-	mNumThreads(std::thread::hardware_concurrency() / 2),
-	mWorkers(new Worker[mNumThreads])
+void JobManager::Begin()
 {
+    for (size_t i = 0; i < mNumThreads; ++i)
+    {
+        mThreads.emplace_back(&JobManager::WorkerThread, this);
+    }
+}
+
+void JobManager::End()
+{
+    mIsRunning = false;
+    mCondition.notify_all();
+
+    // Join each thread
+    for (size_t i = 0; i < mNumThreads; ++i)
+    {
+        if (mThreads[i].joinable())
+        {
+            mThreads[i].join();
+        }
+    }
+    mThreads.clear();
+
+    // Clear the job queue just in case
+    while (!mJobQueue.empty())
+    {
+        mJobQueue.pop();
+    }
+}
+
+void JobManager::AddJob(Job* job)
+{
+    // MUTEX SCOPE
+    {
+        // Lock mutex and add a job to the queue
+        std::lock_guard<std::mutex> lock(mQueueMutex);
+        mJobQueue.push(job);
+        ++mNumJobs;
+        // Mutex unlocks here
+    }
+    mCondition.notify_one();
+}
+
+void JobManager::WaitForJobs()
+{
+    std::unique_lock<std::mutex> lock(mQueueMutex);
+
+    while (!(mJobQueue.empty() && mNumJobs == 0))
+    {
+        mIdleCondition.wait(lock);
+    }
+}
+
+JobManager::JobManager() :
+    mIsRunning(true),
+    mNumJobs(0),
+    mNumThreads(std::thread::hardware_concurrency() / 2)
+{
+    // Reserve half the amount of threads available from the cpu
+    mThreads.reserve(mNumThreads);
 }
 
 JobManager::~JobManager()
 {
-	std::cout << "Delete job manager" << std::endl;
+    std::cout << "Delete JobManager\n";
+}
+
+void JobManager::WorkerThread()
+{
+    while (mIsRunning)
+    {
+        Job* job = nullptr;
+        // MUTEX SCOPE
+        {
+            // Lock mutex with unique lock
+            std::unique_lock<std::mutex> lock(mQueueMutex);
+            // If there is a job, pop from queue, if not just wait for a job
+            if (mJobQueue.empty())
+            {
+                mCondition.wait(lock);
+            }
+            else 
+            {
+                job = mJobQueue.front();
+                mJobQueue.pop();
+                --mNumJobs;
+            }
+            // Mutex auto unlocks here
+        }
+        if (job)
+        {
+            job->DoJob();
+            {
+                std::lock_guard<std::mutex> lock(mQueueMutex);
+
+                if (mJobQueue.empty() && mNumJobs == 0)
+                {
+                    mIdleCondition.notify_all();
+                }
+                // Mutex auto unlocks here
+            }
+        }
+    }
 }
