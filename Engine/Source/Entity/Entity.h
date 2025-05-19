@@ -10,6 +10,7 @@ enum class EntityState
 };
 
 class Component;
+class Mouse;
 
 // Entity class represents a general object within a game.
 // Each entity contains functions to help update and render on each frame.
@@ -23,7 +24,9 @@ public:
 
 	// Virtual ProcessInput that checks if the entity is active.
 	// If so, it will Call ProcessInput on all of its components
-	virtual void ProcessInput(const Uint8* keyState);
+	// @param - const Uint8* for the keyboard state
+	// @param - Mouse* for the mouse
+	virtual void ProcessInput(const Uint8* keyState, const Mouse* mouse);
 
 	// Virtual Update function that updates and handles the entity's own unique attributes.
 	// This base/parent class Update function simply loops through the vector of components updates them.

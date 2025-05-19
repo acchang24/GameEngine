@@ -32,7 +32,8 @@ public:
 	// @param - const void* for an array of model matrices, and any data needed per instance
 	void MakeInstance(unsigned int numInstances, const void* data);
 
-	void ProcessInput(const Uint8* keyState) override;
+	// Entity3D override of Entity::ProcessInput()
+	void ProcessInput(const Uint8* keyState, const Mouse* mouse) override;
 
 	// Override update function for 3D entities
 	// @param - float for delta time
@@ -44,7 +45,7 @@ public:
 	// Draw function using a shader set explicitly
 	void Draw(Shader* shader);
 
-	virtual void OnProcessInput(const Uint8* keyState);
+	virtual void OnProcessInput(const Uint8* keyState, const Mouse* mouse);
 
 	// Entity specific update code (overridable)
 	// This OnUpdate updates the view matrix

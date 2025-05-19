@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include <iostream>
 #include "../Components/Component.h"
+#include "../Input/Mouse.h"
 
 Entity::Entity() :
 	mState(EntityState::Active),
@@ -20,13 +21,13 @@ Entity::~Entity()
 	mComponents.clear();
 }
 
-void Entity::ProcessInput(const Uint8* keyState)
+void Entity::ProcessInput(const Uint8* keyState, const Mouse* mouse)
 {
 	if (mState == EntityState::Active)
 	{
 		for (auto c : mComponents)
 		{
-			c->ProcessInput(keyState);
+			c->ProcessInput(keyState, mouse);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 #include <SDL2/SDL_stdinc.h>
 
 class Entity;
+class Mouse;
 
 // The Component class defines a particular aspect or functionality
 // that an entity possesses. The component is stored in the entity's
@@ -17,7 +18,8 @@ public:
 
 	// Overridable process input function for this component if it's needed
 	// @param - const Uint8* for the keyboard state
-	virtual void ProcessInput(const Uint8* keyState);
+	// @param - const Mouse* for the mouse
+	virtual void ProcessInput(const Uint8* keyState, const Mouse* mouse);
 
 	// Overridable update function that updates a particular component
 	// @param - float for delta time

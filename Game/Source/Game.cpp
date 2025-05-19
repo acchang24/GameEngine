@@ -649,6 +649,11 @@ void Game::ProcessInput()
 	mPrevKeyInputs[SDL_SCANCODE_L] = keyboardState[SDL_SCANCODE_L];
 	mPrevKeyInputs[SDL_SCANCODE_K] = keyboardState[SDL_SCANCODE_K];
 	mPrevKeyInputs[SDL_SCANCODE_M] = keyboardState[SDL_SCANCODE_M];
+
+	for (auto e : mEntities)
+	{
+		e->ProcessInput(keyboardState, mMouse);
+	}
 }
 
 void Game::ProcessMouseInput(Mouse* mouse)
