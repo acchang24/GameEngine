@@ -17,6 +17,7 @@ struct CameraConsts
 	float padding;			  // padding for allignment
 };
 
+class Mouse;
 class UniformBuffer;
 
 // Camera class is mainly responsible for using the view matrix
@@ -77,7 +78,7 @@ public:
 
 	void SetPanDir(const glm::vec3& dir) { mPanDir = dir; }
 
-	void Update(float deltaTime, double mouseX, double mouseY);
+	void Update(float deltaTime, Mouse* mouse);
 
 private:
 	// Camera's constants

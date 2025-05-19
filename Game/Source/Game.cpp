@@ -27,6 +27,7 @@
 #include "Graphics/UniformBuffer.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
+#include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
@@ -46,6 +47,7 @@ int VSYNC = 1;
 double MOUSE_SENSITIVITY = 0.05;
 bool IS_FULLSCREEN = false;
 const char* TITLE = "Game";
+SDL_bool MOUSE_CAPTURED = SDL_TRUE;
 
 Game::Game() :
 	mPrevKeyInputs(),
@@ -61,12 +63,10 @@ Game::Game() :
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
 	mBloomBlendFrameBuffer(nullptr),
-	mMousePosX(0.0),
-	mMousePosY(0.0),
+	mMouse(nullptr),
 	mIsRunning(true),
 	hdr(false),
-	bloom(false),
-	mMouseCaptured(SDL_TRUE)
+	bloom(false)
 {
 }
 
@@ -80,7 +80,7 @@ bool Game::Init()
 
 	mJobManager->Begin();
 
-	if (!mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, mMouseCaptured, "Game"))
+	if (!mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
 	{
 		return false;
 	}
@@ -112,6 +112,8 @@ bool Game::Init()
 
 	LoadGameData();
 
+	mMouse = new Mouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED);
+
 	return true;
 }
 
@@ -128,6 +130,8 @@ void Game::Shutdown()
 	delete mLights;
 
 	delete mShadowMap;
+
+	delete mMouse;
 
 	mJobManager->End();
 
@@ -418,9 +422,7 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
-	Uint8 mouseButtonDown = 0;
-	Uint8 mouseButtonUp = 0;
-	Sint32 scrollDir = 0;
+	mMouse->ResetState();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -433,20 +435,20 @@ void Game::ProcessInput()
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			// Mouse click down
-			mouseButtonDown = event.button.button;
+			mMouse->SetButtonDown(event.button.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
 			// Mouse click release
-			mouseButtonUp = event.button.button;
+			mMouse->SetButtonUp(event.button.button);
 			break;
 		case SDL_MOUSEWHEEL:
 			// Mouse wheel scroll
-			scrollDir = event.wheel.y;
+			mMouse->SetScrollDir(event.wheel.y);
 			break;
 		}
 	}
 
-	ProcessMouseInput(mouseButtonDown, mouseButtonUp, scrollDir);
+	ProcessMouseInput(mMouse);
 
 	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
 
@@ -513,23 +515,8 @@ void Game::ProcessInput()
 	// Capture mouse
 	if (keyboardState[SDL_SCANCODE_M] && !mPrevKeyInputs[SDL_SCANCODE_M])
 	{
-		if (mMouseCaptured == SDL_TRUE)
-		{
-			mMouseCaptured = SDL_FALSE;
-			mMousePosX = 0;
-			mMousePosY = 0;
-		}
-		else
-		{
-			mMouseCaptured = SDL_TRUE;
-		}
-
-		// Enable relative mouse mode
-		SDL_SetRelativeMouseMode(mMouseCaptured);
-		// Clear any saved values
-		SDL_GetRelativeMouseState(nullptr, nullptr);
+		mMouse->ToggleMouseCapture();
 	}
-
 
 	// HDR/Exposure
 	Shader* shader = mAssetManager->LoadShader("hdrGamma");
@@ -613,7 +600,6 @@ void Game::ProcessInput()
 	if (keyboardState[SDL_SCANCODE_KP_0])
 	{
 		vampires[0]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
-			//GetModel()->GetSkeleton()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_1])
 	{
@@ -665,8 +651,11 @@ void Game::ProcessInput()
 	mPrevKeyInputs[SDL_SCANCODE_M] = keyboardState[SDL_SCANCODE_M];
 }
 
-void Game::ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll)
+void Game::ProcessMouseInput(Mouse* mouse)
 {
+	Uint8 buttonDown = mouse->GetButtonDown();
+	Uint8 buttonUp = mouse->GetButtonUp();
+	Sint32 scroll = mouse->GetScrollDir();
 	// Single left click
 	if (buttonDown == SDL_BUTTON_LEFT)
 	{
@@ -757,14 +746,9 @@ void Game::ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll)
 		std::cout << "Scroll Down\n";
 	}
 
-	if (mMouseCaptured == SDL_TRUE)
+	if (mMouse->MouseCaptured() == SDL_TRUE)
 	{
-		// Calculate mouse movement
-		int x = 0;
-		int y = 0;
-		SDL_GetRelativeMouseState(&x, &y);
-		mMousePosX = x * MOUSE_SENSITIVITY;
-		mMousePosY = -y * MOUSE_SENSITIVITY;
+		mMouse->CalculateMovement();
 	}
 }
 
@@ -777,7 +761,7 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mCamera->Update(deltaTime, mMousePosX, mMousePosY);
+	mCamera->Update(deltaTime, mMouse);
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	mJobManager->WaitForJobs();

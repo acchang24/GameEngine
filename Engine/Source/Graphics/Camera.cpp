@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "../Input/Mouse.h"
 #include "Renderer3D.h"
 #include "UniformBuffer.h"
 
@@ -81,8 +82,11 @@ void Camera::SetProjection(float newAspectRatio)
 	glm::perspective(fov, newAspectRatio, near, far);
 }
 
-void Camera::Update(float deltaTime, double mouseX, double mouseY)
+void Camera::Update(float deltaTime, Mouse* mouse)
 {
+	double mouseX = mouse->GetX();
+	double mouseY = mouse->GetY();
+
 	// Update camera angles
 	mYaw = mYaw + mouseX;
 	mPitch = mPitch + mouseY;

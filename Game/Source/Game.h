@@ -11,6 +11,7 @@ class FrameBuffer;
 class FrameBufferMultiSampled;
 class JobManager;
 class Lights;
+class Mouse;
 class Renderer3D;
 class Shader;
 class ShadowMap;
@@ -49,10 +50,8 @@ public:
 	void ProcessInput();
 
 	// Processes and handles any mouse movement, clicks, and scrolls
-	// @param - Uint8 for click down button
-	// @param - Uint8 for click release button
-	// @param - Sint32 for scroll direction
-	void ProcessMouseInput(Uint8 buttonDown, Uint8 buttonUp, Sint32 scroll);
+	// @param - Mouse* for the mouse
+	void ProcessMouseInput(Mouse* mouse);
 
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames
@@ -114,10 +113,8 @@ private:
 
 	std::vector<class Entity3D*> vampires;
 
-	// Mouse x-axis movement
-	double mMousePosX;
-	// Mouse y-axis movement
-	double mMousePosY;
+	// Game's mouse input
+	Mouse* mMouse;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;
@@ -127,7 +124,4 @@ private:
 
 	// Bloom toggle
 	bool bloom;
-
-	// SDL_bool for if the mouse is captured by the screen
-	SDL_bool mMouseCaptured;
 };
