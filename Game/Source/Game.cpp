@@ -27,7 +27,6 @@
 #include "Graphics/UniformBuffer.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
-#include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
@@ -50,7 +49,6 @@ const char* TITLE = "Game";
 SDL_bool MOUSE_CAPTURED = SDL_TRUE;
 
 Game::Game() :
-	mPrevKeyInputs(),
 	mRenderer(Renderer3D::Get()),
 	mAssetManager(AssetManager::Get()),
 	mJobManager(JobManager::Get()),
@@ -63,7 +61,8 @@ Game::Game() :
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
 	mBloomBlendFrameBuffer(nullptr),
-	mMouse(nullptr),
+	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
+	mKeyboard(),
 	mIsRunning(true),
 	hdr(false),
 	bloom(false)
@@ -112,8 +111,6 @@ bool Game::Init()
 
 	LoadGameData();
 
-	mMouse = new Mouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED);
-
 	return true;
 }
 
@@ -130,8 +127,6 @@ void Game::Shutdown()
 	delete mLights;
 
 	delete mShadowMap;
-
-	delete mMouse;
 
 	mJobManager->End();
 
@@ -210,7 +205,6 @@ void Game::LoadGameData()
 	refractiveMat->SetShader(mAssetManager->LoadShader("refraction"));
 	mAssetManager->SaveMaterial("refraction", refractiveMat);
 
-	
 	//Texture* rockTexture = AssetManager::LoadTexture("Assets/models/rock/rock.png");
 	//rockTexture->SetType(TextureType::Diffuse);
 	//mAssetManager->SaveTexture("rock", rockTexture);
@@ -422,7 +416,7 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
-	mMouse->ResetState();
+	mMouse.ResetState();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -435,22 +429,22 @@ void Game::ProcessInput()
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			// Mouse click down
-			mMouse->SetButtonDown(event.button.button);
+			mMouse.SetButtonDown(event.button.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
 			// Mouse click release
-			mMouse->SetButtonUp(event.button.button);
+			mMouse.SetButtonUp(event.button.button);
 			break;
 		case SDL_MOUSEWHEEL:
 			// Mouse wheel scroll
-			mMouse->SetScrollDir(event.wheel.y);
+			mMouse.SetScrollDir(event.wheel.y);
 			break;
 		}
 	}
 
-	ProcessMouseInput(mMouse);
+	ProcessMouseInput(&mMouse);
 
-	const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
+	const Uint8* keyboardState = mKeyboard.GetState();
 
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 	{
@@ -506,16 +500,16 @@ void Game::ProcessInput()
 	mCamera->SetPanDir(camPanDir);
 
 	// Toggle the main directional light
-	if (keyboardState[SDL_SCANCODE_SPACE] && !mPrevKeyInputs[SDL_SCANCODE_SPACE])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_SPACE))
 	{
 		bool light = mLights->GetLights().directionalLight[0].data.isEnabled;
 		mLights->GetLights().directionalLight[0].data.isEnabled = !light;
 	}
 
 	// Capture mouse
-	if (keyboardState[SDL_SCANCODE_M] && !mPrevKeyInputs[SDL_SCANCODE_M])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_M))
 	{
-		mMouse->ToggleMouseCapture();
+		mMouse.ToggleMouseCapture();
 	}
 
 	// HDR/Exposure
@@ -523,14 +517,14 @@ void Game::ProcessInput()
 	Shader* bloomAdd = mAssetManager->LoadShader("bloomBlend");
 
 	// Toggle hdr
-	if (keyboardState[SDL_SCANCODE_H] && !mPrevKeyInputs[SDL_SCANCODE_H])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_H))
 	{
 		hdr = !hdr;
 		shader->SetActive();
 		shader->SetBool("hdr", hdr);
 	}
 	// Toggle bloom
-	if (keyboardState[SDL_SCANCODE_B] && !mPrevKeyInputs[SDL_SCANCODE_B])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_B))
 	{
 		bloom = !bloom;
 
@@ -570,28 +564,28 @@ void Game::ProcessInput()
 	}
 
 	// Shadow debug inputs
-	if (keyboardState[SDL_SCANCODE_UP] && !mPrevKeyInputs[SDL_SCANCODE_UP])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_UP))
 	{
 		size += 10.0f;
 	}
-	if (keyboardState[SDL_SCANCODE_DOWN] && !mPrevKeyInputs[SDL_SCANCODE_DOWN])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_DOWN))
 	{
 		size -= 10.0f;
 	}
-	if (keyboardState[SDL_SCANCODE_LEFT] && !mPrevKeyInputs[SDL_SCANCODE_LEFT])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_LEFT))
 	{
 		far -= 10.0f;
 	}
-	if (keyboardState[SDL_SCANCODE_RIGHT] && !mPrevKeyInputs[SDL_SCANCODE_RIGHT])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_RIGHT))
 	{
 		far += 10.0f;
 	}
-	if (keyboardState[SDL_SCANCODE_L] && !mPrevKeyInputs[SDL_SCANCODE_L])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_L))
 	{
 		dist -= 10.0f;
 		pos = (lightDir * -dist);
 	}
-	if (keyboardState[SDL_SCANCODE_K] && !mPrevKeyInputs[SDL_SCANCODE_K])
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_K))
 	{
 		dist += 10.0f;
 		pos = (lightDir * -dist);
@@ -639,20 +633,20 @@ void Game::ProcessInput()
 	}
 
 	// Save previous key inputs
-	mPrevKeyInputs[SDL_SCANCODE_SPACE] = keyboardState[SDL_SCANCODE_SPACE];
-	mPrevKeyInputs[SDL_SCANCODE_H] = keyboardState[SDL_SCANCODE_H];
-	mPrevKeyInputs[SDL_SCANCODE_B] = keyboardState[SDL_SCANCODE_B];
-	mPrevKeyInputs[SDL_SCANCODE_UP] = keyboardState[SDL_SCANCODE_UP];
-	mPrevKeyInputs[SDL_SCANCODE_DOWN] = keyboardState[SDL_SCANCODE_DOWN];
-	mPrevKeyInputs[SDL_SCANCODE_LEFT] = keyboardState[SDL_SCANCODE_LEFT];
-	mPrevKeyInputs[SDL_SCANCODE_RIGHT] = keyboardState[SDL_SCANCODE_RIGHT];
-	mPrevKeyInputs[SDL_SCANCODE_L] = keyboardState[SDL_SCANCODE_L];
-	mPrevKeyInputs[SDL_SCANCODE_K] = keyboardState[SDL_SCANCODE_K];
-	mPrevKeyInputs[SDL_SCANCODE_M] = keyboardState[SDL_SCANCODE_M];
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_SPACE);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_H);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_B);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_UP);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_DOWN);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_LEFT);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_RIGHT);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_L);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_K);
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_M);
 
 	for (auto e : mEntities)
 	{
-		e->ProcessInput(keyboardState, mMouse);
+		e->ProcessInput(keyboardState, &mKeyboard, &mMouse);
 	}
 }
 
@@ -751,9 +745,9 @@ void Game::ProcessMouseInput(Mouse* mouse)
 		std::cout << "Scroll Down\n";
 	}
 
-	if (mMouse->MouseCaptured() == SDL_TRUE)
+	if (mMouse.MouseCaptured() == SDL_TRUE)
 	{
-		mMouse->CalculateMovement();
+		mMouse.CalculateMovement();
 	}
 }
 
@@ -766,7 +760,7 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mCamera->Update(deltaTime, mMouse);
+	mCamera->Update(deltaTime, &mMouse);
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	mJobManager->WaitForJobs();

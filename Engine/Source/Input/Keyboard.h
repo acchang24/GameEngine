@@ -18,7 +18,5 @@ public:
 
 private:
 	// Array of previous key inputs to see if they are pressed or not
-	bool mPrevKeyInputs[256];
-
-	Uint8* mState;
+	bool mPrevKeyInputs[SDL_NUM_SCANCODES];
 };

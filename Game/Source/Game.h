@@ -3,6 +3,8 @@
 #include <vector>
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 
 class AssetManager;
 class Camera;
@@ -11,7 +13,6 @@ class FrameBuffer;
 class FrameBufferMultiSampled;
 class JobManager;
 class Lights;
-class Mouse;
 class Renderer3D;
 class Shader;
 class ShadowMap;
@@ -73,9 +74,6 @@ public:
 	void RemoveGameEntity(Entity* e);
 
 private:
-	// Array of previous key inputs to see if they are pressed or not
-	bool mPrevKeyInputs[256];
-
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
 
@@ -114,7 +112,10 @@ private:
 	std::vector<class Entity3D*> vampires;
 
 	// Game's mouse input
-	Mouse* mMouse;
+	Mouse mMouse;
+
+	// Game's keyboard input
+	Keyboard mKeyboard;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

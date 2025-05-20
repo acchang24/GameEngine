@@ -2,10 +2,8 @@
 #include <iostream>
 
 Keyboard::Keyboard() :
-	mPrevKeyInputs(),
-	mState(nullptr)
+	mPrevKeyInputs()
 {
-
 }
 
 Keyboard::~Keyboard()
