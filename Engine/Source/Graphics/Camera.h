@@ -9,6 +9,12 @@ enum class CameraMode
 	Fly     // Used for flying around the scene freely
 };
 
+enum class CameraProjection
+{
+	Perspective,
+	Orthographic
+};
+
 // Struct for camera constants that are going to be sent to a buffer in the shaders
 struct CameraConsts
 {
@@ -38,46 +44,101 @@ public:
 	// Gets the camera's constants
 	// @return - const CameraConst& for the camera's constants
 	const CameraConsts& GetCameraConsts() const { return mCamConsts; }
-	// Gets the camera's position
-	// @return - const glm::vec3& for the camera's position
-	const glm::vec3& GetPosition() const { return mCamConsts.position; }
+
 	// Gets the camera's view matrix
 	// @return - const mat4& for the camera's view matrix
 	const glm::mat4& GetViewMatrix() const { return mView; }
+
 	// Gets the camera's projection matrix
 	// @return - const mat4& for the camera's projection matrix
 	const glm::mat4& GetProjectionMatrix() const;
+
+	// Gets the camera's position
+	// @return - const glm::vec3& for the camera's position
+	const glm::vec3& GetPosition() const { return mCamConsts.position; }
+
 	// Gets the camera's target position
 	// @return - const glm::vec3& for the camera's target
 	const glm::vec3& GetTarget() const { return mTarget; }
+
 	// Gets the camera's forward vector
 	// @returns - const glm::vec3& for the camera's forward
 	const glm::vec3& GetForward() const { return mForward; }
+
 	// Gets the camera's up vector
 	// @return - const glm::vec3& for the camera's up vector
 	const glm::vec3& GetUp() const { return mUp; }
+
 	// Gets the camera's right vector
 	// @return - const glm::vec3& for the camera's right vector
 	const glm::vec3& GetRight() const { return mRight; }
+
 	// Gets the camera's buffer
 	UniformBuffer* GetCameraBuffer() { return mCameraBuffer; }
+
 	// Gets the camera's mode
 	// @return - CameraMode for the camera's mode
 	CameraMode GetCameraMode() const { return mMode; }
 
-	// Sets the camera's projection matrix
+	// Gets the camera's yaw rotation
+	// @return - double for the camera's yaw rotation
+	double GetYaw() const { return mYaw; }
+
+	// Gets the camera's pitch rotation
+	// @return - double for the camera's pitch rotation
+	double GetPitch() const { return mPitch; }
+
+	// Gets the camera's roll rotation
+	// @return - double for the camera's roll rotation
+	double GetRoll() const { return mRoll; }
+
+	// Gets the camera's FOV
+	// @return - float for the camera's fov
+	float GetFOV() const { return mFOV; }
+
+	// Gets the camera's near plane
+	// @return - float for the near plane
+	float GetNearPlane() const {return mNearPlane; }
+
+	// Gets the camera's far plane
+	// @return - float for the far plane
+	float GetFarPlane() const { return mFarPlane; }
+
+	// Sets the camera's projection matrix aspect ratio
 	// @param - float for the new aspect ratio
-	static void SetProjection(float newAspectRatio);
+	static void SetProjAspectRatio(float newAspectRatio);
 
 	// Sets the camera's position
 	// @param - const glm::vec3& for the new position
 	void SetPosition(const glm::vec3& pos) { mCamConsts.position = pos; }
+
 	// Sets the camera's target position
 	// @param - const glm::vec3& for the new target position
 	void SetTarget(const glm::vec3& target) { mTarget = target; }
 
+	// Sets the camera's pan direction
+	// @param - const glm::vec3& for the direction
 	void SetPanDir(const glm::vec3& dir) { mPanDir = dir; }
 
+	// Sets the camera's yaw
+	// @param - float for the new yaw rotation
+	void SetYaw(float yaw) { mYaw = yaw; }
+
+	// Sets the camera's pitch
+	// @param - float for the new pitch rotation
+	void SetPitch(float pitch) {  mPitch = pitch; }
+
+	// Sets the camera's roll
+	// @param - float for the new roll rotation
+	void SetRoll(float roll) { mRoll = roll; }
+
+	// Sets the camera's FOV
+	// @param - float for the new fov
+	void SetFOV(float fov) { mFOV = fov; }
+
+	// Update the camera's pos and rotation
+	// @param - float for the delta time
+	// @param - Mouse* for the mouse
 	void Update(float deltaTime, Mouse* mouse);
 
 private:
@@ -87,7 +148,7 @@ private:
 	// View matrix
 	glm::mat4 mView;
 
-	// Camera's target position
+	// Camera's target position (what the camera is looking at)
 	glm::vec3 mTarget;
 
 	// Camera's forward vector (normalized vector for the camera's facing direction)

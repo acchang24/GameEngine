@@ -487,14 +487,14 @@ void Game::ProcessInput()
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
-			camPanDir -= right;
+			camPanDir += right;
 		}
 	}
 	if (keyboardState[SDL_SCANCODE_D])
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
-			camPanDir += right;
+			camPanDir -= right;
 		}
 	}
 	mCamera->SetPanDir(camPanDir);

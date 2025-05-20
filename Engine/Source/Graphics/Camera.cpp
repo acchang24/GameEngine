@@ -6,12 +6,14 @@
 #include "Renderer3D.h"
 #include "UniformBuffer.h"
 
-const float fov = 45.0f;
-const float near = 0.1f;
-const float far = 10000.0f;
-const float panSpeed = 50.0f;
+const float FOV = 45.0f;
+const float NEAR_PLANE = 0.1f;
+const float FAR_PLANE = 10000.0f;
+const float SPEED = 50.0f;
+const float WIDTH_RATIO = 16.0f;
+const float HEIGHT_RATIO = 9.0f;
 
-static glm::mat4 s_Projection = glm::perspective(fov, 16.0f / 9.0f, near, far);
+static glm::mat4 s_Projection = glm::perspective(FOV, WIDTH_RATIO / HEIGHT_RATIO, NEAR_PLANE, FAR_PLANE);
 
 Camera::Camera() :
 	mCamConsts({glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f}),
@@ -26,9 +28,9 @@ Camera::Camera() :
 	mYaw(-90.0f),
 	mPitch(0.0f),
 	mRoll(0.0f),
-	mFOV(fov),
-	mNearPlane(near),
-	mFarPlane(far)
+	mFOV(FOV),
+	mNearPlane(NEAR_PLANE),
+	mFarPlane(FAR_PLANE)
 {
 
 }
@@ -65,7 +67,7 @@ void Camera::SetActive()
 		break;
 	}
 
-	mRight = glm::normalize(glm::cross(mForward, mUp));
+	mRight = glm::normalize(glm::cross(mUp, mForward));
 
 	mCamConsts.viewProjection = s_Projection * mView;
 
@@ -77,9 +79,9 @@ const glm::mat4& Camera::GetProjectionMatrix() const
 	return s_Projection;
 }
 
-void Camera::SetProjection(float newAspectRatio)
+void Camera::SetProjAspectRatio(float newAspectRatio)
 {
-	glm::perspective(fov, newAspectRatio, near, far);
+	s_Projection = glm::perspective(FOV, newAspectRatio, NEAR_PLANE, FAR_PLANE);
 }
 
 void Camera::Update(float deltaTime, Mouse* mouse)
@@ -127,6 +129,6 @@ void Camera::Update(float deltaTime, Mouse* mouse)
 
 	if (mMode == CameraMode::First || mMode == CameraMode::Fly)
 	{
-		mCamConsts.position = mCamConsts.position + mPanDir * panSpeed * deltaTime;
+		SetPosition(GetPosition() + mPanDir * SPEED * deltaTime);
 	}
 }

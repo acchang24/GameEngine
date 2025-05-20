@@ -210,7 +210,7 @@ void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int
 			SDL_GetWindowSize(win, &s_WindowWidth, &s_WindowHeight);
 			printf("Window width: %i, Window height: %i\n", s_WindowWidth, s_WindowHeight);
 			glViewport(0, 0, s_WindowWidth, s_WindowHeight);
-			Camera::SetProjection(static_cast<float>(s_WindowWidth) / static_cast<float>(s_WindowHeight));
+			Camera::SetProjAspectRatio(static_cast<float>(s_WindowWidth) / static_cast<float>(s_WindowHeight));
 
 			s_Resized = true;
 		}
