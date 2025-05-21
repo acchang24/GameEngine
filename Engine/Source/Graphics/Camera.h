@@ -6,7 +6,9 @@ enum class CameraMode
 {
 	First,  // Used for first person
 	Orbit,  // Used to orbit around a target object
-	Fly     // Used for flying around the scene freely
+	Fly,    // Used for flying around the scene freely
+	Third,  // Used for third person
+	Count,   // Used for the number of modes
 };
 
 enum class CameraProjection
@@ -104,6 +106,10 @@ public:
 	// @return - float for the far plane
 	float GetFarPlane() const { return mFarPlane; }
 
+	// Gets the camera's follow distance
+	// @return - float for the distance
+	float GetFollowDistance() const { return mFollowDistance; }
+
 	// Sets the camera's projection matrix aspect ratio
 	// @param - float for the new aspect ratio
 	static void SetProjAspectRatio(float newAspectRatio);
@@ -119,6 +125,10 @@ public:
 	// Sets the camera's pan direction
 	// @param - const glm::vec3& for the direction
 	void SetPanDir(const glm::vec3& dir) { mPanDir = dir; }
+
+	// Sets the camera's mode
+	// @param - CameraMode for the new mode
+	void SetMode(CameraMode mode) { mMode = mode; }
 
 	// Sets the camera's yaw
 	// @param - float for the new yaw rotation
@@ -136,12 +146,28 @@ public:
 	// @param - float for the new fov
 	void SetFOV(float fov) { mFOV = fov; }
 
+	// Sets the camera's follow distance
+	// @param - float for the new distance
+	void SetFollowDistance(float distance) { mFollowDistance = distance; }
+
 	// Update the camera's pos and rotation
 	// @param - float for the delta time
 	// @param - Mouse* for the mouse
 	void Update(float deltaTime, Mouse* mouse);
 
+	// Toggles between all the camera modes
+	void ToggleCameraModes();
+
 private:
+	// Calculates the camera's rotation and offset based on yaw and pitch rotations
+	// @param - float distance for the offset
+	// @param - float for yaw rotation
+	// @param - float for pitch rotation
+	glm::vec3 CalculateRotation(float distance, float yaw, float pitch) const;
+
+	// Clamps the pitch rotation so that it doesn't go above 89 and below -89
+	void ClampPitch();
+
 	// Camera's constants
 	CameraConsts mCamConsts;
 
@@ -186,4 +212,7 @@ private:
 
 	// Camera's far plane
 	float mFarPlane;
+
+	// Camera's follow distance (used for third person)
+	float mFollowDistance;
 };

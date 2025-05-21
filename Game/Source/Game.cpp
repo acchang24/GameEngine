@@ -427,6 +427,13 @@ void Game::ProcessInput()
 			// Check to see when user quits the game
 			mIsRunning = false;
 			break;
+		//case SDL_WINDOWEVENT:
+		//	if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+		//	{
+		//		std::cout << "HELLO " << event.window.data1 << " " << event.window.data2 << "\n";
+		//	}
+		//	
+		//	break;
 		case SDL_MOUSEBUTTONDOWN:
 			// Mouse click down
 			mMouse.SetButtonDown(event.button.button);
@@ -487,17 +494,23 @@ void Game::ProcessInput()
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
-			camPanDir += right;
+			camPanDir -= right;
 		}
 	}
 	if (keyboardState[SDL_SCANCODE_D])
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
-			camPanDir -= right;
+			camPanDir += right;
 		}
 	}
 	mCamera->SetPanDir(camPanDir);
+
+	// Toggle camera modes
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_V))
+	{
+		mCamera->ToggleCameraModes();
+	}
 
 	// Toggle the main directional light
 	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_SPACE))
@@ -633,6 +646,7 @@ void Game::ProcessInput()
 	}
 
 	// Save previous key inputs
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_V);
 	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_SPACE);
 	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_H);
 	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_B);
