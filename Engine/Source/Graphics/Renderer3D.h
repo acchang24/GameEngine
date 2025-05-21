@@ -32,7 +32,6 @@ public:
 	// De-allocates any resources from SDL, and deletes any uniform buffers and frame bufers
 	void Shutdown();
 
-	// Checks for window resize. If true, then resize all the frame buffers.
 	// Clears the screen, and clears the color and depth buffer bits
 	void ClearBuffers();
 
@@ -74,16 +73,11 @@ public:
 
 	// Gets the window's width
 	// @return - int for the width
-	static int GetWidth();
+	int GetWidth() const { return mWindowWidth; }
 
 	// Gets the window's height
 	// @return - int for the height
-	static int GetHeight();
-
-	// Static function that triggers everytime the window is resized.
-	// This resizes the viewport as well as the camera's projection matrix
-	// given the new dimensions
-	static int ResizeWindowEventWatcher(void* data, SDL_Event* event);
+	int GetHeight() const { return mWindowHeight; }
 
 	// Resizes all the frame buffers to the new dimensions
 	void ResizeFrameBuffers();
@@ -99,6 +93,14 @@ public:
 	// Sets the number of subsamples used for anti-aliasing
 	// @param - int for the number of subsamples
 	void SetNumSubsamples(int subsamples) { mNumSubsamples = subsamples; }
+
+	// Sets the window's width
+	// @param - int for the new width
+	void SetWidth(int width) { mWindowWidth = width; }
+
+	// Sets the window's height
+	// @param - int for the new height
+	void SetHeight(int height) { mWindowHeight = height; }
 
 private:
 	// FUNCTIONS
@@ -156,6 +158,12 @@ private:
 
 	// If the renderer uses v-sync
 	int mVSync;
+	
+	// Window width
+	int mWindowWidth;
+
+	// Window height
+	int mWindowHeight;
 
 	// Bool for if the renderer is in fullscreen mode
 	bool mIsFullScreen;

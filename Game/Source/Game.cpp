@@ -427,13 +427,34 @@ void Game::ProcessInput()
 			// Check to see when user quits the game
 			mIsRunning = false;
 			break;
-		//case SDL_WINDOWEVENT:
-		//	if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-		//	{
-		//		std::cout << "HELLO " << event.window.data1 << " " << event.window.data2 << "\n";
-		//	}
-		//	
-		//	break;
+		case SDL_WINDOWEVENT:
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				SDL_Window* window = SDL_GetWindowFromID(event.window.windowID);
+				if (window)
+				{
+					int width = event.window.data1;
+					int height = event.window.data2;
+
+					float ratio = static_cast<float>(width) / static_cast<float>(height);
+
+					// Set new camera aspect ratio
+					mCamera->SetAspectRatio(ratio);
+
+					// Set new viewport dimensions
+					glViewport(0, 0, width, height);
+
+					printf("Window width: %i, Window height: %i\n", width, height);
+				
+					// Set new window dimensions
+					mRenderer->SetWidth(width);
+					mRenderer->SetHeight(height);
+
+					// Resize frame buffers
+					mRenderer->ResizeFrameBuffers();
+				}
+			}
+			break;
 		case SDL_MOUSEBUTTONDOWN:
 			// Mouse click down
 			mMouse.SetButtonDown(event.button.button);

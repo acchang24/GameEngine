@@ -11,6 +11,7 @@ enum class CameraMode
 	Count,   // Used for the number of modes
 };
 
+// Enum class for the type of projection the camera uses
 enum class CameraProjection
 {
 	Perspective,
@@ -53,7 +54,7 @@ public:
 
 	// Gets the camera's projection matrix
 	// @return - const mat4& for the camera's projection matrix
-	const glm::mat4& GetProjectionMatrix() const;
+	const glm::mat4& GetProjectionMatrix() const { return mProjection; }
 
 	// Gets the camera's position
 	// @return - const glm::vec3& for the camera's position
@@ -110,9 +111,10 @@ public:
 	// @return - float for the distance
 	float GetFollowDistance() const { return mFollowDistance; }
 
-	// Sets the camera's projection matrix aspect ratio
-	// @param - float for the new aspect ratio
-	static void SetProjAspectRatio(float newAspectRatio);
+	// Gets the camera's ortho height
+	// @return - float for the height
+	float GetOrthoHeight() const { return mOrthoHeight; }
+
 
 	// Sets the camera's position
 	// @param - const glm::vec3& for the new position
@@ -130,6 +132,10 @@ public:
 	// @param - CameraMode for the new mode
 	void SetMode(CameraMode mode) { mMode = mode; }
 
+	// Sets the camera's projection mode
+	// @param - CameraProjection for the projection mode
+	void SetProjectionMode(CameraProjection mode);
+
 	// Sets the camera's yaw
 	// @param - float for the new yaw rotation
 	void SetYaw(float yaw) { mYaw = yaw; }
@@ -146,9 +152,17 @@ public:
 	// @param - float for the new fov
 	void SetFOV(float fov) { mFOV = fov; }
 
+	// Sets the camera's aspect ratio and updates the projection matrix with the new ratio
+	// @param - float for the new ratio
+	void SetAspectRatio(float ratio);
+
 	// Sets the camera's follow distance
 	// @param - float for the new distance
 	void SetFollowDistance(float distance) { mFollowDistance = distance; }
+
+	// Sets the camera's ortho height for orthographic projection
+	// @param - float for the new height
+	void SetOrthoHeight(float height) { mOrthoHeight = height; }
 
 	// Update the camera's pos and rotation
 	// @param - float for the delta time
@@ -157,6 +171,9 @@ public:
 
 	// Toggles between all the camera modes
 	void ToggleCameraModes();
+
+	// Toggles between camera projection modes
+	void ToggleProjectionMode();
 
 private:
 	// Calculates the camera's rotation and offset based on yaw and pitch rotations
@@ -173,6 +190,9 @@ private:
 
 	// View matrix
 	glm::mat4 mView;
+
+	// Projection matrix
+	glm::mat4 mProjection;
 
 	// Camera's target position (what the camera is looking at)
 	glm::vec3 mTarget;
@@ -195,6 +215,9 @@ private:
 	// Camera's current mode
 	CameraMode mMode;
 
+	// Camera's projection mode
+	CameraProjection mProjectionMode;
+
 	// Camera yaw
 	double mYaw;
 
@@ -207,6 +230,9 @@ private:
 	// Camera's field of view angle
 	float mFOV;
 
+	// Camera's aspect ratio
+	float mAspectRatio;
+
 	// Camera's near plane
 	float mNearPlane;
 
@@ -215,4 +241,7 @@ private:
 
 	// Camera's follow distance (used for third person)
 	float mFollowDistance;
+
+	// Height for orthographic projection
+	float mOrthoHeight;
 };

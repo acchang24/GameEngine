@@ -10,13 +10,6 @@
 #include "stb_image.h"
 #include "VertexBuffer.h"
 
-// Window width
-static int s_WindowWidth;
-// Window height
-static int s_WindowHeight;
-// Bool for whenever the window is resized
-static bool s_Resized = false;
-
 Renderer3D* Renderer3D::Get()
 {
 	static Renderer3D s_Renderer3D;
@@ -25,8 +18,8 @@ Renderer3D* Renderer3D::Get()
 
 bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool fullscreen, SDL_bool mouseCaptured, const char* title)
 {
-	s_WindowWidth = width;
-	s_WindowHeight = height;
+	mWindowWidth = width;
+	mWindowHeight = height;
 	mNumSubsamples = subsamples;
 	mVSync = vsync;
 	mIsFullScreen = fullscreen;
@@ -104,11 +97,6 @@ void Renderer3D::Shutdown()
 
 void Renderer3D::ClearBuffers()
 {
-	if (s_Resized)
-	{
-		ResizeFrameBuffers();
-	}
-
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
@@ -125,7 +113,7 @@ void Renderer3D::SetDefaultFrameBuffer() const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Reset viewport size to this frame buffer's dimensions
-	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
+	glViewport(0, 0, mWindowWidth, mWindowHeight);
 }
 
 void Renderer3D::EndFrame()
@@ -158,18 +146,22 @@ void Renderer3D::EndFrame()
 
 /* STATIC */ FrameBuffer* Renderer3D::CreateFrameBuffer(float size)
 {
-	FrameBuffer* framebuffer = new FrameBuffer(s_WindowWidth, s_WindowHeight, size);
+	Renderer3D* renderer = Get();
 
-	Get()->mFrameBuffers.emplace_back(framebuffer);
+	FrameBuffer* framebuffer = new FrameBuffer(renderer->GetWidth(), renderer->GetHeight(), size);
+
+	renderer->mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
 
 /* STATIC */ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int subsamples, float size)
 {
-	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(s_WindowWidth, s_WindowHeight, subsamples, size);
+	Renderer3D* renderer = Get();
 
-	Get()->mFrameBuffers.emplace_back(framebuffer);
+	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(renderer->GetWidth(), renderer->GetHeight(), subsamples, size);
+
+	renderer->mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
@@ -190,34 +182,6 @@ void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int
 	glBindTexture(GL_TEXTURE_2D, texture2);
 }
 
-/* STATIC */ int Renderer3D::GetWidth()
-{
-	return s_WindowWidth;
-}
-
-/* STATIC */ int Renderer3D::GetHeight()
-{
-	return s_WindowHeight;
-}
-
-/* STATIC */ int Renderer3D::ResizeWindowEventWatcher(void* data, SDL_Event* event)
-{
-	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED)
-	{
-		SDL_Window* win = SDL_GetWindowFromID(event->window.windowID);
-		if (win == data)
-		{
-			SDL_GetWindowSize(win, &s_WindowWidth, &s_WindowHeight);
-			printf("Window width: %i, Window height: %i\n", s_WindowWidth, s_WindowHeight);
-			glViewport(0, 0, s_WindowWidth, s_WindowHeight);
-			Camera::SetProjAspectRatio(static_cast<float>(s_WindowWidth) / static_cast<float>(s_WindowHeight));
-
-			s_Resized = true;
-		}
-	}
-	return 0;
-}
-
 void Renderer3D::ResizeFrameBuffers()
 {
 	for (auto fb : mFrameBuffers)
@@ -227,15 +191,13 @@ void Renderer3D::ResizeFrameBuffers()
 		FrameBufferMultiSampled* multiSampledFrameBuffer = dynamic_cast<FrameBufferMultiSampled*>(fb);
 		if(multiSampledFrameBuffer)
 		{
-			multiSampledFrameBuffer->Load(s_WindowWidth, s_WindowHeight, mNumSubsamples);
+			multiSampledFrameBuffer->Load(mWindowWidth, mWindowHeight, mNumSubsamples);
 		}
 		else
 		{
-			fb->Load(s_WindowWidth, s_WindowHeight);
+			fb->Load(mWindowWidth, mWindowHeight);
 		}
 	}
-
-	s_Resized = false;
 }
 
 Renderer3D::Renderer3D() :
@@ -245,6 +207,8 @@ Renderer3D::Renderer3D() :
 	mWindowTitle(),
 	mNumSubsamples(0),
 	mVSync(1),
+	mWindowWidth(0),
+	mWindowHeight(0),
 	mIsFullScreen(false)
 {
 }
@@ -295,15 +259,15 @@ bool Renderer3D::CreateWindow()
 	{
 		SDL_DisplayMode dm{};
 		SDL_GetDesktopDisplayMode(0, &dm);
-		s_WindowWidth = dm.w;
-		s_WindowHeight = dm.h;
+		mWindowWidth = dm.w;
+		mWindowHeight = dm.h;
 
 		mWindow = SDL_CreateWindow(
 			mWindowTitle,
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			s_WindowWidth,
-			s_WindowHeight,
+			mWindowWidth,
+			mWindowHeight,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP
 		);
 	}
@@ -313,8 +277,8 @@ bool Renderer3D::CreateWindow()
 			mWindowTitle,
 			SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED,
-			s_WindowWidth,
-			s_WindowHeight,
+			mWindowWidth,
+			mWindowHeight,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
 		);
 	}
@@ -355,8 +319,9 @@ void Renderer3D::LoadSdlSettings(SDL_bool mouseCaptured) const
 	SDL_SetRelativeMouseMode(mouseCaptured);
 	// Clear any saved values
 	SDL_GetRelativeMouseState(nullptr, nullptr);
+	
 	// Callback function for when window is resized
-	SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
+	//SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
 }
 
 void Renderer3D::SetOpenGLCapabilities() const
@@ -372,5 +337,5 @@ void Renderer3D::SetOpenGLCapabilities() const
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// Set viewport using the window width and height
-	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
+	glViewport(0, 0, mWindowWidth, mWindowHeight);
 }
