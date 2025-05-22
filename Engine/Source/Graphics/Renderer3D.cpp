@@ -10,10 +10,22 @@
 #include "stb_image.h"
 #include "VertexBuffer.h"
 
-Renderer3D* Renderer3D::Get()
+Renderer3D::Renderer3D() :
+	mVertexBuffer(nullptr),
+	mWindow(nullptr),
+	mContext(nullptr),
+	mWindowTitle(),
+	mNumSubsamples(0),
+	mVSync(1),
+	mWindowWidth(0),
+	mWindowHeight(0),
+	mIsFullScreen(false)
 {
-	static Renderer3D s_Renderer3D;
-	return &s_Renderer3D;
+}
+
+Renderer3D::~Renderer3D()
+{
+	std::cout << "Deleted Renderer3D\n";
 }
 
 bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool fullscreen, SDL_bool mouseCaptured, const char* title)
@@ -132,13 +144,11 @@ UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingP
 	return buffer;
 }
 
-/* STATIC */ UniformBuffer* Renderer3D::GetUniformBuffer(const std::string& bufferName)
+UniformBuffer* Renderer3D::GetUniformBuffer(const std::string& bufferName)
 {
-	std::unordered_map<std::string, UniformBuffer*>& buffers = Get()->mUniformBuffers;
+	auto iter = mUniformBuffers.find(bufferName);
 
-	auto iter = buffers.find(bufferName);
-
-	if (iter != buffers.end())
+	if (iter != mUniformBuffers.end())
 	{
 		return iter->second;
 	}
@@ -199,24 +209,6 @@ void Renderer3D::ResizeFrameBuffers()
 			}
 		}
 	}
-}
-
-Renderer3D::Renderer3D() :
-	mVertexBuffer(nullptr),
-	mWindow(nullptr),
-	mContext(nullptr),
-	mWindowTitle(),
-	mNumSubsamples(0),
-	mVSync(1),
-	mWindowWidth(0),
-	mWindowHeight(0),
-	mIsFullScreen(false)
-{
-}
-
-Renderer3D::~Renderer3D()
-{
-	std::cout << "Deleted Renderer3D\n";
 }
 
 bool Renderer3D::InitSDL() const

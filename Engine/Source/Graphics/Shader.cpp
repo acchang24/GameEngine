@@ -60,8 +60,6 @@ void Shader::LinkShadersToUniformBlocks() const
     // Gets the number of active uniform blocks used by this shader
     glGetProgramiv(mShaderID, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
 
-    Renderer3D* renderer = Renderer3D::Get();
-
     for (int i = 0; i < numBlocks; ++i)
     {
         GLint nameLen = 0;
@@ -77,7 +75,7 @@ void Shader::LinkShadersToUniformBlocks() const
         // Get the index of the uniform block
         int uniformBlockindex = glGetUniformBlockIndex(mShaderID, nameString.c_str());
 
-        UniformBuffer* ub = renderer->GetUniformBuffer(nameString);
+        UniformBuffer* ub = AssetManager::Get()->GetRenderer()->GetUniformBuffer(nameString);
 
         if (ub)
         {

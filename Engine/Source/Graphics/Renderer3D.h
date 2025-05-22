@@ -13,9 +13,8 @@ class VertexBuffer;
 class Renderer3D
 {
 public:
-	// Returns an instance of an Renderer3D (singleton)
-	// @return - Renderer3D* (pointer to the instance)
-	static Renderer3D* Get();
+	Renderer3D();
+	~Renderer3D();
 
 	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
 	// Enables any OpenGL functionality at the end
@@ -51,7 +50,7 @@ public:
 	// Retrieves a uniform buffer from the renderer's uniform buffer map by name
 	// @param - const std::string& for the uniform buffer name
 	// @return - UniformBuffer* for the desired uniform buffer
-	static UniformBuffer* GetUniformBuffer(const std::string& bufferName);
+	UniformBuffer* GetUniformBuffer(const std::string& bufferName);
 
 	// Creates a frame buffer for the renderer to use
 	// @param - int for the screen/window's width
@@ -106,8 +105,6 @@ public:
 
 private:
 	// FUNCTIONS
-	Renderer3D();
-	~Renderer3D();
 
 	// Inititialize SDL for video and audio, and check if successful
 	// @return - true if SDL was loaded successfully

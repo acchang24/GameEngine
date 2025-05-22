@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include "Graphics/Camera.h"
 #include "Graphics/Lights.h"
+#include "Graphics/Renderer3D.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
@@ -13,7 +14,6 @@ class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class JobManager;
-class Renderer3D;
 class Shader;
 class ShadowMap;
 class Skybox;
@@ -82,7 +82,7 @@ private:
 	std::vector<Entity*> mEntities;
 
 	// Renderer for graphics output
-	Renderer3D* mRenderer;
+	Renderer3D mRenderer;
 
 	// Pointer to a static asset manager
 	AssetManager* mAssetManager;

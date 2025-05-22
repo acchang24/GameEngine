@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "../MemoryManager/AssetManager.h"
 #include "Renderer3D.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -17,8 +18,8 @@ float shadowFarPlane = 1000.0f;
 ShadowMap::ShadowMap() :
 	mShadowConsts({}),
 	mShader(nullptr),
-	mVertexBuffer(Renderer3D::Get()->GetVertexBuffer()),
-	mShadowBuffer(Renderer3D::Get()->CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
+	mVertexBuffer(AssetManager::Get()->GetRenderer()->GetVertexBuffer()),
+	mShadowBuffer(AssetManager::Get()->GetRenderer()->CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0),
 	mTextureUnit(static_cast<int>(TextureType::Shadow))

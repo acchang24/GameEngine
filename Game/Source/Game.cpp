@@ -17,7 +17,6 @@
 #include "Graphics/MaterialCubeMap.h"
 #include "Graphics/Mesh.h"
 #include "Graphics/Model.h"
-#include "Graphics/Renderer3D.h"
 #include "Graphics/Shader.h"
 #include "Graphics/ShadowMap.h"
 #include "Graphics/Skybox.h"
@@ -47,7 +46,7 @@ const char* TITLE = "Game";
 SDL_bool MOUSE_CAPTURED = SDL_TRUE;
 
 Game::Game() :
-	mRenderer(Renderer3D::Get()),
+	mRenderer(),
 	mAssetManager(AssetManager::Get()),
 	mJobManager(JobManager::Get()),
 	mCamera(glm::vec3(0.0f, 0.0f, 3.0f)),
@@ -65,6 +64,7 @@ Game::Game() :
 	hdr(false),
 	bloom(false)
 {
+	mAssetManager->SetRenderer(&mRenderer);
 }
 
 Game::~Game()
@@ -77,14 +77,14 @@ bool Game::Init()
 
 	mJobManager->Begin();
 
-	if (!mRenderer->Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
+	if (!mRenderer.Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
 	{
 		return false;
 	}
 
-	mCamera.CreateBuffer(mRenderer);
+	mCamera.CreateBuffer(&mRenderer);
 
-	mLights.CreateBuffer(mRenderer);
+	mLights.CreateBuffer(&mRenderer);
 
 	mShadowMap = new ShadowMap();
 
@@ -92,15 +92,15 @@ bool Game::Init()
 
 	LoadShaders();
 
-	int width = mRenderer->GetWidth();
-	int height = mRenderer->GetHeight();
+	int width = mRenderer.GetWidth();
+	int height = mRenderer.GetHeight();
 
 	// Create frame buffers
-	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples(), mAssetManager->LoadShader("hdrGamma"));
-	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width / 2, height / 2, mAssetManager->LoadShader("bloomMask"));
-	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurHorizontal"));
-	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurVertical"));
-	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height, mAssetManager->LoadShader("bloomBlend"));
+	mMainFrameBuffer = mRenderer.CreateMultiSampledFrameBuffer(width, height, mRenderer.GetNumSubsamples(), mAssetManager->LoadShader("hdrGamma"));
+	mBloomMaskFrameBuffer = mRenderer.CreateFrameBuffer(width / 2, height / 2, mAssetManager->LoadShader("bloomMask"));
+	mBloomBlurHorizontalFrameBuffer = mRenderer.CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurHorizontal"));
+	mBloomBlurVerticalFrameBuffer = mRenderer.CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurVertical"));
+	mBloomBlendFrameBuffer = mRenderer.CreateFrameBuffer(width, height, mAssetManager->LoadShader("bloomBlend"));
 
 	LoadGameData();
 
@@ -109,7 +109,7 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
-	mRenderer->Shutdown();
+	mRenderer.Shutdown();
 
 	UnloadGameData();
 
@@ -776,7 +776,7 @@ void Game::Render()
 
 	mLights.SetBuffer();
 
-	mRenderer->ClearBuffers();
+	mRenderer.ClearBuffers();
 
 	{
 		PROFILE_SCOPE(RENDER_SHADOW_MAP);
@@ -788,7 +788,7 @@ void Game::Render()
 		RenderScene(mShadowMap->GetShader());
 
 		// End shadow render pass
-		mShadowMap->End(mRenderer->GetWidth(), mRenderer->GetHeight());
+		mShadowMap->End(mRenderer.GetWidth(), mRenderer.GetHeight());
 		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("phong"), "textureSamplers.shadow");
 		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("skinned"), "textureSamplers.shadow");
 	}
@@ -805,27 +805,27 @@ void Game::Render()
 	mBloomMaskFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Use the masked off texture and blur horizontally and readjust shader width
 	mBloomBlurHorizontalFrameBuffer->SetActive();
-	mBloomBlurHorizontalFrameBuffer->GetShader()->SetFloat("width", static_cast<float>(mRenderer->GetWidth() / 4));
+	mBloomBlurHorizontalFrameBuffer->GetShader()->SetFloat("width", static_cast<float>(mRenderer.GetWidth() / 4));
 	mBloomBlurHorizontalFrameBuffer->Draw(mBloomMaskFrameBuffer->GetTexture());
 	// Use the horizontally blurred texture to blur vertically to create the blurred image and readjust shader height
 	mBloomBlurVerticalFrameBuffer->SetActive();
-	mBloomBlurVerticalFrameBuffer->GetShader()->SetFloat("height", static_cast<float>(mRenderer->GetHeight() / 4));
+	mBloomBlurVerticalFrameBuffer->GetShader()->SetFloat("height", static_cast<float>(mRenderer.GetHeight() / 4));
 	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
 	// Use the multisampled texture and the blurred texture to additively blend them
 	mBloomBlendFrameBuffer->SetActive();
-	mRenderer->CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureType::FrameBuffer));
+	mRenderer.CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureType::FrameBuffer));
 	mBloomBlendFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Draw the final image
-	mRenderer->SetDefaultFrameBuffer();
+	mRenderer.SetDefaultFrameBuffer();
 	// Set the main frame buffer's shader active here (since SetDefaultFrameBuffer() does not activate a shader) and add HDR/gamma correction
 	mMainFrameBuffer->GetShader()->SetActive();
 	mMainFrameBuffer->Draw(mBloomBlendFrameBuffer->GetTexture());
 
 
 	mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
-	glViewport(0, 0, mRenderer->GetWidth(), mRenderer->GetHeight());
+	glViewport(0, 0, mRenderer.GetWidth(), mRenderer.GetHeight());
 
-	mRenderer->EndFrame();
+	mRenderer.EndFrame();
 }
 
 void Game::RenderScene()
@@ -869,11 +869,11 @@ void Game::ResizeWindow(const SDL_Event& event)
 		printf("Window width: %i, Window height: %i\n", width, height);
 
 		// Set new window dimensions
-		mRenderer->SetWidth(width);
-		mRenderer->SetHeight(height);
+		mRenderer.SetWidth(width);
+		mRenderer.SetHeight(height);
 
 		// Resize frame buffers
-		mRenderer->ResizeFrameBuffers();
+		mRenderer.ResizeFrameBuffers();
 	}
 }
 

@@ -1,5 +1,6 @@
 #include "Material.h"
 #include <iostream>
+#include "../MemoryManager/AssetManager.h"
 #include "Renderer3D.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -8,7 +9,7 @@
 Material::Material() : 
 	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 16.0f, false, false, false, false }),
 	mShader(nullptr),
-    mMaterialBuffer(Renderer3D::Get()->GetUniformBuffer("MaterialBuffer"))
+    mMaterialBuffer(AssetManager::Get()->GetRenderer()->GetUniformBuffer("MaterialBuffer"))
 {
 
 }
@@ -16,7 +17,7 @@ Material::Material() :
 Material::Material(const MaterialColors& mats) :
     mMats(mats),
     mShader(nullptr),
-    mMaterialBuffer(Renderer3D::Get()->GetUniformBuffer("MaterialBuffer"))
+    mMaterialBuffer(AssetManager::Get()->GetRenderer()->GetUniformBuffer("MaterialBuffer"))
 {
 
 }

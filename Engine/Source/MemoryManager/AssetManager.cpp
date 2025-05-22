@@ -1,7 +1,9 @@
 #include "AssetManager.h"
 #include <iostream>
+#include "../Graphics/Renderer3D.h"
 
 AssetManager::AssetManager() :
+	mRenderer(nullptr),
 	mShaderCache(new Cache<Shader>(this)),
 	mTextureCache(new Cache<Texture>(this)),
 	mMaterialCache(new Cache<Material>(this)),
