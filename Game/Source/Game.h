@@ -65,6 +65,10 @@ public:
 
 	void RenderScene(Shader* shader);
 
+	// Resizes the window, updates viewport, and resizes all frame buffers
+	// @param - const SDL_Event& for the resize window event
+	void ResizeWindow(const SDL_Event& event);
+
 	// Adds an entity to the game's vector of entities
 	// @param - Entity* for the new entity
 	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }

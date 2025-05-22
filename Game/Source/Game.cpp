@@ -423,29 +423,7 @@ void Game::ProcessInput()
 		case SDL_WINDOWEVENT:
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 			{
-				SDL_Window* window = SDL_GetWindowFromID(event.window.windowID);
-				if (window)
-				{
-					int width = event.window.data1;
-					int height = event.window.data2;
-
-					float ratio = static_cast<float>(width) / static_cast<float>(height);
-
-					// Set new camera aspect ratio
-					mCamera.SetAspectRatio(ratio);
-
-					// Set new viewport dimensions
-					glViewport(0, 0, width, height);
-
-					printf("Window width: %i, Window height: %i\n", width, height);
-				
-					// Set new window dimensions
-					mRenderer->SetWidth(width);
-					mRenderer->SetHeight(height);
-
-					// Resize frame buffers
-					mRenderer->ResizeFrameBuffers();
-				}
+				ResizeWindow(event);
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
@@ -874,6 +852,33 @@ void Game::RenderScene(Shader* shader)
 	}
 
 	mSkybox->Draw(mCamera.GetViewMatrix(), mCamera.GetProjectionMatrix());
+}
+
+void Game::ResizeWindow(const SDL_Event& event)
+{
+	SDL_Window* window = SDL_GetWindowFromID(event.window.windowID);
+	if (window)
+	{
+		int width = event.window.data1;
+		int height = event.window.data2;
+
+		float ratio = static_cast<float>(width) / static_cast<float>(height);
+
+		// Set new camera aspect ratio
+		mCamera.SetAspectRatio(ratio);
+
+		// Set new viewport dimensions
+		glViewport(0, 0, width, height);
+
+		printf("Window width: %i, Window height: %i\n", width, height);
+
+		// Set new window dimensions
+		mRenderer->SetWidth(width);
+		mRenderer->SetHeight(height);
+
+		// Resize frame buffers
+		mRenderer->ResizeFrameBuffers();
+	}
 }
 
 void Game::RemoveGameEntity(Entity* e)
