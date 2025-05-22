@@ -11,10 +11,8 @@
 #include "Animation/Skeleton.h"
 #include "Components/AnimationComponent.h"
 #include "Entity/Entity3D.h"
-#include "Graphics/Camera.h"
 #include "Graphics/FrameBuffer.h"
 #include "Graphics/FrameBufferMultiSampled.h"
-#include "Graphics/Lights.h"
 #include "Graphics/Material.h"
 #include "Graphics/MaterialCubeMap.h"
 #include "Graphics/Mesh.h"
@@ -52,8 +50,8 @@ Game::Game() :
 	mRenderer(Renderer3D::Get()),
 	mAssetManager(AssetManager::Get()),
 	mJobManager(JobManager::Get()),
-	mCamera(nullptr),
-	mLights(nullptr),
+	mCamera(glm::vec3(0.0f, 0.0f, 3.0f)),
+	mLights(),
 	mShadowMap(nullptr),
 	mSkybox(nullptr),
 	mMainFrameBuffer(nullptr),
@@ -84,10 +82,9 @@ bool Game::Init()
 		return false;
 	}
 
-	mCamera = new Camera();
-	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+	mCamera.CreateBuffer(mRenderer);
 
-	mLights = new Lights();
+	mLights.CreateBuffer(mRenderer);
 
 	mShadowMap = new ShadowMap();
 
@@ -120,13 +117,9 @@ void Game::Shutdown()
 
 	UnloadGameData();
 
-	delete mCamera;
+	delete mShadowMap;
 
 	delete mSkybox;
-
-	delete mLights;
-
-	delete mShadowMap;
 
 	mJobManager->End();
 
@@ -351,10 +344,10 @@ void Game::LoadGameData()
 	mShadowMap->SetShader(mAssetManager->LoadShader("shadowDepth"));
 	pos = lightPosition;
 
-	DirectionalLight* dirLight = mLights->AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
+	DirectionalLight* dirLight = mLights.AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
 	dirLight->data.usesShadow = true;
 
-	PointLight* pointLight = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 3.0f, 60.0f), 1.0f, 0.014f, 0.0007f);
+	PointLight* pointLight = mLights.AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 3.0f, 60.0f), 1.0f, 0.014f, 0.0007f);
 	pointLight->data.diffuseIntensity = 70.0f;
 	pointLight->data.specularIntensity = 50.0f;
 	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -362,14 +355,14 @@ void Game::LoadGameData()
 	lightSphere->SetPosition(glm::vec3(1.0f, 3.0f, 60.0f));
 	AddGameEntity(lightSphere);
 
-	//SpotLight* spotLight = mLights->AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
+	//SpotLight* spotLight = mLights.AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 	//	glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
 	//Sphere* lightSphere2 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	//lightSphere2->SetMaterial(reflectiveMat);
 	//lightSphere2->SetPosition(glm::vec3(-0.7f, 3.0, 0.0f));
 	//AddGameEntity(lightSphere2);
 
-	PointLight* pointLight2 = mLights->AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -120.0f), 1.0f, 0.014f, 0.0007f);
+	PointLight* pointLight2 = mLights.AllocatePointLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 3.0f, -120.0f), 1.0f, 0.014f, 0.0007f);
 	pointLight2->data.diffuseIntensity = 70.0f;
 	pointLight2->data.specularIntensity = 900.0f;
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -439,7 +432,7 @@ void Game::ProcessInput()
 					float ratio = static_cast<float>(width) / static_cast<float>(height);
 
 					// Set new camera aspect ratio
-					mCamera->SetAspectRatio(ratio);
+					mCamera.SetAspectRatio(ratio);
 
 					// Set new viewport dimensions
 					glViewport(0, 0, width, height);
@@ -480,9 +473,9 @@ void Game::ProcessInput()
 	}
 
 	// Camera
-	CameraMode mode = mCamera->GetCameraMode();
-	glm::vec3 right = mCamera->GetRight();
-	glm::vec3 up = mCamera->GetUp();
+	CameraMode mode = mCamera.GetCameraMode();
+	glm::vec3 right = mCamera.GetRight();
+	glm::vec3 up = mCamera.GetUp();
 
 	glm::vec3 camPanDir = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -495,7 +488,7 @@ void Game::ProcessInput()
 			camPanDir += glm::normalize(glm::cross(up, right));
 			break;
 		case CameraMode::Fly:
-			camPanDir += mCamera->GetForward();
+			camPanDir += mCamera.GetForward();
 			break;
 		}
 	}
@@ -507,7 +500,7 @@ void Game::ProcessInput()
 			camPanDir -= glm::normalize(glm::cross(up, right));
 			break;
 		case CameraMode::Fly:
-			camPanDir -= mCamera->GetForward();
+			camPanDir -= mCamera.GetForward();
 			break;
 		}
 	}
@@ -525,19 +518,19 @@ void Game::ProcessInput()
 			camPanDir += right;
 		}
 	}
-	mCamera->SetPanDir(camPanDir);
+	mCamera.SetPanDir(camPanDir);
 
 	// Toggle camera modes
 	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_V))
 	{
-		mCamera->ToggleCameraModes();
+		mCamera.ToggleCameraModes();
 	}
 
 	// Toggle the main directional light
 	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_SPACE))
 	{
-		bool light = mLights->GetLights().directionalLight[0].data.isEnabled;
-		mLights->GetLights().directionalLight[0].data.isEnabled = !light;
+		bool light = mLights.GetLights().directionalLight[0].data.isEnabled;
+		mLights.GetLights().directionalLight[0].data.isEnabled = !light;
 	}
 
 	// Capture mouse
@@ -795,7 +788,7 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mCamera->Update(deltaTime, &mMouse);
+	mCamera.Update(deltaTime, &mMouse);
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	mJobManager->WaitForJobs();
@@ -805,9 +798,9 @@ void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
 
-	mCamera->SetActive();
+	mCamera.SetBuffer();
 
-	mLights->SetActive();
+	mLights.SetBuffer();
 
 	mRenderer->ClearBuffers();
 
@@ -870,7 +863,7 @@ void Game::RenderScene()
 		e->Draw();
 	}
 
-	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
+	mSkybox->Draw(mCamera.GetViewMatrix(), mCamera.GetProjectionMatrix());
 }
 
 void Game::RenderScene(Shader* shader)
@@ -880,7 +873,7 @@ void Game::RenderScene(Shader* shader)
 		static_cast<Entity3D*>(e)->Draw(shader);
 	}
 
-	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
+	mSkybox->Draw(mCamera.GetViewMatrix(), mCamera.GetProjectionMatrix());
 }
 
 void Game::RemoveGameEntity(Entity* e)

@@ -121,11 +121,11 @@ void Renderer3D::EndFrame()
 	SDL_GL_SwapWindow(mWindow);
 }
 
-/* STATIC */ UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName)
+UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName)
 {
 	UniformBuffer* buffer = new UniformBuffer(bufferSize, bindingPoint, bufferName);
 
-	Get()->mUniformBuffers[bufferName] = buffer;
+	mUniformBuffers[bufferName] = buffer;
 
 	return buffer;
 }

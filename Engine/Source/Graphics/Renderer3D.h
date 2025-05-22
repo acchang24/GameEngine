@@ -46,7 +46,7 @@ public:
 	// @param - BufferBindingPoint for the buffer's binding point
 	// @param - const char* for the buffer's name
 	// @return - UniformBuffer* for the newly created buffer object
-	static UniformBuffer* CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName);
+	UniformBuffer* CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName);
 
 	// Retrieves a uniform buffer from the renderer's uniform buffer map by name
 	// @param - const std::string& for the uniform buffer name

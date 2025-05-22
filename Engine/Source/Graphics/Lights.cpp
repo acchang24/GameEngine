@@ -5,7 +5,7 @@
 
 Lights::Lights() :
 	mLightArrays({}),
-	mLightBuffer(Renderer3D::CreateUniformBuffer(sizeof(LightArrays), BufferBindingPoint::Lights, "LightBuffer"))
+	mLightBuffer(nullptr)
 {
 
 }
@@ -17,7 +17,15 @@ Lights::~Lights()
 	DeAllocateLights();
 }
 
-void Lights::SetActive()
+void Lights::CreateBuffer(Renderer3D* renderer)
+{
+	if (mLightBuffer == nullptr)
+	{
+		mLightBuffer = renderer->CreateUniformBuffer(sizeof(LightArrays), BufferBindingPoint::Lights, "LightBuffer");
+	}
+}
+
+void Lights::SetBuffer()
 {
 	mLightBuffer->UpdateBufferData(&mLightArrays);
 }

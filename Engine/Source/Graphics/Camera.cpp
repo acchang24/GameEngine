@@ -24,7 +24,32 @@ Camera::Camera() :
 	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
 	mRight(glm::normalize(glm::cross(mForward, mUp))),
 	mPanDir(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mCameraBuffer(Renderer3D::CreateUniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer")),
+	mCameraBuffer(nullptr),
+	mMode(CameraMode::First),
+	mProjectionMode(CameraProjection::Perspective),
+	mYaw(-90.0f),
+	mPitch(0.0f),
+	mRoll(0.0f),
+	mFOV(FOV),
+	mAspectRatio(WIDTH_RATIO / HEIGHT_RATIO),
+	mNearPlane(NEAR_PLANE),
+	mFarPlane(FAR_PLANE),
+	mFollowDistance(FOLLOW_DISTANCE),
+	mOrthoHeight(ORTHO_HEIGHT)
+{
+	SetProjectionMode(mProjectionMode);
+}
+
+Camera::Camera(const glm::vec3& pos) :
+	mCamConsts({ glm::mat4(1.0f), pos, 0.0f }),
+	mView(glm::mat4(1.0f)),
+	mProjection(glm::mat4(1.0f)),
+	mTarget(glm::vec3(0.0f, 0.0f, 0.0f)),
+	mForward(glm::normalize(mTarget - mCamConsts.position)),
+	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
+	mRight(glm::normalize(glm::cross(mForward, mUp))),
+	mPanDir(glm::vec3(0.0f, 0.0f, 0.0f)),
+	mCameraBuffer(nullptr),
 	mMode(CameraMode::First),
 	mProjectionMode(CameraProjection::Perspective),
 	mYaw(-90.0f),
@@ -42,39 +67,36 @@ Camera::Camera() :
 
 Camera::~Camera()
 {
-	std::cout << "Delete camera" << std::endl;
+	std::cout << "Deleted camera" << std::endl;
 }
 
-void Camera::SetActive()
+void Camera::CreateBuffer(Renderer3D* renderer)
 {
+	if (mCameraBuffer == nullptr)
+	{
+		mCameraBuffer = renderer->CreateUniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer");
+	}
+}
+
+void Camera::SetBuffer()
+{
+	// Update view matrix
 	switch (mMode)
 	{
 	case CameraMode::First:
-		mForward = glm::normalize(CalculateRotation(1.0f, static_cast<float>(mYaw), static_cast<float>(mPitch)));
-
-		mView = glm::lookAt(mCamConsts.position, mCamConsts.position + mForward, mUp);
-		break;
 	case CameraMode::Fly:
-		mForward = glm::normalize(CalculateRotation(1.0f, static_cast<float>(mYaw), static_cast<float>(mPitch)));
-
 		mView = glm::lookAt(mCamConsts.position, mCamConsts.position + mForward, mUp);
 		break;
 	case CameraMode::Orbit:
-		mForward = glm::normalize(mTarget - mCamConsts.position);
-
-		mView = glm::lookAt(mCamConsts.position, mTarget, mUp);
-		break;
 	case CameraMode::Third:
-		mForward = glm::normalize(mTarget - mCamConsts.position);
-
 		mView = glm::lookAt(mCamConsts.position, mTarget, mUp);
 		break;
 	}
 
-	mRight = glm::normalize(glm::cross(mForward, mUp));
-
+	// Calculate view * projection matrix to send to GPU
 	mCamConsts.viewProjection = mProjection * mView;
 
+	// Update buffer
 	mCameraBuffer->UpdateBufferData(&mCamConsts);
 }
 
@@ -132,25 +154,31 @@ void Camera::Update(float deltaTime, Mouse* mouse)
 
 	ClampPitch();
 
-	if (mMode == CameraMode::Orbit)
+	switch (mMode)
 	{
-		// Offset from the target with yaw and pitch rotations
-		glm::vec3 offset = CalculateRotation(mFollowDistance, static_cast<float>(mYaw), static_cast<float>(mPitch));
+	case CameraMode::First:
+	case CameraMode::Fly:
+		// Update position based on directional inputs
+		mCamConsts.position = GetPosition() + mPanDir * SPEED * deltaTime;
+		// Update camera's forward vector based on orientation
+		mForward = glm::normalize(CalculateRotation(1.0f, static_cast<float>(mYaw), static_cast<float>(mPitch)));
+		break;
+	case CameraMode::Orbit:
+		// Update camera position based on orientation
+		mCamConsts.position = mTarget + (CalculateRotation(mFollowDistance, static_cast<float>(mYaw), static_cast<float>(mPitch)) * -1.0f);
+		// Update camera's forward vector based on camera position and target position
+		mForward = glm::normalize(mTarget - mCamConsts.position);
+		break;
+	case CameraMode::Third:
+		// Update camera position based on orientation
+		mCamConsts.position = mTarget - CalculateRotation(mFollowDistance, static_cast<float>(mYaw), static_cast<float>(mPitch));
+		// Update camera's forward vector based on camera position and target position
+		mForward = glm::normalize(mTarget - mCamConsts.position);
+		break;
+	}
 
-		SetPosition(mTarget + offset * -1.0f);
-	}
-	if (mMode == CameraMode::Third)
-	{
-		// Offset from the target with yaw and pitch rotations
-		glm::vec3 offset = CalculateRotation(mFollowDistance, static_cast<float>(mYaw), static_cast<float>(mPitch));
-
-		// Calculate new camera position behind the target
-		SetPosition(mTarget - offset);
-	}
-	if (mMode == CameraMode::First || mMode == CameraMode::Fly)
-	{
-		SetPosition(GetPosition() + mPanDir * SPEED * deltaTime);
-	}
+	// Update the camera's right vector
+	mRight = glm::normalize(glm::cross(mForward, mUp));
 }
 
 void Camera::ToggleCameraModes()

@@ -3,16 +3,16 @@
 #include <vector>
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
+#include "Graphics/Camera.h"
+#include "Graphics/Lights.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
 class AssetManager;
-class Camera;
 class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class JobManager;
-class Lights;
 class Renderer3D;
 class Shader;
 class ShadowMap;
@@ -87,10 +87,10 @@ private:
 	JobManager* mJobManager;
 
 	// The game's camera
-	Camera* mCamera;
+	Camera mCamera;
 
-	// Use lighting
-	Lights* mLights;
+	// Game's lighting
+	Lights mLights;
 
 	// ShadowMap for shadows
 	ShadowMap* mShadowMap;

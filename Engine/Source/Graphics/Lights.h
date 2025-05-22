@@ -1,6 +1,7 @@
 #pragma once
 #include "LightConstants.h"
 
+class Renderer3D;
 class UniformBuffer;
 
 // Lights class manages all the lighting within a scene.
@@ -13,8 +14,12 @@ public:
 	Lights();
 	~Lights();
 
+	// Creates a UniformBuffer for lights object to send lighting data to a buffer
+	// @param - Renderer3D* to create/add a buffer to its map of UniformBuffers
+	void CreateBuffer(Renderer3D* renderer);
+
 	// Updates the lighting buffer with the current state of the light arrays
-	void SetActive();
+	void SetBuffer();
 
 	// Gets the light arrays
 	// @return - LightArrays& for the light arrays

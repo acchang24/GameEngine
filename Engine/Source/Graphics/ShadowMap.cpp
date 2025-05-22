@@ -18,7 +18,7 @@ ShadowMap::ShadowMap() :
 	mShadowConsts({}),
 	mShader(nullptr),
 	mVertexBuffer(Renderer3D::Get()->GetVertexBuffer()),
-	mShadowBuffer(Renderer3D::CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
+	mShadowBuffer(Renderer3D::Get()->CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0),
 	mTextureUnit(static_cast<int>(TextureType::Shadow))

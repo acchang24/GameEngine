@@ -27,6 +27,7 @@ struct CameraConsts
 };
 
 class Mouse;
+class Renderer3D;
 class UniformBuffer;
 
 // Camera class is mainly responsible for using the view matrix
@@ -36,13 +37,16 @@ class Camera
 {
 public:
 	Camera();
+	Camera(const glm::vec3& pos);
 	~Camera();
 
-	// SetActive is responsible for updating the camera's forward vector
-	// as well as recalculating its right vector. It then calculates the 
-	// new view matrix. It combines the view matrix with the projection matrix 
+	// Creates a UniformBuffer for the camera to send view/projection matrix data to a buffer
+	// @param - Renderer3D* to create/add a buffer to its map of UniformBuffers
+	void CreateBuffer(Renderer3D* renderer);
+
+	// Updates the camera's view matrix, combines with the projection matrix 
 	// and updates the CameraConsts struct to send to the shader's buffers
-	void SetActive();
+	void SetBuffer();
 
 	// Gets the camera's constants
 	// @return - const CameraConst& for the camera's constants
@@ -209,7 +213,7 @@ private:
 	// Camera's direction that it will pan/move to
 	glm::vec3 mPanDir;
 
-	// Uniform buffer for camera
+	// Uniform buffer for camera (ownership of this taken care of in Renderer3D. Do not need to delete in destructor)
 	UniformBuffer* mCameraBuffer;
 
 	// Camera's current mode
