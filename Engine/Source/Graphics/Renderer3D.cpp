@@ -39,6 +39,8 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 
 	if (!CreateContext())
 	{
+		// Destroy window before returning false
+		SDL_DestroyWindow(mWindow);
 		return false;
 	}
 
@@ -74,12 +76,6 @@ void Renderer3D::Shutdown()
 {
 	std::cout << "Shutting down Renderer3D\n";
 	
-	SDL_GL_DeleteContext(mContext);
-	
-	SDL_DestroyWindow(mWindow);
-	
-	SDL_Quit();
-
 	for (auto& ub : mUniformBuffers)
 	{
 		delete ub.second;
@@ -93,6 +89,12 @@ void Renderer3D::Shutdown()
 	mFrameBuffers.clear();
 
 	delete mVertexBuffer;
+
+	SDL_GL_DeleteContext(mContext);
+	
+	SDL_DestroyWindow(mWindow);
+	
+	SDL_Quit();
 }
 
 void Renderer3D::ClearBuffers()
@@ -132,7 +134,7 @@ UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingP
 
 /* STATIC */ UniformBuffer* Renderer3D::GetUniformBuffer(const std::string& bufferName)
 {
-	std::unordered_map<std::string, UniformBuffer*> buffers = Get()->mUniformBuffers;
+	std::unordered_map<std::string, UniformBuffer*>& buffers = Get()->mUniformBuffers;
 
 	auto iter = buffers.find(bufferName);
 
@@ -144,24 +146,20 @@ UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingP
 	return nullptr;
 }
 
-/* STATIC */ FrameBuffer* Renderer3D::CreateFrameBuffer(float size)
+FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, Shader* shader)
 {
-	Renderer3D* renderer = Get();
+	FrameBuffer* framebuffer = new FrameBuffer(width, height, this, shader);
 
-	FrameBuffer* framebuffer = new FrameBuffer(renderer->GetWidth(), renderer->GetHeight(), size);
-
-	renderer->mFrameBuffers.emplace_back(framebuffer);
+	mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
 
-/* STATIC */ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int subsamples, float size)
+FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int width, int height, int subsamples, Shader* shader)
 {
-	Renderer3D* renderer = Get();
+	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(width, height, subsamples, this, shader);
 
-	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(renderer->GetWidth(), renderer->GetHeight(), subsamples, size);
-
-	renderer->mFrameBuffers.emplace_back(framebuffer);
+	mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
 }
@@ -191,11 +189,14 @@ void Renderer3D::ResizeFrameBuffers()
 		FrameBufferMultiSampled* multiSampledFrameBuffer = dynamic_cast<FrameBufferMultiSampled*>(fb);
 		if(multiSampledFrameBuffer)
 		{
-			multiSampledFrameBuffer->Load(mWindowWidth, mWindowHeight, mNumSubsamples);
+			multiSampledFrameBuffer->Load(mWindowWidth * multiSampledFrameBuffer->GetWidthRatio(), mWindowHeight * multiSampledFrameBuffer->GetHeightRatio(), mNumSubsamples);
 		}
 		else
 		{
-			fb->Load(mWindowWidth, mWindowHeight);
+			if (fb)
+			{
+				fb->Load(mWindowWidth * fb->GetWidthRatio(), mWindowHeight * fb->GetHeightRatio());
+			}
 		}
 	}
 }
@@ -263,7 +264,7 @@ bool Renderer3D::CreateWindow()
 		mWindowHeight = dm.h;
 
 		mWindow = SDL_CreateWindow(
-			mWindowTitle,
+			mWindowTitle.c_str(),
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			mWindowWidth,
@@ -274,7 +275,7 @@ bool Renderer3D::CreateWindow()
 	else
 	{
 		mWindow = SDL_CreateWindow(
-			mWindowTitle,
+			mWindowTitle.c_str(),
 			SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED,
 			mWindowWidth,
@@ -319,9 +320,6 @@ void Renderer3D::LoadSdlSettings(SDL_bool mouseCaptured) const
 	SDL_SetRelativeMouseMode(mouseCaptured);
 	// Clear any saved values
 	SDL_GetRelativeMouseState(nullptr, nullptr);
-	
-	// Callback function for when window is resized
-	//SDL_AddEventWatch(ResizeWindowEventWatcher, mWindow);
 }
 
 void Renderer3D::SetOpenGLCapabilities() const

@@ -1,6 +1,7 @@
 #pragma once
 #include "Texture.h"
 
+class Renderer3D;
 class Shader;
 class VertexBuffer;
 
@@ -13,14 +14,15 @@ public:
 	// FrameBuffer constructor
 	// @param - int for the screen/window's width
 	// @param - int for the screen/window's height
-	// @param - float for the frame buffer's size
-	FrameBuffer(int windowWidth, int windowHeight, float size);
+	// @param - Renderer3D* for renderer 
+	// @param - Shader* for the framebuffer's shader
+	FrameBuffer(int width, int height, Renderer3D* renderer, Shader* shader);
 	virtual ~FrameBuffer();
 
 	// Generates a new frame buffer
 	// @param - int for the screen/window's width
 	// @param - int for the screen/window's height
-	void Load(int windowWidth, int windowHeight);
+	void Load(int width, int height);
 
 	// Deletes the framebuffer, texture, and renderbuffer references
 	virtual void Unload();
@@ -45,6 +47,14 @@ public:
 	// Returns the offscreen color attachment texture
 	// @return - unsigned int for the id of the color attachment texture
 	unsigned int GetTexture() const { return mTexture; }
+
+	// Gets the width ratio relative to original screen size
+	// @return - float for the size
+	float GetWidthRatio() const { return mWidthRatio; }
+
+	// Gets the ratio ratio relative to original screen size
+	// @return - float for the size
+	float GetHeightRatio() const { return mHeightRatio; }
 
 protected:
 	// The shader used to help draw the frame buffer's quad
@@ -71,7 +81,9 @@ protected:
 	// Framebuffer's height
 	int mHeight;
 
-	// Frame buffer's size relative to screen
-	// E.g. - use 0.5f for a frame buffer that is half of the screen/window size
-	float mSize;
+	// Frame buffer's width size relative to screen
+	float mWidthRatio;
+
+	// Frame buffer's height size relative to screen
+	float mHeightRatio;
 };

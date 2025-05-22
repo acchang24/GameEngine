@@ -54,15 +54,17 @@ public:
 	static UniformBuffer* GetUniformBuffer(const std::string& bufferName);
 
 	// Creates a frame buffer for the renderer to use
-	// @param - float for the frame buffer's scale relative to the window/screen size 
-	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	static FrameBuffer* CreateFrameBuffer(float scale = 1.0f);
+	// @param - int for the screen/window's width
+	// @param - int for the screen/window's height
+	// @param - Shader* for the framebuffer's shader
+	FrameBuffer* CreateFrameBuffer(int width, int height, Shader* shader);
 
 	// Creates a multisampled frame buffer for the renderer to use
+	// @param - int for the screen/window's width
+	// @param - int for the screen/window's height
 	// @param - int for the number of subsamples used for anti-aliasing
-	// @param - float for the frame buffer's scale relative to the window/screen size 
-	// (add a float if a larger/smaller frame buffer size is needed, otherwise it will default to 1.0f)
-	static FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int subsamples, float scale = 1.0f);
+	// @param - Shader* for the framebuffer's shader
+	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples, Shader* shader);
 
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active
@@ -151,7 +153,7 @@ private:
 	SDL_GLContext mContext;
 
 	// Title used for the window
-	const char* mWindowTitle;
+	std::string mWindowTitle;
 
 	// Number of subsamples for anti-aliasing
 	int mNumSubsamples;

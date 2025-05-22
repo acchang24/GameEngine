@@ -88,23 +88,19 @@ bool Game::Init()
 
 	mShadowMap = new ShadowMap();
 
-	// Create frame buffers
-	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(mRenderer->GetNumSubsamples());
-	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(0.5f);
-	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(0.25f);
-	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(0.25f);
-	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer();
-
 	PROFILE_SCOPE(LOAD_DATA);
 
 	LoadShaders();
 
-	// Set frame buffer shaders
-	mMainFrameBuffer->SetShader(mAssetManager->LoadShader("hdrGamma"));
-	mBloomMaskFrameBuffer->SetShader(mAssetManager->LoadShader("bloomMask"));
-	mBloomBlurHorizontalFrameBuffer->SetShader(mAssetManager->LoadShader("bloomBlurHorizontal"));
-	mBloomBlurVerticalFrameBuffer->SetShader(mAssetManager->LoadShader("bloomBlurVertical"));
-	mBloomBlendFrameBuffer->SetShader(mAssetManager->LoadShader("bloomBlend"));
+	int width = mRenderer->GetWidth();
+	int height = mRenderer->GetHeight();
+
+	// Create frame buffers
+	mMainFrameBuffer = mRenderer->CreateMultiSampledFrameBuffer(width, height, mRenderer->GetNumSubsamples(), mAssetManager->LoadShader("hdrGamma"));
+	mBloomMaskFrameBuffer = mRenderer->CreateFrameBuffer(width / 2, height / 2, mAssetManager->LoadShader("bloomMask"));
+	mBloomBlurHorizontalFrameBuffer = mRenderer->CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurHorizontal"));
+	mBloomBlurVerticalFrameBuffer = mRenderer->CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurVertical"));
+	mBloomBlendFrameBuffer = mRenderer->CreateFrameBuffer(width, height, mAssetManager->LoadShader("bloomBlend"));
 
 	LoadGameData();
 

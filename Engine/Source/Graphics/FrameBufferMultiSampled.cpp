@@ -4,13 +4,13 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 
-FrameBufferMultiSampled::FrameBufferMultiSampled(int windowWidth, int windowHeight, int subsamples, float size) :
-	FrameBuffer(windowWidth, windowHeight, size),
+FrameBufferMultiSampled::FrameBufferMultiSampled(int width, int height, int subsamples, Renderer3D* renderer, Shader* shader) :
+	FrameBuffer(width, height, renderer, shader),
 	mMSAAFrameBuffer(0),
 	mTextureMultiSampled(0),
 	mRenderBufferMultiSampled(0)
 {
-	Load(windowWidth, windowHeight, subsamples);
+	Load(width, height, subsamples);
 }
 
 FrameBufferMultiSampled::~FrameBufferMultiSampled()
@@ -20,12 +20,12 @@ FrameBufferMultiSampled::~FrameBufferMultiSampled()
 	Unload();
 }
 
-void FrameBufferMultiSampled::Load(int windowWidth, int windowHeight, int subsamples)
+void FrameBufferMultiSampled::Load(int width, int height, int subsamples)
 {
 	// Re-adjust the width/height of the framebuffer to the new window width/height
 	// and based of frame buffer size (this is in case of a window resize)
-	mWidth = windowWidth * mSize;
-	mHeight = windowHeight * mSize;
+	mWidth = width;
+	mHeight = height;
 
 	if (mFrameBuffer == 0 && mTexture == 0 && mRenderBuffer == 0)
 	{

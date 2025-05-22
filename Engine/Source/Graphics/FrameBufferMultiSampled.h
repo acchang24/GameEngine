@@ -11,15 +11,16 @@ public:
 	// @param - int for the screen/window's width
 	// @param - int for the screen/window's height
 	// @param - int for the number of subsamples used for anti-aliasing
-	// @param - float for the frame buffer's size
-	FrameBufferMultiSampled(int windowWidth, int windowHeight, int subsamples, float size);
+	// @param - Renderer3D* for renderer 
+	// @param - Shader* for the framebuffer's shader
+	FrameBufferMultiSampled(int width, int height, int subsamples, Renderer3D* renderer, Shader* shader);
 	~FrameBufferMultiSampled();
 
 	// Generates a new multi-sampled framebuffer
 	// @param - int for the screen/window's width
 	// @param - int for the screen/window's height
 	// @param - int for the number of subsamples used for anti-aliasing
-	void Load(int windowWidth, int windowHeight, int subsamples);
+	void Load(int width, int height, int subsamples);
 
 	// Deletes the framebuffer, texture, and renderbuffer references as well as its parent's references
 	void Unload() override;

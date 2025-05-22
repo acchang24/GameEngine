@@ -7,18 +7,19 @@
 #include "VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 
-FrameBuffer::FrameBuffer(int windowWidth, int windowHeight, float size) :
-	mShader(nullptr),
+FrameBuffer::FrameBuffer(int width, int height, Renderer3D* renderer, Shader* shader) :
+	mShader(shader),
 	mVertexBuffer(Renderer3D::Get()->GetVertexBuffer()),
 	mFrameBuffer(0),
 	mTexture(0),
 	mRenderBuffer(0),
 	mTextureUnit(static_cast<int>(TextureType::FrameBuffer)),
-	mWidth(windowWidth * size),
-	mHeight(windowHeight * size),
-	mSize(size)
+	mWidth(width),
+	mHeight(height),
+	mWidthRatio(static_cast<float>(width) / renderer->GetWidth()),
+	mHeightRatio(static_cast<float>(height) / renderer->GetHeight())
 {
-	Load(windowWidth, windowHeight);
+	Load(width, height);
 }
 
 FrameBuffer::~FrameBuffer()
@@ -28,12 +29,12 @@ FrameBuffer::~FrameBuffer()
 	Unload();
 }
 
-void FrameBuffer::Load(int windowWidth, int windowHeight)
+void FrameBuffer::Load(int width, int height)
 {
 	// Re-adjust the width/height of the framebuffer to the new window width/height
 	// and based of frame buffer size (this is in case of a window resize)
-	mWidth = windowWidth * mSize;
-	mHeight = windowHeight * mSize;
+	mWidth = width;
+	mHeight = height;
 
 	// Create a frame buffer object with non multisampled texture attachment
 	glGenFramebuffers(1, &mFrameBuffer);
