@@ -27,7 +27,7 @@ public:
 	// and creates an OpenGl texture object
 	// @param - const std::string& for the texture file name
 	// @param - TextureType for the type used for the texture
-	Texture(const std::string& textureFile);
+	Texture(const std::string& textureFile, TextureType type);
 	~Texture();
 
 	// Bind it to so any subsequent texture commands will use the currently bound texture
@@ -35,17 +35,17 @@ public:
 	// There is a minimum of 16 texture units to use (GL_TEXTURE0 to GL_TEXTURE15)
 	void BindTexture() const;
 
+	// Gets the texture's file name
+	// @return - const std::string& for the name of the file
+	const std::string& GetName() const { return mName; }
+
 	// Getter for the texture's ID
-	// @return - unsinged int mTextureID;
+	// @return - unsigned int mTextureID;
 	unsigned int GetID() const { return mTextureID; }
 
 	// Getter for the texture type
 	// @return - TextureType mType
 	TextureType GetType() const { return mType; }
-
-	// Setter for the texture type, then loads/generates the texture based on the type
-	// @param - TextureType for the texture type
-	void SetType(TextureType type);
 
 private:
 	// Binds a texture and uses stbi to load a texture based off the texture's file name.

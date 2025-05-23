@@ -275,9 +275,6 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 			path = mDirectory + (str.C_Str());
 
 			std::cout << "Loading texture: " << path << "\n";
-
-			// Load the texture
-			Texture* t = AssetManager::LoadTexture(path);
 			
 			// Set the texture's type
 			TextureType type = TextureType::None;
@@ -296,7 +293,8 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 				type = TextureType::Normal;
 				break;
 			}
-			t->SetType(type);
+			// Load the texture
+			Texture* t = AssetManager::LoadTexture(path, type);
 
 			++mNumTextures;
 			

@@ -55,11 +55,15 @@ public:
 	// @param - Texture* for the texture that is being saved. 
 	void SaveTexture(const std::string& textureFileName, Texture* texture) { mTextureCache->StoreCache(textureFileName, texture); }
 	// Retrieves a texture from the texture cache's map if it exists.
-	// If not, it will load/create a new texture and save it into the map.
-	// Make sure to call Texture::SetType() right after if loading texture for the first time
 	// @param - const std::string& for the texture name
 	// @return - Texture* for the desired texture
 	static Texture* LoadTexture(const std::string& textureFileName);
+	// Retrieves a texture from the texture cache's map if it exists.
+	// If not, it will load/create a new texture and save it into the map.
+	// @param - const std::string& for the texture name
+	// @param - TextureType for the type
+	// @return - Texture* for the desired texture
+	static Texture* LoadTexture(const std::string& textureFIleName, TextureType type);
 	// Clears each element from the texture cache's map
 	void ClearTextures() { mShaderCache->Clear(); }
 

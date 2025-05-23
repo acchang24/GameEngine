@@ -55,13 +55,18 @@ AssetManager* AssetManager::Get()
 
 Texture* AssetManager::LoadTexture(const std::string& textureFileName)
 {
+	return AssetManager::Get()->mTextureCache->Get(textureFileName);
+}
+
+Texture* AssetManager::LoadTexture(const std::string& textureFileName, TextureType type)
+{
 	AssetManager* am = AssetManager::Get();
 
 	Texture* texture = am->mTextureCache->Get(textureFileName);
 
 	if (!texture)
 	{
-		texture = new Texture(textureFileName);
+		texture = new Texture(textureFileName, type);
 		am->SaveTexture(textureFileName, texture);
 	}
 

@@ -4,16 +4,18 @@
 #include "stb_image.h"
 #include "../MemoryManager/AssetManager.h"
 
-Texture::Texture(const std::string& textureFile) :
+Texture::Texture(const std::string& textureFile, TextureType type) :
 	mName(textureFile),
 	mTextureID(0),
 	mWidth(0),
 	mHeight(0),
 	mNumChannels(0),
-	mType(TextureType::None)
+	mType(type)
 {
 	// Create texture object
 	glGenTextures(1, &mTextureID);
+
+	LoadTexture();
 }
 
 Texture::~Texture()
@@ -25,13 +27,6 @@ Texture::~Texture()
 void Texture::BindTexture() const
 {
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
-}
-
-void Texture::SetType(TextureType type) 
-{ 
-	mType = type; 
-
-	LoadTexture();
 }
 
 void Texture::LoadTexture()

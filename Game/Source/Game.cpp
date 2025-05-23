@@ -152,24 +152,17 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Texture* texture = AssetManager::LoadTexture("Assets/matrix.jpg");
-	texture->SetType(TextureType::Emission);
-	Texture* texture3 = AssetManager::LoadTexture("Assets/container2.png");
-	texture3->SetType(TextureType::Diffuse);
-	Texture* texture4 = AssetManager::LoadTexture("Assets/container2_specular.png");
-	texture4->SetType(TextureType::Specular);
-	Texture* lightSphereTexture = AssetManager::LoadTexture("Assets/lightSphere.png");
-	lightSphereTexture->SetType(TextureType::Diffuse);
-	Texture* woodTexture = AssetManager::LoadTexture("Assets/wood.png");
-	woodTexture->SetType(TextureType::Diffuse);
-	Texture* wallTexture = AssetManager::LoadTexture("Assets/brickwall.jpg");
-	wallTexture->SetType(TextureType::Diffuse);
-	Texture* wallNormalTexture = AssetManager::LoadTexture("Assets/brickwall_normal.jpg");
-	wallNormalTexture->SetType(TextureType::Normal);
+	Texture* texture = AssetManager::LoadTexture("Assets/matrix.jpg", TextureType::Emission);
+	Texture* texture3 = AssetManager::LoadTexture("Assets/container2.png", TextureType::Diffuse);
+	Texture* texture4 = AssetManager::LoadTexture("Assets/container2_specular.png", TextureType::Specular);
+	AssetManager::LoadTexture("Assets/lightSphere.png", TextureType::Diffuse);
+	Texture* woodTexture = AssetManager::LoadTexture("Assets/wood.png", TextureType::Diffuse);
+	Texture* wallTexture = AssetManager::LoadTexture("Assets/brickwall.jpg", TextureType::Diffuse);
+	Texture* wallNormalTexture = AssetManager::LoadTexture("Assets/brickwall_normal.jpg", TextureType::Normal);
 
 	Material* lightSphereMaterial = new Material();
 	lightSphereMaterial->SetShader(mAssetManager->LoadShader("texture"));
-	lightSphereMaterial->AddTexture(lightSphereTexture);
+	lightSphereMaterial->AddTexture(AssetManager::LoadTexture("Assets/lightSphere.png"));
 	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
 
 	// Skybox
