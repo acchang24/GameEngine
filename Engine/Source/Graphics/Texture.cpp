@@ -39,18 +39,58 @@ void Texture::LoadTexture()
 	BindTexture();
 
 	// Load in texture file with stbi_load:
-	unsigned char* data = stbi_load(mName.c_str(), &mWidth, &mHeight, &mNumChannels, 4);
+	unsigned char* data = stbi_load(mName.c_str(), &mWidth, &mHeight, &mNumChannels, 0);
 
 	if (data)
 	{
 		// Get the format based on the number of color channels
 		GLenum wrap = 0;
-		GLenum dataFormat = GL_RGBA;
-		GLenum internalFormat = GL_SRGB_ALPHA;
+		GLenum dataFormat = 0;
+		GLenum internalFormat = 0;
 
-		if (mType == TextureType::Normal || mType == TextureType::Specular)
+		// Setup swizzle mapping
+		GLint swizzleMask[4] = { GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA };
+
+		switch (mNumChannels)
 		{
-			internalFormat = dataFormat;
+		case 1:
+			dataFormat = GL_RED;
+			internalFormat = GL_RED;
+			swizzleMask[0] = GL_RED;
+			swizzleMask[1] = GL_RED;
+			swizzleMask[2] = GL_RED;
+			swizzleMask[3] = GL_ONE;
+			break;
+		case 2:
+			dataFormat = GL_RG;
+			internalFormat = GL_RG;
+			swizzleMask[0] = GL_RED;
+			swizzleMask[1] = GL_GREEN;
+			swizzleMask[2] = GL_ZERO;
+			swizzleMask[3] = GL_ONE;
+			break;
+		case 3:
+			dataFormat = GL_RGB;
+			if (mType == TextureType::Normal || mType == TextureType::Specular)
+			{
+				internalFormat = GL_RGB;
+			}
+			else
+			{
+				internalFormat = GL_SRGB;
+			}
+			break;
+		case 4:
+			dataFormat = GL_RGBA;
+			if (mType == TextureType::Normal || mType == TextureType::Specular)
+			{
+				internalFormat = GL_RGBA;
+			}
+			else
+			{
+				internalFormat = GL_SRGB_ALPHA;
+			}
+			break;
 		}
 
 		// Set the texture's wrapping parameters
@@ -65,6 +105,12 @@ void Texture::LoadTexture()
 		// Set texture filtering parameters
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// Add swizzling mask for 1 and 2 channel textures (treat both as RGB)
+		if (mNumChannels <= 2)
+		{
+			glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		}
 
 		//   Start generating a texture using the loaded image data
 		//   Textures are generated with glTexImage2D:
