@@ -84,7 +84,7 @@ void Texture::LoadTexture()
 	}
 	else
 	{
-		std::cout << "Failed to load texture\n";
+		std::cout << "Failed to load texture: " << mName << "\n";
 	}
 
 	// Free image data
