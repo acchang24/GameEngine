@@ -46,7 +46,7 @@ public:
 	// Retrieves a shader from the shader cache's map
 	// @param - const std::string& for the shader's name.
 	// @return - Shader* for the desired shader retrieved from the shader cache map
-	Shader* LoadShader(const std::string& shaderName) { return mShaderCache->Get(shaderName); }
+	static Shader* LoadShader(const std::string& shaderName) { return AssetManager::Get()->mShaderCache->Get(shaderName); }
 	// Clears each element from the shader cache's map
 	void ClearShaders() { mShaderCache->Clear(); }
 
@@ -57,7 +57,7 @@ public:
 	// Retrieves a texture from the texture cache's map if it exists.
 	// @param - const std::string& for the texture name
 	// @return - Texture* for the desired texture
-	static Texture* LoadTexture(const std::string& textureFileName);
+	static Texture* LoadTexture(const std::string& textureFileName) { return AssetManager::Get()->mTextureCache->Get(textureFileName); }
 	// Retrieves a texture from the texture cache's map if it exists.
 	// If not, it will load/create a new texture and save it into the map.
 	// @param - const std::string& for the texture name
@@ -96,7 +96,7 @@ public:
 	// Retrieves a model from the model cache's map
 	// @param - const std::string& for the model's name
 	// @return - Model* for the desired model retrieved from the model cache map
-	Model* LoadModel(const std::string& modelName) { return mModelCache->Get(modelName); }
+	static Model* LoadModel(const std::string& modelName) { return AssetManager::Get()->mModelCache->Get(modelName); }
 	// Clears each element from the model cache map
 	void ClearModels() { mModelCache->Clear(); }
 
@@ -107,7 +107,7 @@ public:
 	// Retrieves an animation from the animation cache's map
 	// @param - const std::string& for the animation's name
 	// @return - Animation* for the desired animation retrieved from the animation cache map
-	Animation* LoadAnimation(const std::string& animName) { return mAnimationCache->Get(animName); }
+	static Animation* LoadAnimation(const std::string& animName) { return AssetManager::Get()->mAnimationCache->Get(animName); }
 	// Clears each element from the animation cache map
 	void ClearAnimations() { mAnimationCache->Clear(); }
 
@@ -118,7 +118,7 @@ public:
 	// Retrieves an skeleton from the skeleton cache's map
 	// @param - const std::string& for the skeleton's name
 	// @return - Skeleton* for the desired skeleton retrieved from the skeleton cache map
-	Skeleton* LoadSkeleton(const std::string& skeletonName) { return mSkeletonCache->Get(skeletonName); }
+	static Skeleton* LoadSkeleton(const std::string& skeletonName) { return AssetManager::Get()->mSkeletonCache->Get(skeletonName); }
 	// Clears each element from the skeleton cache map
 	void ClearSkeletons() { mSkeletonCache->Clear(); }
 

@@ -53,11 +53,6 @@ AssetManager* AssetManager::Get()
 	return &s_AssetManager;
 }
 
-Texture* AssetManager::LoadTexture(const std::string& textureFileName)
-{
-	return AssetManager::Get()->mTextureCache->Get(textureFileName);
-}
-
 Texture* AssetManager::LoadTexture(const std::string& textureFileName, TextureType type)
 {
 	AssetManager* am = AssetManager::Get();

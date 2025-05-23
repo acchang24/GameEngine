@@ -38,9 +38,7 @@ Entity3D::Entity3D(const std::string& fileName):
 	mRoll(0.0f),
 	mIsSkinned(false)
 {
-	AssetManager* am = AssetManager::Get();
-
-	Model* model = am->LoadModel(fileName);
+	Model* model = AssetManager::LoadModel(fileName);
 
 	if (model)
 	{
@@ -52,7 +50,7 @@ Entity3D::Entity3D(const std::string& fileName):
 		{
 			mIsSkinned = true;
 			// Copy new skeleton and set create an animation component for this entity
-			Skeleton* newSkeleton = new Skeleton(*am->LoadSkeleton(fileName));
+			Skeleton* newSkeleton = new Skeleton(*AssetManager::LoadSkeleton(fileName));
 			AnimationComponent* animComp = new AnimationComponent(this, newSkeleton);
 		}
 	}
