@@ -10,6 +10,7 @@ Texture::Texture(const std::string& textureFile, TextureType type) :
 	mWidth(0),
 	mHeight(0),
 	mNumChannels(0),
+	mTextureUnit(static_cast<int>(type)),
 	mType(type)
 {
 	// Create texture object
@@ -26,6 +27,10 @@ Texture::~Texture()
 
 void Texture::BindTexture() const
 {
+	// Activate proper texture unit before binding
+	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
+
+	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 }
 

@@ -25,6 +25,10 @@ public:
 	// @return - CubeMap* for the skybox's cubemap
 	CubeMap* GetCubeMap() { return mCubeMap; }
 
+	// Sets the skybox's shader
+	// @param - Shader* for the new shader
+	void SetShader(Shader* shader) { mShader = shader; }
+
 private:
 	// The skybox's vertex buffer
 	VertexBuffer* mVertexBuffer;

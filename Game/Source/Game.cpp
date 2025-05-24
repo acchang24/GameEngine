@@ -148,6 +148,7 @@ void Game::LoadShaders() const
 	hdrGammaShader->SetFloat("exposure", 1.0f);
 	Shader* reflectiveShader = new Shader("reflection", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
 	Shader* refractiveShader = new Shader("refraction", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
+	Shader* skyBoxShader = new Shader("skybox", "Shaders/skybox.vert", "Shaders/skybox.frag");
 }
 
 void Game::LoadGameData()
@@ -176,6 +177,7 @@ void Game::LoadGameData()
 		"Assets/skyboxes/skybox1/back.jpg"
 	};
 	mSkybox = new Skybox(faceNames);
+	mSkybox->SetShader(AssetManager::LoadShader("skybox"));
 	CubeMap* sky = mSkybox->GetCubeMap();
 	MaterialCubeMap* reflectiveMat = new MaterialCubeMap();
 	reflectiveMat->SetCubeMap(sky);

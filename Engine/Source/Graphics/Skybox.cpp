@@ -57,21 +57,6 @@ Skybox::Skybox(const std::vector<std::string>& faceNames) :
     };
 
     mVertexBuffer = new VertexBuffer(vertices, 0, sizeof(vertices), 0, sizeof(vertices) / sizeof(VertexPos), 0, VertexLayout::VertexPos);
-
-    AssetManager* am = AssetManager::Get();
-
-    if (!am->LoadShader("skybox"))
-    {
-        Shader* skyboxShader = new Shader("skybox", "Shaders/skybox.vert", "Shaders/skybox.frag");
-        am->SaveShader("skybox", skyboxShader);
-        mShader = skyboxShader;
-    }
-    else
-    {
-        mShader = am->LoadShader("skybox");
-    }
-
-    mShader->SetInt("cubeMap", static_cast<int>(TextureType::CubeMap));
 }
 
 Skybox::~Skybox()
@@ -93,10 +78,13 @@ void Skybox::Draw(const glm::mat4& view, const glm::mat4& proj)
 
     mShader->SetActive();
 
+    // Set the right texture unit
+    mShader->SetInt("cubeMap", static_cast<int>(TextureType::CubeMap));
+
     // Set the new view * proj matrix
     mShader->SetMat4("viewProjection", viewProj);
 
-    mCubeMap->SetActive(mShader);
+    mCubeMap->BindCubeMap();
 
     mVertexBuffer->Draw();
 

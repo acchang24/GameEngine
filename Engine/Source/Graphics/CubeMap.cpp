@@ -55,10 +55,11 @@ CubeMap::~CubeMap()
 	glDeleteTextures(1, &mTextureID);
 }
 
-void CubeMap::SetActive(Shader* s) const
+void CubeMap::BindCubeMap() const
 {
+	// Activate proper texture unit before binding
 	glActiveTexture(GL_TEXTURE0 + mTextureUnit);
-	s->SetInt("cubeMap", mTextureUnit);
+
+	// Bind the cubemap texture
 	glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureID);
-	glActiveTexture(GL_TEXTURE0);
 }

@@ -9,14 +9,12 @@ MaterialCubeMap::MaterialCubeMap() :
 	Material(),
 	mCubeMap(nullptr)
 {
-
 }
 
 MaterialCubeMap::MaterialCubeMap(const MaterialColors& mats) :
 	Material(mats),
 	mCubeMap(nullptr)
 {
-
 }
 
 MaterialCubeMap::~MaterialCubeMap()
@@ -27,6 +25,11 @@ MaterialCubeMap::~MaterialCubeMap()
 void MaterialCubeMap::SetActive()
 {
 	mShader->SetActive();
-	mCubeMap->SetActive(mShader);
+
 	mMaterialBuffer->UpdateBufferData(&mMats);
+
+	// Set the proper cubemap sampler uniform in the shader
+	mShader->SetInt("cubeMap", mCubeMap->GetTextureUnit());
+
+	mCubeMap->BindCubeMap();
 }

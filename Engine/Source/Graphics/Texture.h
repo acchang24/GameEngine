@@ -43,6 +43,10 @@ public:
 	// @return - unsigned int mTextureID;
 	unsigned int GetID() const { return mTextureID; }
 
+	// Getter for the texture unit
+	// @return - int for the texture unit
+	int GetTextureUnit() const { return mTextureUnit; }
+
 	// Getter for the texture type
 	// @return - TextureType mType
 	TextureType GetType() const { return mType; }
@@ -66,6 +70,9 @@ private:
 
 	// Number of color channels
 	int mNumChannels;
+
+	// Texture unit
+	int mTextureUnit;
 
 	// Type of the texture
 	TextureType mType;

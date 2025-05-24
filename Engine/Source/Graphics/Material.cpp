@@ -10,10 +10,10 @@
 
 static std::unordered_map<TextureType, std::string> s_TextureSamplerNames = 
 {
-    {TextureType::Diffuse, "diffuse"},
-    {TextureType::Specular, "specular"},
-    {TextureType::Emission, "emission"},
-    {TextureType::Normal, "normal"},
+    {TextureType::Diffuse, "textureSamplers.diffuse"},
+    {TextureType::Specular, "textureSamplers.specular"},
+    {TextureType::Emission, "textureSamplers.emission"},
+    {TextureType::Normal, "textureSamplers.normal"},
 };
 
 Material::Material() : 
@@ -21,7 +21,6 @@ Material::Material() :
 	mShader(nullptr),
     mMaterialBuffer(AssetManager::Get()->GetRenderer()->GetUniformBuffer("MaterialBuffer"))
 {
-
 }
 
 Material::Material(const MaterialColors& mats) :
@@ -29,7 +28,6 @@ Material::Material(const MaterialColors& mats) :
     mShader(nullptr),
     mMaterialBuffer(AssetManager::Get()->GetRenderer()->GetUniformBuffer("MaterialBuffer"))
 {
-
 }
 
 Material::~Material()
@@ -43,33 +41,22 @@ void Material::SetActive()
  
     mMaterialBuffer->UpdateBufferData(&mMats);
 
-    std::string name;
+    std::string samplerName;
 
     for (size_t i = 0; i < mTextures.size(); ++i)
     {
-        TextureType type = mTextures[i]->GetType();
-
-        // Check if sampler name exists
-        auto iter = s_TextureSamplerNames.find(type);
+        // Check if texture type with sampler name exists
+        auto iter = s_TextureSamplerNames.find(mTextures[i]->GetType());
         if (iter != s_TextureSamplerNames.end())
         {
-            // Update sampler name
-            name = iter->second;
+            samplerName = iter->second;
 
-            // Get the type's texture unit
-            int textureUnit = static_cast<int>(type);
-
-            // Activate proper texture unit before binding
-            glActiveTexture(GL_TEXTURE0 + textureUnit);
+            // Set the proper texture sampler uniform in the shader
+            mShader->SetInt((samplerName), mTextures[i]->GetTextureUnit());
             
-            // Set the proper texture sampler
-            mShader->SetInt(("textureSamplers." + name), textureUnit);
-            
-            // Bind the texture
             mTextures[i]->BindTexture();
         }
     }
-    glActiveTexture(GL_TEXTURE0);
 }
 
 void Material::AddTexture(Texture* t)
