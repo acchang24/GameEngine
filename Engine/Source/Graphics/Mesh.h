@@ -11,8 +11,13 @@ class Shader;
 class Mesh
 {
 public:
-	// Mesh constructor 
+	// Mesh constructor:
+	// @param - VertexBuffer* for the mesh's vertex buffer
+	// @param - Material* for the mesh's material
 	Mesh(VertexBuffer* vb, Material* material);
+	// Mesh destructor:
+	// mMaterial is owned/deleted by AssetManager
+	// Don't call delete on any materials here.
 	~Mesh();
 
 	void Draw(const glm::mat4& modelMatrix);

@@ -124,31 +124,31 @@ void Game::Shutdown()
 
 void Game::LoadShaders() const
 {
-	Shader* colorShader = new Shader("color", "Shaders/color.vert", "Shaders/color.frag");
-	Shader* phongShader = new Shader("phong", "Shaders/phong.vert", "Shaders/phong.frag");
-	Shader* skinnedShader = new Shader("skinned", "Shaders/Animation/skinned.vert", "Shaders/phong.frag");
-	Shader* textureShader = new Shader("texture", "Shaders/texture.vert", "Shaders/texture.frag");
-	Shader* instanceShader = new Shader("instance", "Shaders/instance.vert", "Shaders/phong.frag");
-	Shader* shadowDepthShader = new Shader("shadowDepth", "Shaders/Shadow/shadowDepth.vert", "Shaders/Shadow/shadowDepth.frag");
-	Shader* shadowDebugShader = new Shader("shadowDebug", "Shaders/screen.vert", "Shaders/Shadow/shadowDebug.frag");
-	Shader* pointShadowDepthShader = new Shader("pointShadowDepth", "Shaders/Shadow/pointShadowDepth.vert", "Shaders/Shadow/pointShadowDepth.frag", "Shaders/Shadow/pointShadowDepth.geom");
-	//Shader* invertedColorShader = new Shader("invertedColor", "Shaders/screen.vert", "Shaders/Postprocess/invertedColor.frag");
-	//Shader* grayScaleShader = new Shader("grayScale", "Shaders/screen.vert", "Shaders/Postprocess/grayScale.frag");
-	//Shader* sharpenKernelShader = new Shader("sharpenKernel", "Shaders/screen.vert", "Shaders/Postprocess/sharpenKernel.frag");
-	//Shader* blurKernelShader = new Shader("blurKernel", "Shaders/screen.vert", "Shaders/Postprocess/blurKernel.frag");
-	//Shader* edgeDetectKernelShader = new Shader("edgeDetectKernel", "Shaders/screen.vert", "Shaders/Postprocess/edgeDetectKernel.frag");
-	Shader* copyScreenShader = new Shader("copyScreen", "Shaders/screen.vert", "Shaders/copyScreen.frag");
-	Shader* bloomMaskShader = new Shader("bloomMask", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomMask.frag");
-	Shader* bloomBlurHorizontalShader = new Shader("bloomBlurHorizontal", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurHorizontal.frag");
-	Shader* bloomBlurVerticalShader = new Shader("bloomBlurVertical", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurVertical.frag");
-	Shader* bloomBlendShader = new Shader("bloomBlend", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlend.frag");
-	Shader* hdrGammaShader = new Shader("hdrGamma", "Shaders/screen.vert", "Shaders/hdrGamma.frag");
+	AssetManager::LoadShader("color", "Shaders/color.vert", "Shaders/color.frag");
+	AssetManager::LoadShader("phong", "Shaders/phong.vert", "Shaders/phong.frag");
+	AssetManager::LoadShader("skinned", "Shaders/Animation/skinned.vert", "Shaders/phong.frag");
+	AssetManager::LoadShader("texture", "Shaders/texture.vert", "Shaders/texture.frag");
+	AssetManager::LoadShader("instance", "Shaders/instance.vert", "Shaders/phong.frag");
+	AssetManager::LoadShader("shadowDepth", "Shaders/Shadow/shadowDepth.vert", "Shaders/Shadow/shadowDepth.frag");
+	AssetManager::LoadShader("shadowDebug", "Shaders/screen.vert", "Shaders/Shadow/shadowDebug.frag");
+	AssetManager::LoadShader("pointShadowDepth", "Shaders/Shadow/pointShadowDepth.vert", "Shaders/Shadow/pointShadowDepth.frag", "Shaders/Shadow/pointShadowDepth.geom");
+	//AssetManager::LoadShader("invertedColor", "Shaders/screen.vert", "Shaders/Postprocess/invertedColor.frag");
+	//AssetManager::LoadShader("grayScale", "Shaders/screen.vert", "Shaders/Postprocess/grayScale.frag");
+	//AssetManager::LoadShader("sharpenKernel", "Shaders/screen.vert", "Shaders/Postprocess/sharpenKernel.frag");
+	//AssetManager::LoadShader("blurKernel", "Shaders/screen.vert", "Shaders/Postprocess/blurKernel.frag");
+	//AssetManager::LoadShader("edgeDetectKernel", "Shaders/screen.vert", "Shaders/Postprocess/edgeDetectKernel.frag");
+	AssetManager::LoadShader("copyScreen", "Shaders/screen.vert", "Shaders/copyScreen.frag");
+	AssetManager::LoadShader("bloomMask", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomMask.frag");
+	AssetManager::LoadShader("bloomBlurHorizontal", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurHorizontal.frag");
+	AssetManager::LoadShader("bloomBlurVertical", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlurVertical.frag");
+	AssetManager::LoadShader("bloomBlend", "Shaders/screen.vert", "Shaders/Postprocess/Bloom/bloomBlend.frag");
+	Shader* hdrGammaShader = AssetManager::LoadShader("hdrGamma", "Shaders/screen.vert", "Shaders/hdrGamma.frag");
 	hdrGammaShader->SetActive();
 	hdrGammaShader->SetBool("hdr", hdr);
 	hdrGammaShader->SetFloat("exposure", 1.0f);
-	Shader* reflectiveShader = new Shader("reflection", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
-	Shader* refractiveShader = new Shader("refraction", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
-	Shader* skyBoxShader = new Shader("skybox", "Shaders/skybox.vert", "Shaders/skybox.frag");
+	AssetManager::LoadShader("reflection", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
+	AssetManager::LoadShader("refraction", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
+	AssetManager::LoadShader("skybox", "Shaders/skybox.vert", "Shaders/skybox.frag");
 }
 
 void Game::LoadGameData()
@@ -162,7 +162,7 @@ void Game::LoadGameData()
 	Texture* wallNormalTexture = AssetManager::LoadTexture("Assets/brickwall_normal.jpg", TextureType::Normal);
 
 	Material* lightSphereMaterial = new Material();
-	lightSphereMaterial->SetShader(mAssetManager->LoadShader("texture"));
+	lightSphereMaterial->SetShader(AssetManager::LoadShader("texture"));
 	lightSphereMaterial->AddTexture(AssetManager::LoadTexture("Assets/lightSphere.png"));
 	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
 

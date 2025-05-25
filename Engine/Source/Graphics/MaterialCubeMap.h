@@ -10,6 +10,9 @@ class MaterialCubeMap : public Material
 public:
 	MaterialCubeMap();
 	MaterialCubeMap(const MaterialColors& mats);
+	// MaterialCubeMap destructor:
+	// mCubeMap is owned/deleted by AssetManager.
+	// Don't call delete on any cube maps here.
 	~MaterialCubeMap();
 
 	// Sets the material's shader as active. It also binds 

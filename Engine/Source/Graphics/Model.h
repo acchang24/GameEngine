@@ -16,10 +16,13 @@ class Shader;
 class Model
 {
 public:
-	// Model constructor loads a model using assimp library
+	// Model constructor: loads a model using assimp library
 	// @param - const std::string& for the model's file name
 	// @param - Entity3D* for the model's entity
 	Model(const std::string& fileName, Entity3D* entity);
+	// Model destructor:
+	// meshs and materials are owned/deleted by AssetManager.
+	// Don't call delete on any meshes and materials here.
 	~Model();
 
 	// Makes this an instanced model so that multiple instances of the same

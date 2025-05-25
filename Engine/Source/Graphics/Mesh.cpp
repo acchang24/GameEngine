@@ -8,7 +8,6 @@ Mesh::Mesh(VertexBuffer* vb, Material* material) :
 	mVertexBuffer(vb),
 	mMaterial(material)
 {
-
 }
 
 Mesh::~Mesh()

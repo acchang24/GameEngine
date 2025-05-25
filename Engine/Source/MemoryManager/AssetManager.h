@@ -19,12 +19,7 @@ class Renderer3D;
 class AssetManager
 {
 public:
-	AssetManager(const AssetManager&) = delete; // Makes sure the class can't be copied
-	AssetManager(AssetManager&&) = delete; // No move constructor
-	AssetManager& operator=(const AssetManager&) = delete; // Makes sure the class is not assignable
-	AssetManager& operator=(AssetManager&&) = delete; // No move assignment
-
-	// Goes to each of the caches calls the cache's Clear()
+	// Goes to each of the asset caches and calls the cache's Clear()
 	void Clear();
 
 	// Deletes the shader caches
@@ -37,79 +32,148 @@ public:
 	// Sets a pointer to the renderer
 	void SetRenderer(Renderer3D* renderer) { mRenderer = renderer; }
 
+	// Gets a pointer to the game's renderer
+	// @return - Renderer3D* for the renderer
 	Renderer3D* GetRenderer() { return mRenderer; }
 
+	
 	// Saves a shader into the shader cache's map
 	// @param - const std::string& for the shader's name.
 	// @param - Shader* for the shader that is being saved.
 	void SaveShader(const std::string& shaderName, Shader* shader) { mShaderCache->StoreCache(shaderName, shader); }
-	// Retrieves a shader from the shader cache's map
+
+	// Loads a shader from the shader cache's map if it exists, nullptr if not.
+	// Ownership of any Shader* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteShader() if you need to delete/remove a shader by name
 	// @param - const std::string& for the shader's name.
 	// @return - Shader* for the desired shader retrieved from the shader cache map
 	static Shader* LoadShader(const std::string& shaderName) { return AssetManager::Get()->mShaderCache->Get(shaderName); }
-	// Clears each element from the shader cache's map
+
+	// Creates and returns a shader, saving it in the shader cache's map if it doesn't exist.
+	// Ownership of any Shader* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteShader() if you need to delete/remove a shader by name
+	// @param - const std::string& for the name of the shader (used to acces through AssetManager)
+	// @param - const char* for the vertex shader name/file path
+	// @param - const char* for the fragment shader name/file path
+	// @param - const char* for the geometry shader name/file path if it exists (defaults to nullptr)
+	// @return - Shader* for the newly created shader
+	static Shader* LoadShader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
+
+	// Deletes/clears each element from the shader cache's map
 	void ClearShaders() { mShaderCache->Clear(); }
+
+	// Deletes a shader in the shader cache map by name
+	// @param - const std::string& for the shader name
+	void DeleteShader(const std::string& shaderName) { mShaderCache->Delete(shaderName); }
+
 
 	// Saves a texture into the texture cache's map
 	// @param - const std::string& for the texture's name.
 	// @param - Texture* for the texture that is being saved. 
 	void SaveTexture(const std::string& textureFileName, Texture* texture) { mTextureCache->StoreCache(textureFileName, texture); }
-	// Retrieves a texture from the texture cache's map if it exists.
+
+	// Loads a texture from the texture cache's map if it exists, nullptr if not.
+	// Ownership of any Texture* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteTexture() if you need to delete/remove a texture by name
 	// @param - const std::string& for the texture name
 	// @return - Texture* for the desired texture
 	static Texture* LoadTexture(const std::string& textureFileName) { return AssetManager::Get()->mTextureCache->Get(textureFileName); }
-	// Retrieves a texture from the texture cache's map if it exists.
-	// If not, it will load/create a new texture and save it into the map.
+
+	// Creates and returns a texture, saving it in the texture cache's map if it doesn't exist.
+	// Ownership of any Texture* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteTexture() if you need to delete/remove a texture by name
 	// @param - const std::string& for the texture name
 	// @param - TextureType for the type
 	// @return - Texture* for the desired texture
-	static Texture* LoadTexture(const std::string& textureFIleName, TextureType type);
-	// Clears each element from the texture cache's map
+	static Texture* LoadTexture(const std::string& textureFileName, TextureType type);
+
+	// Deletes/clears each element from the texture cache's map
 	void ClearTextures() { mShaderCache->Clear(); }
+
+	// Deletes a texture in the texture cache map by name
+	// @param - const std::string& for the texture name
+	void DeleteTexture(const std::string& textureName) { mTextureCache->Delete(textureName); }
+
 
 	// Saves a material into the material cache's map
 	// @param - const std::string& for the material's name
 	// @param - Material* for the material that is being saved
 	void SaveMaterial(const std::string& materialName, Material* material) { mMaterialCache->StoreCache(materialName, material); }
-	// Retrieves a material from the material cache's map
+
+	// Loads a material from the material cache's map if it exists, nullptr if not.
+	// Ownership of any Material* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteMaterial() if you need to delete/remove a material by name
 	// @param - const std::string& for the material's name
 	// @return - Material* for the desired material retrieved from the material cache map
 	Material* LoadMaterial(const std::string& materialName) { return mMaterialCache->Get(materialName); }
-	// Clears each element from the material cache's map
+
+	// Deletes/clears each element from the material cache's map
 	void ClearMaterials() { mMaterialCache->Clear(); }
+
+	// Deletes a material in the material cache map by name
+	// @param - const std::string& for the material name
+	void DeleteMaterial(const std::string& materialName) { mMaterialCache->Delete(materialName); }
+
 
 	// Saves a mesh into the mesh cache's map
 	// @param - const std::string& for the mesh's name
 	// @param - Mesh* for the mesh that is being saved
 	void SaveMesh(const std::string& meshName, Mesh* mesh) { mMeshCache->StoreCache(meshName, mesh); }
-	// Retrieves a mesh from the mesh cache's map
+
+	// Loads a mesh from the mesh cache's map if it exists, nullptr if not.
+	// Ownership of any Mesh* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteMesh() if you need to delete/remove a mesh by name
 	// @param - const std::string& for the mesh's name
 	// @return - Mesh* for the desired mesh retrieved from the mesh cache map
 	Mesh* LoadMesh(const std::string& meshName) { return mMeshCache->Get(meshName); }
-	// Clears each element from the mesh cache's map
+
+	// Deletes/clears each element from the mesh cache's map
 	void ClearMesh() { mMeshCache->Clear(); }
+
+	// Deletes a mesh in the mesh cache map by name
+	// @param - const std::string& for the mesh name
+	void DeleteMesh(const std::string& meshName) { mMeshCache->Delete(meshName); }
+
 
 	// Saves a model into the model cache's map
 	// @param - const std::string& for the model's name
 	// @param - Model* for the model to save
 	void SaveModel(const std::string& modelName, Model* model) { mModelCache->StoreCache(modelName, model); }
-	// Retrieves a model from the model cache's map
+
+	// Loads a model from the model cache's map if it exists, nullptr if not.
+	// Ownership of any Model* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteModel() if you need to delete/remove a model by name
 	// @param - const std::string& for the model's name
 	// @return - Model* for the desired model retrieved from the model cache map
 	static Model* LoadModel(const std::string& modelName) { return AssetManager::Get()->mModelCache->Get(modelName); }
-	// Clears each element from the model cache map
+
+	// Deletes/clears each element from the model cache map
 	void ClearModels() { mModelCache->Clear(); }
+
+	// Deletes a model in the model cache map by name
+	// @param - const std::string& for the model name
+	void DeleteModel(const std::string& modelName) { mModelCache->Delete(modelName); }
+
 
 	// Saves an animation into the animation cache's map
 	// @param - const std::string& for the animation's name
 	// @param - Animation* for the animation to save
 	void SaveAnimation(const std::string& animationName, Animation* animation) { mAnimationCache->StoreCache(animationName, animation); }
-	// Retrieves an animation from the animation cache's map
+
+	// Loads an animation from the animation cache's map if it exists, nullptr if not.
+	// Ownership of any Animation* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteAnimation() if you need to delete/remove a animation by name
 	// @param - const std::string& for the animation's name
 	// @return - Animation* for the desired animation retrieved from the animation cache map
 	static Animation* LoadAnimation(const std::string& animName) { return AssetManager::Get()->mAnimationCache->Get(animName); }
-	// Clears each element from the animation cache map
+
+	// Deletes/clears each element from the animation cache map
 	void ClearAnimations() { mAnimationCache->Clear(); }
+
+	// Delets an animation in the animation cache map by name
+	// @param - const std::string& for the animation name
+	void DeleteAnimation(const std::string& animationName) { mAnimationCache->Delete(animationName); }
+
 
 	// Saves an skeleton into the skeleton cache's map
 	// @param - const std::string& for the skeleton's name
@@ -140,6 +204,10 @@ public:
 private:
 	AssetManager();
 	~AssetManager();
+	AssetManager(const AssetManager&) = delete; // Makes sure the class can't be copied
+	AssetManager(AssetManager&&) = delete; // No move constructor
+	AssetManager& operator=(const AssetManager&) = delete; // Makes sure the class is not assignable
+	AssetManager& operator=(AssetManager&&) = delete; // No move assignment
 
 	// Pointer to the game's renderer (does not own the renderer, Game will take care of deleting this pointer)
 	Renderer3D* mRenderer;

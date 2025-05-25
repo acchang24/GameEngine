@@ -32,6 +32,8 @@ Model::~Model()
 {
 	std::cout << "Deleted model: " << mDirectory << "\n";
 
+	mMeshes.clear();
+
 	mMaterialMap.clear();
 }
 

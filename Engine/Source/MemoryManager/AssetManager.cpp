@@ -53,6 +53,22 @@ AssetManager* AssetManager::Get()
 	return &s_AssetManager;
 }
 
+Shader* AssetManager::LoadShader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
+{
+	AssetManager* am = AssetManager::Get();
+
+	Shader* shader = am->mShaderCache->Get(name);
+
+	if (!shader)
+	{
+		shader = new Shader(name, vertexFile, fragmentFile, geometryFile);
+
+		am->SaveShader(name, shader);
+	}
+
+	return shader;
+}
+
 Texture* AssetManager::LoadTexture(const std::string& textureFileName, TextureType type)
 {
 	AssetManager* am = AssetManager::Get();

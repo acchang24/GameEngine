@@ -28,6 +28,9 @@ class Material
 public:
 	Material();
 	Material(const MaterialColors& mats);
+	// Material destructor:
+	// Textures from mTextures are owned/deleted through AssetManager. 
+	// Don't call delete on any textures here.
 	virtual ~Material();
 
 	// Sets the material's shader as active. It also loops

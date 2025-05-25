@@ -33,6 +33,8 @@ Material::Material(const MaterialColors& mats) :
 Material::~Material()
 {
     std::cout << "Delete material" << std::endl;
+
+    mTextures.clear();
 }
 
 void Material::SetActive()
