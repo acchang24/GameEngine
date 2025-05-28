@@ -19,8 +19,7 @@ Entity3D::Entity3D() :
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
-	mRoll(0.0f),
-	mIsSkinned(false)
+	mRoll(0.0f)
 {
 }
 
@@ -35,8 +34,7 @@ Entity3D::Entity3D(const std::string& fileName):
 	mInstanceBuffer(0),
 	mYaw(0.0f),
 	mPitch(0.0f),
-	mRoll(0.0f),
-	mIsSkinned(false)
+	mRoll(0.0f)
 {
 	Model* model = AssetManager::LoadModel(fileName);
 
@@ -48,7 +46,6 @@ Entity3D::Entity3D(const std::string& fileName):
 		// Check if it has a skeleton
 		if (model->HasAnimations())
 		{
-			mIsSkinned = true;
 			// Copy new skeleton and set create an animation component for this entity
 			Skeleton* newSkeleton = new Skeleton(*AssetManager::LoadSkeleton(fileName));
 			AnimationComponent* animComp = new AnimationComponent(this, newSkeleton);
@@ -120,7 +117,7 @@ void Entity3D::OnUpdate(float deltaTime)
 
 void Entity3D::OnDraw()
 {
-	if (mIsSkinned)
+	if (mModel->HasAnimations())
 	{
 		GetComponent<AnimationComponent>()->UpdateSkeletonBuffer();
 	}
@@ -130,13 +127,13 @@ void Entity3D::OnDraw()
 
 void Entity3D::OnDraw(Shader* shader)
 {
-	if (mIsSkinned)
+	if (mModel->HasAnimations())
 	{
 		GetComponent<AnimationComponent>()->UpdateSkeletonBuffer();
 	}
 
 	shader->SetActive();
-	shader->SetBool("isSkinned", mIsSkinned);
+	shader->SetBool("isSkinned", mModel->HasAnimations());
 
 	mModel->Draw(shader, mModelMatrix);
 }

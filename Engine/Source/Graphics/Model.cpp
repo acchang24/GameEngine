@@ -65,8 +65,6 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 	Skeleton* newSkeleton = nullptr;
 	if (mHasAnimations)
 	{
-		entity->SetIsSkinned(true);
-
 		std::cout << "Loading animation for: " << fileName << "\n";
 
 		// Create a new animation component for this model

@@ -151,10 +151,6 @@ public:
 		mQuatRotation = newRotation * mQuatRotation;
 	}
 
-	// Sets if this entity is skinned or not (if model has animations)
-	// @param - bool for if the entity is skinned
-	void SetIsSkinned(bool skin) { mIsSkinned = skin; }
-
 protected:
 	// Job to update the Entity3D's model matrix on a separate thread
 	class UpdateModelMatrixJob : public JobManager::Job
@@ -198,7 +194,4 @@ protected:
 
 	// Roll rotation
 	float mRoll;
-
-	// Bool to see if this entity has an animation
-	bool mIsSkinned;
 };
