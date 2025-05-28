@@ -142,50 +142,32 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 		vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
 		indices.reserve(static_cast<size_t>(mesh->mNumFaces * 3));
 
-		Vertex vertex = {};
-		glm::vec3 vector(0.0f);
+		bool hasTextures = mesh->HasTextureCoords(0);
 
 		// Loop through vertices and add to our vector of vertices
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
-			// Vertices
-			vector.x = mesh->mVertices[i].x;
-			vector.y = mesh->mVertices[i].y;
-			vector.z = mesh->mVertices[i].z;
-			vertex.pos = vector;
+			Vertex vertex = {};
+
+			// Position
+			vertex.pos = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 
 			// Normals
-			vector.x = mesh->mNormals[i].x;
-			vector.y = mesh->mNormals[i].y;
-			vector.z = mesh->mNormals[i].z;
-			vertex.normal = vector;
+			vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
 
 			// Textures
-			aiVector3D* coord = mesh->mTextureCoords[0];
-			if (coord && mesh->HasTextureCoords(0))
+			if (hasTextures)
 			{
 				aiVector3D uv = mesh->mTextureCoords[0][i];
 				vertex.uv = glm::vec2(uv.x, uv.y);
 
 				// Tangent
 				aiVector3D tangent = mesh->mTangents[i];
-				vector.x = tangent.x;
-				vector.y = tangent.y;
-				vector.z = tangent.z;
-				vertex.tangent = vector;
+				vertex.tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
 
 				// Bitangent
 				aiVector3D bitangent = mesh->mBitangents[i];
-				vector.x = bitangent.x;
-				vector.y = bitangent.y;
-				vector.z = bitangent.z;
-				vertex.bitangent = vector;
-			}
-			else
-			{
-				vertex.uv = glm::vec2(0.0f);
-				vertex.tangent = glm::vec3(0.0f);
-				vertex.bitangent = glm::vec3(0.0f);
+				vertex.bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
 			}
 
 			vertices.emplace_back(vertex);
