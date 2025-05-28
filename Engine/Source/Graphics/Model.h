@@ -86,7 +86,9 @@ public:
 	// @param - Shader* to use
 	void Draw(Shader* s, const glm::mat4& model);
 
-	bool HasSkeleton() const { return mHasSkeleton; }
+	// Returns true if there are animations for this model
+	// @return - bool for animations or no animations
+	bool HasAnimations() const { return mHasAnimations; }
 
 private:
 	// Model's vector of meshes
@@ -108,6 +110,6 @@ private:
 	// Number of textures
 	size_t mNumTextures;
 
-	// Bool for if this model has a skeleton
-	bool mHasSkeleton;
+	// Bool for if this model has animations
+	bool mHasAnimations;
 };

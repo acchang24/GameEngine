@@ -46,7 +46,7 @@ Entity3D::Entity3D(const std::string& fileName):
 		mModel = model;
 
 		// Check if it has a skeleton
-		if (model->HasSkeleton())
+		if (model->HasAnimations())
 		{
 			mIsSkinned = true;
 			// Copy new skeleton and set create an animation component for this entity

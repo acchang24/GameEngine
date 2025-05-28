@@ -20,7 +20,7 @@ Model::Model(const std::string& fileName, Entity3D* entity) :
 	mNumMeshes(0),
 	mNumMaterials(0),
 	mNumTextures(0),
-	mHasSkeleton(false)
+	mHasAnimations(false)
 {
 	if (LoadModel(fileName, entity))
 	{
@@ -60,14 +60,14 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 
 	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
 
+	mHasAnimations = scene->HasAnimations();
+
 	Skeleton* newSkeleton = nullptr;
-	if (scene->HasAnimations())
+	if (mHasAnimations)
 	{
 		entity->SetIsSkinned(true);
 
 		std::cout << "Loading animation for: " << fileName << "\n";
-
-		mHasSkeleton = true;
 
 		// Create a new animation component for this model
 		newSkeleton = new Skeleton();
@@ -84,7 +84,7 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 		newSkeleton->SetAnimation(newAnim);
 	}
 
-	if (newSkeleton)
+	if (mHasAnimations)
 	{
 		Skeleton* skeleton = new Skeleton(*newSkeleton);
 		AnimationComponent* animComp = new AnimationComponent(entity, skeleton);
@@ -127,7 +127,7 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 	std::cout << "Loading mesh: " << meshName << "\n";
 
 	// Load skeletal bone data if it exists
-	if (skeleton)
+	if (mHasAnimations)
 	{
 		skeleton->LoadBoneData(mesh);
 	}
@@ -188,7 +188,7 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 		Material* mat = LoadMaterial(scene, mesh, skeleton, am);
 
 		// Add bone id and weights to vertex if there is a skeletal animation
-		if (skeleton)
+		if (mHasAnimations)
 		{
 			skeleton->ExtractVertexBoneWeights(vertices, mesh);
 		}
@@ -223,7 +223,7 @@ Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, Skeleton* skel
 			++mNumMaterials;
 			mat = new Material();
 			mat->SetShader(am->LoadShader("phong"));
-			if (skeleton)
+			if (mHasAnimations)
 			{
 				mat->SetShader(am->LoadShader("skinned"));
 			}
