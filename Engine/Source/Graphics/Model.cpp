@@ -135,42 +135,9 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 
 	if (!newMesh)
 	{
-		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
-		vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
 		indices.reserve(static_cast<size_t>(mesh->mNumFaces * 3));
-
-		bool hasTextures = mesh->HasTextureCoords(0);
-
-		// Loop through vertices and add to our vector of vertices
-		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
-		{
-			Vertex vertex = {};
-
-			// Position
-			vertex.pos = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-
-			// Normals
-			vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-
-			// Textures
-			if (hasTextures)
-			{
-				aiVector3D uv = mesh->mTextureCoords[0][i];
-				vertex.uv = glm::vec2(uv.x, uv.y);
-
-				// Tangent
-				aiVector3D tangent = mesh->mTangents[i];
-				vertex.tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
-
-				// Bitangent
-				aiVector3D bitangent = mesh->mBitangents[i];
-				vertex.bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
-			}
-
-			vertices.emplace_back(vertex);
-		}
-
+		
 		// Loop through the mesh's faces to get indices
 		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
 		{
@@ -182,17 +149,93 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 			}
 		}
 
-		// Load material
-		Material* mat = LoadMaterial(scene, mesh, skeleton, am);
+		bool hasTextures = mesh->HasTextureCoords(0);
 
-		// Add bone id and weights to vertex if there is a skeletal animation
-		if (mHasAnimations)
+		VertexBuffer* vb = nullptr;
+
+		if (!mHasAnimations)
 		{
-			skeleton->ExtractVertexBoneWeights(vertices, mesh);
+			std::vector<Vertex> vertices;
+			vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
+
+			// Loop through vertices and add to our vector of vertices
+			for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+			{
+				Vertex vertex = {};
+
+				// Position
+				vertex.pos = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+
+				// Normals
+				vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
+				// Textures
+				if (hasTextures)
+				{
+					aiVector3D uv = mesh->mTextureCoords[0][i];
+					vertex.uv = glm::vec2(uv.x, uv.y);
+
+					// Tangent
+					aiVector3D tangent = mesh->mTangents[i];
+					vertex.tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
+
+					// Bitangent
+					aiVector3D bitangent = mesh->mBitangents[i];
+					vertex.bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
+				}
+
+				vertices.emplace_back(vertex);
+			}
+
+			vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
+				vertices.size(), indices.size(), VertexLayout::Vertex);
+		}
+		else
+		{
+			std::vector<VertexAnim> vertices;
+			vertices.reserve(static_cast<size_t>(mesh->mNumVertices));
+
+			// Loop through vertices and add to our vector of vertices
+			for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+			{
+				VertexAnim vertex = {};
+
+				// Position
+				vertex.pos = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+
+				// Normals
+				vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
+				// Textures
+				if (hasTextures)
+				{
+					aiVector3D uv = mesh->mTextureCoords[0][i];
+					vertex.uv = glm::vec2(uv.x, uv.y);
+
+					// Tangent
+					aiVector3D tangent = mesh->mTangents[i];
+					vertex.tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
+
+					// Bitangent
+					aiVector3D bitangent = mesh->mBitangents[i];
+					vertex.bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
+				}
+
+				vertices.emplace_back(vertex);
+			}
+
+			// Add bone id and weights to vertex if there is a skeletal animation
+			if (mHasAnimations)
+			{
+				skeleton->ExtractVertexBoneWeights(vertices, mesh);
+			}
+
+			vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(VertexAnim) * vertices.size(), sizeof(unsigned int) * indices.size(),
+				vertices.size(), indices.size(), VertexLayout::VertexAnim);
 		}
 
-		VertexBuffer* vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
-			vertices.size(), indices.size(), VertexLayout::Vertex);
+		// Load material
+		Material* mat = LoadMaterial(scene, mesh, skeleton, am);
 
 		newMesh = new Mesh(vb, mat);
 

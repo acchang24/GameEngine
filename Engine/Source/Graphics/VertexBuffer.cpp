@@ -71,6 +71,9 @@ void VertexBuffer::SetVertexAttributePointers(VertexLayout layout)
 	case VertexLayout::Vertex:
 		mLastAttribIndex = VertexAttribPointer();
 		break;
+	case VertexLayout::VertexAnim:
+		mLastAttribIndex = VertexAnimAttribPointer();
+		break;
 	case VertexLayout::VertexSimple:
 		mLastAttribIndex = VertexSimpleAttribPointer();
 		break;

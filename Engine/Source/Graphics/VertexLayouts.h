@@ -12,12 +12,13 @@
 // defines the vertex values.
 enum class VertexLayout
 {
-	VertexPos, // VertexPos position
-	VertexColor, // VertexColor contains position and color
-	VertexTexture, // VertexTexture contains position and texture(uv)
-	Vertex, // Vertex contains position, normal, texture(uv), tangent, bitangent, bone ids, and bone weights
-	VertexSimple, // Vertex contains position, normal, and texture(uv) coordinates
-	VertexScreenQuad // VertexScreenQuad contains position and texutre coordinates (used for frame buffers)
+	VertexPos,			// VertexPos position
+	VertexColor,		// VertexColor contains position and color
+	VertexTexture,		// VertexTexture contains position and texture(uv)
+	Vertex,				// Vertex contains position, normal, texture(uv), tangent, bitangent
+	VertexAnim,			// Vertex contains position, normal, texture(uv), tangent, bitangent, bone ids, and bone weights
+	VertexSimple,		// Vertex contains position, normal, and texture(uv) coordinates
+	VertexScreenQuad	// VertexScreenQuad contains position and texutre coordinates (used for frame buffers)
 };
 
 const int MAX_BONE_INFLUENCE = 4;
@@ -46,6 +47,16 @@ struct Vertex
 	glm::vec2 uv;
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
+};
+
+
+struct VertexAnim
+{
+	glm::vec3 pos;
+	glm::vec3 normal;
+	glm::vec2 uv;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
 
 	int boneIDs[MAX_BONE_INFLUENCE] = {-1, -1, -1, -1};
 	float weights[MAX_BONE_INFLUENCE];
@@ -63,7 +74,6 @@ struct VertexScreenQuad
 	glm::vec2 pos;
 	glm::vec2 uv;
 };
-
 
 
 // Set VertexPos attribute pointers
@@ -127,12 +137,34 @@ static int VertexAttribPointer()
 	// vertex bitangent
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
+	return 5;
+}
+
+// Set VertexAnim attribute pointers
+static int VertexAnimAttribPointer()
+{
+	// vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAnim), (void*)(0));
+	// vertex normal
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAnim), (void*)offsetof(VertexAnim, normal));
+	// vertex texture coordinates
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexAnim), (void*)offsetof(VertexAnim, uv));
+	// vertex tangent
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAnim), (void*)offsetof(VertexAnim, tangent));
+	// vertex bitangent
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAnim), (void*)offsetof(VertexAnim, bitangent));
 	// vertex bone ids
 	glEnableVertexAttribArray(5);
-	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
+	glVertexAttribIPointer(5, 4, GL_INT, sizeof(VertexAnim), (void*)offsetof(VertexAnim, boneIDs));
 	// bone weights
 	glEnableVertexAttribArray(6);
-	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAnim), (void*)offsetof(VertexAnim, weights));
 
 	return 7;
 }

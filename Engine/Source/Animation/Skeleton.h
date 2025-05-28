@@ -43,13 +43,13 @@ public:
 	// It then loops through the bone's weights array and sets the vertex's bone data by calling SetVertexBoneData()
 	// @param - std::vector<Vertex>& for the array of vertices used to store the bone id and weights
 	// @param - const aiMesh* for the assimp mesh that is currently being processed
-	void ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh) const;
+	void ExtractVertexBoneWeights(std::vector<VertexAnim>& vertices, const aiMesh* mesh) const;
 
 	// Sets the vertex's bone id and bone weights (bone id and weights that influence a vertex)
 	// @param - Vertex& for the vertex
 	// @param - the bone's id that will influence the vertex
 	// @param - the bone's weight that will influence the vertex
-	void SetVertexBoneData(Vertex& vertex, int boneID, float weight) const;
+	void SetVertexBoneData(VertexAnim& vertex, int boneID, float weight) const;
 
 	// If an animation exists, increment the animation's current time. Resets the anim time whenver
 	// it reaches the animation's duration. It finally calculate the final bone transformation matrices

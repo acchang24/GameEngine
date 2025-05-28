@@ -56,7 +56,7 @@ void Skeleton::LoadBoneData(const aiMesh* mesh)
 	}
 }
 
-void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiMesh* mesh) const
+void Skeleton::ExtractVertexBoneWeights(std::vector<VertexAnim>& vertices, const aiMesh* mesh) const
 {
 	for (int i = 0; i < mesh->mNumBones; ++i)
 	{
@@ -76,7 +76,7 @@ void Skeleton::ExtractVertexBoneWeights(std::vector<Vertex>& vertices, const aiM
 	}
 }
 
-void Skeleton::SetVertexBoneData(Vertex& vertex, int boneID, float weight) const
+void Skeleton::SetVertexBoneData(VertexAnim& vertex, int boneID, float weight) const
 {
 	for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
 	{
