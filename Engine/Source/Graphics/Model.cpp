@@ -7,7 +7,6 @@
 #include <assimp/postprocess.h>
 #include "../Entity/Entity3D.h"
 #include "../Graphics/Mesh.h"
-#include "../Graphics/VertexLayouts.h"
 #include "../Graphics/VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 #include "../Animation/Skeleton.h"
@@ -17,7 +16,6 @@
 #include "../Components/AnimationComponent.h"
 
 Model::Model(const std::string& fileName, Entity3D* entity) :
-	mNumMeshes(0),
 	mNumMaterials(0),
 	mNumTextures(0),
 	mHasAnimations(false)
@@ -161,30 +159,7 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 			// Loop through vertices and add to our vector of vertices
 			for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 			{
-				Vertex vertex = {};
-
-				// Position
-				vertex.pos = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-
-				// Normals
-				vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-
-				// Textures
-				if (hasTextures)
-				{
-					aiVector3D uv = mesh->mTextureCoords[0][i];
-					vertex.uv = glm::vec2(uv.x, uv.y);
-
-					// Tangent
-					aiVector3D tangent = mesh->mTangents[i];
-					vertex.tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
-
-					// Bitangent
-					aiVector3D bitangent = mesh->mBitangents[i];
-					vertex.bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
-				}
-
-				vertices.emplace_back(vertex);
+				vertices.emplace_back(GetVertexData(mesh, hasTextures, i));
 			}
 
 			vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(Vertex) * vertices.size(), sizeof(unsigned int) * indices.size(),
@@ -198,37 +173,15 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 			// Loop through vertices and add to our vector of vertices
 			for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 			{
-				VertexAnim vertex = {};
+				Vertex v = GetVertexData(mesh, hasTextures, i);
 
-				// Position
-				vertex.pos = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-
-				// Normals
-				vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-
-				// Textures
-				if (hasTextures)
-				{
-					aiVector3D uv = mesh->mTextureCoords[0][i];
-					vertex.uv = glm::vec2(uv.x, uv.y);
-
-					// Tangent
-					aiVector3D tangent = mesh->mTangents[i];
-					vertex.tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
-
-					// Bitangent
-					aiVector3D bitangent = mesh->mBitangents[i];
-					vertex.bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
-				}
+				VertexAnim vertex = {v.pos, v.normal, v.uv, v.tangent, v.bitangent};
 
 				vertices.emplace_back(vertex);
 			}
 
 			// Add bone id and weights to vertex if there is a skeletal animation
-			if (mHasAnimations)
-			{
-				skeleton->ExtractVertexBoneWeights(vertices, mesh);
-			}
+			skeleton->ExtractVertexBoneWeights(vertices, mesh);
 
 			vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(VertexAnim) * vertices.size(), sizeof(unsigned int) * indices.size(),
 				vertices.size(), indices.size(), VertexLayout::VertexAnim);
@@ -239,12 +192,38 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 
 		newMesh = new Mesh(vb, mat);
 
-		++mNumMeshes;
-
 		am->SaveMesh(meshName, newMesh);
 	}
 
 	return newMesh;
+}
+
+const Vertex Model::GetVertexData(const aiMesh* mesh, bool hasTextures, unsigned int index)
+{
+	Vertex vertex = {};
+
+	// Position
+	vertex.pos = glm::vec3(mesh->mVertices[index].x, mesh->mVertices[index].y, mesh->mVertices[index].z);
+
+	// Normals
+	vertex.normal = glm::vec3(mesh->mNormals[index].x, mesh->mNormals[index].y, mesh->mNormals[index].z);
+
+	// Textures
+	if (hasTextures)
+	{
+		aiVector3D uv = mesh->mTextureCoords[0][index];
+		vertex.uv = glm::vec2(uv.x, uv.y);
+
+		// Tangent
+		aiVector3D tangent = mesh->mTangents[index];
+		vertex.tangent = glm::vec3(tangent.x, tangent.y, tangent.z);
+
+		// Bitangent
+		aiVector3D bitangent = mesh->mBitangents[index];
+		vertex.bitangent = glm::vec3(bitangent.x, bitangent.y, bitangent.z);
+	}
+
+	return vertex;
 }
 
 Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, Skeleton* skeleton, AssetManager* am)

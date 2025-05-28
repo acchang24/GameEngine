@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include <assimp/scene.h>
+#include "../Graphics/VertexLayouts.h"
 
 class Mesh;
 class Skeleton;
@@ -50,6 +51,12 @@ public:
 	// @param - Skeleton* if there is a skeleton for this model
 	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton);
 
+	// Extracts vertex data and returns a vertex containing pos, normal, and texture coordinates
+	// @param - const aiMesh* for the mesh being processed
+	// @param - bool for if there are textures
+	// @param - index of the mesh
+	const Vertex GetVertexData(const aiMesh* mesh, bool hasTextures, unsigned int index);
+
 	// Loads a mesh's materials
 	// @param - aiMesh*
 	// @param - const aiScene*
@@ -77,6 +84,18 @@ public:
 	// @return - Material* for the desired material
 	Material* GetMaterial(const std::string& name) { return mMaterialMap[name]; }
 
+	// Return the number of meshes this model has
+	// @return - size_t for num of meshes
+	size_t GetNumMeshes() const { return mMeshes.size(); }
+
+	// Return the number of materials this model has
+	// @return - size_t for num of materials
+	size_t GetNumMaterials() const { return mNumMaterials; }
+
+	// Return the number of textures this model has
+	// @return - size_t for num of textures
+	size_t GetNumTextures() const { return mNumTextures; }
+
 	// Loops through each mesh and calls Mesh::Draw()
 	// @param - const glm::mat4& for the model matrix
 	void Draw(const glm::mat4& model);
@@ -100,9 +119,6 @@ private:
 
 	// The model's file directory/name
 	std::string mDirectory;
-
-	// Number of meshes
-	size_t mNumMeshes;
 
 	// Number of materials
 	size_t mNumMaterials;
