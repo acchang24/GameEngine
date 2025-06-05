@@ -104,7 +104,13 @@ public:
 
 	// Sets the entity's rotation as a quaternion
 	// @param - const glm::quat& for the new rotation
-	void SetQuatRotation(const glm::quat& rotation) { mQuatRotation = rotation; }
+	void SetQuatRotation(const glm::quat& rotation);
+
+	// Updates the quaternion rotation from euler angles
+	void UpdateRotationFromEuler();
+
+	// Updates eulers from quaternion
+	void UpdateEulerFromRotation();
 
 	// Set the entity's position
 	// @param - const glm::vec3& for the new position
@@ -120,36 +126,15 @@ public:
 
 	// Set the entity's yaw rotation
 	// @param - float for the new yaw rotation
-	void SetYaw(float yaw)
-	{
-		mYaw = yaw;
-
-		glm::quat newRotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		mQuatRotation = newRotation * mQuatRotation;
-	}
+	void SetYaw(float yaw);
 
 	// Set the entity's pitch rotation
 	// @param - float for the new pitch rotation
-	void SetPitch(float pitch)
-	{
-		mPitch = pitch;
-
-		glm::quat newRotation = glm::angleAxis(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-
-		mQuatRotation = newRotation * mQuatRotation;
-	}
+	void SetPitch(float pitch);
 
 	// Set the entity's roll rotation
 	// @param - float for the new roll rotation
-	void SetRoll(float roll)
-	{
-		mRoll = roll;
-
-		glm::quat newRotation = glm::angleAxis(glm::radians(roll), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		mQuatRotation = newRotation * mQuatRotation;
-	}
+	void SetRoll(float roll);
 
 protected:
 	// Job to update the Entity3D's model matrix on a separate thread
@@ -186,12 +171,12 @@ protected:
 	// Buffer for if this entity is drawn as an instance
 	unsigned int mInstanceBuffer;
 
-	// Yaw rotation
+	// Yaw rotation (Y-axis rotation)
 	float mYaw;
 
-	// Pitch rotation
+	// Pitch rotation (X-axis rotation)
 	float mPitch;
 
-	// Roll rotation
+	// Roll rotation (z-axis rotation)
 	float mRoll;
 };

@@ -155,14 +155,51 @@ void Entity3D::CalculateWorldTransform()
 
 	glm::mat4 rotation = glm::toMat4(mQuatRotation);
 
-	// Euler angles
-	//glm::mat4 rotation = glm::rotate(model, glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-	//rotation = glm::rotate(rotation, glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	//rotation = glm::rotate(rotation, glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-
 	glm::mat4 scale = glm::scale(model, mScale);
 
 	mModelMatrix = translate * rotation * scale;
+}
+
+void Entity3D::SetQuatRotation(const glm::quat& rotation)
+{
+	mQuatRotation = rotation; 
+	UpdateEulerFromRotation();
+}
+
+void Entity3D::UpdateRotationFromEuler()
+{
+	glm::quat yawQuat = glm::angleAxis(glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::quat pitchQuat = glm::angleAxis(glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::quat rollQuat = glm::angleAxis(glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	// Yaw * Pitch * Roll
+	mQuatRotation = yawQuat * pitchQuat * rollQuat;
+}
+
+void Entity3D::UpdateEulerFromRotation()
+{
+	glm::vec3 euler = glm::eulerAngles(mQuatRotation);
+	mYaw = glm::degrees(euler.y);
+	mPitch = glm::degrees(euler.x);
+	mRoll = glm::degrees(euler.z);
+}
+
+void Entity3D::SetYaw(float yaw)
+{
+	mYaw = yaw;
+	UpdateRotationFromEuler();
+}
+
+void Entity3D::SetPitch(float pitch)
+{
+	mPitch = pitch;
+	UpdateRotationFromEuler();
+}
+
+void Entity3D::SetRoll(float roll)
+{
+	mRoll = roll;
+	UpdateRotationFromEuler();
 }
 
 void Entity3D::UpdateModelMatrixJob::DoJob()
