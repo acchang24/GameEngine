@@ -85,15 +85,29 @@ void AnimationComponent::Update(float deltaTime)
 {
 	PROFILE_SCOPE(ANIMATE);
 
-	mCurrentTime += mCurrentAnimation->GetTicksPerSecond() * deltaTime;
 
-	if (mCurrentTime >= mCurrentAnimation->GetDuration())
+	if (mCurrentAnimation)
 	{
-		mCurrentTime = 0.0f;
+		mCurrentTime += mCurrentAnimation->GetTicksPerSecond() * deltaTime;
+
+		if (mCurrentTime >= mCurrentAnimation->GetDuration())
+		{
+			mCurrentTime = 0.0f;
+		}
+
+		// Calculate final bone matrices on separate threads
+		JobManager::Get()->AddJob(&mJob);
+	}
+	else
+	{
+		mSkeleton->GetBindPose();
+
+		for (size_t i = 0; i < MAX_BONES; ++i)
+		{
+			mSkeletonConsts.finalBoneMatrices[i] = glm::mat4(1.0f);
+		}
 	}
 
-	// Calculate final bone matrices on separate threads
-	JobManager::Get()->AddJob(&mJob);
 
 	// Use this for single thread
 	//const std::vector<glm::mat4>& matrices = mSkeleton->GetPoseAtTime(mCurrentTime, mCurrentAnimation);
@@ -130,12 +144,16 @@ void AnimationComponent::SetCurrentAnimation(const std::string& name)
 
 void AnimationComponent::UpdateBoneJob::DoJob()
 {
-	const std::vector<glm::mat4>& matrices = mComp->mSkeleton->GetPoseAtTime(mComp->mCurrentTime, mComp->mCurrentAnimation);
-
-	for (size_t i = 0; i < matrices.size(); ++i)
+	if (mComp->mCurrentAnimation)
 	{
-		mComp->mSkeletonConsts.finalBoneMatrices[i] = matrices[i];
+		const std::vector<glm::mat4>& matrices = mComp->mSkeleton->GetPoseAtTime(mComp->mCurrentTime, mComp->mCurrentAnimation);
+
+		for (size_t i = 0; i < matrices.size(); ++i)
+		{
+			mComp->mSkeletonConsts.finalBoneMatrices[i] = matrices[i];
+		}
 	}
+
 }
 
 void AnimationComponent::SetDefaultAnim()

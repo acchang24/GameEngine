@@ -40,6 +40,8 @@ public:
     // @return - const std::vector<glm::mat4> for the final bone matrix palette at a time
     const std::vector<glm::mat4> GetPoseAtTime(float animTime, const Animation* currAnim);
 
+    const std::vector<glm::mat4> GetBindPose();
+
     // Gets the bone id from the bone map by name. Returns -1 if not found.
     // @param - const std::string& for the bone name
     // @return - int for the bone's id

@@ -73,6 +73,20 @@ const std::vector<glm::mat4> Skeleton::GetPoseAtTime(float animTime, const Anima
 	return finalMatrices;
 }
 
+const std::vector<glm::mat4> Skeleton::GetBindPose()
+{
+	// Vector for final bone matrices
+	std::vector<glm::mat4> finalMatrices;
+	finalMatrices.resize(mBones.size());
+
+	for (size_t i = 0; i < finalMatrices.size(); ++i)
+	{
+		finalMatrices[i] = glm::mat4(1.0f);
+	}
+
+	return finalMatrices;
+}
+
 int Skeleton::GetBoneID(const std::string& name) const
 {
 	auto iter = mBoneNameToID.find(name);
