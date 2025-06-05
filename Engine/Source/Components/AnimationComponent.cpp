@@ -22,7 +22,7 @@ AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, con
 	if (!mSkeleton)
 	{
 		// Create a new skeleton
-		mSkeleton = new Skeleton(scene);
+		mSkeleton = new Skeleton(scene, fileName);
 
 		// Save skeleton into AssetManager
 		AssetManager::SaveSkeleton(fileName, mSkeleton);

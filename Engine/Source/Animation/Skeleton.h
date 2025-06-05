@@ -26,7 +26,8 @@ public:
     // Skeleton constructor: Builds the skeleton's hierarchy and stores the bones in hierarchical order
     // in mBones. It will load all the data for a Bone in a model.
     // @param - const aiScene* for the model's scene
-	Skeleton(const aiScene* scene);
+    // @param - const std::string& for the file name
+	Skeleton(const aiScene* scene, const std::string& fileName);
 	// Skeleton destructor:
     // The vector of Animations* is used purely for copying animations to a duplicate model. Models with the same
     // file will share the same skeleton. All ownership of any Animation objects will be handled by the AssetManager. 
@@ -74,4 +75,7 @@ private:
 
     // Inverse of the root transform (need this to make models look normal scale)
     glm::mat4 mRootInverseTransform;
+
+    // Name of file for skeleton
+    std::string mName;
 };

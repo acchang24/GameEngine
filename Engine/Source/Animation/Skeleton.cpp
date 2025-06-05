@@ -5,8 +5,9 @@
 #include "../Util/AssimpGLMHelper.h"
 #include "Animation.h"
 
-Skeleton::Skeleton(const aiScene* scene) :
-	mRootInverseTransform(glm::inverse(AssimpGLMHelper::ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation)))
+Skeleton::Skeleton(const aiScene* scene, const std::string& fileName) :
+	mRootInverseTransform(glm::inverse(AssimpGLMHelper::ConvertMatrixToGLMFormat(scene->mRootNode->mTransformation))),
+	mName(fileName)
 {
 	BuildHierarchy(scene->mRootNode, -1);
 	LoadOffset(scene);
@@ -14,7 +15,7 @@ Skeleton::Skeleton(const aiScene* scene) :
 
 Skeleton::~Skeleton()
 {
-	std::cout << "Deleted Skeleton\n";
+	std::cout << "Deleted Skeleton: " << mName << "\n";
 }
 
 const std::vector<glm::mat4> Skeleton::GetPoseAtTime(float animTime, const Animation* currAnim)
