@@ -94,28 +94,10 @@ void AnimationComponent::Update(float deltaTime)
 		{
 			mCurrentTime = 0.0f;
 		}
-
-		// Calculate final bone matrices on separate threads
-		JobManager::Get()->AddJob(&mJob);
-	}
-	else
-	{
-		mSkeleton->GetBindPose();
-
-		for (size_t i = 0; i < MAX_BONES; ++i)
-		{
-			mSkeletonConsts.finalBoneMatrices[i] = glm::mat4(1.0f);
-		}
 	}
 
-
-	// Use this for single thread
-	//const std::vector<glm::mat4>& matrices = mSkeleton->GetPoseAtTime(mCurrentTime, mCurrentAnimation);
-
-	//for (size_t i = 0; i < matrices.size(); ++i)
-	//{
-	//	mSkeletonConsts.finalBoneMatrices[i] = matrices[i];
-	//}
+	// Calculate final bone matrices on separate threads (go to AnimationComponent::UpdateBoneJob::DoJob() and paste here if you want single thread)
+	JobManager::Get()->AddJob(&mJob);
 }
 
 void AnimationComponent::UpdateSkeletonBuffer()
@@ -151,6 +133,15 @@ void AnimationComponent::UpdateBoneJob::DoJob()
 		for (size_t i = 0; i < matrices.size(); ++i)
 		{
 			mComp->mSkeletonConsts.finalBoneMatrices[i] = matrices[i];
+		}
+	}
+	else
+	{
+		mComp->mSkeleton->GetBindPose();
+
+		for (size_t i = 0; i < MAX_BONES; ++i)
+		{
+			mComp->mSkeletonConsts.finalBoneMatrices[i] = glm::mat4(1.0f);
 		}
 	}
 }

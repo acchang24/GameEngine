@@ -55,7 +55,7 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 		return false;
 	}
 
-	mDirectory = fileName.substr(0, fileName.find_last_of('/') + 1);
+	mDirectory = fileName;
 
 	mHasAnimations = scene->HasAnimations();
 
@@ -273,13 +273,13 @@ Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* 
 void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am)
 {
 	aiString str;
-	std::string path = mDirectory;
+	std::string path = mDirectory.substr(0, mDirectory.find_last_of('/') + 1);
 
 	for (unsigned int i = 0; i < mat->GetTextureCount(aiTextureType); ++i)
 	{
 		if (AI_SUCCESS == mat->GetTexture(aiTextureType, i, &str))
 		{
-			path = mDirectory + (str.C_Str());
+			path = path + (str.C_Str());
 
 			std::cout << "Loading texture: " << path << "\n";
 			
