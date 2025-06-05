@@ -34,7 +34,7 @@ public:
 	// Loops through the model's scene's animations and creates an Animation* for each one,
 	// saving them into the map of Animations* by name
 	// @param - const aiScene* for the model's scene
-	void LoadAnimations(const aiScene* scene);
+	void LoadAnimations(const aiScene* scene, const std::string& fileName);
 
 	// Override update for animation component specific updates
 	// Updates the animation time and gets the skeletons final pose at that time

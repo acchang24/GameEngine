@@ -27,7 +27,7 @@ AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, con
 		// Save skeleton into AssetManager
 		AssetManager::SaveSkeleton(fileName, mSkeleton);
 
-		LoadAnimations(scene);
+		LoadAnimations(scene, fileName);
 	}
 	else
 	{
@@ -58,11 +58,11 @@ AnimationComponent::~AnimationComponent()
 	std::cout << "Deleted animation component\n";
 }
 
-void AnimationComponent::LoadAnimations(const aiScene* scene)
+void AnimationComponent::LoadAnimations(const aiScene* scene, const std::string& fileName)
 {
 	for (int i = 0; i < scene->mNumAnimations; ++i)
 	{
-		std::string animName = scene->mAnimations[i]->mName.C_Str();
+		std::string animName = fileName + "/" + scene->mAnimations[i]->mName.C_Str();
 
 		// Check to see if animation was already loaded
 		Animation* anim = AssetManager::LoadAnimation(animName);
@@ -70,7 +70,7 @@ void AnimationComponent::LoadAnimations(const aiScene* scene)
 		if (!anim)
 		{
 			// Create a new animation
-			anim = new Animation(scene->mAnimations[i], mSkeleton);
+			anim = new Animation(scene->mAnimations[i], mSkeleton, animName);
 
 			// Save the animation into AssetManager
 			AssetManager::SaveAnimation(animName, anim);
@@ -153,7 +153,6 @@ void AnimationComponent::UpdateBoneJob::DoJob()
 			mComp->mSkeletonConsts.finalBoneMatrices[i] = matrices[i];
 		}
 	}
-
 }
 
 void AnimationComponent::SetDefaultAnim()

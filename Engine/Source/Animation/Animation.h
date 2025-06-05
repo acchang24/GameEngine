@@ -46,7 +46,8 @@ public:
 	// Animation constructor: Reads all the bone animation tracks and saves this animation to skeleton's vector of animations
 	// @param - const aiAnimation* for the assimp animation
 	// @param - const Skeleton* for the skeleton associated with this animation. This will add to skeleton's vector of animations
-	Animation(const aiAnimation* anim, Skeleton* skeleton);
+	// @param - const std::string& for the animation name
+	Animation(const aiAnimation* anim, Skeleton* skeleton, const std::string& animName);
 	~Animation();
 
 	// Gets a bone's animation track by bone id/index. Returns nullptr if not found
@@ -80,7 +81,6 @@ public:
 	// Gets the ticks per second
 	// @return - float for ticks per second
 	float GetTicksPerSecond() const { return mTicksPerSecond; }
-
 
 private:
 	// Reads an animation's key frames, and saves each bone's track to the map of animation tracks

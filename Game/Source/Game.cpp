@@ -8,7 +8,6 @@
 #include "3dPrimitives/Cube.h"
 #include "3dPrimitives/Plane.h"
 #include "3dPrimitives/Sphere.h"
-//#include "Animation/Skeleton.h"
 #include "Components/AnimationComponent.h"
 #include "Entity/Entity3D.h"
 #include "Graphics/FrameBuffer.h"
@@ -281,35 +280,18 @@ void Game::LoadGameData()
 
 	Entity3D* squidward = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
-	squidward->SetScale(0.35f);
-	squidward->SetYaw(-90.0f);
-	squidward->SetPitch(45.0f);
-	squidward->SetRoll(20.0f);
-	glm::quat rot = squidward->GetQuatRotation();
-	glm::vec3 euler = glm::eulerAngles(rot);
-
-	std::cout << "pitch: " << glm::degrees(euler.x) << " yaw: " << glm::degrees(euler.y) << " roll: " << glm::degrees(euler.z) << "\n";
-	glm::quat rot2 = glm::quat(euler);
+	AddGameEntity(squidward);
 
 	Entity3D* squidward2 = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
 	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f));
 	squidward2->SetScale(0.35f);
-	glm::quat newRot = glm::quat(glm::vec3(glm::radians(45.0f), glm::radians(-90.0f), glm::radians(20.0f)));
-	squidward2->SetQuatRotation(newRot);
 	AddGameEntity(squidward2);
 
-	glm::quat rot3 = squidward2->GetQuatRotation();
-	glm::vec3 euler2 = glm::eulerAngles(rot3);
-	std::cout << "pitch: " << glm::degrees(euler2.x) << " yaw: " << glm::degrees(euler2.y) << " roll: " << glm::degrees(euler2.z) << "\n";
-	glm::vec3 euler3 = glm::eulerAngles(newRot);
-	std::cout << "pitch: " << glm::degrees(euler3.x) << " yaw: " << glm::degrees(euler3.y) << " roll: " << glm::degrees(euler3.z) << "\n";
-	glm::quat testquat = glm::quat(euler2);
 
 	//squidward->SetMaterialShader("tt", refractiveShader);
 	Material* m = squidward->GetModel()->GetMaterial("ttmat");
 	//m->AddTexture(texture);
 	m->SetSpecularIntensity(0.0f);
-	AddGameEntity(squidward);
 
 	//Material* woodMat = new Material();
 	//woodMat->AddTexture(woodTexture);
@@ -329,6 +311,15 @@ void Game::LoadGameData()
 	//cube2->SetMaterial(woodMat);
 	//AddGameEntity(cube2);
 
+	Entity3D* fortune2 = new Entity3D("Assets/models/MissFortune/MissFortune.dae");
+	fortune2->SetPosition(glm::vec3(-5.0f, -5.0f, -25.0f));
+	fortune2->SetScale(0.25f);
+	AddGameEntity(fortune2);
+
+	Entity3D* fortune = new Entity3D("Assets/models/MissFortune2/MissFortune2.dae");
+	fortune->SetPosition(glm::vec3(5.0f, -5.0f, -25.0f));
+	fortune->SetScale(0.25f);
+	AddGameEntity(fortune);
 
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 	glm::vec3 lightPosition = lightDir * -dist;

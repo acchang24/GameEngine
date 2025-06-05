@@ -3,8 +3,8 @@
 #include "../Util/AssimpGLMHelper.h"
 #include "Skeleton.h"
 
-Animation::Animation(const aiAnimation* anim, Skeleton* skeleton) :
-	mName(anim->mName.C_Str()),
+Animation::Animation(const aiAnimation* anim, Skeleton* skeleton, const std::string& animName) :
+	mName(animName),
 	mDuration(static_cast<float>(anim->mDuration)),
 	mTicksPerSecond(static_cast<float>(anim->mTicksPerSecond))
 {
