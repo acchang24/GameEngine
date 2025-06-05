@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "stb_image.h"
 #include "VertexBuffer.h"
+#include "../Animation/BoneData.h"
 
 Renderer3D::Renderer3D() :
 	mVertexBuffer(nullptr),

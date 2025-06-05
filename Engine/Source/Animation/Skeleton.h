@@ -1,131 +1,75 @@
 #pragma once
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 #include <vector>
-#include <glm/glm.hpp>
 #include <assimp/scene.h>
-#include "../Graphics/UniformBuffer.h"
-#include "../Graphics/VertexLayouts.h"
-#include "../Multithreading/JobManager.h"
-#include "Animation.h"
-#include "BoneData.h"
+#include <glm/glm.hpp>
 
-// Maximum number of bones a skeleton can have
-const int MAX_BONES = 100;
-
-// Skeleton constants to send to a buffer in a shader. 
-// Holds an array of MAX_BONES size of glm::mat4 for bone matrices used
-// to create the skeleton's pose at a certain frame of an animation.
-struct SkeletonConsts
+// Struct for bone data
+struct Bone
 {
-	glm::mat4 finalBoneMatrices[MAX_BONES];
+    glm::mat4 localTransform = glm::mat4(1.0f);         // Local transform relative to parent bone in original bind pose (t-pose). Used for chaining from parent/root bone
+    glm::mat4 offsetMatrix = glm::mat4(1.0f);           // Transform from mesh space to bone space (inverse bind pose matrix)
+    std::string name;                                   // Bone name
+    int id;                                             // Bone id
+    int parentID = -1;                                  // parent id (default to -1)
+    bool influenceMesh = false;                         // If this bone influences any meshes or vertices (default false)
 };
 
-// Skeleton class is used to hold bone and animation data.
-// This helps skin a 3d model to be able to animate 3D objects.
+class Animation;
+
+// Skeleton class is responsible for loading all the model's bone data and
+// calculating the final bind pose at a specific time in an animation.
 class Skeleton
 {
-	// Allow Animation class to access private Skeleton functions
-	friend class Animation;
-
 public:
-	Skeleton();
-	~Skeleton();
-	Skeleton(Skeleton& other);
+    // Skeleton constructor: Builds the skeleton's hierarchy and stores the bones in hierarchical order
+    // in mBones. It will load all the data for a Bone in a model.
+    // @param - const aiScene* for the model's scene
+	Skeleton(const aiScene* scene);
+	// Skeleton destructor:
+    // The vector of Animations* is used purely for copying animations to a duplicate model. Models with the same
+    // file will share the same skeleton. All ownership of any Animation objects will be handled by the AssetManager. 
+    // Do not free/call delete on the Animations vector
+    ~Skeleton();
 
-	// Loops through the assimp mesh's bones and creates a BoneData variable if it doesn't exist within the
-	// skeleton's bone data map. It then loads the bone's id and inverse bind pose matrices and adds that BoneData
-	// into the skeleton's bone data map by name.
-	// @param - const aiMesh* for the assimp mesh that is currently being processed
-	void LoadBoneData(const aiMesh* mesh);
+    // Calculates and returns an array of matrices representing the final bone transformation matrices
+    // for a pose at a given time in the animation.
+    // @param - float for the time in the animation
+    // @param - Animation* for the current animation
+    // @return - const std::vector<glm::mat4> for the final bone matrix palette at a time
+    const std::vector<glm::mat4> GetPoseAtTime(float animTime, const Animation* currAnim);
 
-	// Loops through the assimp mesh's bones and extracts that bone's ids and array of bone weights.
-	// It then loops through the bone's weights array and sets the vertex's bone data by calling SetVertexBoneData()
-	// @param - std::vector<Vertex>& for the array of vertices used to store the bone id and weights
-	// @param - const aiMesh* for the assimp mesh that is currently being processed
-	void ExtractVertexBoneWeights(std::vector<VertexAnim>& vertices, const aiMesh* mesh) const;
+    // Gets the bone id from the bone map by name. Returns -1 if not found.
+    // @param - const std::string& for the bone name
+    // @return - int for the bone's id
+    int GetBoneID(const std::string& name) const;
 
-	// Sets the vertex's bone id and bone weights (bone id and weights that influence a vertex)
-	// @param - Vertex& for the vertex
-	// @param - the bone's id that will influence the vertex
-	// @param - the bone's weight that will influence the vertex
-	void SetVertexBoneData(VertexAnim& vertex, int boneID, float weight) const;
+    // Adds an animation to the vector of animations
+    void AddAnim(Animation* anim) { mAnimations.emplace_back(anim); }
 
-	// If an animation exists, increment the animation's current time. Resets the anim time whenver
-	// it reaches the animation's duration. It finally calculate the final bone transformation matrices
-	// @param - float for delta time
-	void UpdateAnimation(float deltaTime);
-
-	// Takes the animation's root node and recursively calculates the bone transformation matrices on each bone
-	// @param - const AnimNode* for the animation's root node
-	// @param - const glm::mat4& for the bone's transformation relative to its parent
-	void CalculateBoneTransform(const AnimNode* node, const glm::mat4& parentTransform);
-
-	// Updates the skeleton buffer with the skeleton's final bone matrices
-	void UpdateSkeletonBuffer() { mSkeletonBuffer->UpdateBufferData(mSkeletonConsts.finalBoneMatrices); }
-	
-	// Gets the skeleton's current animation
-	// @return - Animation* for the skeleton's current animation
-	Animation* GetCurrentAnimation() { return mCurrentAnimation; }
-
-	// Adds an animation to the skelton's map of animations if it doesn't exist
-	// @param - Animation* for the new animation
-	void AddAnimation(Animation* a)
-	{
-		std::string animName = a->GetName();
-		if (mAnimations.find(animName) == mAnimations.end())
-		{
-			mAnimations[animName] = a;
-		}
-	}
-
-	// Sets the current animation and resets the current time to 0
-	// @param - Animation* for the new animation
-	void SetAnimation(Animation* a)
-	{
-		mCurrentAnimation = a;
-		mCurrentTime = 0.0f;
-	}
-
-	void SetTime(float time) { mCurrentTime = time; }
+    // Returns vector of animations. (Purely for copying repeated models)
+    // @return - const std::vector<Animation*>& for the model's animations
+    const std::vector<Animation*>& GetAnims() const { return mAnimations; }
 
 private:
-	// Job to update bone matrices on a separate thread
-	class UpdateBoneJob : public JobManager::Job
-	{
-	public:
-		UpdateBoneJob(Skeleton* s) : mSkeleton(s)
-		{}
+    // Build the bone hierarchy and store bone data into the vector of bones
+    // @param - const aiNode* for the node that's being processed
+    // @param - int for the parent id
+    void BuildHierarchy(const aiNode* node, int parentID);
 
-		void DoJob() override;
+    // Loads in the inverse bind pose matrices, or offset matrix
+    void LoadOffset(const aiScene* scene);
 
-	private:
-		Skeleton* mSkeleton;
-	};
+    // Map of bone name to index for quick access
+    std::unordered_map<std::string, int> mBoneNameToID;
 
+    // Vector of bones
+    std::vector<Bone> mBones;
 
+    // Vector of animations
+    std::vector<Animation*> mAnimations;
 
-	// Map of the skeleton's bone data
-	std::unordered_map<std::string, BoneData> mBoneDataMap;
-
-	// Map of the skeleton's animations
-	std::unordered_map<std::string, Animation*> mAnimations;
-
-	// Skeleton consts to send to buffers in shaders
-	SkeletonConsts mSkeletonConsts;
-
-	// Job to update bone matrices
-	UpdateBoneJob mJob;
-
-	// Uniform buffer to send the skeleton's bone matrices to a shader
-	UniformBuffer* mSkeletonBuffer;
-
-	// The skeleton's current animation
-	Animation* mCurrentAnimation;
-
-	// The current time elapsed for the animation
-	float mCurrentTime;
-
-	// The number of bones this skeleton has
-	int mNumBones;
+    // Inverse of the root transform (need this to make models look normal scale)
+    glm::mat4 mRootInverseTransform;
 };

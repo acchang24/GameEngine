@@ -158,7 +158,7 @@ public:
 	// Saves an animation into the animation cache's map
 	// @param - const std::string& for the animation's name
 	// @param - Animation* for the animation to save
-	void SaveAnimation(const std::string& animationName, Animation* animation) { mAnimationCache->StoreCache(animationName, animation); }
+	static void SaveAnimation(const std::string& animationName, Animation* animation) { AssetManager::Get()->mAnimationCache->StoreCache(animationName, animation); }
 
 	// Loads an animation from the animation cache's map if it exists, nullptr if not.
 	// Ownership of any Animation* returned from this method is handled by the AssetManager. Don't need to free memory manually.
@@ -170,7 +170,7 @@ public:
 	// Deletes/clears each element from the animation cache map
 	void ClearAnimations() { mAnimationCache->Clear(); }
 
-	// Delets an animation in the animation cache map by name
+	// Deletes an animation in the animation cache map by name
 	// @param - const std::string& for the animation name
 	void DeleteAnimation(const std::string& animationName) { mAnimationCache->Delete(animationName); }
 
@@ -178,28 +178,42 @@ public:
 	// Saves an skeleton into the skeleton cache's map
 	// @param - const std::string& for the skeleton's name
 	// @param - Skeleton* for the skeleton to save
-	void SaveSkeleton(const std::string& skeletonName, Skeleton* skeleton) { mSkeletonCache->StoreCache(skeletonName, skeleton); }
-	// Retrieves an skeleton from the skeleton cache's map
+	static void SaveSkeleton(const std::string& skeletonName, Skeleton* skeleton) { AssetManager::Get()->mSkeletonCache->StoreCache(skeletonName, skeleton); }
+	
+	// Loads an skeleton from the skeleton cache's map if it exists, nullptr if not.
+	// Ownership of any Skeleton* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteSkeleton() if you need to delete/remove a skeleton by name
 	// @param - const std::string& for the skeleton's name
 	// @return - Skeleton* for the desired skeleton retrieved from the skeleton cache map
 	static Skeleton* LoadSkeleton(const std::string& skeletonName) { return AssetManager::Get()->mSkeletonCache->Get(skeletonName); }
-	// Clears each element from the skeleton cache map
+	
+	// Deletes/clears each element from the skeleton cache map
 	void ClearSkeletons() { mSkeletonCache->Clear(); }
+
+	// Deletes a skeleton in the skeleton cache map by name
+	// @param - const std::string& for the skeleton name
+	void DeleteSkeleton(const std::string& skeletonName) { mSkeletonCache->Delete(skeletonName); }
+
 
 	// Saves a ShaderProgram into the shader program cache's map
 	// @param - const std::string& for the shader's file name
 	// @param - ShaderProgram* for the shader program to save
 	void SaveShaderProgram(const std::string& shaderFileName, ShaderProgram* program) { mShaderProgramCache->StoreCache(shaderFileName, program); }
-	// Retrieves a ShaderProgram from the shader program cache's map if it exists.
-	// If not, it will load/create a new ShaderProgram and save it into the map
-	// @param - const std::string& for the shader file name
-	// @return - ShaderProgram* for the desired shader program
+	
+	// Loads an ShaderProgram from the ShaderProgram cache's map if it exists, nullptr if not.
+	// Ownership of any ShaderProgram* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteShaderProgram() if you need to delete/remove a ShaderProgram by name
+	// @param - const std::string& for the ShaderProgram's name
+	// @return - ShaderProgram* for the desired ShaderProgram retrieved from the ShaderProgram cache map
 	static ShaderProgram* LoadShaderProgram(const std::string& shaderFileName);
-	// Clears each element from the shader program cache map
+
+	// Deletes/clears each element from the shader program cache map
 	void ClearShaderPrograms() { mShaderProgramCache->Clear(); }
+
 	// Deletes a shader program by name
 	// @param - const std::string& for the shader file name
 	void DeleteShaderProgram(const std::string& shaderFileName) { mShaderProgramCache->Delete(shaderFileName); }
+
 
 private:
 	AssetManager();

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../Animation/Skeleton.h"
 #include "../Components/AnimationComponent.h"
 #include "../Graphics/Model.h"
 #include "../Graphics/Shader.h"
@@ -40,19 +39,29 @@ Entity3D::Entity3D(const std::string& fileName):
 
 	if (model)
 	{
-		// Copy new model
+		// Use the cached model
 		mModel = model;
 
-		// Check if it has a skeleton
+		// Check to see if there are animations
 		if (model->HasAnimations())
 		{
-			// Copy new skeleton and set create an animation component for this entity
-			Skeleton* newSkeleton = new Skeleton(*AssetManager::LoadSkeleton(fileName));
-			AnimationComponent* animComp = new AnimationComponent(this, newSkeleton);
+			// Check to see the skeleton is already loaded
+			Skeleton* skeleton = AssetManager::LoadSkeleton(fileName);
+
+			if (skeleton)
+			{
+				// Create an animation component for this entity using the cached skeleton
+				AnimationComponent* animComp = new AnimationComponent(this, skeleton);
+			}
+			else
+			{
+				std::cout << "Model loading error:: duplicated model file: " << fileName << " does not have a matching skeleton loaded.\n";
+			}
 		}
 	}
 	else
 	{
+		// Create a new model
 		mModel = new Model(fileName, this);
 	}
 }

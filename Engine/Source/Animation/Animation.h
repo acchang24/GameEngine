@@ -1,85 +1,102 @@
 #pragma once
 #include <string>
-#include <vector>
 #include <unordered_map>
-#include <glm/glm.hpp>
+#include <vector>
 #include <assimp/scene.h>
-#include "BoneData.h"
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
-class Bone;
-class Skeleton;
-
-// AnimNode is a node that holds animation data about a bone and its bone heirarchy
-struct AnimNode
+// Keyframe for position
+struct KeyPosition
 {
-	glm::mat4 transformation; // Transformation relative to the parent node/bone
-	std::string name; // The node/bone's name
-	std::vector<AnimNode> children; // The array of children nodes/bones
-	Bone* bone = nullptr; // Bone if it exists in the model's skeleton
-	int numChildren; // Number of children
+	glm::vec3 position;
+	float timeStamp;
 };
 
+// Keyframe for rotation
+struct KeyRotation
+{
+	glm::quat rotation;
+	float timeStamp;
+};
+
+// Keyframe for scale
+struct KeyScale
+{
+	glm::vec3 scale;
+	float timeStamp;
+};
+
+// Animation track for one bone
+struct AnimationTrack
+{
+	std::vector<KeyPosition> positions;
+	std::vector<KeyRotation> rotations;
+	std::vector<KeyScale> scalings;
+};
+
+class Skeleton;
+
+// Animation class responsible for loading and holding all the animation key frame data. A bone's
+// keyframe data can be accessed by the bone's id or bone number. It will also interpolate the bone's
+// position, rotation, and scaling matrices that can be applied to a bone at a specific time in the animation.
 class Animation
 {
 public:
-	// Animation constructor takes in an assimp animation, an assimp scene's root node, and a pointer to a Skeleton.
-	// It adds this animation to the skeleton's map of animations as well as calculates its global inverse
-	// transform matrix. It then reads in all the animation nodes' data and reads in the bone's keyframes.
-	// Each animation node may or may not affect a bone within the model's skeleton of bones (number of nodes may be different from total bone count)
+	// Animation constructor: Reads all the bone animation tracks and saves this animation to skeleton's vector of animations
 	// @param - const aiAnimation* for the assimp animation
-	// @param - const aiNode* for the root node of the animation's bone heirarchy
-	// @param - Skeleton* to add this animation to
-	Animation(const aiAnimation* animation, const aiNode* rootNode, Skeleton* skeleton);
+	// @param - const Skeleton* for the skeleton associated with this animation. This will add to skeleton's vector of animations
+	Animation(const aiAnimation* anim, Skeleton* skeleton);
 	~Animation();
 
-	// Recursively reads through all the assimp animation nodes and saves them into an AnimNode.
-	// A node will create a new bone if it exists within the model's skeleton bones (BoneData hash map loaded within the Skeleton class)
-	// and adds it to the animation's vector of AnimNodes.
-	// @param - AnimNode& for the current node that is being processed
-	// @param - const aiNode* for the assimp root node
-	// @param - std::unordered_map<std::string, BoneData>& for the model's Skeleton bone info map
-	void ReadNodeHeirarchy(AnimNode& curr, const aiNode* src, std::unordered_map<std::string, BoneData>& boneData);
+	// Gets a bone's animation track by bone id/index. Returns nullptr if not found
+	// @param - int for the bone id/index
+	// @return - const AnimationTrack* for the bone's animation track, nullptr if not found
+	const AnimationTrack* GetTrack(int boneID) const;
 
-	// Takes in an assimp animation and loops through all of its channels and reads all of the bone's key frames.
-	// @param - const aiAnimation* for the assimp animation
-	void ReadBones(const aiAnimation* anim);
+	// Interpolates a bone's position from the current key frame to the next
+	// @param - float for the current time of the animation
+	// @param - const AnimationTrack& for the bone being interpolated
+	glm::mat4 InterpolatePosition(float currentTime, const AnimationTrack& track) const;
 
-	// Gets the animation's root node
-	// @return - const AnimNode& for the animation's root node
-	const AnimNode& GetRootNode() const { return mRoot; }
+	// Interpolates a bone's rotation from the current key frame to the next
+	// @param - float for the current time of the animation
+	// @param - const AnimationTrack& for the bone being interpolated
+	glm::mat4 InterpolateRotation(float currentTime, const AnimationTrack& track) const;
 
-	// Gets the animation's global inverse transform matrix
-	// @return - const glm::mat4& for the animation's global inverse transform matrix
-	const glm::mat4& GetGlobalInverseTransform() const { return mGlobalInverseTransform; }
+	// Interpolates a bone's scaling from the current key frame to the next
+	// @param - float for the current time of the animation
+	// @param - const AnimationTrack& for the bone being interpolated
+	glm::mat4 InterpolateScaling(float currentTime, const AnimationTrack& track) const;
 
-	// Gets the animation's name
-	// @return - const std::string& for the animation's name
+	// Gets the animation name
+	// @return - const std::string& for the name
 	const std::string& GetName() const { return mName; }
-	
-	// Gets the animation's duration
-	// @return - float for the animation's duration
-	float GetDuration() const { return mDuration; }
 
-	// Gets the ticks per second for this animation
-	// @return - float for the ticks per second
+	// Gets the animation duration in ticks per second
+	// @return - float for duration in ticks per second
+	float GetDuration() const { return mDuration; }
+	
+	// Gets the ticks per second
+	// @return - float for ticks per second
 	float GetTicksPerSecond() const { return mTicksPerSecond; }
 
+
 private:
-	// Array of bones affected by this animation
-	std::vector<Bone*> mBones;
+	// Reads an animation's key frames, and saves each bone's track to the map of animation tracks
+	// @param - const aiAnimation* for the assimp animation
+	// @param - const Skeleton* for the skeleton associated with this animation. This will add to skeleton's vector of animations
+	void ReadKeyFrames(const aiAnimation* anim, const Skeleton* skeleton);
 
-	// The animation's root node
-	AnimNode mRoot;
-	
-	// Global inverse transform matrix
-	glm::mat4 mGlobalInverseTransform;
+	// Animation track associated with a skeleton's bone, by ID
+	std::unordered_map<int, AnimationTrack> mAnimationTracks;
 
-	// The animation's name
+	// Animation name
 	std::string mName;
 
-	// The duration of this animation
+	// Duration (in ticks per second)
 	float mDuration;
 
-	// The ticks per second for this animation
+	// Ticks per second
 	float mTicksPerSecond;
 };

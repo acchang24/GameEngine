@@ -8,7 +8,7 @@
 #include "3dPrimitives/Cube.h"
 #include "3dPrimitives/Plane.h"
 #include "3dPrimitives/Sphere.h"
-#include "Animation/Skeleton.h"
+//#include "Animation/Skeleton.h"
 #include "Components/AnimationComponent.h"
 #include "Entity/Entity3D.h"
 #include "Graphics/FrameBuffer.h"
@@ -589,43 +589,43 @@ void Game::ProcessInput()
 
 	if (keyboardState[SDL_SCANCODE_KP_0])
 	{
-		vampires[0]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[0]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_1])
 	{
-		vampires[1]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[1]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_2])
 	{
-		vampires[2]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[2]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_3])
 	{
-		vampires[3]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[3]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_4])
 	{
-		vampires[4]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[4]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_5])
 	{
-		vampires[5]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[5]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_6])
 	{
-		vampires[6]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[6]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_7])
 	{
-		vampires[7]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[7]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_8])
 	{
-		vampires[8]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[8]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 	if (keyboardState[SDL_SCANCODE_KP_9])
 	{
-		vampires[9]->GetComponent<AnimationComponent>()->GetSkeleton()->SetTime(0.0f);
+		vampires[9]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 
 	// Save previous key inputs

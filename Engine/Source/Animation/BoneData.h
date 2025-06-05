@@ -1,12 +1,11 @@
 #pragma once
 #include <glm/glm.hpp>
 
-// Struct to hold data of a skeleton's bone
-struct BoneData
+// Max number of bones a skelton can have
+constexpr unsigned int MAX_BONES = 100;
+
+// Struct for skeleton constants that are going to be sent to a uniform buffer in the shaders
+struct SkeletonConsts
 {
-	// bone's index for the bone matrices
-	int index;
-	// offset matrix transforms a vertex from model space to bone space (sets model's pose)
-	// This is sometimes called the inverse bind pose matrix
-	glm::mat4 offset;
+	glm::mat4 finalBoneMatrices[MAX_BONES];
 };

@@ -62,7 +62,7 @@ public:
 	// @param - const aiScene*
 	// @param - Skeleton* if there is a skeleton for this model
 	// @param - AssetManager* to save the model's materials
-	Material* LoadMaterial(const aiScene* scene, aiMesh* mesh, Skeleton* skeleton, AssetManager* am);
+	Material* LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* am);
 
 	// Loads the textures of the material
 	// @param - aiMaterial*
@@ -119,7 +119,7 @@ private:
 
 	// The model's file directory/name
 	std::string mDirectory;
-
+	
 	// Number of materials
 	size_t mNumMaterials;
 

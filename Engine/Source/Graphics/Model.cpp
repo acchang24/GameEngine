@@ -10,7 +10,6 @@
 #include "../Graphics/VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 #include "../Animation/Skeleton.h"
-#include "../Animation/Animation.h"
 #include "../Graphics/UniformBuffer.h"
 #include "../Profiler/Profiler.h"
 #include "../Components/AnimationComponent.h"
@@ -60,31 +59,16 @@ bool Model::LoadModel(const std::string& fileName, Entity3D* entity)
 
 	mHasAnimations = scene->HasAnimations();
 
-	Skeleton* newSkeleton = nullptr;
+	Skeleton* skeleton = nullptr;
+	
+	// Create animation component if there are animations
 	if (mHasAnimations)
 	{
-		std::cout << "Loading animation for: " << fileName << "\n";
-
-		// Create a new animation component for this model
-		newSkeleton = new Skeleton();
-		AssetManager::Get()->SaveSkeleton(fileName, newSkeleton);
+		AnimationComponent* animComp = new AnimationComponent(entity, scene, fileName);
+		skeleton = animComp->GetSkeleton();
 	}
 
-	ProcessNodes(scene->mRootNode, scene, newSkeleton);
-
-	for (int i = 0; i < scene->mNumAnimations; ++i)
-	{
-		std::string animName = scene->mAnimations[i]->mName.C_Str();
-		Animation* newAnim = new Animation(scene->mAnimations[i], scene->mRootNode, newSkeleton);
-		AssetManager::Get()->SaveAnimation(animName, newAnim);
-		newSkeleton->SetAnimation(newAnim);
-	}
-
-	if (mHasAnimations)
-	{
-		Skeleton* skeleton = new Skeleton(*newSkeleton);
-		AnimationComponent* animComp = new AnimationComponent(entity, skeleton);
-	}
+	ProcessNodes(scene->mRootNode, scene, skeleton);
 
 	return true;
 }
@@ -121,12 +105,6 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 	std::string meshName = mesh->mName.C_Str();
 
 	std::cout << "Loading mesh: " << meshName << "\n";
-
-	// Load skeletal bone data if it exists
-	if (mHasAnimations)
-	{
-		skeleton->LoadBoneData(mesh);
-	}
 
 	// Check to see if mesh has already been loaded
 	Mesh* newMesh = am->LoadMesh(meshName);
@@ -180,15 +158,40 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 				vertices.emplace_back(vertex);
 			}
 
-			// Add bone id and weights to vertex if there is a skeletal animation
-			skeleton->ExtractVertexBoneWeights(vertices, mesh);
+			// Add bone id and weights to vertex
+			for (int i = 0; i < mesh->mNumBones; ++i)
+			{
+				// Get bone id from skeleton
+				int boneID = skeleton->GetBoneID(mesh->mBones[i]->mName.C_Str());
+
+				aiVertexWeight* boneWeightsArray = mesh->mBones[i]->mWeights;
+
+				int numWeights = mesh->mBones[i]->mNumWeights;
+
+				for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+				{
+					int vertexID = boneWeightsArray[weightIndex].mVertexId;
+					float weight = boneWeightsArray[weightIndex].mWeight;
+
+					VertexAnim& v = vertices[vertexID];
+					for (int j = 0; j < MAX_BONE_INFLUENCE; ++j)
+					{
+						if (v.boneIDs[j] < 0)
+						{
+							v.boneIDs[j] = boneID;
+							v.weights[j] = weight;
+							break;
+						}
+					}
+				}
+			}
 
 			vb = new VertexBuffer(vertices.data(), indices.data(), sizeof(VertexAnim) * vertices.size(), sizeof(unsigned int) * indices.size(),
 				vertices.size(), indices.size(), VertexLayout::VertexAnim);
 		}
 
 		// Load material
-		Material* mat = LoadMaterial(scene, mesh, skeleton, am);
+		Material* mat = LoadMaterial(scene, mesh, am);
 
 		newMesh = new Mesh(vb, mat);
 
@@ -226,7 +229,7 @@ const Vertex Model::GetVertexData(const aiMesh* mesh, bool hasTextures, unsigned
 	return vertex;
 }
 
-Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, Skeleton* skeleton, AssetManager* am)
+Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* am)
 {
 	if (mesh->mMaterialIndex >= 0)
 	{
