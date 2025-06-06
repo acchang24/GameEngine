@@ -21,7 +21,7 @@ Camera::Camera(Renderer* renderer) :
 	mRight(glm::normalize(glm::cross(mForward, mUp))),
 	mPanDir(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mRenderer(renderer),
-	mCameraBuffer(renderer->CreateUniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer")),
+	mCameraBuffer(renderer->GetUniformBuffer("CameraBuffer")),
 	mMode(CameraMode::Fly),
 	mProjectionMode(GetProjectionFromRenderer(renderer)),
 	mYaw(-90.0f),
@@ -33,6 +33,13 @@ Camera::Camera(Renderer* renderer) :
 	mFarPlane(FAR_PLANE),
 	mFollowDistance(FOLLOW_DISTANCE)
 {
+	// Check to see if camera buffer was not loaded
+	if (!mCameraBuffer)
+	{
+		// Create the camera buffer within renderer (ownership belongs in renderer)
+		mCameraBuffer = renderer->CreateUniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer");
+	}
+
 	SetProjectionMode(mProjectionMode);
 }
 

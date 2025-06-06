@@ -12,6 +12,7 @@
 // defines the vertex values.
 enum class VertexLayout
 {
+	Vertex2D,			// Vertex2D contains 2d position and textures
 	VertexPos,			// VertexPos position
 	VertexColor,		// VertexColor contains position and color
 	VertexTexture,		// VertexTexture contains position and texture(uv)
@@ -22,6 +23,12 @@ enum class VertexLayout
 };
 
 const int MAX_BONE_INFLUENCE = 4;
+
+struct Vertex2D
+{
+	glm::vec2 pos;
+	glm::vec2 uv;
+};
 
 struct VertexPos
 {
@@ -75,6 +82,19 @@ struct VertexScreenQuad
 	glm::vec2 uv;
 };
 
+
+// Set Vertex2D attribute pointers
+static int Vertex2DAttribPointers()
+{
+	// vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)(0));
+	// vertex color
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, uv));
+
+	return 2;
+}
 
 // Set VertexPos attribute pointers
 static int VertexPosAttribPointer()

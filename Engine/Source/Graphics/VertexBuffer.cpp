@@ -59,6 +59,9 @@ void VertexBuffer::SetVertexAttributePointers(VertexLayout layout)
 {
 	switch (layout)
 	{
+	case VertexLayout::Vertex2D:
+		mLastAttribIndex = Vertex2DAttribPointers();
+		break;
 	case VertexLayout::VertexPos:
 		mLastAttribIndex = VertexPosAttribPointer();
 		break;

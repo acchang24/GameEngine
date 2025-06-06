@@ -80,9 +80,12 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	};
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
-	CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
-	CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
-
+	if (mMode == RendererMode::MODE_3D)
+	{
+		// Create a material buffer in 3D mode
+		CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+	}
+	
 	return true;
 }
 

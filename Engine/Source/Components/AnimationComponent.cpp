@@ -36,6 +36,13 @@ AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, con
 
 	// Set default animation to first anim in map
 	SetDefaultAnim();
+
+	// If there isn't skeleton buffer loaded within renderer
+	if (!mSkeletonBuffer)
+	{
+		// Create a new skeleton buffer within renderer (this component will not have ownership)
+		mSkeletonBuffer = AssetManager::Get()->GetRenderer()->CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
+	}
 }
 
 AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton) :
