@@ -36,13 +36,8 @@ class UniformBuffer;
 class Camera
 {
 public:
-	Camera();
-	Camera(const glm::vec3& pos);
+	Camera(Renderer* renderer);
 	~Camera();
-
-	// Creates a UniformBuffer for the camera to send view/projection matrix data to a buffer
-	// @param - Renderer3D* to create/add a buffer to its map of UniformBuffers
-	void CreateBuffer(Renderer* renderer);
 
 	// Updates the camera's view matrix, combines with the projection matrix 
 	// and updates the CameraConsts struct to send to the shader's buffers
@@ -115,10 +110,6 @@ public:
 	// @return - float for the distance
 	float GetFollowDistance() const { return mFollowDistance; }
 
-	// Gets the camera's ortho height
-	// @return - float for the height
-	float GetOrthoHeight() const { return mOrthoHeight; }
-
 
 	// Sets the camera's position
 	// @param - const glm::vec3& for the new position
@@ -164,10 +155,6 @@ public:
 	// @param - float for the new distance
 	void SetFollowDistance(float distance) { mFollowDistance = distance; }
 
-	// Sets the camera's ortho height for orthographic projection
-	// @param - float for the new height
-	void SetOrthoHeight(float height) { mOrthoHeight = height; }
-
 	// Update the camera's pos and rotation
 	// @param - float for the delta time
 	// @param - Mouse* for the mouse
@@ -188,6 +175,11 @@ private:
 
 	// Clamps the pitch rotation so that it doesn't go above 89 and below -89
 	void ClampPitch();
+
+	// Gets the projection type based on 2D or 3D renderer
+	// @param - Renderer* for the renderer
+	// @return - CameraProjection for projection type
+	CameraProjection GetProjectionFromRenderer(Renderer* renderer);
 
 	// Camera's constants
 	CameraConsts mCamConsts;
@@ -212,6 +204,9 @@ private:
 
 	// Camera's direction that it will pan/move to
 	glm::vec3 mPanDir;
+
+	// Pointer to the renderer
+	Renderer* mRenderer;
 
 	// Uniform buffer for camera (ownership of this taken care of in Renderer3D. Do not need to delete in destructor)
 	UniformBuffer* mCameraBuffer;
@@ -245,7 +240,4 @@ private:
 
 	// Camera's follow distance (used for third person)
 	float mFollowDistance;
-
-	// Height for orthographic projection
-	float mOrthoHeight;
 };

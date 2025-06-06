@@ -5,6 +5,12 @@
 #include <SDL2/SDL.h>
 #include "UniformBuffer.h"
 
+enum class RendererMode 
+{
+	MODE_2D, // Represents 2D rendering mode
+	MODE_3D  // Represents 3D rendering mode
+};
+
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
@@ -13,7 +19,7 @@ class VertexBuffer;
 class Renderer
 {
 public:
-	Renderer();
+	Renderer(RendererMode mode);
 	~Renderer();
 
 	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
@@ -79,6 +85,10 @@ public:
 	// Gets the window's height
 	// @return - int for the height
 	int GetHeight() const { return mWindowHeight; }
+
+	// Gets the rendering mode
+	// @return - RendererMode for mode
+	RendererMode GetMode() { return mMode; }
 
 	// Resizes all the frame buffers to the new dimensions
 	void ResizeFrameBuffers();
@@ -166,4 +176,7 @@ private:
 
 	// Bool for if the renderer is in fullscreen mode
 	bool mIsFullScreen;
+
+	// Mode for 2D or 3D rendering
+	RendererMode mMode;
 };

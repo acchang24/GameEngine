@@ -11,7 +11,7 @@
 #include "VertexBuffer.h"
 #include "../Animation/BoneData.h"
 
-Renderer::Renderer() :
+Renderer::Renderer(RendererMode mode) :
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
@@ -20,7 +20,8 @@ Renderer::Renderer() :
 	mVSync(1),
 	mWindowWidth(0),
 	mWindowHeight(0),
-	mIsFullScreen(false)
+	mIsFullScreen(false),
+	mMode(mode)
 {
 }
 

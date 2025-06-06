@@ -6,16 +6,12 @@
 #include "Renderer.h"
 #include "UniformBuffer.h"
 
-const float FOV = 45.0f;
 const float NEAR_PLANE = 0.1f;
 const float FAR_PLANE = 10000.0f;
 const float SPEED = 50.0f;
-const float WIDTH_RATIO = 16.0f;
-const float HEIGHT_RATIO = 9.0f;
 const float FOLLOW_DISTANCE = 50.0f;
-const float ORTHO_HEIGHT = 50.0f;
 
-Camera::Camera() :
+Camera::Camera(Renderer* renderer) :
 	mCamConsts({glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f}),
 	mView(glm::mat4(1.0f)),
 	mProjection(glm::mat4(1.0f)),
@@ -24,43 +20,18 @@ Camera::Camera() :
 	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
 	mRight(glm::normalize(glm::cross(mForward, mUp))),
 	mPanDir(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mCameraBuffer(nullptr),
+	mRenderer(renderer),
+	mCameraBuffer(renderer->CreateUniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer")),
 	mMode(CameraMode::Fly),
-	mProjectionMode(CameraProjection::Perspective),
+	mProjectionMode(GetProjectionFromRenderer(renderer)),
 	mYaw(-90.0f),
 	mPitch(0.0f),
 	mRoll(0.0f),
-	mFOV(FOV),
-	mAspectRatio(WIDTH_RATIO / HEIGHT_RATIO),
+	mFOV(45.0f),
+	mAspectRatio(static_cast<float>(renderer->GetWidth()) / renderer->GetHeight()),
 	mNearPlane(NEAR_PLANE),
 	mFarPlane(FAR_PLANE),
-	mFollowDistance(FOLLOW_DISTANCE),
-	mOrthoHeight(ORTHO_HEIGHT)
-{
-	SetProjectionMode(mProjectionMode);
-}
-
-Camera::Camera(const glm::vec3& pos) :
-	mCamConsts({ glm::mat4(1.0f), pos, 0.0f }),
-	mView(glm::mat4(1.0f)),
-	mProjection(glm::mat4(1.0f)),
-	mTarget(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mForward(glm::normalize(mTarget - mCamConsts.position)),
-	mUp(glm::vec3(0.0f, 1.0f, 0.0f)),
-	mRight(glm::normalize(glm::cross(mForward, mUp))),
-	mPanDir(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mCameraBuffer(nullptr),
-	mMode(CameraMode::Fly),
-	mProjectionMode(CameraProjection::Perspective),
-	mYaw(-90.0f),
-	mPitch(0.0f),
-	mRoll(0.0f),
-	mFOV(FOV),
-	mAspectRatio(WIDTH_RATIO / HEIGHT_RATIO),
-	mNearPlane(NEAR_PLANE),
-	mFarPlane(FAR_PLANE),
-	mFollowDistance(FOLLOW_DISTANCE),
-	mOrthoHeight(ORTHO_HEIGHT)
+	mFollowDistance(FOLLOW_DISTANCE)
 {
 	SetProjectionMode(mProjectionMode);
 }
@@ -68,14 +39,6 @@ Camera::Camera(const glm::vec3& pos) :
 Camera::~Camera()
 {
 	std::cout << "Deleted camera" << std::endl;
-}
-
-void Camera::CreateBuffer(Renderer* renderer)
-{
-	if (mCameraBuffer == nullptr)
-	{
-		mCameraBuffer = renderer->CreateUniformBuffer(sizeof(CameraConsts), BufferBindingPoint::Camera, "CameraBuffer");
-	}
 }
 
 void Camera::SetBuffer()
@@ -111,8 +74,7 @@ void Camera::SetProjectionMode(CameraProjection mode)
 		mProjection = glm::perspective(glm::radians(mFOV), mAspectRatio, mNearPlane, mFarPlane);
 		break;
 	case CameraProjection::Orthographic:
-		float orthoWidth = mOrthoHeight * mAspectRatio;
-		mProjection = glm::ortho(-orthoWidth / 2.0f, orthoWidth / 2.0f, -mOrthoHeight / 2.0f, mOrthoHeight / 2.0f, mNearPlane, mFarPlane);
+		mProjection = glm::ortho(0.0f, static_cast<float>(mRenderer->GetWidth()), 0.0f, static_cast<float>(mRenderer->GetHeight()), mNearPlane, mFarPlane);
 		break;
 	}
 }
@@ -224,4 +186,20 @@ void Camera::ClampPitch()
 	{
 		mPitch = -89.0;
 	}
+}
+
+CameraProjection Camera::GetProjectionFromRenderer(Renderer* renderer)
+{
+	CameraProjection proj = {};
+	switch (renderer->GetMode())
+	{
+	case RendererMode::MODE_2D:
+		proj = CameraProjection::Orthographic;
+		break;
+	case RendererMode::MODE_3D:
+		proj = CameraProjection::Perspective;
+		break;
+	}
+
+	return proj;
 }

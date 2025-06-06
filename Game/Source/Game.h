@@ -91,7 +91,7 @@ private:
 	JobManager* mJobManager;
 
 	// The game's camera
-	Camera mCamera;
+	Camera* mCamera;
 
 	// Game's lighting
 	Lights mLights;
