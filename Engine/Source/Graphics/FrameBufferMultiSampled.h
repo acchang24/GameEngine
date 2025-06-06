@@ -13,7 +13,7 @@ public:
 	// @param - int for the number of subsamples used for anti-aliasing
 	// @param - Renderer3D* for renderer 
 	// @param - Shader* for the framebuffer's shader
-	FrameBufferMultiSampled(int width, int height, int subsamples, Renderer3D* renderer, Shader* shader);
+	FrameBufferMultiSampled(int width, int height, int subsamples, Renderer* renderer, Shader* shader);
 	~FrameBufferMultiSampled();
 
 	// Generates a new multi-sampled framebuffer

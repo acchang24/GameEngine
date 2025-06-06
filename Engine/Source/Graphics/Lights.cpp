@@ -1,6 +1,6 @@
 #include "Lights.h"
 #include <iostream>
-#include "Renderer3D.h"
+#include "Renderer.h"
 #include "UniformBuffer.h"
 
 Lights::Lights() :
@@ -17,7 +17,7 @@ Lights::~Lights()
 	DeAllocateLights();
 }
 
-void Lights::CreateBuffer(Renderer3D* renderer)
+void Lights::CreateBuffer(Renderer* renderer)
 {
 	if (mLightBuffer == nullptr)
 	{

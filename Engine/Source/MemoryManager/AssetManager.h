@@ -10,7 +10,7 @@
 #include "../Graphics/Mesh.h"
 #include "../Graphics/Model.h"
 
-class Renderer3D;
+class Renderer;
 
 // The AssetManager is a singleton class that helps load assets on demand
 // and cache them so that subsequent loads will return the cached asset
@@ -30,11 +30,11 @@ public:
 	static AssetManager* Get();
 
 	// Sets a pointer to the renderer
-	void SetRenderer(Renderer3D* renderer) { mRenderer = renderer; }
+	void SetRenderer(Renderer* renderer) { mRenderer = renderer; }
 
 	// Gets a pointer to the game's renderer
 	// @return - Renderer3D* for the renderer
-	Renderer3D* GetRenderer() { return mRenderer; }
+	Renderer* GetRenderer() { return mRenderer; }
 
 	
 	// Saves a shader into the shader cache's map
@@ -224,7 +224,7 @@ private:
 	AssetManager& operator=(AssetManager&&) = delete; // No move assignment
 
 	// Pointer to the game's renderer (does not own the renderer, Game will take care of deleting this pointer)
-	Renderer3D* mRenderer;
+	Renderer* mRenderer;
 
 	// Shader cache
 	Cache<Shader>* mShaderCache;

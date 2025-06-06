@@ -1,7 +1,7 @@
 #pragma once
 #include "Texture.h"
 
-class Renderer3D;
+class Renderer;
 class Shader;
 class VertexBuffer;
 
@@ -16,7 +16,7 @@ public:
 	// @param - int for the screen/window's height
 	// @param - Renderer3D* for renderer 
 	// @param - Shader* for the framebuffer's shader
-	FrameBuffer(int width, int height, Renderer3D* renderer, Shader* shader);
+	FrameBuffer(int width, int height, Renderer* renderer, Shader* shader);
 	virtual ~FrameBuffer();
 
 	// Generates a new frame buffer

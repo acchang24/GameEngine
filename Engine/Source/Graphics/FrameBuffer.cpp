@@ -2,12 +2,12 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include "Renderer3D.h"
+#include "Renderer.h"
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 
-FrameBuffer::FrameBuffer(int width, int height, Renderer3D* renderer, Shader* shader) :
+FrameBuffer::FrameBuffer(int width, int height, Renderer* renderer, Shader* shader) :
 	mShader(shader),
 	mVertexBuffer(AssetManager::Get()->GetRenderer()->GetVertexBuffer()),
 	mFrameBuffer(0),

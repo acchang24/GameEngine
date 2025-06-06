@@ -2,7 +2,7 @@
 #include <iostream>
 #include "../Animation/Skeleton.h"
 #include "../Animation/Animation.h"
-#include "../Graphics/Renderer3D.h"
+#include "../Graphics/Renderer.h"
 #include "../Graphics/UniformBuffer.h"
 #include "../MemoryManager/AssetManager.h"
 #include "../Profiler/Profiler.h"

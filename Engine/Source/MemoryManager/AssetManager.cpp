@@ -1,6 +1,6 @@
 #include "AssetManager.h"
 #include <iostream>
-#include "../Graphics/Renderer3D.h"
+#include "../Graphics/Renderer.h"
 
 AssetManager::AssetManager() :
 	mRenderer(nullptr),

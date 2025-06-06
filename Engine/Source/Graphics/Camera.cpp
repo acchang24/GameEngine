@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../Input/Mouse.h"
-#include "Renderer3D.h"
+#include "Renderer.h"
 #include "UniformBuffer.h"
 
 const float FOV = 45.0f;
@@ -70,7 +70,7 @@ Camera::~Camera()
 	std::cout << "Deleted camera" << std::endl;
 }
 
-void Camera::CreateBuffer(Renderer3D* renderer)
+void Camera::CreateBuffer(Renderer* renderer)
 {
 	if (mCameraBuffer == nullptr)
 	{

@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include "Graphics/Camera.h"
 #include "Graphics/Lights.h"
-#include "Graphics/Renderer3D.h"
+#include "Graphics/Renderer.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 
@@ -82,7 +82,7 @@ private:
 	std::vector<Entity*> mEntities;
 
 	// Renderer for graphics output
-	Renderer3D mRenderer;
+	Renderer mRenderer;
 
 	// Pointer to a static asset manager
 	AssetManager* mAssetManager;

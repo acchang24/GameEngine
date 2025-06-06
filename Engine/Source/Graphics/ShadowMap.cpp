@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../MemoryManager/AssetManager.h"
-#include "Renderer3D.h"
+#include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "UniformBuffer.h"

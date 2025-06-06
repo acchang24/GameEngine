@@ -10,11 +10,11 @@ class FrameBufferMultiSampled;
 class Shader;
 class VertexBuffer;
 
-class Renderer3D
+class Renderer
 {
 public:
-	Renderer3D();
-	~Renderer3D();
+	Renderer();
+	~Renderer();
 
 	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
 	// Enables any OpenGL functionality at the end

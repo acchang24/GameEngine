@@ -1,6 +1,6 @@
 #include "Skeleton.h"
 #include <iostream>
-#include "../Graphics/Renderer3D.h"
+#include "../Graphics/Renderer.h"
 #include "../MemoryManager/AssetManager.h"
 #include "../Util/AssimpGLMHelper.h"
 #include "Animation.h"

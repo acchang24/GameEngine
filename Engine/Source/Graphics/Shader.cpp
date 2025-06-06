@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "../MemoryManager/AssetManager.h"
-#include "Renderer3D.h"
+#include "Renderer.h"
 #include "ShaderProgram.h"
 
 Shader::Shader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile) :

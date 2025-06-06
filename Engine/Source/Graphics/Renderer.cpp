@@ -1,4 +1,4 @@
-#include "Renderer3D.h"
+#include "Renderer.h"
 #include <iostream>
 #include <glad/glad.h>
 #include "../Animation/Skeleton.h"
@@ -11,7 +11,7 @@
 #include "VertexBuffer.h"
 #include "../Animation/BoneData.h"
 
-Renderer3D::Renderer3D() :
+Renderer::Renderer() :
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
@@ -24,12 +24,12 @@ Renderer3D::Renderer3D() :
 {
 }
 
-Renderer3D::~Renderer3D()
+Renderer::~Renderer()
 {
 	std::cout << "Deleted Renderer3D\n";
 }
 
-bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool fullscreen, SDL_bool mouseCaptured, const char* title)
+bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fullscreen, SDL_bool mouseCaptured, const char* title)
 {
 	mWindowWidth = width;
 	mWindowHeight = height;
@@ -85,7 +85,7 @@ bool Renderer3D::Init(int width, int height, int subsamples, int vsync, bool ful
 	return true;
 }
 
-void Renderer3D::Shutdown()
+void Renderer::Shutdown()
 {
 	std::cout << "Shutting down Renderer3D\n";
 	
@@ -110,7 +110,7 @@ void Renderer3D::Shutdown()
 	SDL_Quit();
 }
 
-void Renderer3D::ClearBuffers()
+void Renderer::ClearBuffers()
 {
 	// Specify color to clear the screen
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -119,7 +119,7 @@ void Renderer3D::ClearBuffers()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer3D::SetDefaultFrameBuffer() const
+void Renderer::SetDefaultFrameBuffer() const
 {
 	// Bind back to default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -131,12 +131,12 @@ void Renderer3D::SetDefaultFrameBuffer() const
 	glViewport(0, 0, mWindowWidth, mWindowHeight);
 }
 
-void Renderer3D::EndFrame()
+void Renderer::EndFrame()
 {
 	SDL_GL_SwapWindow(mWindow);
 }
 
-UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName)
+UniformBuffer* Renderer::CreateUniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName)
 {
 	UniformBuffer* buffer = new UniformBuffer(bufferSize, bindingPoint, bufferName);
 
@@ -145,7 +145,7 @@ UniformBuffer* Renderer3D::CreateUniformBuffer(size_t bufferSize, BufferBindingP
 	return buffer;
 }
 
-UniformBuffer* Renderer3D::GetUniformBuffer(const std::string& bufferName)
+UniformBuffer* Renderer::GetUniformBuffer(const std::string& bufferName)
 {
 	auto iter = mUniformBuffers.find(bufferName);
 
@@ -157,7 +157,7 @@ UniformBuffer* Renderer3D::GetUniformBuffer(const std::string& bufferName)
 	return nullptr;
 }
 
-FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, Shader* shader)
+FrameBuffer* Renderer::CreateFrameBuffer(int width, int height, Shader* shader)
 {
 	FrameBuffer* framebuffer = new FrameBuffer(width, height, this, shader);
 
@@ -166,7 +166,7 @@ FrameBuffer* Renderer3D::CreateFrameBuffer(int width, int height, Shader* shader
 	return framebuffer;
 }
 
-FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int width, int height, int subsamples, Shader* shader)
+FrameBufferMultiSampled* Renderer::CreateMultiSampledFrameBuffer(int width, int height, int subsamples, Shader* shader)
 {
 	FrameBufferMultiSampled* framebuffer = new FrameBufferMultiSampled(width, height, subsamples, this, shader);
 
@@ -175,7 +175,7 @@ FrameBufferMultiSampled* Renderer3D::CreateMultiSampledFrameBuffer(int width, in
 	return framebuffer;
 }
 
-void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit)
+void Renderer::CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit)
 {
 	shader->SetActive();
 
@@ -191,7 +191,7 @@ void Renderer3D::CreateBlend(Shader* shader, unsigned int texture1, unsigned int
 	glBindTexture(GL_TEXTURE_2D, texture2);
 }
 
-void Renderer3D::ResizeFrameBuffers()
+void Renderer::ResizeFrameBuffers()
 {
 	for (auto fb : mFrameBuffers)
 	{
@@ -212,7 +212,7 @@ void Renderer3D::ResizeFrameBuffers()
 	}
 }
 
-bool Renderer3D::InitSDL() const
+bool Renderer::InitSDL() const
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
@@ -222,7 +222,7 @@ bool Renderer3D::InitSDL() const
 	return true;
 }
 
-void Renderer3D::LoadOpenGL() const
+void Renderer::LoadOpenGL() const
 {
 	SDL_GL_LoadLibrary(NULL);
 
@@ -247,7 +247,7 @@ void Renderer3D::LoadOpenGL() const
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, mNumSubsamples);
 }
 
-bool Renderer3D::CreateWindow()
+bool Renderer::CreateWindow()
 {
 	if (mIsFullScreen)
 	{
@@ -284,7 +284,7 @@ bool Renderer3D::CreateWindow()
 	return true;
 }
 
-bool Renderer3D::CreateContext()
+bool Renderer::CreateContext()
 {
 	mContext = SDL_GL_CreateContext(mWindow);
 	if (mContext == NULL)
@@ -295,7 +295,7 @@ bool Renderer3D::CreateContext()
 	return true;
 }
 
-void Renderer3D::LoadGLAD() const
+void Renderer::LoadGLAD() const
 {
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
@@ -305,7 +305,7 @@ void Renderer3D::LoadGLAD() const
 	std::cout << "Version: " << glGetString(GL_VERSION) << "\n";
 }
 
-void Renderer3D::LoadSdlSettings(SDL_bool mouseCaptured) const
+void Renderer::LoadSdlSettings(SDL_bool mouseCaptured) const
 {
 	// Enable v-sync by
 	SDL_GL_SetSwapInterval(mVSync);
@@ -315,7 +315,7 @@ void Renderer3D::LoadSdlSettings(SDL_bool mouseCaptured) const
 	SDL_GetRelativeMouseState(nullptr, nullptr);
 }
 
-void Renderer3D::SetOpenGLCapabilities() const
+void Renderer::SetOpenGLCapabilities() const
 {
 	// Enable z-buffering (depth testing)
 	glEnable(GL_DEPTH_TEST);

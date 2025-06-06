@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 
-FrameBufferMultiSampled::FrameBufferMultiSampled(int width, int height, int subsamples, Renderer3D* renderer, Shader* shader) :
+FrameBufferMultiSampled::FrameBufferMultiSampled(int width, int height, int subsamples, Renderer* renderer, Shader* shader) :
 	FrameBuffer(width, height, renderer, shader),
 	mMSAAFrameBuffer(0),
 	mTextureMultiSampled(0),

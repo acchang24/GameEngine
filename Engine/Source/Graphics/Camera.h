@@ -27,7 +27,7 @@ struct CameraConsts
 };
 
 class Mouse;
-class Renderer3D;
+class Renderer;
 class UniformBuffer;
 
 // Camera class is mainly responsible for using the view matrix
@@ -42,7 +42,7 @@ public:
 
 	// Creates a UniformBuffer for the camera to send view/projection matrix data to a buffer
 	// @param - Renderer3D* to create/add a buffer to its map of UniformBuffers
-	void CreateBuffer(Renderer3D* renderer);
+	void CreateBuffer(Renderer* renderer);
 
 	// Updates the camera's view matrix, combines with the projection matrix 
 	// and updates the CameraConsts struct to send to the shader's buffers
