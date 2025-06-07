@@ -63,7 +63,7 @@ void SpriteRenderer::Draw()
 				model = glm::rotate(model, glm::radians(e->GetRotation()), glm::vec3(0.0f, 0.0f, 1.0f));
 
 				// Scale
-				model = glm::scale(model, glm::vec3(size, 1.0f));
+				model = glm::scale(model, glm::vec3(e->GetFloatScale() * size, 1.0f));
 
 				// Send model and projection matrix to shader
 				mShader->SetMat4("model", model);

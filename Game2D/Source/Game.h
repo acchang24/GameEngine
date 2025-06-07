@@ -81,9 +81,6 @@ private:
 	// Pointer to a static JobManager
 	JobManager* mJobManager;
 
-	// The game's camera
-	Camera* mCamera;
-
 	// Game's mouse input
 	Mouse mMouse;
 

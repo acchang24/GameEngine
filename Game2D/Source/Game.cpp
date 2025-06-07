@@ -27,7 +27,6 @@ Game::Game() :
 	mRenderer(RendererMode::MODE_2D),
 	mAssetManager(AssetManager::Get()),
 	mJobManager(JobManager::Get()),
-	mCamera(nullptr),
 	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
 	mKeyboard(),
 	mIsRunning(true)
@@ -50,9 +49,6 @@ bool Game::Init()
 		return false;
 	}
 
-	mCamera = new Camera(&mRenderer);
-	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-
 	PROFILE_SCOPE(LOAD_DATA);
 
 	LoadShaders();
@@ -65,8 +61,6 @@ bool Game::Init()
 void Game::Shutdown()
 {
 	UnloadGameData();
-
-	delete mCamera;
 
 	mRenderer.Shutdown();
 
@@ -82,15 +76,24 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Entity* face = new Entity();
-	face->SetPos2D(glm::vec2(200.0f, 200.0f));
-	face->SetRotation(45.0f);
-	face->SetSize(glm::vec2(300.0f, 400.0f));
-	Texture* sprite = AssetManager::LoadTexture("Assets/awesomeface.png", TextureType::Sprite);
-	SpriteComponent* sc = new SpriteComponent(face, mRenderer.GetSpriteRenderer());
+	Texture* sprite = AssetManager::LoadTexture("Assets/Ship.png", TextureType::Sprite);
+	Entity* ship = new Entity();
+	ship->SetPos2D(glm::vec2(200.0f, 200.0f));
+	ship->SetRotation(45.0f);
+	ship->SetSize(glm::vec2(sprite->GetWidth(), sprite->GetHeight()));
+	SpriteComponent* sc = new SpriteComponent(ship, mRenderer.GetSpriteRenderer());
 	sc->AddSprite(sprite);
-	sc->SetSprite(sc->GetSprite("Assets/awesomeface.png"));
-	AddGameEntity(face);
+	sc->SetSprite(sc->GetSprite("Assets/Ship.png"));
+	AddGameEntity(ship);
+
+	Entity* background = new Entity();
+	background->SetPos2D(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
+	background->SetSize(glm::vec2(static_cast<float>(mRenderer.GetWidth()),  static_cast<float>(mRenderer.GetHeight())));
+	Texture* backgroundSprite = AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite);
+	SpriteComponent* backgroundSC = new SpriteComponent(background, mRenderer.GetSpriteRenderer(), 50);
+	backgroundSC->AddSprite(backgroundSprite);
+	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
+	AddGameEntity(background);
 
 	mRenderer.GetSpriteRenderer()->SetShader(AssetManager::LoadShader("sprite"));
 }
@@ -119,8 +122,6 @@ void Game::Run()
 		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count());
 		float deltaTime = static_cast<float>(0.000000001 * duration);
 		frameStart = frameEnd;
-
-		std::cout << mEntities[0]->GetPos2D().x << " " << mEntities[0]->GetPos2D().y << " " << mEntities[0]->GetRotation() << "\n";
 
 		ProcessInput();
 
@@ -206,21 +207,6 @@ void Game::ProcessInput()
 		e->SetRotation(e->GetRotation() - 0.5f);
 	}
 
-
-	// Toggle camera modes
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_V))
-	{
-		mCamera->ToggleCameraModes();
-	}
-
-	// Capture mouse
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_M))
-	{
-		mMouse.ToggleMouseCapture();
-	}
-
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_M);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_V);
 
 	for (auto e : mEntities)
 	{
@@ -338,8 +324,6 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mCamera->Update(deltaTime, &mMouse);
-
 	PROFILE_SCOPE(WAIT_JOBS);
 	mJobManager->WaitForJobs();
 }
@@ -347,8 +331,6 @@ void Game::Update(float deltaTime)
 void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
-
-	mCamera->SetBuffer();
 
 	mRenderer.ClearBuffers();
 
@@ -367,8 +349,6 @@ void Game::ResizeWindow(const SDL_Event& event)
 
 		float ratio = static_cast<float>(width) / static_cast<float>(height);
 
-		// Set new camera aspect ratio
-		mCamera->SetAspectRatio(ratio);
 
 		// Set new viewport dimensions
 		glViewport(0, 0, width, height);
