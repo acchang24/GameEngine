@@ -44,9 +44,25 @@ void Texture::LoadTexture()
 	if (data)
 	{
 		// Get the format based on the number of color channels
-		GLenum wrap = 0;
+		GLenum wrap = GL_REPEAT;
+		GLenum maxFilter = GL_LINEAR;
+		GLenum minFilter = GL_LINEAR_MIPMAP_LINEAR;
 		GLenum dataFormat = 0;
 		GLenum internalFormat = 0;
+
+		if (mType == TextureType::Sprite)
+		{
+			// Don't auto create mip maps if it's a sprite (will just scale it manually)
+			minFilter = GL_LINEAR;
+
+			// Do not flip loaded textures on the y axis for 2D sprites
+			stbi_set_flip_vertically_on_load(false);
+		}
+		else
+		{
+			// Flip loaded textures on the y axis by default (3D textures)
+			stbi_set_flip_vertically_on_load(true);
+		}
 
 		// Setup swizzle mapping
 		GLint swizzleMask[4] = { GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA };
@@ -99,12 +115,12 @@ void Texture::LoadTexture()
 		// GL_CLAMP_TO_EDGE: Clamps coordinates between 0 and 1. Higher coordinates become
 		// clamped to the edge, resulting in a stretched edge pattern.
 		// GL_CLAMP_TO_BORDER: Coordinates outside the range are now given a user specifed vorder color
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
 
 		// Set texture filtering parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
 
 		// Add swizzling mask for 1 and 2 channel textures (treat both as RGB)
 		if (mNumChannels <= 2)

@@ -5,24 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include "3dPrimitives/Cube.h"
-#include "3dPrimitives/Plane.h"
-#include "3dPrimitives/Sphere.h"
-#include "Components/AnimationComponent.h"
-#include "Entity/Entity3D.h"
-#include "Graphics/FrameBuffer.h"
-#include "Graphics/FrameBufferMultiSampled.h"
-#include "Graphics/Material.h"
-#include "Graphics/MaterialCubeMap.h"
-#include "Graphics/Mesh.h"
-#include "Graphics/Model.h"
-#include "Graphics/Shader.h"
-#include "Graphics/ShadowMap.h"
-#include "Graphics/Skybox.h"
+#include "Components/SpriteComponent.h"
+#include "Entity/Entity.h"
 #include "Graphics/Texture.h"
-#include "Graphics/UniformBuffer.h"
-#include "Graphics/VertexBuffer.h"
-#include "Graphics/VertexLayouts.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
@@ -72,9 +57,6 @@ bool Game::Init()
 
 	LoadShaders();
 
-	int width = mRenderer.GetWidth();
-	int height = mRenderer.GetHeight();
-
 	LoadGameData();
 
 	return true;
@@ -82,11 +64,11 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
-	mRenderer.Shutdown();
-
 	UnloadGameData();
 
 	delete mCamera;
+
+	mRenderer.Shutdown();
 
 	mJobManager->End();
 
@@ -100,7 +82,17 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
+	Entity* face = new Entity();
+	face->SetPos2D(glm::vec2(200.0f, 200.0f));
+	face->SetRotation(45.0f);
+	face->SetSize(glm::vec2(300.0f, 400.0f));
+	Texture* sprite = AssetManager::LoadTexture("Assets/awesomeface.png", TextureType::Sprite);
+	SpriteComponent* sc = new SpriteComponent(face, mRenderer.GetSpriteRenderer());
+	sc->AddSprite(sprite);
+	sc->SetSprite(sc->GetSprite("Assets/awesomeface.png"));
+	AddGameEntity(face);
 
+	mRenderer.GetSpriteRenderer()->SetShader(AssetManager::LoadShader("sprite"));
 }
 
 void Game::UnloadGameData()
@@ -127,6 +119,8 @@ void Game::Run()
 		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count());
 		float deltaTime = static_cast<float>(0.000000001 * duration);
 		frameStart = frameEnd;
+
+		std::cout << mEntities[0]->GetPos2D().x << " " << mEntities[0]->GetPos2D().y << " " << mEntities[0]->GetRotation() << "\n";
 
 		ProcessInput();
 
@@ -177,6 +171,39 @@ void Game::ProcessInput()
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 	{
 		mIsRunning = false;
+	}
+
+
+	// Move camera around
+	if (keyboardState[SDL_SCANCODE_W])
+	{
+		Entity* e = mEntities[0];
+		e->SetPos2D(e->GetPos2D() + glm::vec2(0.0f, -1.0f) * 0.5f);
+	}
+	if (keyboardState[SDL_SCANCODE_S])
+	{
+		Entity* e = mEntities[0];
+		e->SetPos2D(e->GetPos2D() + glm::vec2(0.0f, 1.0f) * 0.5f);
+	}
+	if (keyboardState[SDL_SCANCODE_A])
+	{
+		Entity* e = mEntities[0];
+		e->SetPos2D(e->GetPos2D() + glm::vec2(-1.0f, 0.0f) * 0.5f);
+	}
+	if (keyboardState[SDL_SCANCODE_D])
+	{
+		Entity* e = mEntities[0];
+		e->SetPos2D(e->GetPos2D() + glm::vec2(1.0f, 0.0f) * 0.5f);
+	}
+	if (keyboardState[SDL_SCANCODE_RIGHT])
+	{
+		Entity* e = mEntities[0];
+		e->SetRotation(e->GetRotation() + 0.5f);
+	}
+	if (keyboardState[SDL_SCANCODE_LEFT])
+	{
+		Entity* e = mEntities[0];
+		e->SetRotation(e->GetRotation() - 0.5f);
 	}
 
 
@@ -325,7 +352,7 @@ void Game::Render()
 
 	mRenderer.ClearBuffers();
 
-
+	mRenderer.Draw2D();
 
 	mRenderer.EndFrame();
 }

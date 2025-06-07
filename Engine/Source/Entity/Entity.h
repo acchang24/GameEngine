@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <SDL2/SDL_stdinc.h>
+#include <glm/glm.hpp>
 
 enum class EntityState
 {
@@ -62,9 +63,19 @@ public:
 	// @return - EntityState for the entity's state
 	EntityState GetEntityState() const { return mState; }
 
+	// Gets the entity's 2d position
+	const glm::vec2& GetPos2D() const { return mPos2D; }
+
+	// Gets the entity's size (width and height)
+	const glm::vec2& GetSize() const { return mSize; }
+
 	// Gets the entity's rotation as a float value
 	// @return - float for the rotation
 	float GetRotation() const { return mRotation; }
+
+	// Gets the entity's float scale
+	// @return - float for the scale
+	float GetFloatScale() const { return mFloatScale; }
 
 	// Sets the entity's state
 	// @param - EntityState for the entity's new state
@@ -74,6 +85,18 @@ public:
 	// @param - float for the new rotation
 	void SetRotation(float rotation) { mRotation = rotation; }
 
+	// Sets the entity's single float scale
+	// @param - float for the new scale
+	void SetFloatScale(float scale) { mFloatScale = scale; }
+
+	// Sets the 2D pos
+	// @param - const glm::vec2& for new pos
+	void SetPos2D(const glm::vec2& pos) { mPos2D = pos; }
+
+	// Sets the size
+	// @param - const glm::vec2& for new size
+	void SetSize(const glm::vec2& size) { mSize = size; }
+
 protected:
 	// Vector of components the entity uses
 	std::vector<Component*> mComponents;
@@ -81,6 +104,16 @@ protected:
 	// Entity's state
 	EntityState mState;
 
-	// Entity's rotation in radians as a float
+	// Entity's rotation in degrees as a float
 	float mRotation;
+
+private:
+	// Position for in 2D
+	glm::vec2 mPos2D;
+
+	// Size for width and height
+	glm::vec2 mSize;
+
+	// Entity's scale in float
+	float mFloatScale;
 };

@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 #include <SDL2/SDL.h>
+#include "SpriteRenderer.h"
 #include "UniformBuffer.h"
 
 enum class RendererMode 
@@ -40,6 +41,9 @@ public:
 	// Clears the screen, and clears the color and depth buffer bits
 	void ClearBuffers();
 
+	// Draws any 2D sprites, UI using the SpriteRenderer
+	void Draw2D();
+
 	// Sets back to the default frame buffer, clears its color/depth buffers and resets the viewport
 	void SetDefaultFrameBuffer() const;
 
@@ -71,6 +75,10 @@ public:
 	// @param - Shader* for the framebuffer's shader
 	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples, Shader* shader);
 
+	// Gets the SpriteRenderer
+	// @return - SpriteRenderer* for 2D renderer
+	SpriteRenderer* GetSpriteRenderer() { return mSpriteRenderer; }
+
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active
 	// @param - unsigned int for a reference to the first texture
@@ -88,7 +96,7 @@ public:
 
 	// Gets the rendering mode
 	// @return - RendererMode for mode
-	RendererMode GetMode() { return mMode; }
+	RendererMode GetMode() const { return mMode; }
 
 	// Resizes all the frame buffers to the new dimensions
 	void ResizeFrameBuffers();
@@ -112,6 +120,10 @@ public:
 	// Sets the window's height
 	// @param - int for the new height
 	void SetHeight(int height) { mWindowHeight = height; }
+
+	// Sets the SpriteRenderer shader
+	// @param - Shader* for the new shader
+	void SetSpriteRendererShader(Shader* shader) { mSpriteRenderer->SetShader(shader); }
 
 private:
 	// FUNCTIONS
@@ -149,6 +161,9 @@ private:
 
 	// Vector of frame buffers used by the renderer
 	std::vector<FrameBuffer*> mFrameBuffers;
+
+	// Sprite renderer for 2D
+	SpriteRenderer* mSpriteRenderer;
 
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;

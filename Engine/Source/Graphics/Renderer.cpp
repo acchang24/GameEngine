@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <iostream>
 #include <glad/glad.h>
+#include "../Animation/BoneData.h"
 #include "../Animation/Skeleton.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
@@ -9,9 +10,9 @@
 #include "Shader.h"
 #include "stb_image.h"
 #include "VertexBuffer.h"
-#include "../Animation/BoneData.h"
 
 Renderer::Renderer(RendererMode mode) :
+	mSpriteRenderer(nullptr),
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
@@ -60,9 +61,6 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 
 	LoadGLAD();
 
-	// Flip loaded textures on the y axis by default
-	stbi_set_flip_vertically_on_load(false);
-
 	LoadSdlSettings(mouseCaptured);
 
 	SetOpenGLCapabilities();
@@ -80,11 +78,15 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	};
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
+	// Create sprite renderer
+	mSpriteRenderer = new SpriteRenderer(nullptr, mWindowWidth, mWindowHeight);
+
 	if (mMode == RendererMode::MODE_3D)
 	{
 		// Create a material buffer in 3D mode
 		CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	}
+	
 	
 	return true;
 }
@@ -105,6 +107,8 @@ void Renderer::Shutdown()
 	}
 	mFrameBuffers.clear();
 
+	delete mSpriteRenderer;
+
 	delete mVertexBuffer;
 
 	SDL_GL_DeleteContext(mContext);
@@ -121,6 +125,11 @@ void Renderer::ClearBuffers()
 
 	// Clear the color buffer, depth buffer for default frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::Draw2D()
+{
+	mSpriteRenderer->Draw();
 }
 
 void Renderer::SetDefaultFrameBuffer() const
@@ -321,11 +330,22 @@ void Renderer::LoadSdlSettings(SDL_bool mouseCaptured) const
 
 void Renderer::SetOpenGLCapabilities() const
 {
-	// Enable z-buffering (depth testing)
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	// Enable face culling
-	glEnable(GL_CULL_FACE);
+	if (mMode == RendererMode::MODE_3D)
+	{
+		// Enable z-buffering (depth testing)
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		// Enable face culling
+		glEnable(GL_CULL_FACE);
+	}
+	else if (mMode == RendererMode::MODE_2D)
+	{
+		// Disable z-buffering (depth testing)
+		glDisable(GL_DEPTH_TEST);
+		// Disable face culling
+		glDisable(GL_CULL_FACE);
+	}
+
 	// Enable anti-aliasing
 	glEnable(GL_MULTISAMPLE);
 	// Enable blending

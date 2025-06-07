@@ -4,22 +4,23 @@
 // Enum class for texture types and its corresponding texture unit
 enum class TextureType
 {
-	None = 0, // Default to 0
-	Diffuse = 1, // Texture unit 1 for diffuse color textures
-	Specular = 2, // Texture unit 2 for specular map textures
-	Emission = 3, // Texture unit 3 for emission map textures
-	Normal = 4, // Texture unit 4 for normal map textures
-	FrameBuffer = 5, // Texture unit 5 is used to sample a texture created from a frame buffer
-	CubeMap = 6, // Texture unit 6 is used to sample from a cube map
-	Shadow = 7, // Texture unit 7 is used to sample from a directional shadow/depth map
-	PointShadow = 8 // Texture unit 8 is used to sample from a cube map for a point shadow/depth map
+	None = 0,				// Default to 0
+	Diffuse = 1,			// Texture unit 1 for diffuse color textures
+	Specular = 2,			// Texture unit 2 for specular map textures
+	Emission = 3,			// Texture unit 3 for emission map textures
+	Normal = 4,				// Texture unit 4 for normal map textures
+	FrameBuffer = 5,		// Texture unit 5 is used to sample a texture created from a frame buffer
+	CubeMap = 6,			// Texture unit 6 is used to sample from a cube map
+	Shadow = 7,				// Texture unit 7 is used to sample from a directional shadow/depth map
+	PointShadow = 8,		// Texture unit 8 is used to sample from a cube map for a point shadow/depth map
+	Sprite = 9				// Texture unit 9 is used to sample from a texture that is used as a sprite for 2D rendering
 };
 
 // The Texture class helps load image files with the
 // stb_image loader and saves image details. All texture
 // objects are referenced with an integer and provides
 // functions to help set currently bound texture. These are textures 
-// used for texture mapping in 3D. Do not use this for 2D sprites.
+// used for texture mapping in 3D. 
 class Texture
 {
 public:
@@ -42,6 +43,14 @@ public:
 	// Getter for the texture's ID
 	// @return - unsigned int mTextureID;
 	unsigned int GetID() const { return mTextureID; }
+
+	// Gets the texture width
+	// @return - float for width
+	float GetWidth() const { return mWidth; }
+
+	// Gets the texture height
+	// @return - float for height
+	float GetHeight() const { return mHeight; }
 
 	// Getter for the texture unit
 	// @return - int for the texture unit
