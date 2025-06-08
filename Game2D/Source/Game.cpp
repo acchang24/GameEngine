@@ -120,6 +120,10 @@ void Game::Run()
 		float deltaTime = static_cast<float>(0.000000001 * duration);
 		frameStart = frameEnd;
 
+		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
+
+		std::cout << e->GetPosition().x << " " << e->GetPosition().y << " " << e->GetRotation() << " " << e->GetForward().x << " " << e->GetForward().y << "\n";
+
 		ProcessInput();
 
 		Update(deltaTime);

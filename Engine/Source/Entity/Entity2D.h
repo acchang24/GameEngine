@@ -31,6 +31,10 @@ public:
 	// @param - float for delta time
 	virtual void OnUpdate(float deltaTime);
 
+	// Gets the entity's forward facing direction based on its rotation
+	// @return - const glm::vec2 for the forward facing direction
+	const glm::vec2 GetForward() const { return glm::vec2(cos(glm::radians(mRotation)), sin(glm::radians(mRotation))); }
+
 	// Gets the entity's 2d position
 	// @return - const glm::vec2& for the position
 	const glm::vec2& GetPosition() const { return mPosition; }
