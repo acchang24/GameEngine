@@ -12,7 +12,7 @@
 class AssetManager;
 class Entity;
 class JobManager;
-
+class AABBComponent2D;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
 class Game
@@ -68,9 +68,18 @@ public:
 	// @param - Entity* for the entity to remove
 	void RemoveGameEntity(Entity* e);
 
+	// Add entity with collisions
+	void AddCollision(AABBComponent2D* collision) { mCollisions.emplace_back(collision); }
+
+	// Get vector of collision components
+	const std::vector<AABBComponent2D*>& GetCollisions() { return mCollisions; }
+
 private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
+
+	// All entities with collision
+	std::vector<AABBComponent2D*> mCollisions;
 
 	// Renderer for graphics output
 	Renderer mRenderer;

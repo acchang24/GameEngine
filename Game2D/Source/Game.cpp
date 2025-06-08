@@ -20,7 +20,7 @@ const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
 int VSYNC = 1;
 double MOUSE_SENSITIVITY = 0.05;
-bool IS_FULLSCREEN = false;
+bool IS_FULLSCREEN = true;
 const char* TITLE = "Game2D";
 SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 
@@ -77,9 +77,13 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this);
+	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this, 1);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
+
+	Ship* ship2 = new Ship(mRenderer.GetSpriteRenderer(), this, 2);
+	ship2->SetScale(2.0f);
+	ship2->SetPosition(glm::vec2(200.0f, 400.0f));
 
 	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
 	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
@@ -115,10 +119,6 @@ void Game::Run()
 		double duration = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(frameEnd - frameStart).count());
 		float deltaTime = static_cast<float>(0.000000001 * duration);
 		frameStart = frameEnd;
-
-		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
-
-		std::cout << e->GetPosition().x << " " << e->GetPosition().y << " " << e->GetRotation() << " " << e->GetForward().x << " " << e->GetForward().y << "\n";
 
 		ProcessInput();
 
