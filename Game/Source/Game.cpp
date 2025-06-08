@@ -259,7 +259,8 @@ void Game::LoadGameData()
 	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.125);
-	sponza->SetYaw(-90.0f);
+	sponza->FaceDirection(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	//sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
 
 	//Material* wallMaterial = new Material();
@@ -283,6 +284,7 @@ void Game::LoadGameData()
 
 	Entity3D* squidward = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
+	squidward->FaceDirection(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	AddGameEntity(squidward);
 
 	Entity3D* squidward2 = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");

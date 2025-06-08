@@ -67,6 +67,29 @@ public:
 
 	void CalculateWorldTransform();
 
+	void RotateFromInput(float deltaYawDeg, float deltaPitchDeg, float deltaRollDeg);
+
+	// Sets the entity's quaternion orientation to face a certain direction
+	// @param - const glm::vec3& for the forward facing direction
+	// @param - const glm::vec3& for the model's up facing direction
+	void FaceDirection(const glm::vec3& forwardDir, const glm::vec3& up);
+
+	// Sets the entity's quaternion orientation from euler angles(in degrees)
+	// @param - const glm::vec3& for the euler angles in degrees
+	void SetRotationFromEulerDegrees(const glm::vec3& eulerDegrees);
+
+	// Gets the euler angles from the entity's quaternion rotation
+	// @return - const glm::vec3 for the euler angles
+	const glm::vec3 GetEulerAngles() const { return glm::eulerAngles(mQuatRotation); }
+
+	// Get the euler angles from the entity's quaternion rotation in degrees
+	// @return - const glm::vec3 for the euler angles in degrees
+	const glm::vec3 GetEulerAngleDegrees() const { return glm::degrees(glm::eulerAngles(mQuatRotation)); }
+
+	// Gets the entity's forward facing dir based on rotation
+	// @return - const glm::vec3 for the entity's forward facing direction
+	const glm::vec3 GetForward() const { return glm::normalize(mQuatRotation * glm::vec3(0.0f, 0.0f, 1.0f)); }
+
 	// Gets the entity's model matrix
 	// @return - const glm::mat4& for the entity's model matrix
 	const glm::mat4& GetModelMatrix() const { return mModelMatrix; }
@@ -86,18 +109,6 @@ public:
 	// Gets the entity's model
 	// @return - Model* for the entity's 3D model
 	Model* GetModel() { return mModel; }
-
-	// Gets the entity's yaw rotation
-	// @return - float for the entity's yaw rotation
-	float GetYaw() const { return mYaw; }
-
-	// Gets the entity's pitch rotation
-	// @return - float for the entity's pitch rotation
-	float GetPitch() const { return mPitch; }
-
-	// Gets the entity's roll rotation
-	// @return - float for the entity's roll rotation
-	float GetRoll() const { return mRoll; }
 	
 	// Set the entity's model matrix
 	// @param - const glm::mat4& for the new model matrix
@@ -105,13 +116,7 @@ public:
 
 	// Sets the entity's rotation as a quaternion
 	// @param - const glm::quat& for the new rotation
-	void SetQuatRotation(const glm::quat& rotation);
-
-	// Updates the quaternion rotation from euler angles
-	void UpdateRotationFromEuler();
-
-	// Updates eulers from quaternion
-	void UpdateEulerFromRotation();
+	void SetQuatRotation(const glm::quat& rotation) { mQuatRotation = rotation; }
 
 	// Set the entity's position
 	// @param - const glm::vec3& for the new position
@@ -124,18 +129,6 @@ public:
 	// Set the entity's scale (using single float value)
 	// @param - float for the new scale
 	void SetScale(float scale) { mScale = glm::vec3(scale, scale, scale); }
-
-	// Set the entity's yaw rotation
-	// @param - float for the new yaw rotation
-	void SetYaw(float yaw);
-
-	// Set the entity's pitch rotation
-	// @param - float for the new pitch rotation
-	void SetPitch(float pitch);
-
-	// Set the entity's roll rotation
-	// @param - float for the new roll rotation
-	void SetRoll(float roll);
 
 protected:
 	// Job to update the Entity3D's model matrix on a separate thread
@@ -171,13 +164,4 @@ protected:
 
 	// Buffer for if this entity is drawn as an instance
 	unsigned int mInstanceBuffer;
-
-	// Yaw rotation (Y-axis rotation)
-	float mYaw;
-
-	// Pitch rotation (X-axis rotation)
-	float mPitch;
-
-	// Roll rotation (z-axis rotation)
-	float mRoll;
 };

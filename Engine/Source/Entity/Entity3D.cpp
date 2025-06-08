@@ -11,14 +11,11 @@ Entity3D::Entity3D() :
 	Entity(),
 	mUpdateModelMatrixJob(this),
 	mModelMatrix(glm::mat4(1.0f)),
-	mQuatRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
+	mQuatRotation(glm::quat()),
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mModel(nullptr),
-	mInstanceBuffer(0),
-	mYaw(0.0f),
-	mPitch(0.0f),
-	mRoll(0.0f)
+	mInstanceBuffer(0)
 {
 }
 
@@ -30,10 +27,7 @@ Entity3D::Entity3D(const std::string& fileName):
 	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mModel(nullptr),
-	mInstanceBuffer(0),
-	mYaw(0.0f),
-	mPitch(0.0f),
-	mRoll(0.0f)
+	mInstanceBuffer(0)
 {
 	Model* model = AssetManager::LoadModel(fileName);
 
@@ -160,46 +154,47 @@ void Entity3D::CalculateWorldTransform()
 	mModelMatrix = translate * rotation * scale;
 }
 
-void Entity3D::SetQuatRotation(const glm::quat& rotation)
+void Entity3D::RotateFromInput(float deltaYawDeg, float deltaPitchDeg, float deltaRollDeg)
 {
-	mQuatRotation = rotation; 
-	UpdateEulerFromRotation();
+	// Convert degrees to radians
+	float deltaYawRad = glm::radians(deltaYawDeg);
+	float deltaPitchRad = glm::radians(deltaPitchDeg);
+	float deltaRollRad = glm::radians(deltaRollDeg);
+
+	// Create incremental quaternions
+	glm::quat qYaw = glm::angleAxis(deltaYawRad, glm::vec3(0.0f, 1.0f, 0.0f)); // Y axis
+	glm::quat qPitch = glm::angleAxis(deltaPitchRad, glm::vec3(1.0f, 0.0f, 0.0f)); // X axis
+	glm::quat qRoll = glm::angleAxis(deltaRollRad, glm::vec3(0.0f, 0.0f, 1.0f)); // Z axis
+
+	// Apply order: yaw (global Y) -> pitch (local X) -> roll (local Z)
+	mQuatRotation = qYaw * mQuatRotation;
+	mQuatRotation = mQuatRotation * qPitch;
+	mQuatRotation = mQuatRotation * qRoll;
+
+	mQuatRotation = glm::normalize(mQuatRotation);
 }
 
-void Entity3D::UpdateRotationFromEuler()
+void Entity3D::FaceDirection(const glm::vec3& forwardDir, const glm::vec3& up)
 {
-	glm::quat yawQuat = glm::angleAxis(glm::radians(mYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::quat pitchQuat = glm::angleAxis(glm::radians(mPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::quat rollQuat = glm::angleAxis(glm::radians(mRoll), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	// Yaw * Pitch * Roll
-	mQuatRotation = yawQuat * pitchQuat * rollQuat;
+	// Make sure forward dir is normalized
+	glm::vec3 forward = glm::normalize(forwardDir);
+	// Get the right vector
+	glm::vec3 right = glm::normalize(glm::cross(up, forward));
+	// Update up bector
+	glm::vec3 u = glm::cross(forward, right);
+	// Right, Up, Forward
+	glm::mat3 rotationMatrix(right, u, forward);
+	// Create quaternion orientation
+	mQuatRotation = glm::quat_cast(rotationMatrix);
 }
 
-void Entity3D::UpdateEulerFromRotation()
+void Entity3D::SetRotationFromEulerDegrees(const glm::vec3& eulerDegrees)
 {
-	glm::vec3 euler = glm::eulerAngles(mQuatRotation);
-	mYaw = glm::degrees(euler.y);
-	mPitch = glm::degrees(euler.x);
-	mRoll = glm::degrees(euler.z);
-}
+	// convert to radians
+	glm::vec3 radians = glm::radians(eulerDegrees);
 
-void Entity3D::SetYaw(float yaw)
-{
-	mYaw = yaw;
-	UpdateRotationFromEuler();
-}
-
-void Entity3D::SetPitch(float pitch)
-{
-	mPitch = pitch;
-	UpdateRotationFromEuler();
-}
-
-void Entity3D::SetRoll(float roll)
-{
-	mRoll = roll;
-	UpdateRotationFromEuler();
+	// Create the quaternion from radian degrees
+	mQuatRotation = glm::quat(radians);
 }
 
 void Entity3D::UpdateModelMatrixJob::DoJob()
