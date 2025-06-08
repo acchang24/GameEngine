@@ -31,6 +31,14 @@ public:
 	// @param - Shader* for the new shader
 	void SetShader(Shader* shader) { mShader = shader; }
 
+	// Gets the renderer width
+	// @return - float for width
+	float GetWidth() const { return mWidth; }
+
+	// Gets the renderer height
+	// @return - float for height
+	float GetHeight() const { return mHeight; }
+
 private:
 	// Array of sprites
 	std::vector<SpriteComponent*> mSprites;

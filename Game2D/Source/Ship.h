@@ -2,6 +2,7 @@
 #include "Entity/Entity2D.h"
 
 class Game;
+class MoveComponent2D;
 class SpriteComponent;
 class SpriteRenderer;
 
@@ -17,5 +18,9 @@ public:
 	void OnUpdate(float deltaTime) override;
 
 private:
-	SpriteComponent* mSpriteComponent;
+	MoveComponent2D* mMovement;
+
+	SpriteComponent* mSprite;
+
+	SpriteRenderer* mRenderer;
 };

@@ -69,7 +69,7 @@ public:
 	// @param - float for the new scale
 	void SetScale(float scale) { mScale = scale; }
 
-private:
+protected:
 	// Position for 2D
 	glm::vec2 mPosition;
 

@@ -172,38 +172,6 @@ void Game::ProcessInput()
 	}
 
 
-	if (keyboardState[SDL_SCANCODE_W])
-	{
-		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
-		e->SetPosition(e->GetPosition() + glm::vec2(0.0f, -1.0f) * 0.5f);
-	}
-	if (keyboardState[SDL_SCANCODE_S])
-	{
-		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
-		e->SetPosition(e->GetPosition() + glm::vec2(0.0f, 1.0f) * 0.5f);
-	}
-	if (keyboardState[SDL_SCANCODE_A])
-	{
-		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
-		e->SetPosition(e->GetPosition() + glm::vec2(-1.0f, 0.0f) * 0.5f);
-	}
-	if (keyboardState[SDL_SCANCODE_D])
-	{
-		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
-		e->SetPosition(e->GetPosition() + glm::vec2(1.0f, 0.0f) * 0.5f);
-	}
-	if (keyboardState[SDL_SCANCODE_RIGHT])
-	{
-		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
-		e->SetRotation(e->GetRotation() + 0.5f);
-	}
-	if (keyboardState[SDL_SCANCODE_LEFT])
-	{
-		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
-		e->SetRotation(e->GetRotation() - 0.5f);
-	}
-
-
 	for (auto e : mEntities)
 	{
 		e->ProcessInput(keyboardState, &mKeyboard, &mMouse);
