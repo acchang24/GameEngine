@@ -5,6 +5,8 @@
 class Entity2D : public Entity
 {
 public:
+	Entity2D();
+
 	// Entity2D constructor:
 	// @param - float for width of entity
 	// @param - float for height of entity

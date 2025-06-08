@@ -12,6 +12,7 @@
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
 #include "Util/Random.h"
+#include "Ship.h"
 
 
 const int WINDOW_WIDTH = 1280;
@@ -76,14 +77,9 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Texture* sprite = AssetManager::LoadTexture("Assets/Ship.png", TextureType::Sprite);
-	Entity2D* ship = new Entity2D(sprite->GetWidth(), sprite->GetHeight());
+	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
-	SpriteComponent* sc = new SpriteComponent(ship, mRenderer.GetSpriteRenderer());
-	sc->AddSprite(sprite);
-	sc->SetSprite(sc->GetSprite("Assets/Ship.png"));
-	AddGameEntity(ship);
 
 	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
 	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
