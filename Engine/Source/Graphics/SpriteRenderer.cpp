@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../Components/SpriteComponent.h"
-#include "../Entity/Entity.h"
+#include "../Entity/Entity2D.h"
 #include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -50,20 +50,20 @@ void SpriteRenderer::Draw()
 			{
 				glm::mat4 model = glm::mat4(1.0f);
 
-				Entity* e = sprite->GetEntity();
+				Entity2D* e = dynamic_cast<Entity2D*>(sprite->GetEntity());
 
 				Texture* tex = sprite->GetCurrentSprite();
 
 				glm::vec2 size = e->GetSize();
 
 				// Translate position
-				model = glm::translate(model, glm::vec3(e->GetPos2D(), 0.0f));
+				model = glm::translate(model, glm::vec3(e->GetPosition(), 0.0f));
 
 				// Rotate
 				model = glm::rotate(model, glm::radians(e->GetRotation()), glm::vec3(0.0f, 0.0f, 1.0f));
 
 				// Scale
-				model = glm::scale(model, glm::vec3(e->GetFloatScale() * size, 1.0f));
+				model = glm::scale(model, glm::vec3(e->GetScale() * size, 1.0f));
 
 				// Send model and projection matrix to shader
 				mShader->SetMat4("model", model);

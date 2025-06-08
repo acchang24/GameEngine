@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "Components/SpriteComponent.h"
-#include "Entity/Entity.h"
+#include "Entity/Entity2D.h"
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
@@ -77,21 +77,18 @@ void Game::LoadShaders() const
 void Game::LoadGameData()
 {
 	Texture* sprite = AssetManager::LoadTexture("Assets/Ship.png", TextureType::Sprite);
-	Entity* ship = new Entity();
-	ship->SetPos2D(glm::vec2(200.0f, 200.0f));
+	Entity2D* ship = new Entity2D(sprite->GetWidth(), sprite->GetHeight());
+	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
-	ship->SetSize(glm::vec2(sprite->GetWidth(), sprite->GetHeight()));
 	SpriteComponent* sc = new SpriteComponent(ship, mRenderer.GetSpriteRenderer());
 	sc->AddSprite(sprite);
 	sc->SetSprite(sc->GetSprite("Assets/Ship.png"));
 	AddGameEntity(ship);
 
-	Entity* background = new Entity();
-	background->SetPos2D(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
-	background->SetSize(glm::vec2(static_cast<float>(mRenderer.GetWidth()),  static_cast<float>(mRenderer.GetHeight())));
-	Texture* backgroundSprite = AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite);
+	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
+	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
 	SpriteComponent* backgroundSC = new SpriteComponent(background, mRenderer.GetSpriteRenderer(), 50);
-	backgroundSC->AddSprite(backgroundSprite);
+	backgroundSC->AddSprite(AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
 	AddGameEntity(background);
 
@@ -175,35 +172,34 @@ void Game::ProcessInput()
 	}
 
 
-	// Move camera around
 	if (keyboardState[SDL_SCANCODE_W])
 	{
-		Entity* e = mEntities[0];
-		e->SetPos2D(e->GetPos2D() + glm::vec2(0.0f, -1.0f) * 0.5f);
+		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
+		e->SetPosition(e->GetPosition() + glm::vec2(0.0f, -1.0f) * 0.5f);
 	}
 	if (keyboardState[SDL_SCANCODE_S])
 	{
-		Entity* e = mEntities[0];
-		e->SetPos2D(e->GetPos2D() + glm::vec2(0.0f, 1.0f) * 0.5f);
+		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
+		e->SetPosition(e->GetPosition() + glm::vec2(0.0f, 1.0f) * 0.5f);
 	}
 	if (keyboardState[SDL_SCANCODE_A])
 	{
-		Entity* e = mEntities[0];
-		e->SetPos2D(e->GetPos2D() + glm::vec2(-1.0f, 0.0f) * 0.5f);
+		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
+		e->SetPosition(e->GetPosition() + glm::vec2(-1.0f, 0.0f) * 0.5f);
 	}
 	if (keyboardState[SDL_SCANCODE_D])
 	{
-		Entity* e = mEntities[0];
-		e->SetPos2D(e->GetPos2D() + glm::vec2(1.0f, 0.0f) * 0.5f);
+		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
+		e->SetPosition(e->GetPosition() + glm::vec2(1.0f, 0.0f) * 0.5f);
 	}
 	if (keyboardState[SDL_SCANCODE_RIGHT])
 	{
-		Entity* e = mEntities[0];
+		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
 		e->SetRotation(e->GetRotation() + 0.5f);
 	}
 	if (keyboardState[SDL_SCANCODE_LEFT])
 	{
-		Entity* e = mEntities[0];
+		Entity2D* e = dynamic_cast<Entity2D*>(mEntities[0]);
 		e->SetRotation(e->GetRotation() - 0.5f);
 	}
 

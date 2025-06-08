@@ -56,6 +56,7 @@ public:
 
 	// Entity specific update code (overridable)
 	// This OnUpdate updates the view matrix
+	// @param - float for delta time
 	virtual void OnUpdate(float deltaTime);
 
 	// Entity specific draw code (overrideable)

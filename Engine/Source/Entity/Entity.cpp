@@ -5,11 +5,7 @@
 #include "../Input/Mouse.h"
 
 Entity::Entity() :
-	mState(EntityState::Active),
-	mRotation(0.0f),
-	mPos2D(glm::vec2(0.0f, 0.0f)),
-	mSize(glm::vec2(5.0f, 5.0f)),
-	mFloatScale(1.0f)
+	mState(EntityState::Active)
 {
 
 }
