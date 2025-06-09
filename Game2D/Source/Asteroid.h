@@ -1,20 +1,17 @@
 #pragma once
+
 #include "Entity/Entity2D.h"
 
 class Game;
-class AABBComponent2D;
+class CircleComponent;
 class MoveComponent2D;
 class SpriteComponent;
 class SpriteRenderer;
-
-class Ship : public Entity2D
+class Asteroid :public Entity2D
 {
 public:
-	Ship(SpriteRenderer* renderer, Game* game);
-	~Ship();
-
-	// Override for ship's process input
-	void OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse) override;
+	Asteroid(SpriteRenderer* renderer, Game* game);
+	~Asteroid();
 
 	// Override for ship's update
 	void OnUpdate(float deltaTime) override;
@@ -24,7 +21,9 @@ private:
 
 	SpriteComponent* mSprite;
 
-	AABBComponent2D* mCollisionBox;
+	CircleComponent* mCollisionCircle;
 
 	SpriteRenderer* mRenderer;
+
+	Game* mGame;
 };

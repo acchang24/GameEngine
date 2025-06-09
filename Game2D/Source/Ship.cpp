@@ -7,23 +7,13 @@
 #include "Graphics/Texture.h"
 #include "Game.h"
 
-Ship::Ship(SpriteRenderer* renderer, Game* game, int test) :
+Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	Entity2D(),
-	mMovement(nullptr),
+	mMovement(new MoveComponent2D(this)),
 	mSprite(new SpriteComponent(this, renderer)),
-	mCollisionBox(nullptr),
+	mCollisionBox(new AABBComponent2D(this, game->GetPhysics())),
 	mRenderer(renderer)
 {
-	if (test == 1)
-	{
-		mMovement = new MoveComponent2D(this);
-		mCollisionBox = new AABBComponent2D(this, game->GetPhysics());
-	}
-	else
-	{
-		mCollisionBox = new AABBComponent2D(this, game->GetPhysics(), BodyType::Static);
-	}
-
 	game->AddGameEntity(this);
 
 	Texture* shipSprite = AssetManager::LoadTexture("Assets/Ship.png", TextureType::Sprite);
@@ -36,6 +26,11 @@ Ship::Ship(SpriteRenderer* renderer, Game* game, int test) :
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
 	mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
+}
+
+Ship::~Ship()
+{
+	std::cout << "Deleted Ship\n";
 }
 
 void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)

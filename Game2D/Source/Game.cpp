@@ -14,7 +14,7 @@
 #include "Physics/Physics.h"
 #include "Util/Random.h"
 #include "Ship.h"
-
+#include "Asteroid.h"
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
@@ -81,13 +81,16 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this, 1);
+	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
-	Ship* ship2 = new Ship(mRenderer.GetSpriteRenderer(), this, 2);
-	ship2->SetScale(2.0f);
-	ship2->SetPosition(glm::vec2(200.0f, 400.0f));
+
+	for (int i = 0; i < 10; ++i)
+	{
+		Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
+	}
+
 
 	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
 	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
