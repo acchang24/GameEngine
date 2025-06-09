@@ -3,6 +3,27 @@
 #include <glm/glm.hpp>
 #include "../Entity/Entity2D.h"
 
+// Enum class for collision shape type
+enum class CollisionShapeType
+{
+	AABB2D,
+	Circle,
+	Ray2D,
+	AABB3D,
+	Sphere,
+	Capsule,
+	Ray3D,
+	Plane3D
+};
+
+// Enum class for the body type of the collision (how it interacts with other collisions)
+enum class BodyType
+{
+	Static,
+	Dynamic,
+	Kinematic
+};
+
 // Enum class for which side of the object a box collides with
 enum class CollisionSide
 {
@@ -30,9 +51,41 @@ struct AABB_2D
 	float height;	// height of the entity
 };
 
+class CollisionComponent : public Component
+{
+public:
+	CollisionComponent(Entity* owner, CollisionShapeType shapeType, BodyType bodyType);
+	virtual ~CollisionComponent();
+
+	// Override of Component::Update() for collision. 
+	// This is a virtual function (overridable)
+	virtual void Update(float deltaTime) override;
+
+	// Intersect check for collisions (overridable)
+	// @param - const CollisionComponent* for the other object's collision component
+	virtual bool Intersects(const CollisionComponent* other);
+
+	// Gets the collision component's shape type
+	// @return - CollisionShapeType for the shape type
+	CollisionShapeType GetShapeType() const { return mShapeType; }
+
+	// Gets the collision component's body type
+	// @return - BodyType for the body type
+	BodyType GetBodyType() const { return mBodyType; }
+
+protected:
+	// Type of the shape used for collision
+	CollisionShapeType mShapeType;
+
+	// Body type of the shape
+	BodyType mBodyType;
+};
+
 class AABBComponent2D : public Component
 {
 public:
+	// AABBComponent2D constructor:
+	// @param - Entity2D* for the owner
 	AABBComponent2D(Entity2D* owner);
 	~AABBComponent2D();
 
@@ -76,6 +129,7 @@ public:
 	}
 
 private:
+	// Pointer to entity 2D
 	Entity2D* mOwner2D;
 
 	// Collision box

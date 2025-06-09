@@ -3,6 +3,27 @@
 #include <cstdlib>
 #include <iostream>
 
+CollisionComponent::CollisionComponent(Entity* owner, CollisionShapeType shapeType, BodyType bodyType) :
+	Component(owner),
+	mShapeType(shapeType),
+	mBodyType(bodyType)
+{
+}
+
+CollisionComponent::~CollisionComponent()
+{
+	std::cout << "Deleted CollisionComponent\n";
+}
+
+void CollisionComponent::Update(float deltaTime)
+{
+}
+
+bool CollisionComponent::Intersects(const CollisionComponent* other)
+{
+	return false;
+}
+
 AABBComponent2D::AABBComponent2D(Entity2D* owner) :
 	Component(owner),
 	mOwner2D(owner),
@@ -98,4 +119,5 @@ const glm::vec2 AABBComponent2D::GetMax() const
 
 	return max;
 }
+
 
