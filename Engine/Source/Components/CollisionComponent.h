@@ -117,6 +117,10 @@ public:
 	// @return - const glm::vec2 for the max
 	const glm::vec2 GetMax() const;
 
+	// Gets the Entity2D owner of this collision component
+	// @return - Entity2D* for the owner
+	Entity2D* GetOwner() { return mOwner2D; }
+
 	// Gets the the entity's collision box (AABB)
 	// @return - const AABB_2D& for the axis aligned bounding box
 	const AABB_2D& GetBox() const { return mBox; }
