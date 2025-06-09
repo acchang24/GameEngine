@@ -19,13 +19,14 @@ void CollisionComponent::Update(float deltaTime)
 {
 }
 
-bool CollisionComponent::Intersects(const CollisionComponent* other)
+bool CollisionComponent::Intersects(const CollisionComponent* other) const
 {
 	return false;
 }
 
-AABBComponent2D::AABBComponent2D(Entity2D* owner) :
-	Component(owner),
+
+AABBComponent2D::AABBComponent2D(Entity2D* owner, BodyType bodyType) :
+	CollisionComponent(owner, CollisionShapeType::AABB2D, bodyType),
 	mOwner2D(owner),
 	mBox()
 {
@@ -42,6 +43,11 @@ void AABBComponent2D::Update(float deltaTime)
 
 	mBox.min = GetMin();
 	mBox.max = GetMax();
+}
+
+bool AABBComponent2D::Intersects(const CollisionComponent* other) const
+{
+	return false;
 }
 
 bool AABBComponent2D::Intersect(const AABBComponent2D* other) const

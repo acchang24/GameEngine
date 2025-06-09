@@ -63,7 +63,7 @@ public:
 
 	// Intersect check for collisions (overridable)
 	// @param - const CollisionComponent* for the other object's collision component
-	virtual bool Intersects(const CollisionComponent* other);
+	virtual bool Intersects(const CollisionComponent* other) const;
 
 	// Gets the collision component's shape type
 	// @return - CollisionShapeType for the shape type
@@ -81,18 +81,23 @@ protected:
 	BodyType mBodyType;
 };
 
-class AABBComponent2D : public Component
+class AABBComponent2D : public CollisionComponent
 {
 public:
 	// AABBComponent2D constructor:
 	// @param - Entity2D* for the owner
-	AABBComponent2D(Entity2D* owner);
+	// @param - BodyType (optional, defaults to dynamic)
+	AABBComponent2D(Entity2D* owner, BodyType bodyType = BodyType::Dynamic);
 	~AABBComponent2D();
 
 	// Override Update for collision: 
 	// Updates the collision box location based on owner's position
 	// @param - float for delta time
 	void Update(float deltaTime) override;
+
+	// Override of Component::Intersect for AABB2D
+	// @param - const CollisionComponent* for the other component
+	bool Intersects(const CollisionComponent* other) const override;
 
 	// Checks to see if this collides with another AABB_2D collision box
 	// @param - const AABBComponent2D* for the other collision box
