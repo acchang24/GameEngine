@@ -156,6 +156,10 @@ public:
 	CircleComponent(Entity2D* owner, Physics* physics, float radius, BodyType type = BodyType::Dynamic);
 	~CircleComponent();
 
+	// Gets the Entity2D owner
+	// @return - Entity2D* for the owner
+	Entity2D* GetOwner() { return mOwner2D; }
+
 	// Gets the the entity's collision circle
 	// @return - const Cirlce2D& for the circle
 	const Circle2D& GetCircle() const { return mCircle; }

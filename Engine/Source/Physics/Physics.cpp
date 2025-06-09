@@ -30,6 +30,15 @@ void Physics::Update(float deltaTime)
 				CollisionResult result = HandleAABB2DvsAABB2D(collisionA, collisionB);
 
 			}
+			// Handle 2 Circle collision
+			if (a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::Circle)
+			{
+				// Cast to circle component
+				CircleComponent* collisionA = static_cast<CircleComponent*>(a);
+				CircleComponent* collisionB = static_cast<CircleComponent*>(b);
+
+				HandleCircleVsCircle(collisionA, collisionB);
+			}
 		}
 	}
 }
@@ -130,4 +139,81 @@ bool Physics::IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBCompon
 	bool case4 = boxA.max.y < boxB.min.y;
 
 	return !(case1 || case2 || case3 || case4);
+}
+
+CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponent* b)
+{
+	CollisionResult result = { CollisionSide::None, CollisionSide::None };
+
+	glm::vec2 offset(0.0f);
+
+	if (IntersectCircleVsCircle(a, b, offset))
+	{
+		Entity2D* ownerA = a->GetOwner();
+		Entity2D* ownerB = b->GetOwner();
+
+		const Circle2D& circleA = a->GetCircle();
+		const Circle2D& circleB = b->GetCircle();
+
+		BodyType typeA = a->GetBodyType();
+		BodyType typeB = b->GetBodyType();
+
+		// Set the offset based on body type
+		if (typeA == BodyType::Dynamic && typeB == BodyType::Static)
+		{
+			// Apply offset to owner (a) that initiated collision
+			ownerA->SetPosition(ownerA->GetPosition() + offset);
+		}
+		else if (typeA == BodyType::Static && typeB == BodyType::Dynamic)
+		{
+			// Apply offset to owner (b) that initiated collision
+			ownerB->SetPosition(ownerB->GetPosition() - offset);
+		}
+		else if (typeA == BodyType::Dynamic && typeB == BodyType::Dynamic)
+		{
+			// Split offset to both if they are both dynamic
+			ownerA->SetPosition(ownerA->GetPosition() + offset * 0.5f);
+			ownerB->SetPosition(ownerB->GetPosition() - offset * 0.5f);
+		}
+
+		// No result update, circle's don't have sides I guess?
+	}
+
+	return result;
+}
+
+bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComponent* b, glm::vec2& offset) const
+{
+	// Get the vector from b to a
+	glm::vec2 v = a->GetCenter() - b->GetCenter();
+
+	// Get the length of vector b to a
+	float distance = glm::length(v);
+
+	// Get the total radius between a and b
+	float radiusSum = a->GetCircle().radius + b->GetCircle().radius;
+
+	// if distance is less than radius sum then it intersects
+	if (distance < radiusSum)
+	{
+		// Check if a and b are in same position (rare occasion)
+		if (distance == 0.0f)
+		{
+			// Arbitrary direction
+			offset = glm::vec2(radiusSum, 0.0f);
+		}
+		else
+		{
+			// Get the direction from b to a
+			glm::vec2 direction = glm::normalize(v);
+
+			float overlap = radiusSum - distance;
+
+			offset = direction * overlap;
+		}
+
+		return true;
+	}
+
+	return false;
 }
