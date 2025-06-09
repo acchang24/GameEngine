@@ -2,6 +2,12 @@
 #include <vector>
 #include "../Components/CollisionComponent.h"
 
+struct CollisionResult
+{
+	CollisionSide sideA;
+	CollisionSide sideB;
+};
+
 class Physics
 {
 public:
@@ -23,10 +29,12 @@ public:
 private:
 	// Handles collision between 2 AABB2D collision components:
 	// First checks to see if the two AABB2D boxes intersects,
-	// then applies offset to the position depending on the body type
+	// then applies offset to the position depending on the body type.
+	// It then returns the collision result that contains collision sides for two objects
 	// @param - const AABBComponent2D* for the first 2D AABB
 	// @param - const AABBComponent2D* for the second 2D AABB
-	void HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b);
+	// @return - CollisionResult for sides that got collided
+	CollisionResult HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b);
 
 	// Checks intersection between two 2D AABB
 	// @param - const AABBComponent2D* for the first 2D AABB

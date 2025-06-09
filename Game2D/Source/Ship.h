@@ -18,8 +18,6 @@ public:
 	// Override for ship's update
 	void OnUpdate(float deltaTime) override;
 
-	Game* GetGame() { return mGame; }
-
 private:
 	MoveComponent2D* mMovement;
 
@@ -28,6 +26,4 @@ private:
 	AABBComponent2D* mCollisionBox;
 
 	SpriteRenderer* mRenderer;
-
-	Game* mGame;
 };

@@ -27,7 +27,8 @@ void Physics::Update(float deltaTime)
 				AABBComponent2D* collisionA = static_cast<AABBComponent2D*>(a);
 				AABBComponent2D* collisionB = static_cast<AABBComponent2D*>(b);
 
-				HandleAABB2DvsAABB2D(collisionA, collisionB);
+				CollisionResult result = HandleAABB2DvsAABB2D(collisionA, collisionB);
+
 			}
 		}
 	}
@@ -42,8 +43,10 @@ void Physics::RemoveCollider(CollisionComponent* collider)
 	}
 }
 
-void Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b)
+CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b)
 {
+	CollisionResult result = { CollisionSide::None, CollisionSide::None };
+
 	if (IntersectAABB2DvsAABB2D(a, b))
 	{
 		// Offset position to push back objects
@@ -67,18 +70,28 @@ void Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b)
 		if (minOverlap == std::abs(topEdge))
 		{
 			offset.y += topEdge;
+			result.sideA = CollisionSide::Bottom;
+			result.sideB = CollisionSide::Top;
 		}
 		else if (minOverlap == std::abs(bottomEdge))
 		{
 			offset.y += bottomEdge;
+
+			result.sideA = CollisionSide::Top;
+			result.sideB = CollisionSide::Bottom;
 		}
 		else if (minOverlap == std::abs(leftEdge))
 		{
 			offset.x += leftEdge;
+			result.sideA = CollisionSide::Right;
+			result.sideB = CollisionSide::Left;
 		}
 		else if (minOverlap == std::abs(rightEdge))
 		{
 			offset.x += rightEdge;
+
+			result.sideA = CollisionSide::Left;
+			result.sideB = CollisionSide::Right;
 		}
 
 		// Apply offset based on body type
@@ -102,6 +115,8 @@ void Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b)
 			ownerB->SetPosition(ownerB->GetPosition() - offset * 0.5f);
 		}
 	}
+
+	return result;
 }
 
 bool Physics::IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBComponent2D* b) const

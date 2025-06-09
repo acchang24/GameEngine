@@ -11,13 +11,17 @@ Ship::Ship(SpriteRenderer* renderer, Game* game, int test) :
 	Entity2D(),
 	mMovement(nullptr),
 	mSprite(new SpriteComponent(this, renderer)),
-	mCollisionBox(new AABBComponent2D(this)),
-	mRenderer(renderer),
-	mGame(game)
+	mCollisionBox(nullptr),
+	mRenderer(renderer)
 {
 	if (test == 1)
 	{
 		mMovement = new MoveComponent2D(this);
+		mCollisionBox = new AABBComponent2D(this, game->GetPhysics());
+	}
+	else
+	{
+		mCollisionBox = new AABBComponent2D(this, game->GetPhysics(), BodyType::Static);
 	}
 
 	game->AddGameEntity(this);
@@ -32,7 +36,6 @@ Ship::Ship(SpriteRenderer* renderer, Game* game, int test) :
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
 	mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
-	game->AddCollision(mCollisionBox);
 }
 
 void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
@@ -90,25 +93,5 @@ void Ship::OnUpdate(float deltaTime)
 	if (mPosition.y > mRenderer->GetHeight())
 	{
 		mPosition.y = 0.0f;
-	}
-
-	const std::vector<AABBComponent2D*>& collisions =  mGame->GetCollisions();
-
-	for (auto c : collisions)
-	{
-		glm::vec2 offset(0.0f);
-
-		if (c != mCollisionBox)
-		{
-			if (mMovement)
-			{
-				if (mMovement->GetMoveSpeed() > 0.0f)
-				{
-					CollisionSide side = mCollisionBox->GetMinOverlap(c, offset);
-
-					mPosition += offset;
-				}
-			}
-		}
 	}
 }

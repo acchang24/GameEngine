@@ -29,6 +29,7 @@ public:
 	void SetMovementSpeed(float speed) { mMoveSpeed = speed; }
 
 private:
+	// Pointer to the Entity2D owner
 	Entity2D* mOwner2D;
 
 	// Rotation speed

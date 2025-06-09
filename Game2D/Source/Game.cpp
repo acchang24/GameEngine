@@ -11,6 +11,7 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
+#include "Physics/Physics.h"
 #include "Util/Random.h"
 #include "Ship.h"
 
@@ -20,7 +21,7 @@ const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
 int VSYNC = 1;
 double MOUSE_SENSITIVITY = 0.05;
-bool IS_FULLSCREEN = true;
+bool IS_FULLSCREEN = false;
 const char* TITLE = "Game2D";
 SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 
@@ -28,6 +29,7 @@ Game::Game() :
 	mRenderer(RendererMode::MODE_2D),
 	mAssetManager(AssetManager::Get()),
 	mJobManager(JobManager::Get()),
+	mPhysics(new Physics()),
 	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
 	mKeyboard(),
 	mIsRunning(true)
@@ -62,6 +64,8 @@ bool Game::Init()
 void Game::Shutdown()
 {
 	UnloadGameData();
+
+	delete mPhysics;
 
 	mRenderer.Shutdown();
 
@@ -287,6 +291,8 @@ void Game::Update(float deltaTime)
 	{
 		e->Update(deltaTime);
 	}
+
+	mPhysics->Update(deltaTime);
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	mJobManager->WaitForJobs();

@@ -51,19 +51,17 @@ struct AABB_2D
 	float height;	// height of the entity
 };
 
+class Physics;
+
 class CollisionComponent : public Component
 {
 public:
-	CollisionComponent(Entity* owner, CollisionShapeType shapeType, BodyType bodyType);
+	CollisionComponent(Entity* owner, Physics* physics, CollisionShapeType shapeType, BodyType bodyType);
 	virtual ~CollisionComponent();
 
 	// Override of Component::Update() for collision. 
 	// This is a virtual function (overridable)
 	virtual void Update(float deltaTime) override;
-
-	// Intersect check for collisions (overridable)
-	// @param - const CollisionComponent* for the other object's collision component
-	virtual bool Intersects(const CollisionComponent* other) const;
 
 	// Gets the collision component's shape type
 	// @return - CollisionShapeType for the shape type
@@ -74,6 +72,9 @@ public:
 	BodyType GetBodyType() const { return mBodyType; }
 
 protected:
+	// Pointer to physics system
+	Physics* mPhysics;
+
 	// Type of the shape used for collision
 	CollisionShapeType mShapeType;
 
@@ -87,27 +88,13 @@ public:
 	// AABBComponent2D constructor:
 	// @param - Entity2D* for the owner
 	// @param - BodyType (optional, defaults to dynamic)
-	AABBComponent2D(Entity2D* owner, BodyType bodyType = BodyType::Dynamic);
+	AABBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
 	~AABBComponent2D();
 
 	// Override Update for collision: 
 	// Updates the collision box location based on owner's position
 	// @param - float for delta time
 	void Update(float deltaTime) override;
-
-	// Override of Component::Intersect for AABB2D
-	// @param - const CollisionComponent* for the other component
-	bool Intersects(const CollisionComponent* other) const override;
-
-	// Checks to see if this collides with another AABB_2D collision box
-	// @param - const AABBComponent2D* for the other collision box
-	// @param - bool for if the boxes collide
-	bool Intersect(const AABBComponent2D* other) const;
-
-	// Gets the side of this object that collides with another 2d AABB
-	// @param - const AABBComponent2D* for the other component's AABB
-	// @param - glm::vec2& to provide an offset to push objects back
-	CollisionSide GetMinOverlap(const AABBComponent2D* other, glm::vec2& offset);
 
 	// Gets the min x and y values of the box where an object can intersect
 	// @return - const glm::vec2 for the min
