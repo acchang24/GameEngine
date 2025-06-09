@@ -27,8 +27,7 @@ void Physics::Update(float deltaTime)
 				AABBComponent2D* collisionA = static_cast<AABBComponent2D*>(a);
 				AABBComponent2D* collisionB = static_cast<AABBComponent2D*>(b);
 
-				CollisionResult result = HandleAABB2DvsAABB2D(collisionA, collisionB);
-
+				HandleAABB2DvsAABB2D(collisionA, collisionB);
 			}
 			// Handle 2 Circle collision
 			if (a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::Circle)
@@ -38,6 +37,26 @@ void Physics::Update(float deltaTime)
 				CircleComponent* collisionB = static_cast<CircleComponent*>(b);
 
 				HandleCircleVsCircle(collisionA, collisionB);
+			}
+
+			// Circle vs AABB (both orders)
+			if ((a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::AABB2D) ||
+				(a->GetShapeType() == CollisionShapeType::AABB2D && b->GetShapeType() == CollisionShapeType::Circle))
+			{
+				CircleComponent* circle = nullptr;
+				AABBComponent2D* box = nullptr;
+				if(a->GetShapeType() == CollisionShapeType::Circle)
+				{
+					circle = static_cast<CircleComponent*>(a);
+					box = static_cast<AABBComponent2D*>(b);
+				}
+				else
+				{
+					circle = static_cast<CircleComponent*>(b);
+					box = static_cast<AABBComponent2D*>(a);
+				}
+
+				HandleCircleVsAABB2D(circle, box);
 			}
 		}
 	}
@@ -216,4 +235,102 @@ bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComp
 	}
 
 	return false;
+}
+
+CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBComponent2D* aabb)
+{
+	CollisionResult result = { CollisionSide::None, CollisionSide::None };
+
+	// Offset
+	glm::vec2 offset(0.0f);
+
+	if (IntersectCircleVsAABB2D(circle, aabb, offset))
+	{
+		Entity2D* ownerCircle = circle->GetOwner();
+		Entity2D* ownerAABB = aabb->GetOwner();
+		BodyType typeCircle = circle->GetBodyType();
+		BodyType typeAABB = aabb->GetBodyType();
+
+		// Set the offset based on body type
+		if (typeCircle == BodyType::Dynamic && typeAABB == BodyType::Static)
+		{
+			// Apply offset to dynamic circle
+			ownerCircle->SetPosition(ownerCircle->GetPosition() + offset);
+		}
+		else if (typeCircle == BodyType::Static && typeAABB == BodyType::Dynamic)
+		{
+			// Apply offset to dynamic AABB2D
+			ownerAABB->SetPosition(ownerAABB->GetPosition() - offset);
+		}
+		else if (typeCircle == BodyType::Dynamic && typeAABB == BodyType::Dynamic)
+		{
+			// Apply offset to both
+			ownerCircle->SetPosition(ownerCircle->GetPosition() + offset * 0.5f);
+			ownerAABB->SetPosition(ownerAABB->GetPosition() - offset * 0.5f);
+		}
+
+		// Get side for AABB
+		glm::vec2 diff = circle->GetCenter() - aabb->GetCenter();
+
+		if (std::abs(diff.x) > std::abs(diff.y))
+		{
+			// More horizontal overlap
+			if (diff.x > 0)
+			{
+				result.sideB = CollisionSide::Right;
+			}
+			else
+			{
+				result.sideB = CollisionSide::Left;
+			}
+		}
+		else
+		{
+			// More vertical overlap
+			if (diff.y > 0) 
+			{
+				result.sideB = CollisionSide::Top;
+			} 
+			else
+			{
+				result.sideB = CollisionSide::Bottom;
+			}
+		}
+	}
+
+	return result;
+}
+
+bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset) const
+{
+	const glm::vec2 circleCenter = circle->GetCenter();
+	const AABB_2D& box = aabb->GetBox();
+
+	// Clamp the circle to the AABB bounds to get closest point on/inside the AABB to circle center
+	glm::vec2 clamped = glm::clamp(circleCenter, box.min, box.max);
+
+	// Get the vector from clamped circle center to the circle center
+	glm::vec2 v = circleCenter - clamped;
+
+	// get the distance from that vector
+	float distance = glm::length(v);
+
+	// Rare case distance is 0.0, set arbitrary push direction
+	if (distance == 0.0f)
+	{
+		offset = glm::vec2(1.0f, 0.0f);
+		distance = 1.0f;
+	}
+
+	// Direction from that vector
+	glm::vec2 direction = glm::normalize(v);
+
+	float overlap = circle->GetCircle().radius - distance;
+	offset = direction * overlap;
+
+	// Use squared distance to compare with radius squared
+	float distanceSq = glm::dot(v, v);
+	float radius = circle->GetCircle().radius;
+
+	return distanceSq < radius * radius;
 }

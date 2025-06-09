@@ -58,6 +58,22 @@ private:
 	// @return - bool for if the two circles intersect
 	bool IntersectCircleVsCircle(const CircleComponent* a, const CircleComponent* b, glm::vec2& offset) const;
 
+	// Handles collision between circle and AABB2D collision components:
+	// First checks to see if the circle and AABB intersect,
+	// then applies offset to position depending on the body type
+	// It then returns the collision result that contains collision sides for two objects
+	// @param - CircleComponent* for the circle
+	// @param - AABBComponent2D* for the 2d AABB
+	// @return - CollisionResult for the sides that got collided
+	CollisionResult HandleCircleVsAABB2D(CircleComponent* circle, AABBComponent2D* aabb);
+
+	// Checks intersection between a Circle and an AABB2D
+	// @param - const CircleComponent* for the circle
+	// @param - const AABBComponent2D* for the 2D AABB
+	// @param - glm::vec2& for the offset vector
+	// @return - bool for if the circle and AABB intersect
+	bool IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset) const;
+
 	// Array of collision component colliders
 	std::vector<CollisionComponent*> mColliders;
 };
