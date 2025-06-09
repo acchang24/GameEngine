@@ -100,27 +100,13 @@ void Ship::OnUpdate(float deltaTime)
 
 		if (c != mCollisionBox)
 		{
-			CollisionSide side = mCollisionBox->GetMinOverlap(c, offset);
 			if (mMovement)
 			{
 				if (mMovement->GetMoveSpeed() > 0.0f)
 				{
-					// Add offset if ship is moving
-					switch (side)
-					{
-					case CollisionSide::Top:
-						mPosition = glm::vec2(mPosition.x, mPosition.y + offset.y);
-						break;
-					case CollisionSide::Bottom:
-						mPosition = glm::vec2(mPosition.x, mPosition.y + offset.y);
-						break;
-					case CollisionSide::Left:
-						mPosition = glm::vec2(mPosition.x + offset.x, mPosition.y);
-						break;
-					case CollisionSide::Right:
-						mPosition = glm::vec2(mPosition.x + offset.x, mPosition.y);
-						break;
-					}
+					CollisionSide side = mCollisionBox->GetMinOverlap(c, offset);
+
+					mPosition += offset;
 				}
 			}
 		}
