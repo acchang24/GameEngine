@@ -71,6 +71,89 @@ void Physics::RemoveCollider(CollisionComponent* collider)
 	}
 }
 
+bool Physics::IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBComponent2D* b)
+{
+	const AABB_2D& boxA = a->GetBox();
+	const AABB_2D& boxB = b->GetBox();
+
+	bool case1 = boxB.max.x < boxA.min.x;
+	bool case2 = boxA.max.x < boxB.min.x;
+	bool case3 = boxB.max.y < boxA.min.y;
+	bool case4 = boxA.max.y < boxB.min.y;
+
+	return !(case1 || case2 || case3 || case4);
+}
+
+bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComponent* b, glm::vec2& offset)
+{
+	// Get the vector from b to a
+	glm::vec2 v = a->GetCenter() - b->GetCenter();
+
+	// Get the length of vector b to a
+	float distance = glm::length(v);
+
+	// Get the total radius between a and b
+	float radiusSum = a->GetCircle().radius + b->GetCircle().radius;
+
+	// if distance is less than radius sum then it intersects
+	if (distance < radiusSum)
+	{
+		// Check if a and b are in same position (rare occasion)
+		if (distance == 0.0f)
+		{
+			// Arbitrary direction
+			offset = glm::vec2(radiusSum, 0.0f);
+		}
+		else
+		{
+			// Get the direction from b to a
+			glm::vec2 direction = glm::normalize(v);
+
+			float overlap = radiusSum - distance;
+
+			offset = direction * overlap;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset)
+{
+	const glm::vec2 circleCenter = circle->GetCenter();
+	const AABB_2D& box = aabb->GetBox();
+
+	// Clamp the circle to the AABB bounds to get closest point on/inside the AABB to circle center
+	glm::vec2 clamped = glm::clamp(circleCenter, box.min, box.max);
+
+	// Get the vector from clamped circle center to the circle center
+	glm::vec2 v = circleCenter - clamped;
+
+	// get the distance from that vector
+	float distance = glm::length(v);
+
+	// Rare case distance is 0.0, set arbitrary push direction
+	if (distance == 0.0f)
+	{
+		offset = glm::vec2(1.0f, 0.0f);
+		distance = 1.0f;
+	}
+
+	// Direction from that vector
+	glm::vec2 direction = glm::normalize(v);
+
+	float overlap = circle->GetCircle().radius - distance;
+	offset = direction * overlap;
+
+	// Use squared distance to compare with radius squared
+	float distanceSq = glm::dot(v, v);
+	float radius = circle->GetCircle().radius;
+
+	return distanceSq < radius * radius;
+}
+
 CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b)
 {
 	CollisionResult result = { CollisionSide::None, CollisionSide::None };
@@ -147,19 +230,6 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 	return result;
 }
 
-bool Physics::IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBComponent2D* b) const
-{
-	const AABB_2D& boxA = a->GetBox();
-	const AABB_2D& boxB = b->GetBox();
-
-	bool case1 = boxB.max.x < boxA.min.x;
-	bool case2 = boxA.max.x < boxB.min.x;
-	bool case3 = boxB.max.y < boxA.min.y;
-	bool case4 = boxA.max.y < boxB.min.y;
-
-	return !(case1 || case2 || case3 || case4);
-}
-
 CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponent* b)
 {
 	CollisionResult result = { CollisionSide::None, CollisionSide::None };
@@ -199,42 +269,6 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 	}
 
 	return result;
-}
-
-bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComponent* b, glm::vec2& offset) const
-{
-	// Get the vector from b to a
-	glm::vec2 v = a->GetCenter() - b->GetCenter();
-
-	// Get the length of vector b to a
-	float distance = glm::length(v);
-
-	// Get the total radius between a and b
-	float radiusSum = a->GetCircle().radius + b->GetCircle().radius;
-
-	// if distance is less than radius sum then it intersects
-	if (distance < radiusSum)
-	{
-		// Check if a and b are in same position (rare occasion)
-		if (distance == 0.0f)
-		{
-			// Arbitrary direction
-			offset = glm::vec2(radiusSum, 0.0f);
-		}
-		else
-		{
-			// Get the direction from b to a
-			glm::vec2 direction = glm::normalize(v);
-
-			float overlap = radiusSum - distance;
-
-			offset = direction * overlap;
-		}
-
-		return true;
-	}
-
-	return false;
 }
 
 CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBComponent2D* aabb)
@@ -301,36 +335,3 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 	return result;
 }
 
-bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset) const
-{
-	const glm::vec2 circleCenter = circle->GetCenter();
-	const AABB_2D& box = aabb->GetBox();
-
-	// Clamp the circle to the AABB bounds to get closest point on/inside the AABB to circle center
-	glm::vec2 clamped = glm::clamp(circleCenter, box.min, box.max);
-
-	// Get the vector from clamped circle center to the circle center
-	glm::vec2 v = circleCenter - clamped;
-
-	// get the distance from that vector
-	float distance = glm::length(v);
-
-	// Rare case distance is 0.0, set arbitrary push direction
-	if (distance == 0.0f)
-	{
-		offset = glm::vec2(1.0f, 0.0f);
-		distance = 1.0f;
-	}
-
-	// Direction from that vector
-	glm::vec2 direction = glm::normalize(v);
-
-	float overlap = circle->GetCircle().radius - distance;
-	offset = direction * overlap;
-
-	// Use squared distance to compare with radius squared
-	float distanceSq = glm::dot(v, v);
-	float radius = circle->GetCircle().radius;
-
-	return distanceSq < radius * radius;
-}

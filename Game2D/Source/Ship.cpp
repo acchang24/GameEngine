@@ -6,13 +6,16 @@
 #include "Graphics/SpriteRenderer.h"
 #include "Graphics/Texture.h"
 #include "Game.h"
+#include "Laser.h"
 
 Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	Entity2D(),
 	mMovement(new MoveComponent2D(this)),
 	mSprite(new SpriteComponent(this, renderer)),
 	mCollisionBox(new AABBComponent2D(this, game->GetPhysics())),
-	mRenderer(renderer)
+	mRenderer(renderer),
+	mGame(game),
+	mLaserCooldown(1.0f)
 {
 	game->AddGameEntity(this);
 
@@ -63,6 +66,15 @@ void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const
 		rotationSpeed += 100.0f;
 	}
 
+	if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown > 1.0f)
+	{
+		Laser* laser = new Laser(mRenderer, mGame);
+		laser->SetPosition(mPosition);
+		laser->SetRotation(mRotation);
+
+		mLaserCooldown = 0.0f;
+	}
+
 	if (mMovement)
 	{
 		mMovement->SetMovementSpeed(moveSpeed);
@@ -73,6 +85,8 @@ void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const
 
 void Ship::OnUpdate(float deltaTime)
 {
+	mLaserCooldown += deltaTime;
+
 	if (mPosition.x < 0.0f)
 	{
 		mPosition.x = mRenderer->GetWidth();

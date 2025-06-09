@@ -27,4 +27,8 @@ private:
 	AABBComponent2D* mCollisionBox;
 
 	SpriteRenderer* mRenderer;
+
+	Game* mGame;
+
+	float mLaserCooldown;
 };

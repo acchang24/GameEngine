@@ -16,7 +16,7 @@ Asteroid::Asteroid(SpriteRenderer* renderer, Game* game) :
 	mRenderer(renderer),
 	mGame(game)
 {
-	mMovement->SetMovementSpeed(75.0f);
+	mMovement->SetMovementSpeed(Random::GetFloatRange(50.0f, 150.0f));
 	
 	// Get random rotation degree
 	mRotation = Random::GetFloatRange(0.0f, 360.0f);
@@ -31,12 +31,14 @@ Asteroid::Asteroid(SpriteRenderer* renderer, Game* game) :
 
 	mCollisionCircle = new CircleComponent(this, game->GetPhysics(), asteroidSprite->GetWidth() * 0.5f);
 
+	game->AddAsteroid(this);
 	game->AddGameEntity(this);
 }
 
 Asteroid::~Asteroid()
 {
 	std::cout << "Deleted Asteroid\n";
+	mGame->RemoveAsteroid(this);
 }
 
 void Asteroid::OnUpdate(float deltaTime)

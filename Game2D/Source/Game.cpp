@@ -290,9 +290,20 @@ void Game::Update(float deltaTime)
 {
 	PROFILE_SCOPE(UPDATE);
 
+	std::vector<Entity*> destroy;
+
 	for (auto e : mEntities)
 	{
 		e->Update(deltaTime);
+		if (e->GetEntityState() == EntityState::Destroy)
+		{
+			destroy.emplace_back(e);
+		}
+	}
+
+	for (auto d : destroy)
+	{
+		RemoveGameEntity(d);
 	}
 
 	mPhysics->Update(deltaTime);

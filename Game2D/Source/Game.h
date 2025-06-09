@@ -14,6 +14,7 @@ class Entity;
 class JobManager;
 class AABBComponent2D;
 class Physics;
+class Asteroid;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
 class Game
@@ -70,10 +71,22 @@ public:
 	void RemoveGameEntity(Entity* e);
 
 	// Add entity with collisions
-	//void AddCollision(AABBComponent2D* collision) { mCollisions.emplace_back(collision); }
+	void AddAsteroid(Asteroid* asteroid) { mAsteroids.emplace_back(asteroid); }
 
-	// Get vector of collision components
-	//const std::vector<AABBComponent2D*>& GetCollisions() { return mCollisions; }
+	// Get vector of Asteroids
+	const std::vector<Asteroid*>& GetAsteroids() { return mAsteroids; }
+
+	void RemoveAsteroid(Asteroid* a)
+	{
+		auto iter = std::find(mAsteroids.begin(), mAsteroids.end(), a);
+		if (iter != mAsteroids.end())
+		{
+			// Swap to end of vector and pop off
+			auto iter2 = mAsteroids.end() - 1;
+			std::iter_swap(iter, iter2);
+			mAsteroids.pop_back();
+		}
+	}
 
 	Physics* GetPhysics() { return mPhysics; }
 
@@ -81,8 +94,8 @@ private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
 
-	//// All entities with collision
-	//std::vector<AABBComponent2D*> mCollisions;
+	// Asteroids
+	std::vector<Asteroid*> mAsteroids;
 
 	// Renderer for graphics output
 	Renderer mRenderer;

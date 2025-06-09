@@ -21,7 +21,7 @@ enum class BodyType
 {
 	Static,
 	Dynamic,
-	Kinematic
+	Intersect
 };
 
 // Enum class for which side of the object a box collides with
