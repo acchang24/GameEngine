@@ -69,3 +69,16 @@ const glm::vec2 AABBComponent2D::GetMax() const
 
 	return max;
 }
+
+
+CircleComponent::CircleComponent(Entity2D* owner, Physics* physics, float radius, BodyType type) :
+	CollisionComponent(owner, physics, CollisionShapeType::Circle, type),
+	mOwner2D(owner),
+	mCircle(radius)
+{
+}
+
+CircleComponent::~CircleComponent()
+{
+	std::cout << "Deleted CircleComponent\n";
+}

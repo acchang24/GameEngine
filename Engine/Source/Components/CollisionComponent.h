@@ -51,6 +51,17 @@ struct AABB_2D
 	float height;	// height of the entity
 };
 
+// Struct for a 2D circle
+struct Circle2D
+{
+	Circle2D(float r) : 
+		radius(r)
+	{
+	}
+
+	float radius;	// Radius of the circle
+};
+
 class Physics;
 
 class CollisionComponent : public Component
@@ -87,6 +98,7 @@ class AABBComponent2D : public CollisionComponent
 public:
 	// AABBComponent2D constructor:
 	// @param - Entity2D* for the owner
+	// @param - Physics* for the physics system
 	// @param - BodyType (optional, defaults to dynamic)
 	AABBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
 	~AABBComponent2D();
@@ -131,3 +143,36 @@ private:
 	// Collision box
 	AABB_2D mBox;
 };
+
+
+class CircleComponent : public CollisionComponent
+{
+public:
+	// Circle constructor:
+	// @param - Entity2D* for the owner
+	// @param - Physics* for the physics system
+	// @param - float for the radius
+	// @param - BodyType (optional, defaults to dynamic)
+	CircleComponent(Entity2D* owner, Physics* physics, float radius, BodyType type = BodyType::Dynamic);
+	~CircleComponent();
+
+	// Gets the the entity's collision circle
+	// @return - const Cirlce2D& for the circle
+	const Circle2D& GetCircle() const { return mCircle; }
+
+	// Gets the center of the circle box
+	// @return - const glm::vec2& for the center position
+	const glm::vec2& GetCenter() const { return mOwner2D->GetPosition(); }
+
+	// Sets the circle's radius
+	// @param - float for the new radius
+	void SetRadius(float r) { mCircle.radius = r; }
+
+private:
+	// Pointer to entity 2D
+	Entity2D* mOwner2D;
+
+	// Circle collision
+	Circle2D mCircle;
+};
+
