@@ -5,6 +5,7 @@
 SFX::SFX(const std::string& fileName):
 	mName(fileName),
 	mSoundChunk(nullptr),
+	mChannel(0),
 	mVolume(MIX_MAX_VOLUME)
 {
 	mSoundChunk = Mix_LoadWAV(fileName.c_str());
@@ -12,10 +13,6 @@ SFX::SFX(const std::string& fileName):
 	if (!mSoundChunk)
 	{
 		std::cout << "Failed to load sound file: " << fileName << "\n";
-	}
-	else
-	{
-		mVolume = mSoundChunk->volume;
 	}
 }
 
@@ -29,21 +26,22 @@ SFX::~SFX()
 	}
 }
 
-void SFX::Play(int loops)
+int SFX::Play(int channel, int loops)
 {
 	if (mSoundChunk)
 	{
-		int channel = Mix_PlayChannel(-1, mSoundChunk, loops);
-		if (channel != -1)
+		mChannel = Mix_PlayChannel(channel, mSoundChunk, loops);
+		if (mChannel != -1)
 		{
-			Mix_Volume(channel, mVolume);
+			Mix_Volume(mChannel, mVolume);
 		}
 	}
+	return mChannel;
 }
 
-void SFX::Stop()
+void SFX::Stop() const
 {
-	Mix_HaltChannel(-1);
+	Mix_HaltChannel(mChannel);
 }
 
 Music::Music(const std::string& fileName) :

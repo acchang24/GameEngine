@@ -15,13 +15,14 @@
 #include "Util/Random.h"
 #include "Ship.h"
 #include "Asteroid.h"
+#include "Audio/Sound.h"
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
 int VSYNC = 1;
 double MOUSE_SENSITIVITY = 0.05;
-bool IS_FULLSCREEN = true;
+bool IS_FULLSCREEN = false;
 const char* TITLE = "Game2D";
 SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 
@@ -32,6 +33,7 @@ Game::Game() :
 	mPhysics(new Physics()),
 	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
 	mKeyboard(),
+	mAudio(),
 	mIsRunning(true)
 {
 	mAssetManager->SetRenderer(&mRenderer);
@@ -52,6 +54,11 @@ bool Game::Init()
 		return false;
 	}
 
+	if (!mAudio.Init())
+	{
+		return false;
+	}
+
 	PROFILE_SCOPE(LOAD_DATA);
 
 	LoadShaders();
@@ -66,6 +73,8 @@ void Game::Shutdown()
 	UnloadGameData();
 
 	delete mPhysics;
+
+	mAudio.Shutdown();
 
 	mRenderer.Shutdown();
 
@@ -85,13 +94,13 @@ void Game::LoadGameData()
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
-
+	// Load 10 asteroids
 	for (int i = 0; i < 10; ++i)
 	{
 		Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
 	}
 
-
+	// Background
 	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
 	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
 	SpriteComponent* backgroundSC = new SpriteComponent(background, mRenderer.GetSpriteRenderer(), 50);
@@ -99,6 +108,7 @@ void Game::LoadGameData()
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
 	AddGameEntity(background);
 
+	// Set sprite renderer shader
 	mRenderer.GetSpriteRenderer()->SetShader(AssetManager::LoadShader("sprite"));
 }
 

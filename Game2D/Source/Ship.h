@@ -6,6 +6,7 @@ class AABBComponent2D;
 class MoveComponent2D;
 class SpriteComponent;
 class SpriteRenderer;
+class AudioSystem;
 
 class Ship : public Entity2D
 {
@@ -31,4 +32,7 @@ private:
 	Game* mGame;
 
 	float mLaserCooldown;
+
+	// Looped channel for ship move sfx
+	int mShipThrustSFX;
 };

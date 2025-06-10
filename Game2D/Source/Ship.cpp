@@ -1,10 +1,12 @@
 #include "Ship.h"
+#include "Audio/AudioSystem.h"
 #include "MemoryManager/AssetManager.h"
 #include "Components/CollisionComponent.h"
 #include "Components/MoveComponent2D.h"
 #include "Components/SpriteComponent.h"
 #include "Graphics/SpriteRenderer.h"
 #include "Graphics/Texture.h"
+#include "Input/Keyboard.h"
 #include "Game.h"
 #include "Laser.h"
 
@@ -15,7 +17,8 @@ Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	mCollisionBox(new AABBComponent2D(this, game->GetPhysics())),
 	mRenderer(renderer),
 	mGame(game),
-	mLaserCooldown(1.0f)
+	mLaserCooldown(1.0f),
+	mShipThrustSFX(0)
 {
 	game->AddGameEntity(this);
 
@@ -29,6 +32,15 @@ Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
 	mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
+
+	// Load audio files associated with this entity
+	AssetManager::LoadSFX("Assets/Sounds/Shoot.wav");
+	AssetManager::LoadSFX("Assets/Sounds/ShipThrust.wav");
+
+	// Store ship thrust sfx channel using first free channel and loop infinitely
+	mShipThrustSFX = mGame->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
+	// Pause sound
+	mGame->GetAudio()->PauseSFX(mShipThrustSFX);
 }
 
 Ship::~Ship()
@@ -42,32 +54,39 @@ void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const
 
 	
 	float moveSpeed = 0.0f;
-	if (keyState[SDL_SCANCODE_W] || keyState[SDL_SCANCODE_UP])
+	if (keyState[SDL_SCANCODE_W])
 	{
+		if (mGame->GetKeyboard()->HasLeadingEdge(keyState, SDL_SCANCODE_W))
+		{
+			mGame->GetAudio()->ResumeSFX(mShipThrustSFX);
+		}
+
 		moveSpeed += 200.0f;
-	}
-	if (keyState[SDL_SCANCODE_S] || keyState[SDL_SCANCODE_DOWN])
-	{
-		moveSpeed -= 200.0f;
 	}
 
 	if (moveSpeed > 0.0f)
 	{
 		mSprite->SetSprite(mSprite->GetSprite("Assets/ShipThrust.png"));
 	}
+	else
+	{
+		mGame->GetAudio()->PauseSFX(mShipThrustSFX);
+	}
 
 	float rotationSpeed = 0.0f;
-	if (keyState[SDL_SCANCODE_A] || keyState[SDL_SCANCODE_LEFT])
+	if (keyState[SDL_SCANCODE_A])
 	{
 		rotationSpeed -= 100.0f;
 	}
-	if (keyState[SDL_SCANCODE_D] || keyState[SDL_SCANCODE_RIGHT])
+	if (keyState[SDL_SCANCODE_D])
 	{
 		rotationSpeed += 100.0f;
 	}
 
 	if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown > 1.0f)
 	{
+		mGame->GetAudio()->PlaySFX("Assets/Sounds/Shoot.wav");
+
 		Laser* laser = new Laser(mRenderer, mGame);
 		laser->SetPosition(mPosition);
 		laser->SetRotation(mRotation);
@@ -81,6 +100,7 @@ void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const
 		mMovement->SetRotationSpeed(rotationSpeed);
 	}
 
+	mGame->GetKeyboard()->SavePrevKeyState(keyState, SDL_SCANCODE_W);
 }
 
 void Ship::OnUpdate(float deltaTime)

@@ -12,11 +12,16 @@ public:
 	~SFX();
 
 	// Plays the sound
+	// @param - int for channel: -1 = first free channel
 	// @param - int for loops: -1 = infinite loop, 0 = play once, > 0 = loop however many times
-	void Play(int loops = 0);
+	int Play(int channel, int loops);
 
 	// Stops all channels playing this sound chunk
-	void Stop();
+	void Stop() const;
+
+	// sets the sfx channel
+	// @param - int for the new channel
+	void SetChannel(int channel) { mChannel = channel; }
 
 	// Sets the volume of the sound
 	void SetVolume(uint8_t volume) { if (volume >= 0 && volume <= 128) { mVolume = volume; } }
@@ -27,6 +32,9 @@ private:
 
 	// Sound chunk
 	Mix_Chunk* mSoundChunk;
+
+	// Current channel this chunk is playing on
+	int mChannel;
 
 	// Volume of the sound
 	uint8_t mVolume;

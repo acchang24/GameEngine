@@ -1,6 +1,7 @@
 #include "Laser.h"
 #include <iostream>
 #include <glm/glm.hpp>
+#include "Audio/AudioSystem.h"
 #include "Components/SpriteComponent.h"
 #include "Components/CollisionComponent.h"
 #include "Components/MoveComponent2D.h"
@@ -16,6 +17,7 @@ Laser::Laser(SpriteRenderer* renderer, Game* game) :
 	mLaserMovement(new MoveComponent2D(this)),
 	mRenderer(renderer),
 	mBox(new AABBComponent2D(this, game->GetPhysics(), BodyType::Intersect)),
+	mGame(game),
 	mLaserDecay(0.0f)
 {
 	mLaserMovement->SetMovementSpeed(1000.0f);
@@ -30,12 +32,15 @@ Laser::Laser(SpriteRenderer* renderer, Game* game) :
 
 	mBox->SetBoxSize(glm::vec2(30.0f, 10.0f));
 
+	AssetManager::LoadSFX("Assets/Sounds/AsteroidExplode.wav");
+
 	// Set on collision callback
 	mBox->SetOnCollision([this](Entity2D* other, const CollisionResult& result) {
 		// If collided with asteroid, destroy the asteroid and this laser
 		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
 		if (asteroid)
 		{
+			mGame->GetAudio()->PlaySFX("Assets/Sounds/AsteroidExplode.wav");
 			asteroid->SetEntityState(EntityState::Destroy);
 			mState = EntityState::Destroy;
 		}

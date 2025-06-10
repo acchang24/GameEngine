@@ -3,6 +3,7 @@
 #include <vector>
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
+#include "Audio/AudioSystem.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Lights.h"
 #include "Graphics/Renderer.h"
@@ -72,6 +73,10 @@ public:
 
 	Physics* GetPhysics() { return mPhysics; }
 
+	AudioSystem* GetAudio() { return &mAudio; }
+
+	Keyboard* GetKeyboard() { return &mKeyboard; }
+
 private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
@@ -92,6 +97,9 @@ private:
 
 	// Game's keyboard input
 	Keyboard mKeyboard;
+
+	// Audio system
+	AudioSystem mAudio;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;
