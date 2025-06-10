@@ -205,26 +205,10 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 			result.sideB = CollisionSide::Right;
 		}
 
-		// Apply offset based on body type
 		BodyType typeA = a->GetBodyType();
 		BodyType typeB = b->GetBodyType();
 
-		if (typeA == BodyType::Dynamic && typeB == BodyType::Static)
-		{
-			// Apply offset to owner (a) that initiated collision
-			ownerA->SetPosition(ownerA->GetPosition() + offset);
-		}
-		else if (typeA == BodyType::Static && typeB == BodyType::Dynamic)
-		{
-			// Apply offset to owner (b) that initiated collision
-			ownerB->SetPosition(ownerB->GetPosition() - offset);
-		}
-		else if (typeA == BodyType::Dynamic && typeB == BodyType::Dynamic)
-		{
-			// Split offset to both if they are both dynamic
-			ownerA->SetPosition(ownerA->GetPosition() + offset * 0.5f);
-			ownerB->SetPosition(ownerB->GetPosition() - offset * 0.5f);
-		}
+		ApplyOffset2D(ownerA, ownerB, typeA, typeB, offset);
 
 		a->OnCollision(b->GetOwner(), result);
 		b->OnCollision(a->GetOwner(), result);
@@ -250,23 +234,7 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 		BodyType typeA = a->GetBodyType();
 		BodyType typeB = b->GetBodyType();
 
-		// Set the offset based on body type
-		if (typeA == BodyType::Dynamic && typeB == BodyType::Static)
-		{
-			// Apply offset to owner (a) that initiated collision
-			ownerA->SetPosition(ownerA->GetPosition() + offset);
-		}
-		else if (typeA == BodyType::Static && typeB == BodyType::Dynamic)
-		{
-			// Apply offset to owner (b) that initiated collision
-			ownerB->SetPosition(ownerB->GetPosition() - offset);
-		}
-		else if (typeA == BodyType::Dynamic && typeB == BodyType::Dynamic)
-		{
-			// Split offset to both if they are both dynamic
-			ownerA->SetPosition(ownerA->GetPosition() + offset * 0.5f);
-			ownerB->SetPosition(ownerB->GetPosition() - offset * 0.5f);
-		}
+		ApplyOffset2D(ownerA, ownerB, typeA, typeB, offset);
 
 		// No result update, circle's don't have sides I guess?
 
@@ -292,23 +260,7 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 		BodyType typeCircle = circle->GetBodyType();
 		BodyType typeAABB = aabb->GetBodyType();
 
-		// Set the offset based on body type
-		if (typeCircle == BodyType::Dynamic && typeAABB == BodyType::Static)
-		{
-			// Apply offset to dynamic circle
-			ownerCircle->SetPosition(ownerCircle->GetPosition() + offset);
-		}
-		else if (typeCircle == BodyType::Static && typeAABB == BodyType::Dynamic)
-		{
-			// Apply offset to dynamic AABB2D
-			ownerAABB->SetPosition(ownerAABB->GetPosition() - offset);
-		}
-		else if (typeCircle == BodyType::Dynamic && typeAABB == BodyType::Dynamic)
-		{
-			// Apply offset to both
-			ownerCircle->SetPosition(ownerCircle->GetPosition() + offset * 0.5f);
-			ownerAABB->SetPosition(ownerAABB->GetPosition() - offset * 0.5f);
-		}
+		ApplyOffset2D(ownerCircle, ownerAABB, typeCircle, typeAABB, offset);
 
 		// Get side for AABB
 		glm::vec2 diff = circle->GetCenter() - aabb->GetCenter();
@@ -345,3 +297,23 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 	return result;
 }
 
+void Physics::ApplyOffset2D(Entity2D* a, Entity2D* b, BodyType bodyA, BodyType bodyB, const glm::vec2& offset)
+{
+	// Set the offset based on body type
+	if (bodyA == BodyType::Dynamic && bodyB == BodyType::Static)
+	{
+		// Apply offset to owner (a) that initiated collision
+		a->SetPosition(a->GetPosition() + offset);
+	}
+	else if (bodyA == BodyType::Static && bodyB == BodyType::Dynamic)
+	{
+		// Apply offset to owner (b) that initiated collision
+		b->SetPosition(b->GetPosition() - offset);
+	}
+	else if (bodyA == BodyType::Dynamic && bodyB == BodyType::Dynamic)
+	{
+		// Split offset to both if they are both dynamic
+		a->SetPosition(a->GetPosition() + offset * 0.5f);
+		b->SetPosition(b->GetPosition() - offset * 0.5f);
+	}
+}

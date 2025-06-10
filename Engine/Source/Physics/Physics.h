@@ -68,6 +68,14 @@ private:
 	// @return - CollisionResult for the sides that got collided
 	CollisionResult HandleCircleVsAABB2D(CircleComponent* circle, AABBComponent2D* aabb);
 
+	// Applies offset to 2D entities based on the body type
+	// @param - Entity2D* for the first entity
+	// @param - Entity2D* for the second entity
+	// @param - BodyType for the first body type
+	// @param - BodyType for the second body type
+	// @param - const glm::vec2& for the offset to apply
+	void ApplyOffset2D(Entity2D* a, Entity2D* b, BodyType bodyA, BodyType bodyB, const glm::vec2& offset);
+
 	// Array of collision component colliders
 	std::vector<CollisionComponent*> mColliders;
 };
