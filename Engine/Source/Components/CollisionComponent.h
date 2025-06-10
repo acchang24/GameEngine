@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include <functional>
 #include <glm/glm.hpp>
 #include "../Entity/Entity2D.h"
 
@@ -34,6 +35,12 @@ enum class CollisionSide
 	Right
 };
 
+struct CollisionResult
+{
+	CollisionSide sideA;
+	CollisionSide sideB;
+};
+
 // Struct for a 2D axis-aligned bounding box
 struct AABB_2D
 {
@@ -63,10 +70,13 @@ struct Circle2D
 };
 
 class Physics;
+struct CollisionResult;
 
 class CollisionComponent : public Component
 {
 public:
+	using CollisionCallback = std::function<void(Entity2D* other, const CollisionResult& result)>;
+
 	CollisionComponent(Entity* owner, Physics* physics, CollisionShapeType shapeType, BodyType bodyType);
 	virtual ~CollisionComponent();
 
@@ -82,6 +92,18 @@ public:
 	// @return - BodyType for the body type
 	BodyType GetBodyType() const { return mBodyType; }
 
+	// Setter for collision callback
+	void SetOnCollision(const CollisionCallback& callback) { mOnCollision = callback; }
+
+	// Call this during collision
+	void OnCollision(Entity2D* other, const CollisionResult& result)
+	{
+		if (mOnCollision)
+		{
+			mOnCollision(other, result);
+		}
+	}
+
 protected:
 	// Pointer to physics system
 	Physics* mPhysics;
@@ -91,6 +113,8 @@ protected:
 
 	// Body type of the shape
 	BodyType mBodyType;
+
+	CollisionCallback mOnCollision;
 };
 
 class AABBComponent2D : public CollisionComponent

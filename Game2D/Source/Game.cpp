@@ -21,7 +21,7 @@ const int WINDOW_HEIGHT = 720;
 int SUB_SAMPLES = 4;
 int VSYNC = 1;
 double MOUSE_SENSITIVITY = 0.05;
-bool IS_FULLSCREEN = false;
+bool IS_FULLSCREEN = true;
 const char* TITLE = "Game2D";
 SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 

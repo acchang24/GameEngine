@@ -2,12 +2,6 @@
 #include <vector>
 #include "../Components/CollisionComponent.h"
 
-struct CollisionResult
-{
-	CollisionSide sideA;
-	CollisionSide sideB;
-};
-
 class Physics
 {
 public:

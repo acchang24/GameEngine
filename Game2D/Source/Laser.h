@@ -23,8 +23,6 @@ private:
 	SpriteRenderer* mRenderer;
 	AABBComponent2D* mBox;
 
-	Game* mGame;
-
 	// lifetime tracker
 	float mLaserDecay;
 };

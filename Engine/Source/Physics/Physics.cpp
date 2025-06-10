@@ -225,6 +225,9 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 			ownerA->SetPosition(ownerA->GetPosition() + offset * 0.5f);
 			ownerB->SetPosition(ownerB->GetPosition() - offset * 0.5f);
 		}
+
+		a->OnCollision(b->GetOwner(), result);
+		b->OnCollision(a->GetOwner(), result);
 	}
 
 	return result;
@@ -266,6 +269,10 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 		}
 
 		// No result update, circle's don't have sides I guess?
+
+		a->OnCollision(b->GetOwner(), result);
+		b->OnCollision(a->GetOwner(), result);
+
 	}
 
 	return result;
@@ -330,6 +337,9 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 				result.sideB = CollisionSide::Bottom;
 			}
 		}
+
+		circle->OnCollision(aabb->GetOwner(), result);
+		aabb->OnCollision(circle->GetOwner(), result);
 	}
 
 	return result;

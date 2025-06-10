@@ -70,32 +70,11 @@ public:
 	// @param - Entity* for the entity to remove
 	void RemoveGameEntity(Entity* e);
 
-	// Add entity with collisions
-	void AddAsteroid(Asteroid* asteroid) { mAsteroids.emplace_back(asteroid); }
-
-	// Get vector of Asteroids
-	const std::vector<Asteroid*>& GetAsteroids() { return mAsteroids; }
-
-	void RemoveAsteroid(Asteroid* a)
-	{
-		auto iter = std::find(mAsteroids.begin(), mAsteroids.end(), a);
-		if (iter != mAsteroids.end())
-		{
-			// Swap to end of vector and pop off
-			auto iter2 = mAsteroids.end() - 1;
-			std::iter_swap(iter, iter2);
-			mAsteroids.pop_back();
-		}
-	}
-
 	Physics* GetPhysics() { return mPhysics; }
 
 private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
-
-	// Asteroids
-	std::vector<Asteroid*> mAsteroids;
 
 	// Renderer for graphics output
 	Renderer mRenderer;
