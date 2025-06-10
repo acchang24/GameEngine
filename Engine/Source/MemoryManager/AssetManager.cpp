@@ -11,7 +11,9 @@ AssetManager::AssetManager() :
 	mModelCache(new Cache<Model>(this)),
 	mAnimationCache(new Cache<Animation>(this)),
 	mSkeletonCache(new Cache<Skeleton>(this)),
-	mShaderProgramCache(new Cache<ShaderProgram>(this))
+	mShaderProgramCache(new Cache<ShaderProgram>(this)),
+	mSfxCache(new Cache<SFX>(this)),
+	mMusicCache(new Cache<Music>(this))
 {
 }
 
@@ -32,6 +34,8 @@ void AssetManager::Shutdown()
 	delete mAnimationCache;
 	delete mSkeletonCache;
 	delete mShaderProgramCache;
+	delete mSfxCache;
+	delete mMusicCache;
 }
 
 void AssetManager::Clear()
@@ -44,6 +48,8 @@ void AssetManager::Clear()
 	mAnimationCache->Clear();
 	mSkeletonCache->Clear();
 	mShaderProgramCache->Clear();
+	mSfxCache->Clear();
+	mMusicCache->Clear();
 }
 
 AssetManager* AssetManager::Get()
@@ -97,4 +103,34 @@ ShaderProgram* AssetManager::LoadShaderProgram(const std::string& shaderFileName
 	}
 
 	return shaderProgram;
+}
+
+SFX* AssetManager::LoadSFX(const std::string& fileName)
+{
+	AssetManager* am = AssetManager::Get();
+
+	SFX* sfx = am->mSfxCache->Get(fileName);
+
+	if (!sfx)
+	{
+		sfx = new SFX(fileName);
+		am->SaveSFX(fileName, sfx);
+	}
+
+	return sfx;
+}
+
+Music* AssetManager::LoadMusic(const std::string& fileName)
+{
+	AssetManager* am = AssetManager::Get();
+
+	Music* music = am->mMusicCache->Get(fileName);
+
+	if (!music)
+	{
+		music = new Music(fileName);
+		am->SaveMusic(fileName, music);
+	}
+
+	return music;
 }

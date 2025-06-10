@@ -2,6 +2,7 @@
 #include "Cache.h"
 #include "../Animation/Animation.h"
 #include "../Animation/Skeleton.h"
+#include "../Audio/Sound.h"
 #include "../Graphics/Shader.h"
 #include "../Graphics/ShaderProgram.h"
 #include "../Graphics/Texture.h"
@@ -215,6 +216,45 @@ public:
 	void DeleteShaderProgram(const std::string& shaderFileName) { mShaderProgramCache->Delete(shaderFileName); }
 
 
+	// Saves an SFX into the sfx program cache's map
+	// @param - const std::string& for the SFX's file name
+	// @param - SFX* for the sfx to save
+	void SaveSFX(const std::string& fileName, SFX* sfx) { mSfxCache->StoreCache(fileName, sfx); }
+
+	// Loads an SFX file from SFX cache's map if it exists, nullptr if not.
+	// Ownership of any SFX* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteSFX() if you need to delete/remove an SFX by name
+	// @param - const std::string& for the SFX file name
+	// @return - SFX* for the desired SFX retrieved from the SFX cache map
+	static SFX* LoadSFX(const std::string& fileName);
+
+	// Deletes/clears each element from the sfx cache map
+	void ClearSFX() { mSfxCache->Clear(); }
+
+	// Deletes an sfx by name
+	// @param - const std::string& for the sfx file name
+	void DeleteSfx(const std::string& fileName) { mSfxCache->Delete(fileName); }
+
+
+	// Saves a Music into the music program cache's map
+	// @param - const std::string& for the music file name
+	// @param - Music* for the Music to save
+	void SaveMusic(const std::string& fileName, Music* music) { mMusicCache->StoreCache(fileName, music); }
+
+	// Loads a music file from music cache's map if it exists, nullptr if not.
+	// Ownership of any Music* returned from this method is handled by the AssetManager. Don't need to free memory manually.
+	// Call AssetManager::DeleteMusic() if you need to delete/remove an Music by name
+	// @param - const std::string& for the Music file name
+	// @return - Music* for the desired Music retrieved from the SFX cache map
+	static Music* LoadMusic(const std::string& fileName);
+
+	// Deletes/clears each element from the music cache map
+	void ClearMusic() { mMusicCache->Clear(); }
+
+	// Deletes a music by name
+	// @param - const std::string& for the music file name
+	void DeleteMusic(const std::string& fileName) { mMusicCache->Delete(fileName); }
+
 private:
 	AssetManager();
 	~AssetManager();
@@ -249,4 +289,10 @@ private:
 
 	// ShaderProgram cache
 	Cache<ShaderProgram>* mShaderProgramCache;
+
+	// SFX cache
+	Cache<SFX>* mSfxCache;
+
+	// Music sound track cache
+	Cache<Music>* mMusicCache;
 };
