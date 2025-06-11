@@ -38,6 +38,15 @@ void Physics::Update(float deltaTime)
 
 				HandleCircleVsCircle(collisionA, collisionB);
 			}
+			// Handle 2 OBB collision
+			if (a->GetShapeType() == CollisionShapeType::OBB2D && b->GetShapeType() == CollisionShapeType::OBB2D)
+			{
+				// Cast to OBB components
+				OBBComponent2D* collisionA = static_cast<OBBComponent2D*>(a);
+				OBBComponent2D* collisionB = static_cast<OBBComponent2D*>(b);
+
+				HandleOBB2DvsOBB2D(collisionA, collisionB);
+			}
 
 			// Circle vs AABB (both orders)
 			if ((a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::AABB2D) ||
@@ -117,6 +126,11 @@ bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComp
 		return true;
 	}
 
+	return false;
+}
+
+bool Physics::IntersectOBB2DvsOBB2D(const OBBComponent2D* a, const OBBComponent2D* b, glm::vec2& offset)
+{
 	return false;
 }
 
@@ -205,13 +219,10 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 			result.sideB = CollisionSide::Right;
 		}
 
-		BodyType typeA = a->GetBodyType();
-		BodyType typeB = b->GetBodyType();
+		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
 
-		ApplyOffset2D(ownerA, ownerB, typeA, typeB, offset);
-
-		a->OnCollision(b->GetOwner(), result);
-		b->OnCollision(a->GetOwner(), result);
+		a->OnCollision(ownerB, result);
+		b->OnCollision(ownerA, result);
 	}
 
 	return result;
@@ -228,19 +239,32 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 		Entity2D* ownerA = a->GetOwner();
 		Entity2D* ownerB = b->GetOwner();
 
-		const Circle2D& circleA = a->GetCircle();
-		const Circle2D& circleB = b->GetCircle();
-
-		BodyType typeA = a->GetBodyType();
-		BodyType typeB = b->GetBodyType();
-
-		ApplyOffset2D(ownerA, ownerB, typeA, typeB, offset);
+		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
 
 		// No result update, circle's don't have sides I guess?
 
-		a->OnCollision(b->GetOwner(), result);
-		b->OnCollision(a->GetOwner(), result);
+		a->OnCollision(ownerB, result);
+		b->OnCollision(ownerA, result);
+	}
 
+	return result;
+}
+
+CollisionResult Physics::HandleOBB2DvsOBB2D(OBBComponent2D* a, OBBComponent2D* b)
+{
+	CollisionResult result = { CollisionSide::None, CollisionSide::None };
+
+	glm::vec2 offset(0.0f);
+
+	if (IntersectOBB2DvsOBB2D(a, b, offset))
+	{
+		Entity2D* ownerA = a->GetOwner();
+		Entity2D* ownerB = b->GetOwner();
+
+		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
+
+		a->OnCollision(ownerB, result);
+		b->OnCollision(ownerA, result);
 	}
 
 	return result;
@@ -257,10 +281,8 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 	{
 		Entity2D* ownerCircle = circle->GetOwner();
 		Entity2D* ownerAABB = aabb->GetOwner();
-		BodyType typeCircle = circle->GetBodyType();
-		BodyType typeAABB = aabb->GetBodyType();
 
-		ApplyOffset2D(ownerCircle, ownerAABB, typeCircle, typeAABB, offset);
+		ApplyOffset2D(ownerCircle, ownerAABB, circle->GetBodyType(), aabb->GetBodyType(), offset);
 
 		// Get side for AABB
 		glm::vec2 diff = circle->GetCenter() - aabb->GetCenter();
@@ -282,16 +304,16 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			// More vertical overlap
 			if (diff.y > 0) 
 			{
-				result.sideB = CollisionSide::Top;
+				result.sideB = CollisionSide::Bottom;
 			} 
 			else
 			{
-				result.sideB = CollisionSide::Bottom;
+				result.sideB = CollisionSide::Top;
 			}
 		}
 
-		circle->OnCollision(aabb->GetOwner(), result);
-		aabb->OnCollision(circle->GetOwner(), result);
+		circle->OnCollision(ownerAABB, result);
+		aabb->OnCollision(ownerCircle, result);
 	}
 
 	return result;

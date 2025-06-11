@@ -247,6 +247,10 @@ public:
 	// @return - Entity2D* for the owner
 	Entity2D* GetOwner() { return mOwner2D; }
 
+	// Gets the oriented bounded box
+	// @return - const OBB_2D& for the collision box
+	const OBB_2D& GetOBB() const { return mOBB; }
+
 	// Gets the center of the 2D OBB box
 	// @return - const glm::vec2& for the center position
 	const glm::vec2& GetCenter() const { return mOwner2D->GetPosition(); }
