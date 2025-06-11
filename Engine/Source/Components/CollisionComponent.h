@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include <array>
 #include <functional>
 #include <glm/glm.hpp>
 #include "../Entity/Entity2D.h"
@@ -69,6 +70,25 @@ struct Circle2D
 	float radius;	// Radius of the circle
 };
 
+// Struct for a 2D OBB
+struct OBB_2D
+{
+	OBB_2D() :
+		center(glm::vec2(0.0f, 0.0f)),
+		halfExtents(glm::vec2(0.0f, 0.0f)),
+		rotation(0.0f)
+	{
+	}
+
+	// Gets the corners of the OBB
+	// @return - std::array<glm::vec2, 4> for the corners
+	std::array<glm::vec2, 4> GetCorners() const;
+
+	glm::vec2 center;		// Center of the box
+	glm::vec2 halfExtents;	// Half of the width and height of box
+	float rotation;			// Rotation of owner in radians
+};
+
 class Physics;
 struct CollisionResult;
 
@@ -77,6 +97,11 @@ class CollisionComponent : public Component
 public:
 	using CollisionCallback = std::function<void(Entity2D* other, const CollisionResult& result)>;
 
+	// CollisionComponent constructor: adds this collision component to physics
+	// @param - Entity* for the component's owner
+	// @param - Physics* to add the collider to
+	// @param - CollisionShapeType for the collision shape
+	// @param - BodyType for the body type (static, dynamic)
 	CollisionComponent(Entity* owner, Physics* physics, CollisionShapeType shapeType, BodyType bodyType);
 	virtual ~CollisionComponent();
 
@@ -114,6 +139,7 @@ protected:
 	// Body type of the shape
 	BodyType mBodyType;
 
+	// Callback function to do something after collision
 	CollisionCallback mOnCollision;
 };
 
@@ -204,3 +230,38 @@ private:
 	Circle2D mCircle;
 };
 
+
+class OBBComponent2D : public Component
+{
+public:
+	OBBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
+	~OBBComponent2D();
+
+	// Override Update for collision: 
+	// Updates the oriented bounding box collision location and rotation (converts to radians here) based on owner's position
+	// @param - float for delta time
+	void Update(float deltaTime) override;
+
+	// Gets the Entity2D owner
+	// @return - Entity2D* for the owner
+	Entity2D* GetOwner() { return mOwner2D; }
+
+	// Gets the center of the 2D OBB box
+	// @return - const glm::vec2& for the center position
+	const glm::vec2& GetCenter() const { return mOwner2D->GetPosition(); }
+
+	// Gets the rotation of the 2D OBB in radians
+	// @return - float for the single float rotation
+	float GetRotation() const { return mOwner2D->GetRotation(); }
+
+	// Sets the OBB half extents (stores half width and half height)
+	// @param - const glm::vec2& for the width and height of the box
+	void SetSize(const glm::vec2& size) { mOBB.halfExtents = size * 0.5f; }
+
+private:
+	// Pointer to entity 2D
+	Entity2D* mOwner2D;
+
+	// OBB collision box
+	OBB_2D mOBB;
+};

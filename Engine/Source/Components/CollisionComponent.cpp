@@ -82,3 +82,43 @@ CircleComponent::~CircleComponent()
 {
 	std::cout << "Deleted CircleComponent\n";
 }
+
+OBBComponent2D::OBBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType) :
+	Component(owner),
+	mOwner2D(owner),
+	mOBB()
+{
+}
+
+OBBComponent2D::~OBBComponent2D()
+{
+	std::cout << "Deleted OOBBComponent2D\n";
+}
+
+void OBBComponent2D::Update(float deltaTime)
+{
+	mOBB.center = mOwner2D->GetPosition();
+	mOBB.rotation = glm::radians(mOwner2D->GetRotation());
+}
+
+std::array<glm::vec2, 4> OBB_2D::GetCorners() const
+{
+	// Get the box's local x axis (positive width direction)
+	glm::vec2 xAxis = glm::vec2(cos(rotation), sin(rotation));
+	// Get the box's local y axis (positive height direction)
+	glm::vec2 yAxis = glm::vec2(-sin(rotation), cos(rotation));
+
+	// Scale axis by half of box width
+	glm::vec2 hx = xAxis * halfExtents.x;
+	// Scale axis by half of box height
+	glm::vec2 hy = yAxis * halfExtents.y;
+
+	std::array<glm::vec2, 4> corners = {
+		center - hx - hy, // Bottom-left
+		center + hx - hy, // Bottom-right
+		center + hx + hy, // Top-right
+		center - hx + hy  // Top-left
+	};
+
+	return corners;
+}
