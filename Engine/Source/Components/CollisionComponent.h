@@ -10,6 +10,7 @@ enum class CollisionShapeType
 {
 	AABB2D,
 	Circle,
+	OBB2D,
 	Ray2D,
 	AABB3D,
 	Sphere,
@@ -203,7 +204,7 @@ public:
 	// @param - Physics* for the physics system
 	// @param - float for the radius
 	// @param - BodyType (optional, defaults to dynamic)
-	CircleComponent(Entity2D* owner, Physics* physics, float radius, BodyType type = BodyType::Dynamic);
+	CircleComponent(Entity2D* owner, Physics* physics, float radius, BodyType bodyType = BodyType::Dynamic);
 	~CircleComponent();
 
 	// Gets the Entity2D owner
@@ -231,7 +232,7 @@ private:
 };
 
 
-class OBBComponent2D : public Component
+class OBBComponent2D : public CollisionComponent
 {
 public:
 	OBBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
