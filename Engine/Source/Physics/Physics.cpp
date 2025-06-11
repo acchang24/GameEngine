@@ -142,16 +142,11 @@ bool Physics::IntersectOBB2DvsOBB2D(const OBBComponent2D* a, const OBBComponent2
 	std::array<glm::vec2, 4> cornersB = obbB.GetCorners();
 
 	// Define the normalized axes to test (two from each box: local x and local y)
-	glm::vec2 axes[4] = {
-
-		// A's local axes
-		axes[0] = glm::normalize(cornersA[1] - cornersA[0]), // local x-axis
-		axes[1] = glm::normalize(cornersA[3] - cornersA[0]), // local y-axis
-
-		// B's local axes
-		axes[2] = glm::normalize(cornersB[1] - cornersB[0]),
-		axes[3] = glm::normalize(cornersB[3] - cornersB[0])
-	};
+	glm::vec2 axes[4] = {};
+	axes[0] = glm::normalize(cornersA[1] - cornersA[0]); // A local x
+	axes[1] = glm::normalize(cornersA[3] - cornersA[0]); // A local y
+	axes[2] = glm::normalize(cornersB[1] - cornersB[0]); // B local x
+	axes[3] = glm::normalize(cornersB[3] - cornersB[0]); // B local y
 
 	// Minimum overlap (init to very large);
 	float minOverlap = std::numeric_limits<float>::max();
@@ -188,6 +183,7 @@ bool Physics::IntersectOBB2DvsOBB2D(const OBBComponent2D* a, const OBBComponent2
 
 			// Get the direction from A to B
 			glm::vec2 direction = obbB.center - obbA.center;
+			direction = glm::normalize(direction);
 			// greater than 90 degrees
 			if (glm::dot(direction, axis) < 0)
 			{
@@ -199,7 +195,7 @@ bool Physics::IntersectOBB2DvsOBB2D(const OBBComponent2D* a, const OBBComponent2
 
 	}
 
-	offset = smallestAxis * minOverlap;
+	offset = -smallestAxis * minOverlap;
 
 	return true;
 }

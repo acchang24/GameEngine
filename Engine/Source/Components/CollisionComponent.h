@@ -261,7 +261,7 @@ public:
 
 	// Sets the OBB half extents (stores half width and half height)
 	// @param - const glm::vec2& for the width and height of the box
-	void SetSize(const glm::vec2& size) { mOBB.halfExtents = size * 0.5f; }
+	void SetBoxSize(const glm::vec2& size) { mOBB.halfExtents = size * 0.5f; }
 
 private:
 	// Pointer to entity 2D

@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity/Entity2D.h"
 
-class AABBComponent2D;
+class CollisionComponent;
 class Game;
 class MoveComponent2D;
 class SpriteComponent;
@@ -10,7 +10,7 @@ class SpriteRenderer;
 class Ship : public Entity2D
 {
 public:
-	Ship(SpriteRenderer* renderer, Game* game);
+	Ship(SpriteRenderer* renderer, Game* game, int test);
 	~Ship();
 
 	// Override for ship's process input
@@ -24,7 +24,7 @@ private:
 	
 	MoveComponent2D* mMovement;
 
-	AABBComponent2D* mCollisionBox;
+	CollisionComponent* mCollisionBox;
 
 	SpriteRenderer* mRenderer;
 

@@ -88,15 +88,19 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this);
+	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this, 1);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
-	// Load 10 asteroids
-	for (int i = 0; i < 10; ++i)
-	{
-		Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
-	}
+	Ship* ship1 = new Ship(mRenderer.GetSpriteRenderer(), this, 2);
+	ship1->SetRotation(45.0f);
+	ship1->SetPosition(glm::vec2(600.0f, 200.0f));
+
+	//// Load 10 asteroids
+	//for (int i = 0; i < 10; ++i)
+	//{
+	//	Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
+	//}
 
 	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
 	music->SetVolume(90);
