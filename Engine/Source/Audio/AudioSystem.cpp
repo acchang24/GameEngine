@@ -47,26 +47,39 @@ void AudioSystem::StopSFX(const std::string& sfxName)
 {
 	SFX* sfx = AssetManager::LoadSFX(sfxName);
 
-	sfx->Stop();
+	if (sfx)
+	{
+		sfx->Stop();
+	}
 }
 
-void AudioSystem::PauseSFX(int channel)
+void AudioSystem::PauseSFX(const std::string& sfxName)
 {
-	Mix_Pause(channel);
+	SFX* sfx = AssetManager::LoadSFX(sfxName);
+
+	if (sfx)
+	{
+		sfx->Pause();
+	}
 }
 
-void AudioSystem::ResumeSFX(int channel)
+void AudioSystem::ResumeSFX(const std::string& sfxName)
 {
-	Mix_Resume(channel);
+	SFX* sfx = AssetManager::LoadSFX(sfxName);
+
+	if (sfx)
+	{
+		sfx->Resume();
+	}
 }
 
-void AudioSystem::PlayMusic(const std::string& musicName)
+void AudioSystem::PlayMusic(const std::string& musicName, int loops)
 {
 	Music* music = AssetManager::LoadMusic(musicName);
 
 	if (music)
 	{
-		music->Play();
+		music->Play(loops);
 	}
 }
 
@@ -74,5 +87,28 @@ void AudioSystem::StopMusic(const std::string& musicName)
 {
 	Music* music = AssetManager::LoadMusic(musicName);
 
-	music->Stop();
+	if (music)
+	{
+		music->Stop();
+	}
+}
+
+void AudioSystem::PauseMusic(const std::string& musicName)
+{
+	Music* music = AssetManager::LoadMusic(musicName);
+
+	if (music)
+	{
+		music->Pause();
+	}
+}
+
+void AudioSystem::ResumeMusic(const std::string& musicName)
+{
+	Music* music = AssetManager::LoadMusic(musicName);
+
+	if (music)
+	{
+		music->Resume();
+	}
 }

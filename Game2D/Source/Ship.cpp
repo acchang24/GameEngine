@@ -17,8 +17,7 @@ Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	mCollisionBox(new AABBComponent2D(this, game->GetPhysics())),
 	mRenderer(renderer),
 	mGame(game),
-	mLaserCooldown(1.0f),
-	mShipThrustSFX(0)
+	mLaserCooldown(1.0f)
 {
 	game->AddGameEntity(this);
 
@@ -33,14 +32,10 @@ Ship::Ship(SpriteRenderer* renderer, Game* game) :
 
 	mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
 
-	// Load audio files associated with this entity
-	AssetManager::LoadSFX("Assets/Sounds/Shoot.wav");
-	AssetManager::LoadSFX("Assets/Sounds/ShipThrust.wav");
-
-	// Store ship thrust sfx channel using first free channel and loop infinitely
-	mShipThrustSFX = mGame->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
-	// Pause sound
-	mGame->GetAudio()->PauseSFX(mShipThrustSFX);
+	// Fire off loop sfx so this sound chunk can pause/resume later
+	mGame->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
+	// Pause sound immediately
+	mGame->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
 }
 
 Ship::~Ship()
@@ -50,18 +45,19 @@ Ship::~Ship()
 
 void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
 {
-	mSprite->SetSprite(mSprite->GetSprite("Assets/Ship.png"));
-
-	
 	float moveSpeed = 0.0f;
 	if (keyState[SDL_SCANCODE_W])
 	{
 		if (mGame->GetKeyboard()->HasLeadingEdge(keyState, SDL_SCANCODE_W))
 		{
-			mGame->GetAudio()->ResumeSFX(mShipThrustSFX);
+			mGame->GetAudio()->ResumeSFX("Assets/Sounds/ShipThrust.wav");
 		}
 
 		moveSpeed += 200.0f;
+	}
+	if (keyState[SDL_SCANCODE_S])
+	{
+		moveSpeed -= 40.0f;
 	}
 
 	if (moveSpeed > 0.0f)
@@ -70,7 +66,8 @@ void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const
 	}
 	else
 	{
-		mGame->GetAudio()->PauseSFX(mShipThrustSFX);
+		mSprite->SetSprite(mSprite->GetSprite("Assets/Ship.png"));
+		mGame->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
 	}
 
 	float rotationSpeed = 0.0f;

@@ -32,8 +32,6 @@ Laser::Laser(SpriteRenderer* renderer, Game* game) :
 
 	mBox->SetBoxSize(glm::vec2(30.0f, 10.0f));
 
-	AssetManager::LoadSFX("Assets/Sounds/AsteroidExplode.wav");
-
 	// Set on collision callback
 	mBox->SetOnCollision([this](Entity2D* other, const CollisionResult& result) {
 		// If collided with asteroid, destroy the asteroid and this laser

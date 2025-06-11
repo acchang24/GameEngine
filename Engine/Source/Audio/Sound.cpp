@@ -44,6 +44,16 @@ void SFX::Stop() const
 	Mix_HaltChannel(mChannel);
 }
 
+void SFX::Pause() const
+{
+	Mix_Pause(mChannel);
+}
+
+void SFX::Resume() const
+{
+	Mix_Resume(mChannel);
+}
+
 Music::Music(const std::string& fileName) :
 	mName(fileName),
 	mMusic(nullptr),

@@ -11,17 +11,24 @@ public:
 	SFX(const std::string& fileName);
 	~SFX();
 
-	// Plays the sound
+	// Plays the sound and saves the channel number and returns it
 	// @param - int for channel: -1 = first free channel
 	// @param - int for loops: -1 = infinite loop, 0 = play once, > 0 = loop however many times
+	// @return - int for the channel number
 	int Play(int channel, int loops);
 
-	// Stops all channels playing this sound chunk
+	// Stops channel playing this sfx sound chunk
 	void Stop() const;
 
-	// sets the sfx channel
-	// @param - int for the new channel
-	void SetChannel(int channel) { mChannel = channel; }
+	// Pauses channel playing this sfx sound chunk
+	void Pause() const;
+
+	// Resumes channel playing this sfx sound chunk
+	void Resume() const;
+
+	// Gets the sfx sound chunk's volume
+	// @return - uint8_t for the sfx volume
+	uint8_t GetVolume() const { return mVolume; }
 
 	// Sets the volume of the sound
 	void SetVolume(uint8_t volume) { if (volume >= 0 && volume <= 128) { mVolume = volume; } }
@@ -49,8 +56,8 @@ public:
 	~Music();
 
 	// Plays the music sound track
-	// @param - int for loops (defaults to -1 or infinite loop)
-	void Play(int loops = -1);
+	// @param - int for loops: -1 = infinite loop, 0 = play once, > 0 = loop however many times
+	void Play(int loops);
 
 	// Pauses the music sound track
 	void Pause();
@@ -58,7 +65,7 @@ public:
 	// Resumes playing the music sound track
 	void Resume();
 
-	// Stops playing the music
+	// Stops playing the music sound track
 	void Stop();
 
 	// Gets the music soundtrack's volume

@@ -32,7 +32,4 @@ private:
 	Game* mGame;
 
 	float mLaserCooldown;
-
-	// Looped channel for ship move sfx
-	int mShipThrustSFX;
 };

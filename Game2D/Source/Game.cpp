@@ -100,6 +100,10 @@ void Game::LoadGameData()
 		Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
 	}
 
+	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
+	music->SetVolume(90);
+	mAudio.PlayMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
+
 	// Background
 	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
 	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
@@ -187,7 +191,6 @@ void Game::ProcessInput()
 	{
 		mIsRunning = false;
 	}
-
 
 	for (auto e : mEntities)
 	{
