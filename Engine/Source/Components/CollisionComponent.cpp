@@ -16,6 +16,8 @@ CollisionComponent::CollisionComponent(Entity* owner, Physics* physics, Collisio
 CollisionComponent::~CollisionComponent()
 {
 	std::cout << "Deleted CollisionComponent\n";
+
+	mPhysics->RemoveCollider(this);
 }
 
 void CollisionComponent::Update(float deltaTime)
@@ -31,8 +33,6 @@ AABBComponent2D::AABBComponent2D(Entity2D* owner, Physics* physics, BodyType bod
 
 AABBComponent2D::~AABBComponent2D()
 {
-	mPhysics->RemoveCollider(this);
-
 	std::cout << "Deleted AABBComponent2D\n";
 }
 
