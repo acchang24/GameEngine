@@ -1,6 +1,8 @@
 #include "Physics.h"
 #include <algorithm>
+#include <array>
 #include <iostream>
+#include <limits>
 
 Physics::Physics()
 {
@@ -131,7 +133,75 @@ bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComp
 
 bool Physics::IntersectOBB2DvsOBB2D(const OBBComponent2D* a, const OBBComponent2D* b, glm::vec2& offset)
 {
-	return false;
+	// Get the OBB of each component
+	const OBB_2D& obbA = a->GetOBB();
+	const OBB_2D& obbB = b->GetOBB();
+
+	// Get the array of corners of each OBB
+	std::array<glm::vec2, 4> cornersA = obbA.GetCorners();
+	std::array<glm::vec2, 4> cornersB = obbB.GetCorners();
+
+	// Define the normalized axes to test (two from each box: local x and local y)
+	glm::vec2 axes[4] = {
+
+		// A's local axes
+		axes[0] = glm::normalize(cornersA[1] - cornersA[0]), // local x-axis
+		axes[1] = glm::normalize(cornersA[3] - cornersA[0]), // local y-axis
+
+		// B's local axes
+		axes[2] = glm::normalize(cornersB[1] - cornersB[0]),
+		axes[3] = glm::normalize(cornersB[3] - cornersB[0])
+	};
+
+	// Minimum overlap (init to very large);
+	float minOverlap = std::numeric_limits<float>::max();
+	
+	// Smallest axis
+	glm::vec2 smallestAxis(0.0f);
+
+	// Loop through the normalized axes
+	for (int i = 0; i < 4; ++i)
+	{
+		glm::vec2 axis = axes[i];
+
+		// Project both OBB onto this axis
+		float minA = 0.0f;
+		float maxA = 0.0f;
+		float minB = 0.0f;
+		float maxB = 0.0f;
+
+		ProjectOnAxis(cornersA, axis, minA, maxA);
+		ProjectOnAxis(cornersB, axis, minB, maxB);
+
+		// Check for if there is a gap — if so, no collision and return false
+		if (maxA < minB || maxB < minA)
+		{
+			return false;
+		}
+
+		// Calculate overlap
+		float overlap = std::min(maxA, maxB) - std::max(minA, minB);
+
+		if (overlap < minOverlap)
+		{
+			minOverlap = overlap;
+
+			// Get the direction from A to B
+			glm::vec2 direction = obbB.center - obbA.center;
+			// greater than 90 degrees
+			if (glm::dot(direction, axis) < 0)
+			{
+				// Negate axis
+				axis = -axis;
+			}
+			smallestAxis = axis;
+		}
+
+	}
+
+	offset = smallestAxis * minOverlap;
+
+	return true;
 }
 
 bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset)
@@ -166,6 +236,25 @@ bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBC
 	float radius = circle->GetCircle().radius;
 
 	return distanceSq < radius * radius;
+}
+
+void Physics::ProjectOnAxis(const std::array<glm::vec2, 4>& corners, const glm::vec2& axis, float& min, float& max)
+{
+	min = glm::dot(corners[0], axis);
+	max = glm::dot(corners[0], axis);
+
+	for (int i = 1; i < 4; ++i)
+	{
+		float projection = glm::dot(corners[i], axis);
+		if (projection < min)
+		{
+			min = projection;
+		}
+		if (projection > max) 
+		{
+			max = projection;
+		}
+	}
 }
 
 CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2D* b)

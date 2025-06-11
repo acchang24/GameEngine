@@ -47,6 +47,8 @@ public:
 	// @return - bool for if the circle and AABB intersect
 	static bool IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset);
 
+	static void ProjectOnAxis(const std::array<glm::vec2, 4>& corners, const glm::vec2& axis, float& min, float& max);
+
 private:
 	// Handles collision between 2 AABB2D collision components:
 	// First checks to see if the two AABB2D boxes intersects,
