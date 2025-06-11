@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <glm/glm.hpp>
@@ -11,7 +12,6 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
-#include "Physics/Physics.h"
 #include "Util/Random.h"
 #include "Ship.h"
 #include "Asteroid.h"
@@ -28,11 +28,11 @@ SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 
 Game::Game() :
 	mRenderer(RendererMode::MODE_2D),
-	mAssetManager(AssetManager::Get()),
 	mJobManager(JobManager::Get()),
-	mPhysics(new Physics()),
-	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
+	mAssetManager(AssetManager::Get()),
 	mKeyboard(),
+	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
+	mPhysics(),
 	mAudio(),
 	mIsRunning(true)
 {
@@ -72,12 +72,10 @@ void Game::Shutdown()
 {
 	UnloadGameData();
 
-	delete mPhysics;
-
-	mAudio.Shutdown();
-
 	mRenderer.Shutdown();
 
+	mAudio.Shutdown();
+	
 	mJobManager->End();
 
 	mAssetManager->Shutdown();
@@ -319,7 +317,7 @@ void Game::Update(float deltaTime)
 		RemoveGameEntity(d);
 	}
 
-	mPhysics->Update(deltaTime);
+	mPhysics.Update(deltaTime);
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	mJobManager->WaitForJobs();

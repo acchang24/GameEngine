@@ -1,7 +1,5 @@
 #pragma once
-#include <algorithm>
 #include <vector>
-#include <glad/glad.h>
 #include <SDL2/SDL.h>
 #include "Audio/AudioSystem.h"
 #include "Graphics/Camera.h"
@@ -9,12 +7,12 @@
 #include "Graphics/Renderer.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
+#include "Physics/Physics.h"
 
 class AssetManager;
 class Entity;
 class JobManager;
 class AABBComponent2D;
-class Physics;
 class Asteroid;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
@@ -71,11 +69,17 @@ public:
 	// @param - Entity* for the entity to remove
 	void RemoveGameEntity(Entity* e);
 
-	Physics* GetPhysics() { return mPhysics; }
-
-	AudioSystem* GetAudio() { return &mAudio; }
-
+	// Gets the game's keyboard
+	// @return - Keyboard* for the game's keyboard
 	Keyboard* GetKeyboard() { return &mKeyboard; }
+
+	// Gets the game's physics system
+	// @return - Physics* for the game physics
+	Physics* GetPhysics() { return &mPhysics; }
+
+	// Gets the game's audio system
+	// @return - AudioSystem* for the audio system
+	AudioSystem* GetAudio() { return &mAudio; }
 
 private:
 	// std::vector of game entities
@@ -84,19 +88,20 @@ private:
 	// Renderer for graphics output
 	Renderer mRenderer;
 
-	// Pointer to a static asset manager
-	AssetManager* mAssetManager;
-
 	// Pointer to a static JobManager
 	JobManager* mJobManager;
 
-	Physics* mPhysics;
+	// Pointer to a static asset manager
+	AssetManager* mAssetManager;
+
+	// Game's keyboard input
+	Keyboard mKeyboard;
 
 	// Game's mouse input
 	Mouse mMouse;
 
-	// Game's keyboard input
-	Keyboard mKeyboard;
+	// Game's physics
+	Physics mPhysics;
 
 	// Audio system
 	AudioSystem mAudio;

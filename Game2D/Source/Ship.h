@@ -1,12 +1,11 @@
 #pragma once
 #include "Entity/Entity2D.h"
 
-class Game;
 class AABBComponent2D;
+class Game;
 class MoveComponent2D;
 class SpriteComponent;
 class SpriteRenderer;
-class AudioSystem;
 
 class Ship : public Entity2D
 {
@@ -21,9 +20,9 @@ public:
 	void OnUpdate(float deltaTime) override;
 
 private:
-	MoveComponent2D* mMovement;
-
 	SpriteComponent* mSprite;
+	
+	MoveComponent2D* mMovement;
 
 	AABBComponent2D* mCollisionBox;
 

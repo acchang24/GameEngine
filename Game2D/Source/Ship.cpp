@@ -1,41 +1,43 @@
 #include "Ship.h"
 #include "Audio/AudioSystem.h"
-#include "MemoryManager/AssetManager.h"
 #include "Components/CollisionComponent.h"
 #include "Components/MoveComponent2D.h"
 #include "Components/SpriteComponent.h"
 #include "Graphics/SpriteRenderer.h"
 #include "Graphics/Texture.h"
 #include "Input/Keyboard.h"
+#include "MemoryManager/AssetManager.h"
 #include "Game.h"
 #include "Laser.h"
 
 Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	Entity2D(),
-	mMovement(new MoveComponent2D(this)),
 	mSprite(new SpriteComponent(this, renderer)),
+	mMovement(new MoveComponent2D(this)),
 	mCollisionBox(new AABBComponent2D(this, game->GetPhysics())),
 	mRenderer(renderer),
 	mGame(game),
 	mLaserCooldown(1.0f)
 {
-	game->AddGameEntity(this);
-
+	// Load and set ship sprites
 	Texture* shipSprite = AssetManager::LoadTexture("Assets/Ship.png", TextureType::Sprite);
-
-	mSprite->AddSprite(shipSprite);
 	mSprite->AddSprite(AssetManager::LoadTexture("Assets/ShipThrust.png", TextureType::Sprite));
-	
+	mSprite->AddSprite(shipSprite);
 	mSprite->SetSprite(shipSprite);
 
+	// Set the entity size to the ship sprite size
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
+	// Set ship hit box size
 	mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
 
 	// Fire off loop sfx so this sound chunk can pause/resume later
 	mGame->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
 	// Pause sound immediately
 	mGame->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
+
+	// Add to game
+	game->AddGameEntity(this);
 }
 
 Ship::~Ship()
@@ -45,14 +47,15 @@ Ship::~Ship()
 
 void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
 {
+	// Reset movement speed
 	float moveSpeed = 0.0f;
+
 	if (keyState[SDL_SCANCODE_W])
 	{
 		if (mGame->GetKeyboard()->HasLeadingEdge(keyState, SDL_SCANCODE_W))
 		{
 			mGame->GetAudio()->ResumeSFX("Assets/Sounds/ShipThrust.wav");
 		}
-
 		moveSpeed += 200.0f;
 	}
 	if (keyState[SDL_SCANCODE_S])
@@ -102,8 +105,10 @@ void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const
 
 void Ship::OnUpdate(float deltaTime)
 {
+	// Update laser cool down
 	mLaserCooldown += deltaTime;
 
+	// Wrap screen if out of bounds
 	if (mPosition.x < 0.0f)
 	{
 		mPosition.x = mRenderer->GetWidth();

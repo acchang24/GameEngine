@@ -2,34 +2,35 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include "Audio/AudioSystem.h"
-#include "Components/SpriteComponent.h"
 #include "Components/CollisionComponent.h"
 #include "Components/MoveComponent2D.h"
+#include "Components/SpriteComponent.h"
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
-#include "Game.h"
-#include "Asteroid.h"
 #include "Physics/Physics.h"
+#include "Asteroid.h"
+#include "Game.h"
 
 Laser::Laser(SpriteRenderer* renderer, Game* game) :
 	Entity2D(),
 	mLaserSprite(new SpriteComponent(this, renderer)),
 	mLaserMovement(new MoveComponent2D(this)),
-	mRenderer(renderer),
 	mBox(new AABBComponent2D(this, game->GetPhysics(), BodyType::Intersect)),
 	mGame(game),
 	mLaserDecay(0.0f)
 {
-	mLaserMovement->SetMovementSpeed(1000.0f);
-
+	// Add and set laser sprite texture
 	Texture* laserSprite = AssetManager::LoadTexture("Assets/Laser.png", TextureType::Sprite);
 	mLaserSprite->AddSprite(laserSprite);
 	mLaserSprite->SetSprite(laserSprite);
 
+	// Set the entity size to the sprite size
 	mSize = glm::vec2(laserSprite->GetWidth(), laserSprite->GetHeight());
 
-	game->AddGameEntity(this);
+	// Set laser speed
+	mLaserMovement->SetMovementSpeed(1000.0f);
 
+	// Set laser hit box size
 	mBox->SetBoxSize(glm::vec2(30.0f, 10.0f));
 
 	// Set on collision callback
@@ -43,6 +44,9 @@ Laser::Laser(SpriteRenderer* renderer, Game* game) :
 			mState = EntityState::Destroy;
 		}
 	});
+
+	// Add to game
+	game->AddGameEntity(this);
 }
 
 Laser::~Laser()
