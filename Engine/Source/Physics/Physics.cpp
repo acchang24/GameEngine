@@ -22,38 +22,41 @@ void Physics::Update(float deltaTime)
 			CollisionComponent* a = mColliders[i];
 			CollisionComponent* b = mColliders[j];
 			
-			// Handle 2 AABB2D collision
 			if (a->GetShapeType() == CollisionShapeType::AABB2D && b->GetShapeType() == CollisionShapeType::AABB2D)
 			{
+				// Handle 2 AABB2D collision
+				
 				// Use static cast since we know the type for sure
 				AABBComponent2D* collisionA = static_cast<AABBComponent2D*>(a);
 				AABBComponent2D* collisionB = static_cast<AABBComponent2D*>(b);
 
 				HandleAABB2DvsAABB2D(collisionA, collisionB);
 			}
-			// Handle 2 Circle collision
-			if (a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::Circle)
+			else if (a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::Circle)
 			{
+				// Handle 2 Circle collision
+
 				// Cast to circle component
 				CircleComponent* collisionA = static_cast<CircleComponent*>(a);
 				CircleComponent* collisionB = static_cast<CircleComponent*>(b);
 
 				HandleCircleVsCircle(collisionA, collisionB);
 			}
-			// Handle 2 OBB collision
-			if (a->GetShapeType() == CollisionShapeType::OBB2D && b->GetShapeType() == CollisionShapeType::OBB2D)
+			else if (a->GetShapeType() == CollisionShapeType::OBB2D && b->GetShapeType() == CollisionShapeType::OBB2D)
 			{
+				// Handle 2 OBB collision
+
 				// Cast to OBB components
 				OBBComponent2D* collisionA = static_cast<OBBComponent2D*>(a);
 				OBBComponent2D* collisionB = static_cast<OBBComponent2D*>(b);
 
 				HandleOBB2DvsOBB2D(collisionA, collisionB);
 			}
-
-			// Circle vs AABB (both orders)
-			if ((a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::AABB2D) ||
+			else if ((a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::AABB2D) ||
 				(a->GetShapeType() == CollisionShapeType::AABB2D && b->GetShapeType() == CollisionShapeType::Circle))
 			{
+				// Circle vs AABB (both orders)
+
 				CircleComponent* circle = nullptr;
 				AABBComponent2D* box = nullptr;
 				if(a->GetShapeType() == CollisionShapeType::Circle)
@@ -68,6 +71,27 @@ void Physics::Update(float deltaTime)
 				}
 
 				HandleCircleVsAABB2D(circle, box);
+			}
+			else if ((a->GetShapeType() == CollisionShapeType::OBB2D && b->GetShapeType() == CollisionShapeType::AABB2D) ||
+				(a->GetShapeType() == CollisionShapeType::AABB2D && b->GetShapeType() == CollisionShapeType::OBB2D))
+			{
+				// OBB vs AABB (both orders)
+
+				OBBComponent2D* obb = nullptr;
+				AABBComponent2D* aabb = nullptr;
+
+				if (a->GetShapeType() == CollisionShapeType::OBB2D)
+				{
+					obb = static_cast<OBBComponent2D*>(a);
+					aabb = static_cast<AABBComponent2D*>(b);
+				}
+				else
+				{
+					obb = static_cast<OBBComponent2D*>(b);
+					aabb = static_cast<AABBComponent2D*>(a);
+				}
+
+				HandleOBB2DVsAABB2D(obb, aabb);
 			}
 		}
 	}
@@ -234,6 +258,83 @@ bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBC
 	return distanceSq < radius * radius;
 }
 
+bool Physics::IntersectOBB2DvsAABB2D(const OBBComponent2D* obb, const AABBComponent2D* aabb, glm::vec2& offset)
+{
+	const OBB_2D& obbBox = obb->GetOBB();
+	const AABB_2D& aabbBox = aabb->GetBox();
+
+	// OBB corners
+	std::array<glm::vec2, 4> obbCorners = obbBox.GetCorners();
+
+	// AABB corners
+	glm::vec2 aabbMin = aabb->GetMin();
+	glm::vec2 aabbMax = aabb->GetMax();
+	std::array<glm::vec2, 4> aabbCorners = {
+		aabbMin,
+		glm::vec2(aabbMax.x, aabbMin.y),
+		aabbMax,
+		glm::vec2(aabbMin.x, aabbMax.y)
+	};
+
+	// Axes to test: 2 from OBB, 2 from AABB (X, Y)
+	glm::vec2 axes[4] = {
+		glm::normalize(obbCorners[1] - obbCorners[0]),  // OBB local X
+		glm::normalize(obbCorners[3] - obbCorners[0]),  // OBB local Y
+		glm::vec2(1.0f, 0.0f),                          // AABB X-axis
+		glm::vec2(0.0f, 1.0f)                           // AABB Y-axis
+	};
+
+	// Minimum overlap (init to very large);
+	float minOverlap = std::numeric_limits<float>::max();
+
+	// Smallest axis
+	glm::vec2 smallestAxis(0.0f);
+
+	// Loop through the normalized axes
+	for (int i = 0; i < 4; ++i)
+	{
+		glm::vec2 axis = axes[i];
+
+		// Project both OBB onto this axis
+		float minA = 0.0f;
+		float maxA = 0.0f;
+		float minB = 0.0f;
+		float maxB = 0.0f;
+
+		ProjectOnAxis(obbCorners, axis, minA, maxA);
+		ProjectOnAxis(aabbCorners, axis, minB, maxB);
+
+		// Check for if there is a gap — if so, no collision and return false
+		if (maxA < minB || maxB < minA)
+		{
+			return false;
+		}
+
+		// Calculate overlap
+		float overlap = std::min(maxA, maxB) - std::max(minA, minB);
+
+		if (overlap < minOverlap)
+		{
+			minOverlap = overlap;
+
+			// Get the direction from obb to aabb
+			glm::vec2 direction = aabb->GetCenter() - obb->GetCenter();
+			direction = glm::normalize(direction);
+			// greater than 90 degrees
+			if (glm::dot(direction, axis) < 0)
+			{
+				// Negate axis
+				axis = -axis;
+			}
+			smallestAxis = axis;
+		}
+	}
+
+	offset = -smallestAxis * minOverlap;
+
+	return true;
+}
+
 void Physics::ProjectOnAxis(const std::array<glm::vec2, 4>& corners, const glm::vec2& axis, float& min, float& max)
 {
 	min = glm::dot(corners[0], axis);
@@ -339,6 +440,7 @@ CollisionResult Physics::HandleOBB2DvsOBB2D(OBBComponent2D* a, OBBComponent2D* b
 {
 	CollisionResult result = { CollisionSide::None, CollisionSide::None };
 
+	// Offset
 	glm::vec2 offset(0.0f);
 
 	if (IntersectOBB2DvsOBB2D(a, b, offset))
@@ -399,6 +501,27 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 
 		circle->OnCollision(ownerAABB, result);
 		aabb->OnCollision(ownerCircle, result);
+	}
+
+	return result;
+}
+
+CollisionResult Physics::HandleOBB2DVsAABB2D(OBBComponent2D* obb, AABBComponent2D* aabb)
+{
+	CollisionResult result = { CollisionSide::None, CollisionSide::None };
+
+	// Offset 
+	glm::vec2 offset(0.0f);
+
+	if (IntersectOBB2DvsAABB2D(obb, aabb, offset))
+	{
+		Entity2D* obbOwner = obb->GetOwner();
+		Entity2D* aabbOwner = aabb->GetOwner();
+
+		ApplyOffset2D(obbOwner, aabbOwner, obb->GetBodyType(), aabb->GetBodyType(), offset);
+
+		obb->OnCollision(aabbOwner, result);
+		aabb->OnCollision(obbOwner, result);
 	}
 
 	return result;

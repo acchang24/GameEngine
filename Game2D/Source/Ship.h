@@ -10,7 +10,7 @@ class SpriteRenderer;
 class Ship : public Entity2D
 {
 public:
-	Ship(SpriteRenderer* renderer, Game* game, int test);
+	Ship(SpriteRenderer* renderer, Game* game);
 	~Ship();
 
 	// Override for ship's process input

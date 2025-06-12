@@ -47,6 +47,14 @@ public:
 	// @return - bool for if the circle and AABB intersect
 	static bool IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset);
 
+	// Checks intersection between 2D OBB and 2D AABB
+	// @param - const OBBComponent2D* for the obb
+	// @param - const AABBComponent2D* for the aabb
+	// @param - glm::vec2& for the offset vector
+	// @return - bool for if the OBB and AABB intersect
+	static bool IntersectOBB2DvsAABB2D(const OBBComponent2D* obb, const AABBComponent2D* aabb, glm::vec2& offset);
+
+	// Projects corners onto an axis
 	static void ProjectOnAxis(const std::array<glm::vec2, 4>& corners, const glm::vec2& axis, float& min, float& max);
 
 private:
@@ -85,6 +93,15 @@ private:
 	// @param - AABBComponent2D* for the 2d AABB
 	// @return - CollisionResult for the sides that got collided
 	CollisionResult HandleCircleVsAABB2D(CircleComponent* circle, AABBComponent2D* aabb);
+
+	// Handles collision between OBB2D and AABB2D collision components:
+	// First checks to see if the OBB2D and AABB intersect,
+	// then applies offset to position depending on the body type
+	// It then returns the collision result that contains collision sides for two objects
+	// @param - OBBComponent2D* for the 2d OBB
+	// @param - AABBComponent2D* for the 2d AABB
+	// @return - CollisionResult for the sides that got collided
+	CollisionResult HandleOBB2DVsAABB2D(OBBComponent2D* obb, AABBComponent2D* aabb);
 
 	// Applies offset to 2D entities based on the body type
 	// @param - Entity2D* for the first entity

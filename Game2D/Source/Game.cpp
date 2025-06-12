@@ -88,19 +88,16 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this, 1);
+	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
-	Ship* ship1 = new Ship(mRenderer.GetSpriteRenderer(), this, 2);
-	ship1->SetRotation(45.0f);
-	ship1->SetPosition(glm::vec2(600.0f, 200.0f));
 
-	//// Load 10 asteroids
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
-	//}
+	// Load 10 asteroids
+	for (int i = 0; i < 1; ++i)
+	{
+		Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
+	}
 
 	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
 	music->SetVolume(90);
@@ -194,9 +191,9 @@ void Game::ProcessInput()
 		mIsRunning = false;
 	}
 
-	for (auto e : mEntities)
+	for (size_t i =0; i<mEntities.size(); ++i)
 	{
-		e->ProcessInput(keyboardState, &mKeyboard, &mMouse);
+		mEntities[i]->ProcessInput(keyboardState, &mKeyboard, &mMouse);
 	}
 }
 
@@ -307,8 +304,9 @@ void Game::Update(float deltaTime)
 
 	std::vector<Entity*> destroy;
 
-	for (auto e : mEntities)
+	for (size_t i = 0; i < mEntities.size(); ++i)
 	{
+		Entity* e = mEntities[i];
 		e->Update(deltaTime);
 		if (e->GetEntityState() == EntityState::Destroy)
 		{

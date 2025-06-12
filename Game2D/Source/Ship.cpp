@@ -10,10 +10,10 @@
 #include "Game.h"
 #include "Laser.h"
 
-Ship::Ship(SpriteRenderer* renderer, Game* game, int test) :
+Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	Entity2D(),
 	mSprite(new SpriteComponent(this, renderer)),
-	mMovement(nullptr),
+	mMovement(new MoveComponent2D(this)),
 	mCollisionBox(nullptr),
 	mRenderer(renderer),
 	mGame(game),
@@ -28,26 +28,12 @@ Ship::Ship(SpriteRenderer* renderer, Game* game, int test) :
 	// Set the entity size to the ship sprite size
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
-	if (test == 1)
-	{
-		OBBComponent2D* CollisionBox = new OBBComponent2D(this, game->GetPhysics());
-		// Set ship hit box size
-		CollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
-		mMovement = new MoveComponent2D(this);
 
-		mCollisionBox = CollisionBox;
-	}
-	else
-	{
-		OBBComponent2D* CollisionBox = new OBBComponent2D(this, game->GetPhysics(), BodyType::Static);
-		// Set ship hit box size
-		CollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
+	// Set ship hit box size
+	OBBComponent2D* box = new OBBComponent2D(this, game->GetPhysics());
+	box->SetBoxSize(glm::vec2(100.0f, 90.0f));
 
-		mCollisionBox = CollisionBox;
-	}
-	
-
-	
+	mCollisionBox = box;
 
 	// Fire off loop sfx so this sound chunk can pause/resume later
 	mGame->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
