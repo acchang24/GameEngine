@@ -47,6 +47,13 @@ public:
 	// @return - bool for if the circle and AABB intersect
 	static bool IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBComponent2D* aabb, glm::vec2& offset);
 
+	// Checks intersection between a Circle and an OBB2D
+	// @param - const CircleComponent* for the circle
+	// @param - const OBBComponent2D* for the 2D OBB
+	// @param - glm::vec2& for the offset vector
+	// @return - bool for if the circle and OBB intersect
+	static bool IntersectCircleVsOBB2D(const CircleComponent* circle, const OBBComponent2D* obb, glm::vec2& offset);
+
 	// Checks intersection between 2D OBB and 2D AABB
 	// @param - const OBBComponent2D* for the obb
 	// @param - const AABBComponent2D* for the aabb
@@ -93,6 +100,15 @@ private:
 	// @param - AABBComponent2D* for the 2d AABB
 	// @return - CollisionResult for the sides that got collided
 	CollisionResult HandleCircleVsAABB2D(CircleComponent* circle, AABBComponent2D* aabb);
+
+	// Handles collision between circle and OBB2D collision components:
+	// First checks to see if the circle and OBB intersect,
+	// then applies offset to position depending on the body type
+	// It then returns the collision result that contains collision sides for two objects
+	// @param - CircleComponent* for the circle
+	// @param - OBBComponent2D* for the 2d OBB
+	// @return - CollisionResult for the sides that got collided
+	CollisionResult HandleCircleVsOBB2D(CircleComponent* circle, OBBComponent2D* obb);
 
 	// Handles collision between OBB2D and AABB2D collision components:
 	// First checks to see if the OBB2D and AABB intersect,

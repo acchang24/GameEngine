@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity/Entity2D.h"
 
-class AABBComponent2D;
+class OBBComponent2D;
 class Game;
 class MoveComponent2D;
 class SpriteComponent;
@@ -19,7 +19,7 @@ public:
 private:
 	SpriteComponent* mLaserSprite;
 	MoveComponent2D* mLaserMovement;
-	AABBComponent2D* mBox;
+	OBBComponent2D* mBox;
 	Game* mGame;
 	
 	// lifetime tracker

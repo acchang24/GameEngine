@@ -94,7 +94,7 @@ void Game::LoadGameData()
 
 
 	// Load 10 asteroids
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
 		Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
 	}

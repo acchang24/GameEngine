@@ -15,7 +15,7 @@ Laser::Laser(SpriteRenderer* renderer, Game* game) :
 	Entity2D(),
 	mLaserSprite(new SpriteComponent(this, renderer)),
 	mLaserMovement(new MoveComponent2D(this)),
-	mBox(new AABBComponent2D(this, game->GetPhysics(), BodyType::Intersect)),
+	mBox(new OBBComponent2D(this, game->GetPhysics(), BodyType::Intersect)),
 	mGame(game),
 	mLaserDecay(0.0f)
 {

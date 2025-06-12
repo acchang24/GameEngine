@@ -72,6 +72,26 @@ void Physics::Update(float deltaTime)
 
 				HandleCircleVsAABB2D(circle, box);
 			}
+			else if ((a->GetShapeType() == CollisionShapeType::Circle && b->GetShapeType() == CollisionShapeType::OBB2D) || 
+				(a->GetShapeType() == CollisionShapeType::OBB2D && b->GetShapeType() == CollisionShapeType::Circle))
+			{
+				// Circle vs OBB (both orders)
+				CircleComponent* circle = nullptr;
+				OBBComponent2D* obb = nullptr;
+
+				if (a->GetShapeType() == CollisionShapeType::Circle)
+				{
+					circle = static_cast<CircleComponent*>(a);
+					obb = static_cast<OBBComponent2D*>(b);
+				}
+				else
+				{
+					circle = static_cast<CircleComponent*>(b);
+					obb = static_cast<OBBComponent2D*>(a);
+				}
+
+				HandleCircleVsOBB2D(circle, obb);
+			}
 			else if ((a->GetShapeType() == CollisionShapeType::OBB2D && b->GetShapeType() == CollisionShapeType::AABB2D) ||
 				(a->GetShapeType() == CollisionShapeType::AABB2D && b->GetShapeType() == CollisionShapeType::OBB2D))
 			{
@@ -256,6 +276,60 @@ bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBC
 	float radius = circle->GetCircle().radius;
 
 	return distanceSq < radius * radius;
+}
+
+bool Physics::IntersectCircleVsOBB2D(const CircleComponent* circle, const OBBComponent2D* obb, glm::vec2& offset)
+{
+	// Find the closest point of OBB to circle center and check if that point lies in the circle's radius
+
+	const OBB_2D& box = obb->GetOBB();
+	const Circle2D& c = circle->GetCircle();
+
+	const glm::vec2& circleCenter = circle->GetCenter();
+
+	// Get the vector from OBB to circle
+	glm::vec2 obbToCircle = circleCenter - box.center;
+
+	// Get the box corners
+	std::array<glm::vec2, 4> corners = box.GetCorners();
+
+	// Project that vector onto OBB's local axes to get coordinates in box space
+	// OBB local x axis
+	glm::vec2 localX = glm::normalize(corners[1] - corners[0]);
+	// OBB local y axis
+	glm::vec2 localY = glm::normalize(corners[3] - corners[0]);
+
+	float localXCoord = glm::dot(obbToCircle, localX);
+	float localYCoord = glm::dot(obbToCircle, localY);
+
+	// Clamp to box extents
+	float clampedX = glm::clamp(localXCoord, -box.halfExtents.x, box.halfExtents.x);
+	float clampedY = glm::clamp(localYCoord, -box.halfExtents.y, box.halfExtents.y);
+
+	// Get the closest point on OBB
+	glm::vec2 closestPoint = box.center + (localX * clampedX) + (localY * clampedY);
+
+	// Get vector from closest point to circle center
+	glm::vec2 v = circleCenter - closestPoint;
+
+	// Distance of closest point to circle center
+	float distance = glm::length(v);
+	float radius = c.radius;
+
+	// If distance is less than radius, they intersect
+	if (distance < radius)
+	{
+		if (distance == 0.0f)
+		{
+			offset = glm::vec2(radius, 0.0f);
+		}
+		else
+		{
+			offset = glm::normalize(v) * (radius - distance);
+		}
+		return true;
+	}
+	return false;
 }
 
 bool Physics::IntersectOBB2DvsAABB2D(const OBBComponent2D* obb, const AABBComponent2D* aabb, glm::vec2& offset)
@@ -501,6 +575,27 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 
 		circle->OnCollision(ownerAABB, result);
 		aabb->OnCollision(ownerCircle, result);
+	}
+
+	return result;
+}
+
+CollisionResult Physics::HandleCircleVsOBB2D(CircleComponent* circle, OBBComponent2D* obb)
+{
+	CollisionResult result = { CollisionSide::None, CollisionSide::None };
+
+	// Offset
+	glm::vec2 offset(0.0f);
+
+	if (IntersectCircleVsOBB2D(circle, obb, offset))
+	{
+		Entity2D* circleOwner = circle->GetOwner();
+		Entity2D* obbOwner = obb->GetOwner();
+
+		ApplyOffset2D(circleOwner, obbOwner, circle->GetBodyType(), obb->GetBodyType(), offset);
+
+		circle->OnCollision(obbOwner, result);
+		obb->OnCollision(circleOwner, result);
 	}
 
 	return result;

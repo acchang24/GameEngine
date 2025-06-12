@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity/Entity2D.h"
 
-class CollisionComponent;
+class CircleComponent;
 class Game;
 class MoveComponent2D;
 class SpriteComponent;
@@ -21,7 +21,7 @@ private:
 
 	MoveComponent2D* mMovement;
 
-	CollisionComponent* mCollisionCircle;
+	CircleComponent* mCollisionCircle;
 
 	SpriteRenderer* mRenderer;
 };
