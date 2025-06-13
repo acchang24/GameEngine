@@ -126,7 +126,7 @@ void Physics::RemoveCollider(CollisionComponent* collider)
 	}
 }
 
-bool Physics::IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBComponent2D* b)
+bool Physics::IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBComponent2D* b, glm::vec2& offset)
 {
 	const AABB_2D& boxA = a->GetBox();
 	const AABB_2D& boxB = b->GetBox();
@@ -136,7 +136,37 @@ bool Physics::IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBCompon
 	bool case3 = boxB.max.y < boxA.min.y;
 	bool case4 = boxA.max.y < boxB.min.y;
 
-	return !(case1 || case2 || case3 || case4);
+	// Intersect return
+	bool intersect = !(case1 || case2 || case3 || case4);
+
+	// Apply offset
+	// Get the difference between two intersected boxes for each edge of the box
+	float topEdge = (boxB.min.y - boxA.max.y);
+	float bottomEdge = (boxB.max.y - boxA.min.y);
+	float leftEdge = (boxB.min.x - boxA.max.x);
+	float rightEdge = (boxB.max.x - boxA.min.x);
+
+	// Find lowest absolute value for the closest edge
+	float minOverlap = std::min({ std::abs(topEdge), std::abs(bottomEdge), std::abs(leftEdge), std::abs(rightEdge) });
+
+	if (minOverlap == std::abs(topEdge))
+	{
+		offset.y += topEdge;
+	}
+	else if (minOverlap == std::abs(bottomEdge))
+	{
+		offset.y += bottomEdge;
+	}
+	else if (minOverlap == std::abs(leftEdge))
+	{
+		offset.x += leftEdge;
+	}
+	else if (minOverlap == std::abs(rightEdge))
+	{
+		offset.x += rightEdge;
+	}
+
+	return intersect;
 }
 
 bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComponent* b, glm::vec2& offset)
@@ -432,51 +462,37 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 {
 	CollisionResult result = { CollisionSide::None, CollisionSide::None };
 
-	if (IntersectAABB2DvsAABB2D(a, b))
-	{
-		// Offset position to push back objects
-		glm::vec2 offset(0.0f);
+	// Offset
+	glm::vec2 offset(0.0f);
 
+	if (IntersectAABB2DvsAABB2D(a, b, offset))
+	{
 		Entity2D* ownerA = a->GetOwner();
 		Entity2D* ownerB = b->GetOwner();
 
-		const AABB_2D& boxA = a->GetBox();
-		const AABB_2D& boxB = b->GetBox();
-
-		// Get the difference between two intersected boxes for each edge of the box
-		float topEdge = (boxB.min.y - boxA.max.y);
-		float bottomEdge = (boxB.max.y - boxA.min.y);
-		float leftEdge = (boxB.min.x - boxA.max.x);
-		float rightEdge = (boxB.max.x - boxA.min.x);
-
-		// Find lowest absolute value for the closest edge
-		float minOverlap = std::min({ std::abs(topEdge), std::abs(bottomEdge), std::abs(leftEdge), std::abs(rightEdge) });
-
-		if (minOverlap == std::abs(topEdge))
+		if (offset.y < 0.0f)
 		{
-			offset.y += topEdge;
 			result.sideA = CollisionSide::Bottom;
 			result.sideB = CollisionSide::Top;
+			std::cout << "SHIP BOTTOM\n";
 		}
-		else if (minOverlap == std::abs(bottomEdge))
+		else if(offset.y > 0.0f)
 		{
-			offset.y += bottomEdge;
-
 			result.sideA = CollisionSide::Top;
 			result.sideB = CollisionSide::Bottom;
+			std::cout << "SHIP TOP\n";
 		}
-		else if (minOverlap == std::abs(leftEdge))
+		else if (offset.x < 0.0f)
 		{
-			offset.x += leftEdge;
 			result.sideA = CollisionSide::Right;
 			result.sideB = CollisionSide::Left;
+			std::cout << "SHIP RIGHT\n";
 		}
-		else if (minOverlap == std::abs(rightEdge))
+		else if (offset.x > 0.0f)
 		{
-			offset.x += rightEdge;
-
 			result.sideA = CollisionSide::Left;
 			result.sideB = CollisionSide::Right;
+			std::cout << "SHIP LEFT\n";
 		}
 
 		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
@@ -501,7 +517,41 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 
 		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
 
-		// No result update, circle's don't have sides I guess?
+		// Get side for circle
+		glm::vec2 diff = a->GetCenter() - b->GetCenter();
+
+		if (std::abs(diff.x) > std::abs(diff.y))
+		{
+			// More horizontal overlap
+			if (diff.x > 0)
+			{
+				result.sideA = CollisionSide::Left;
+				result.sideB = CollisionSide::Right;
+				std::cout << "SHIP LEFT\n";
+			}
+			else
+			{
+				result.sideA = CollisionSide::Right;
+				result.sideB = CollisionSide::Left;
+				std::cout << "SHIP RIGHT\n";
+			}
+		}
+		else
+		{
+			// More vertical overlap
+			if (diff.y > 0)
+			{
+				result.sideA = CollisionSide::Top;
+				result.sideB = CollisionSide::Bottom;
+				std::cout << "SHIP TOP\n";
+			}
+			else
+			{
+				result.sideA = CollisionSide::Bottom;
+				result.sideB = CollisionSide::Top;
+				std::cout << "SHIP BOTTOM\n";
+			}
+		}
 
 		a->OnCollision(ownerB, result);
 		b->OnCollision(ownerA, result);
@@ -553,11 +603,15 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			// More horizontal overlap
 			if (diff.x > 0)
 			{
+				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
+				std::cout << "SHIP RIGHT\n";
 			}
 			else
 			{
+				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
+				std::cout << "SHIP LEFT\n";
 			}
 		}
 		else
@@ -565,11 +619,15 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			// More vertical overlap
 			if (diff.y > 0) 
 			{
+				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
+				std::cout << "SHIP BOTTOM\n";
 			} 
 			else
 			{
+				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
+				std::cout << "SHIP TOP\n";
 			}
 		}
 

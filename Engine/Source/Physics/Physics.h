@@ -24,7 +24,7 @@ public:
 	// @param - const AABBComponent2D* for the first 2D AABB
 	// @param - const AABBComponent2D* for the second 2D AABB
 	// @return - bool for if the two AABBs intersect
-	static bool IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBComponent2D* b);
+	static bool IntersectAABB2DvsAABB2D(const AABBComponent2D* a, const AABBComponent2D* b, glm::vec2& offset);
 
 	// Checks intersection between two circles and updates the offset vector
 	// @param - const CircleComponent* for the first circle
