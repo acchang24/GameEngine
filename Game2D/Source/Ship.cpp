@@ -14,7 +14,7 @@ Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	Entity2D(),
 	mSprite(new SpriteComponent(this, renderer)),
 	mMovement(new MoveComponent2D(this)),
-	mCollisionBox(new OBBComponent2D(this, game->GetPhysics())),
+	mCollisionBox(nullptr),
 	mRenderer(renderer),
 	mGame(game),
 	mLaserCooldown(1.0f)
@@ -28,8 +28,13 @@ Ship::Ship(SpriteRenderer* renderer, Game* game) :
 	// Set the entity size to the ship sprite size
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
+	AABBComponent2D* box = new AABBComponent2D(this, game->GetPhysics());
+	box->SetBoxSize(glm::vec2(100.0f, 90.0f));
+
+	mCollisionBox = box;
+
 	// Set ship hit box size
-	mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
+	//mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
 
 	// Fire off loop sfx so this sound chunk can pause/resume later
 	mGame->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
