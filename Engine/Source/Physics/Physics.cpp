@@ -471,7 +471,32 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 		Entity2D* ownerA = a->GetOwner();
 		Entity2D* ownerB = b->GetOwner();
 
-		if (std::abs(offset.x) > std::abs(offset.y) + 0.001f)
+		if (offset.y < 0.0f)
+		{
+			result.sideA = CollisionSide::Bottom;
+			result.sideB = CollisionSide::Top;
+			std::cout << "SHIP BOTTOM\n";
+		}
+		else if (offset.y > 0.0f)
+		{
+			result.sideA = CollisionSide::Top;
+			result.sideB = CollisionSide::Bottom;
+			std::cout << "SHIP TOP\n";
+		}
+		else if (offset.x < 0.0f)
+		{
+			result.sideA = CollisionSide::Right;
+			result.sideB = CollisionSide::Left;
+			std::cout << "SHIP RIGHT\n";
+		}
+		else if (offset.x > 0.0f)
+		{
+			result.sideA = CollisionSide::Left;
+			result.sideB = CollisionSide::Right;
+			std::cout << "SHIP LEFT\n";
+		}
+
+		/*if (std::abs(offset.x) > std::abs(offset.y) + 0.001f)
 		{
 			if (offset.x < 0.0f)
 			{
@@ -500,7 +525,7 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 				result.sideB = CollisionSide::Bottom;
 				std::cout << "SHIP TOP\n";
 			}
-		}
+		}*/
 
 		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
 
@@ -613,13 +638,13 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
-				//std::cout << "SHIP RIGHT\n";
+				std::cout << "CIRCLE LEFT BOX RIGHT\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
-				//std::cout << "SHIP LEFT\n";
+				std::cout << "CIRCLE RIGHT BOX LEFT\n";
 			}
 		}
 		else
@@ -629,13 +654,13 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
-				//std::cout << "SHIP BOTTOM\n";
+				std::cout << "CIRCLE TOP BOX BOTTOM\n";
 			} 
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
-				//std::cout << "SHIP TOP\n";
+				std::cout << "CIRCLE BOTTOM BOX TOP\n";
 			}
 		}
 
@@ -659,6 +684,38 @@ CollisionResult Physics::HandleCircleVsOBB2D(CircleComponent* circle, OBBCompone
 		Entity2D* obbOwner = obb->GetOwner();
 
 		ApplyOffset2D(circleOwner, obbOwner, circle->GetBodyType(), obb->GetBodyType(), offset);
+
+		// Get side for AABB
+		glm::vec2 diff = circle->GetCenter() - obb->GetCenter();
+
+		if (std::abs(diff.x) > std::abs(diff.y))
+		{
+			// More horizontal overlap
+			if (diff.x > 0)
+			{
+				result.sideA = CollisionSide::Left;
+				std::cout << "CIRCLE LEFT\n";
+			}
+			else
+			{
+				result.sideA = CollisionSide::Right;
+				std::cout << "CIRCLE RIGHT\n";
+			}
+		}
+		else
+		{
+			// More vertical overlap
+			if (diff.y > 0)
+			{
+				result.sideA = CollisionSide::Top;
+				std::cout << "CIRCLE TOP\n";
+			}
+			else
+			{
+				result.sideA = CollisionSide::Bottom;
+				std::cout << "CIRCLE BOTTOM\n";
+			}
+		}
 
 		circle->OnCollision(obbOwner, result);
 		obb->OnCollision(circleOwner, result);
