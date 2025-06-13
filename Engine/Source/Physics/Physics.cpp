@@ -3,6 +3,7 @@
 #include <array>
 #include <iostream>
 #include <limits>
+#include "../Components/MoveComponent2D.h"
 
 Physics::Physics()
 {
@@ -470,25 +471,35 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 		Entity2D* ownerA = a->GetOwner();
 		Entity2D* ownerB = b->GetOwner();
 
-		if (offset.y < 0.0f)
+		if (std::abs(offset.x) > std::abs(offset.y) + 0.001f)
 		{
-			result.sideA = CollisionSide::Bottom;
-			result.sideB = CollisionSide::Top;
+			if (offset.x < 0.0f)
+			{
+				result.sideA = CollisionSide::Right;
+				result.sideB = CollisionSide::Left;
+				std::cout << "SHIP RIGHT\n";
+			}
+			else if (offset.x > 0.0f)
+			{
+				result.sideA = CollisionSide::Left;
+				result.sideB = CollisionSide::Right;
+				std::cout << "SHIP LEFT\n";
+			}
 		}
-		else if(offset.y > 0.0f)
+		else if (std::abs(offset.y) > std::abs(offset.x) + 0.001f)
 		{
-			result.sideA = CollisionSide::Top;
-			result.sideB = CollisionSide::Bottom;
-		}
-		else if (offset.x < 0.0f)
-		{
-			result.sideA = CollisionSide::Right;
-			result.sideB = CollisionSide::Left;
-		}
-		else if (offset.x > 0.0f)
-		{
-			result.sideA = CollisionSide::Left;
-			result.sideB = CollisionSide::Right;
+			if (offset.y < 0.0f)
+			{
+				result.sideA = CollisionSide::Bottom;
+				result.sideB = CollisionSide::Top;
+				std::cout << "SHIP BOTTOM\n";
+			}
+			else if (offset.y > 0.0f)
+			{
+				result.sideA = CollisionSide::Top;
+				result.sideB = CollisionSide::Bottom;
+				std::cout << "SHIP TOP\n";
+			}
 		}
 
 		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
@@ -523,11 +534,14 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 			{
 				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
+				std::cout << "SHIP LEFT\n";
+
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
+				std::cout << "SHIP RIGHT\n";
 			}
 		}
 		else
@@ -537,11 +551,13 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 			{
 				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
+				std::cout << "SHIP TOP\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
+				std::cout << "SHIP BOTTOM\n";
 			}
 		}
 
@@ -597,11 +613,13 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
+				//std::cout << "SHIP RIGHT\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
+				//std::cout << "SHIP LEFT\n";
 			}
 		}
 		else
@@ -611,11 +629,13 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
+				//std::cout << "SHIP BOTTOM\n";
 			} 
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
+				//std::cout << "SHIP TOP\n";
 			}
 		}
 
@@ -705,3 +725,4 @@ void Physics::ApplyOffset2D(Entity2D* a, Entity2D* b, BodyType bodyA, BodyType b
 		b->SetPosition(b->GetPosition() - offset * 0.5f);
 	}
 }
+
