@@ -474,25 +474,21 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 		{
 			result.sideA = CollisionSide::Bottom;
 			result.sideB = CollisionSide::Top;
-			std::cout << "SHIP BOTTOM\n";
 		}
 		else if(offset.y > 0.0f)
 		{
 			result.sideA = CollisionSide::Top;
 			result.sideB = CollisionSide::Bottom;
-			std::cout << "SHIP TOP\n";
 		}
 		else if (offset.x < 0.0f)
 		{
 			result.sideA = CollisionSide::Right;
 			result.sideB = CollisionSide::Left;
-			std::cout << "SHIP RIGHT\n";
 		}
 		else if (offset.x > 0.0f)
 		{
 			result.sideA = CollisionSide::Left;
 			result.sideB = CollisionSide::Right;
-			std::cout << "SHIP LEFT\n";
 		}
 
 		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
@@ -527,13 +523,11 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 			{
 				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
-				std::cout << "SHIP LEFT\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
-				std::cout << "SHIP RIGHT\n";
 			}
 		}
 		else
@@ -543,13 +537,11 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 			{
 				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
-				std::cout << "SHIP TOP\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
-				std::cout << "SHIP BOTTOM\n";
 			}
 		}
 
@@ -605,13 +597,11 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
-				std::cout << "SHIP RIGHT\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
-				std::cout << "SHIP LEFT\n";
 			}
 		}
 		else
@@ -621,13 +611,11 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
-				std::cout << "SHIP BOTTOM\n";
 			} 
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
-				std::cout << "SHIP TOP\n";
 			}
 		}
 
