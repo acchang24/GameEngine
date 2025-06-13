@@ -659,6 +659,23 @@ CollisionResult Physics::HandleOBB2DVsAABB2D(OBBComponent2D* obb, AABBComponent2
 		Entity2D* obbOwner = obb->GetOwner();
 		Entity2D* aabbOwner = aabb->GetOwner();
 
+		if (offset.y < 0.0f)
+		{
+			result.sideB = CollisionSide::Top;
+		}
+		else if (offset.y > 0.0f)
+		{
+			result.sideB = CollisionSide::Bottom;
+		}
+		else if (offset.x < 0.0f)
+		{
+			result.sideB = CollisionSide::Left;
+		}
+		else if (offset.x > 0.0f)
+		{
+			result.sideB = CollisionSide::Right;
+		}
+
 		ApplyOffset2D(obbOwner, aabbOwner, obb->GetBodyType(), aabb->GetBodyType(), offset);
 
 		obb->OnCollision(aabbOwner, result);

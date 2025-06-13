@@ -33,13 +33,13 @@ Asteroid::Asteroid(SpriteRenderer* renderer, Game* game) :
 
 	mPosition = glm::vec2(400.0f, 400.0f);
 
-	//AABBComponent2D* collision = new AABBComponent2D(this, game->GetPhysics(), BodyType::Static);
-	//collision->SetBoxSize(mSize);
+	AABBComponent2D* collision = new AABBComponent2D(this, game->GetPhysics(), BodyType::Static);
+	collision->SetBoxSize(mSize);
 
-	//mCollisionCircle = collision;
+	mCollisionCircle = collision;
 
 	// Set the collision circle radius
-	mCollisionCircle = new CircleComponent(this, game->GetPhysics(), asteroidSprite->GetWidth() * 0.5f, BodyType::Static);
+	//mCollisionCircle = new CircleComponent(this, game->GetPhysics(), asteroidSprite->GetWidth() * 0.5f, BodyType::Static);
 
 	// Set the on collision callback
 	mCollisionCircle->SetOnCollision([this](Entity2D* other, const CollisionResult& result) {
