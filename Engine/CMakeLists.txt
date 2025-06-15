@@ -17,4 +17,6 @@ if(WIN32)
 	target_link_libraries(engine assimp-vc143-mt)
 	# Link SDL library to engine
 	target_link_libraries(engine SDL2 SDL2main SDL2_image SDL2_mixer)
+	# Link FreeType library to engine
+	target_link_libraries(engine freetype)
 endif()

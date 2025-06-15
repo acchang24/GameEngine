@@ -19,10 +19,12 @@ include_directories(Libraries/GLM/include)
 include_directories(Libraries/KHR/include)
 include_directories(Libraries/Assimp/include)
 include_directories(Libraries/SDL/include)
+include_directories(Libraries/FreeType/include)
 
 if(WIN32)
 	link_directories(Libraries/Assimp/lib/win)
 	link_directories(Libraries/SDL/lib/win)
+	link_directories(Libraries/FreeType/lib/win)
 endif()
 
 # Subdirectories to build
