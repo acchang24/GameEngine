@@ -7,18 +7,18 @@ class Shader;
 class SpriteComponent;
 class VertexBuffer;
 
-class SpriteRenderer
+class Renderer2D
 {
 public:
-	// SpriteRenderer constructor:
+	// Renderer2D constructor:
 	// @param - Shader* for the shader used to render sprites
 	// @param - float for window width
 	// @param - float for window height
-	SpriteRenderer(Shader* shader, float width, float height);
-	~SpriteRenderer();
+	Renderer2D(Shader* shader, float width, float height);
+	~Renderer2D();
 
 	// Loops through sprite component vector and draws each sprite
-	void Draw();
+	void DrawSprites();
 
 	// Adds a sprite to the sprite renderer, sorting it by draw order (lower means further back)
 	// @param - SpriteComponent* for the new sprite

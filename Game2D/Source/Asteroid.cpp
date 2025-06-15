@@ -7,7 +7,7 @@
 #include "Util/Random.h"
 #include "Game.h"
 
-Asteroid::Asteroid(SpriteRenderer* renderer, Game* game) :
+Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 	Entity2D(),
 	mSprite(new SpriteComponent(this, renderer)),
 	mMovement(new MoveComponent2D(this)),

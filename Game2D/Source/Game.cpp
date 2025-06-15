@@ -88,7 +88,7 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Ship* ship = new Ship(mRenderer.GetSpriteRenderer(), this);
+	Ship* ship = new Ship(mRenderer.GetRenderer2D(), this);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
@@ -96,7 +96,7 @@ void Game::LoadGameData()
 	// Load 10 asteroids
 	for (int i = 0; i < 1; ++i)
 	{
-		Asteroid* a = new Asteroid(mRenderer.GetSpriteRenderer(), this);
+		Asteroid* a = new Asteroid(mRenderer.GetRenderer2D(), this);
 	}
 
 	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
@@ -106,13 +106,13 @@ void Game::LoadGameData()
 	// Background
 	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
 	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
-	SpriteComponent* backgroundSC = new SpriteComponent(background, mRenderer.GetSpriteRenderer(), 50);
+	SpriteComponent* backgroundSC = new SpriteComponent(background, mRenderer.GetRenderer2D(), 50);
 	backgroundSC->AddSprite(AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
 	AddGameEntity(background);
 
-	// Set sprite renderer shader
-	mRenderer.GetSpriteRenderer()->SetShader(AssetManager::LoadShader("sprite"));
+	// Set 2d renderer shader
+	mRenderer.GetRenderer2D()->SetShader(AssetManager::LoadShader("sprite"));
 }
 
 void Game::UnloadGameData()

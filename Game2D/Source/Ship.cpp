@@ -3,14 +3,13 @@
 #include "Components/CollisionComponent.h"
 #include "Components/MoveComponent2D.h"
 #include "Components/SpriteComponent.h"
-#include "Graphics/SpriteRenderer.h"
 #include "Graphics/Texture.h"
 #include "Input/Keyboard.h"
 #include "MemoryManager/AssetManager.h"
 #include "Game.h"
 #include "Laser.h"
 
-Ship::Ship(SpriteRenderer* renderer, Game* game) :
+Ship::Ship(Renderer2D* renderer, Game* game) :
 	Entity2D(),
 	mSprite(new SpriteComponent(this, renderer)),
 	mMovement(new MoveComponent2D(this)),

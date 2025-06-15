@@ -1,4 +1,4 @@
-#include "SpriteRenderer.h"
+#include "Renderer2D.h"
 #include <algorithm>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,7 +10,7 @@
 #include "Texture.h"
 #include "VertexBuffer.h"
 
-SpriteRenderer::SpriteRenderer(Shader* shader, float width, float height) :
+Renderer2D::Renderer2D(Shader* shader, float width, float height) :
 	mProjection(glm::ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f)),
 	mShader(shader),
 	mVertexBuffer(nullptr),
@@ -31,14 +31,14 @@ SpriteRenderer::SpriteRenderer(Shader* shader, float width, float height) :
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 }
 
-SpriteRenderer::~SpriteRenderer()
+Renderer2D::~Renderer2D()
 {
 	std::cout << "Deleted SpriteRenderer\n";
 
 	delete mVertexBuffer;
 }
 
-void SpriteRenderer::Draw()
+void Renderer2D::DrawSprites()
 {
 	if (mShader)
 	{
@@ -82,7 +82,7 @@ void SpriteRenderer::Draw()
 	}
 }
 
-void SpriteRenderer::AddSprite(SpriteComponent* sprite)
+void Renderer2D::AddSprite(SpriteComponent* sprite)
 {
 	mSprites.emplace_back(sprite);
 	
@@ -92,7 +92,7 @@ void SpriteRenderer::AddSprite(SpriteComponent* sprite)
 	});
 }
 
-void SpriteRenderer::RemoveSprite(SpriteComponent* sprite)
+void Renderer2D::RemoveSprite(SpriteComponent* sprite)
 {
 	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
 	if (iter != mSprites.end())

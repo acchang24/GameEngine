@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-class SpriteRenderer;
+class Renderer2D;
 class Texture;
 
 class SpriteComponent : public Component
@@ -13,7 +13,7 @@ public:
 	// @param - Entity* for the owner
 	// @param - SpriteRenderer* for the sprite renderer
 	// @param - int for optional draw order. (lower number means it will be drawn further back)
-	SpriteComponent(Entity* owner, SpriteRenderer* renderer, int drawOrder = 100);
+	SpriteComponent(Entity* owner, Renderer2D* renderer, int drawOrder = 100);
 	~SpriteComponent();
 
 	// Adds a sprite to the map of sprites
@@ -50,7 +50,7 @@ private:
 	std::unordered_map<std::string, Texture*> mSprites;
 
 	// Pointer to the sprite renderer
-	SpriteRenderer* mRenderer;
+	Renderer2D* mRenderer;
 
 	// Current sprite
 	Texture* mCurrentSprite;

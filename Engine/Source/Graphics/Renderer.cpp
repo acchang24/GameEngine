@@ -12,7 +12,7 @@
 #include "VertexBuffer.h"
 
 Renderer::Renderer(RendererMode mode) :
-	mSpriteRenderer(nullptr),
+	mRenderer2D(nullptr),
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
@@ -78,8 +78,8 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	};
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
-	// Create sprite renderer
-	mSpriteRenderer = new SpriteRenderer(nullptr, mWindowWidth, mWindowHeight);
+	// Create renderer 2D
+	mRenderer2D = new Renderer2D(nullptr, mWindowWidth, mWindowHeight);
 
 	if (mMode == RendererMode::MODE_3D)
 	{
@@ -107,7 +107,7 @@ void Renderer::Shutdown()
 	}
 	mFrameBuffers.clear();
 
-	delete mSpriteRenderer;
+	delete mRenderer2D;
 
 	delete mVertexBuffer;
 
@@ -129,7 +129,7 @@ void Renderer::ClearBuffers()
 
 void Renderer::Draw2D()
 {
-	mSpriteRenderer->Draw();
+	mRenderer2D->DrawSprites();
 }
 
 void Renderer::SetDefaultFrameBuffer() const

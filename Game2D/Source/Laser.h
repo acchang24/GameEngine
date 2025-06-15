@@ -5,12 +5,12 @@ class OBBComponent2D;
 class Game;
 class MoveComponent2D;
 class SpriteComponent;
-class SpriteRenderer;
+class Renderer2D;
 
 class Laser : public Entity2D
 {
 public:
-	Laser(SpriteRenderer* renderer, Game* game);
+	Laser(Renderer2D* renderer, Game* game);
 	~Laser();
 
 	// OnUpdate override

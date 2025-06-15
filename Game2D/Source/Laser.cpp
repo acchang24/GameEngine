@@ -11,7 +11,7 @@
 #include "Asteroid.h"
 #include "Game.h"
 
-Laser::Laser(SpriteRenderer* renderer, Game* game) :
+Laser::Laser(Renderer2D* renderer, Game* game) :
 	Entity2D(),
 	mLaserSprite(new SpriteComponent(this, renderer)),
 	mLaserMovement(new MoveComponent2D(this)),

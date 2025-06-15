@@ -5,12 +5,12 @@ class CollisionComponent;
 class Game;
 class MoveComponent2D;
 class SpriteComponent;
-class SpriteRenderer;
+class Renderer2D;
 
 class Asteroid :public Entity2D
 {
 public:
-	Asteroid(SpriteRenderer* renderer, Game* game);
+	Asteroid(Renderer2D* renderer, Game* game);
 	~Asteroid();
 
 	// Override for asteroid's update
@@ -23,5 +23,5 @@ private:
 
 	CollisionComponent* mCollisionCircle;
 
-	SpriteRenderer* mRenderer;
+	Renderer2D* mRenderer;
 };

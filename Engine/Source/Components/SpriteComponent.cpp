@@ -1,9 +1,9 @@
 #include "SpriteComponent.h"
 #include <iostream>
-#include "../Graphics/SpriteRenderer.h"
+#include "../Graphics/Renderer2D.h"
 #include "../Graphics/Texture.h"
 
-SpriteComponent::SpriteComponent(Entity* owner, SpriteRenderer* renderer, int drawOrder) :
+SpriteComponent::SpriteComponent(Entity* owner, Renderer2D* renderer, int drawOrder) :
 	Component(owner),
 	mRenderer(renderer),
 	mCurrentSprite(nullptr),
