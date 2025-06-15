@@ -1,7 +1,8 @@
 #pragma once
+#include <string>
 #include <vector>
-#include <freetype/freetype.h>
 #include <glm/glm.hpp>
+#include "Text.h"
 
 class Renderer;
 class Shader;
@@ -33,7 +34,11 @@ public:
 
 	// Sets the sprite renderer's shader
 	// @param - Shader* for the new shader
-	void SetShader(Shader* shader) { mShader = shader; }
+	void SetSpriteShader(Shader* shader) { mSpriteShader = shader; }
+
+	// Sets the text renderer's shader
+	// @param - Shader* for the new shader
+	void SetTextShader(Shader* shader) { mTextRenderer->SetShader(shader);}
 
 	// Gets the renderer width
 	// @return - float for width
@@ -50,16 +55,21 @@ private:
 	// Projection matrix used for 2D rendering
 	glm::mat4 mProjection;
 
-	// FreeType library for text renderering
-	FT_Library mFont;
+	// Text renderer
+	Text* mTextRenderer;
 
 	// Shader used to render sprites
-	Shader* mShader;
+	Shader* mSpriteShader;
+
+	// Shader used to render text
+	Shader* mTextShader;
 
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;
 
+	// Width of renderer
 	float mWidth;
 
+	// Height of renderer
 	float mHeight;
 };

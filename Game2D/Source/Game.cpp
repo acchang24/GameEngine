@@ -112,7 +112,7 @@ void Game::LoadGameData()
 	AddGameEntity(background);
 
 	// Set 2d renderer shader
-	mRenderer.GetRenderer2D()->SetShader(AssetManager::LoadShader("sprite"));
+	mRenderer.GetRenderer2D()->SetSpriteShader(AssetManager::LoadShader("sprite"));
 }
 
 void Game::UnloadGameData()

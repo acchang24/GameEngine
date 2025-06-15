@@ -121,9 +121,13 @@ public:
 	// @param - int for the new height
 	void SetHeight(int height) { mWindowHeight = height; }
 
-	// Sets the Renderer2D shader
+	// Sets the Renderer2D sprite shader
 	// @param - Shader* for the new shader
-	void SetRenderer2DShader(Shader* shader) { mRenderer2D->SetShader(shader); }
+	void SetSpriteShader(Shader* shader) { mRenderer2D->SetSpriteShader(shader); }
+
+	// Sets the Renderer2D text shader
+	// @param - Shader* for the new shader
+	void SetTextShader(Shader* shader) { mRenderer2D->SetTextShader(shader); }
 
 private:
 	// FUNCTIONS
