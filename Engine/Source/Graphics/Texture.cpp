@@ -4,6 +4,21 @@
 #include "stb_image.h"
 #include "../MemoryManager/AssetManager.h"
 
+Texture::Texture(TextureType type) :
+	mName(),
+	mTextureID(0),
+	mWidth(0),
+	mHeight(0),
+	mNumChannels(0),
+	mTextureUnit(static_cast<int>(type)),
+	mType(type)
+{
+	// Create texture object
+	glGenTextures(1, &mTextureID);
+
+	mName = "texture_" + std::to_string(mTextureID);
+}
+
 Texture::Texture(const std::string& textureFile, TextureType type) :
 	mName(textureFile),
 	mTextureID(0),
@@ -23,6 +38,91 @@ Texture::~Texture()
 {
 	std::cout << "Deleted texture: \"" << mName << "\"\n";
 	glDeleteTextures(1, &mTextureID);
+}
+
+void Texture::GenerateTexture(TextureType type, GLenum target, int width, int height, GLenum dataType, const void* data, bool generatesMipMap, 
+	int numChannels, GLenum wrapS, GLenum wrapT, GLenum minFilter, GLenum maxFilter)
+{
+	// Set the texture's wrapping parameters
+	// GL_REPEAT: The default behavior. Repeats the texture image.
+	// GL_MIRRORED_REPEAT: Same as GL_REPEAT but mirrors the image with each repeat
+	// GL_CLAMP_TO_EDGE: Clamps coordinates between 0 and 1. Higher coordinates become
+	// clamped to the edge, resulting in a stretched edge pattern.
+	// GL_CLAMP_TO_BORDER: Coordinates outside the range are now given a user specifed vorder color
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
+	// Add wrap r for cube maps and point shadow maps
+	if (type == TextureType::CubeMap || type == TextureType::PointShadow)
+	{
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, wrapS);
+	}
+
+	// Set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
+
+
+	// Setup swizzle mapping
+	GLint swizzleMask[4] = { GL_RED, GL_GREEN, GL_BLUE, GL_ALPHA };
+
+	// Configure data format and internal format based on number of channels
+	GLenum dataFormat = 0;
+	GLenum internalFormat = 0;
+
+	switch (numChannels)
+	{
+	case 1:
+		dataFormat = GL_RED;
+		internalFormat = GL_RED;
+		swizzleMask[0] = GL_RED;
+		swizzleMask[1] = GL_RED;
+		swizzleMask[2] = GL_RED;
+		swizzleMask[3] = GL_ONE;
+		// Add swizzling mask for 1 and 2 channel textures (treat both as RGB)
+		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		break;
+	case 2:
+		dataFormat = GL_RG;
+		internalFormat = GL_RG;
+		swizzleMask[0] = GL_RED;
+		swizzleMask[1] = GL_GREEN;
+		swizzleMask[2] = GL_ZERO;
+		swizzleMask[3] = GL_ONE;
+		// Add swizzling mask for 1 and 2 channel textures (treat both as RGB)
+		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		break;
+	case 3:
+		dataFormat = GL_RGB;
+		if (type == TextureType::Normal || type == TextureType::Specular)
+		{
+			internalFormat = GL_RGB;
+		}
+		else
+		{
+			internalFormat = GL_SRGB;
+		}
+		break;
+	case 4:
+		dataFormat = GL_RGBA;
+		if (type == TextureType::Normal || type == TextureType::Specular)
+		{
+			internalFormat = GL_RGBA;
+		}
+		else
+		{
+			internalFormat = GL_SRGB_ALPHA;
+		}
+		break;
+	}
+
+	// Create the texture
+	glTexImage2D(target, 0, internalFormat, width, height, 0, dataFormat, dataType, data);
+
+	if (generatesMipMap)
+	{
+		// Automatically generate all the required mipmaps for the currently bound texture
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 }
 
 void Texture::BindTexture() const

@@ -13,7 +13,8 @@ enum class TextureType
 	CubeMap = 6,			// Texture unit 6 is used to sample from a cube map
 	Shadow = 7,				// Texture unit 7 is used to sample from a directional shadow/depth map
 	PointShadow = 8,		// Texture unit 8 is used to sample from a cube map for a point shadow/depth map
-	Sprite = 9				// Texture unit 9 is used to sample from a texture that is used as a sprite for 2D rendering
+	Sprite = 9,				// Texture unit 9 is used to sample from a texture that is used as a sprite for 2D rendering
+	Font = 10,				// Texture unit 10 is used to sample from a texture that is used for fonts
 };
 
 // The Texture class helps load image files with the
@@ -24,12 +25,33 @@ enum class TextureType
 class Texture
 {
 public:
-	// Texture constructor takes the name of a texture file
+	// Texture constructor: Generates texture and creates OpenGL texture object
+	// @param - TextureType for the type used for the texture
+	Texture(TextureType type);
+	// Texture constructor: Generates texture with texture file
 	// and creates an OpenGl texture object
 	// @param - const std::string& for the texture file name
 	// @param - TextureType for the type used for the texture
 	Texture(const std::string& textureFile, TextureType type);
 	~Texture();
+
+	// Generates a texture to the currently bound texture
+	// @param - TextureType for the type of texture
+	// @param - GLenum for target texture. Typically use GL_TEXTURE_2D for textures, frame buffers and shadow maps (TextureTypes 1-5, 7, 9, 10)
+	// and use GL_TEXTURE_CUBE_MAP_POSITIVE_X for cube maps, point shadow maps (TextureType 6, 8)
+	// @param - int for texture width
+	// @param - int for texture height
+	// @param - GLenum for type. Specifies the data type of the pixel data. Use GL_UNSIGNED_BYTE for most applications. 
+	// Use GL_FLOAT for shadow/point shadow maps
+	// @param - const void* for the pointer to the image data
+	// @param - bool for if this texture should automatically generate mip maps
+	// @param - int for number of channels for this texture
+	// @param - GLenum for the wrap s parameter
+	// @param - GLenum for the wrap t parameter
+	// @param - GLenum for min texture filtering
+	// @param - GLenum for max texture filtering
+	static void GenerateTexture(TextureType type, GLenum target, int width, int height, GLenum dataType, const void* data,
+		bool generatesMipMap, int numChannels, GLenum wrapS, GLenum wrapT, GLenum minFilter, GLenum maxFilter);
 
 	// Bind it to so any subsequent texture commands will use the currently bound texture
 	// Binding after activating a texture unit will bind the texture to that unit
@@ -51,6 +73,10 @@ public:
 	// Gets the texture height
 	// @return - float for height
 	float GetHeight() const { return mHeight; }
+
+	// Gets the number of channels for this texture
+	// @return - int for channel number
+	int GetNumChannels() const { return mNumChannels; }
 
 	// Getter for the texture unit
 	// @return - int for the texture unit
