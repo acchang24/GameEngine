@@ -3,17 +3,17 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
+class Shader;
+class Texture;
 
 // Struct for character glyph used for text rendering
 struct Character
 {
 	glm::ivec2 size;				// Size (width and height in pixels) of the glyph texture
 	glm::ivec2 bearing;				// Offset from baseline to left/top of glyph
-	unsigned int textureID;			// Text texture ID
+	Texture* texture;				// Texture* for the character
 	unsigned int advanceOffset;		// Offset to advance to next glyph
 };
-
-class Shader;
 
 // Text class for rendering text displayed by the loaded font
 class Text
@@ -33,6 +33,9 @@ public:
 	// @param - float for the scale
 	// @param - const glm::vec3& for the color of the font (optional, defaults to white)
 	void RenderText(const std::string& text, float x, float y, float scale, const glm::vec3& color = glm::vec3(1.0f));
+
+	// Loops through character map and frees each texture and clears the map
+	void ClearCharacters();
 
 	// Sets the shader used for text rendering
 	// @param - Shader* for the new shader

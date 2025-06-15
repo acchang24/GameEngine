@@ -6,16 +6,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "Audio/Sound.h"
 #include "Components/SpriteComponent.h"
 #include "Entity/Entity2D.h"
+#include "Graphics/Text.h"
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
 #include "Util/Random.h"
-#include "Ship.h"
 #include "Asteroid.h"
-#include "Audio/Sound.h"
+#include "Ship.h"
+
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
@@ -101,7 +103,7 @@ void Game::LoadGameData()
 
 	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
 	music->SetVolume(90);
-	mAudio.PlayMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
+	music->Play(-1);
 
 	// Background
 	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
@@ -113,6 +115,9 @@ void Game::LoadGameData()
 
 	// Set 2d renderer shader
 	mRenderer.GetRenderer2D()->SetSpriteShader(AssetManager::LoadShader("sprite"));
+
+	// Set font
+	mRenderer.GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 48);
 }
 
 void Game::UnloadGameData()

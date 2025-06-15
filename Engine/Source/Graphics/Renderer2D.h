@@ -32,13 +32,9 @@ public:
 	// Removes a sprite from the sprite renderer
 	void RemoveSprite(SpriteComponent* sprite);
 
-	// Sets the sprite renderer's shader
-	// @param - Shader* for the new shader
-	void SetSpriteShader(Shader* shader) { mSpriteShader = shader; }
-
-	// Sets the text renderer's shader
-	// @param - Shader* for the new shader
-	void SetTextShader(Shader* shader) { mTextRenderer->SetShader(shader);}
+	// Gets the text renderer
+	// @return - Text* for the text renderer
+	Text* GetTextRenderer() { return mTextRenderer; }
 
 	// Gets the renderer width
 	// @return - float for width
@@ -47,6 +43,14 @@ public:
 	// Gets the renderer height
 	// @return - float for height
 	float GetHeight() const { return mHeight; }
+
+	// Sets the sprite renderer's shader
+	// @param - Shader* for the new shader
+	void SetSpriteShader(Shader* shader) { mSpriteShader = shader; }
+
+	// Sets the text renderer's shader
+	// @param - Shader* for the new shader
+	void SetTextShader(Shader* shader) { mTextRenderer->SetShader(shader);}
 
 private:
 	// Array of sprites

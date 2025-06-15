@@ -142,6 +142,9 @@ void Texture::GenerateTexture(GLenum target, int width, int height, GLenum dataT
 		// Automatically generate all the required mipmaps for the currently bound texture
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
+
+	// Unbind
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::BindTexture() const
