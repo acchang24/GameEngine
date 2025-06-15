@@ -66,7 +66,7 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	SetOpenGLCapabilities();
 
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
-	VertexScreenQuad quadVertices[] = 
+	VertexScreenQuad quadVertices[] =
 	{
 		glm::vec2(-1.0f,  1.0f), glm::vec2(0.0f, 1.0f),
 		glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f),
@@ -79,14 +79,19 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
 
 	// Create renderer 2D
-	mRenderer2D = new Renderer2D(nullptr, mWindowWidth, mWindowHeight);
+	mRenderer2D = new Renderer2D(mWindowWidth, mWindowHeight);
+
+	// Init renderer2D
+	if(!mRenderer2D->Init())
+	{
+		return false;
+	}
 
 	if (mMode == RendererMode::MODE_3D)
 	{
 		// Create a material buffer in 3D mode
 		CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	}
-	
 	
 	return true;
 }

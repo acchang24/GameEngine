@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <freetype/freetype.h>
 #include <glm/glm.hpp>
 
 class Renderer;
@@ -11,11 +12,14 @@ class Renderer2D
 {
 public:
 	// Renderer2D constructor:
-	// @param - Shader* for the shader used to render sprites
 	// @param - float for window width
 	// @param - float for window height
-	Renderer2D(Shader* shader, float width, float height);
+	Renderer2D(float width, float height);
 	~Renderer2D();
+
+	// Inits Renderer2D: Inits FreeType library
+	// @return - bool for if Renderer2D was initialized
+	bool Init();
 
 	// Loops through sprite component vector and draws each sprite
 	void DrawSprites();
@@ -45,6 +49,9 @@ private:
 
 	// Projection matrix used for 2D rendering
 	glm::mat4 mProjection;
+
+	// FreeType library for text renderering
+	FT_Library mFont;
 
 	// Shader used to render sprites
 	Shader* mShader;

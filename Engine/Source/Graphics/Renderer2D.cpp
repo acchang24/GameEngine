@@ -1,6 +1,7 @@
 #include "Renderer2D.h"
 #include <algorithm>
 #include <iostream>
+#include <ft2build.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../Components/SpriteComponent.h"
@@ -10,12 +11,24 @@
 #include "Texture.h"
 #include "VertexBuffer.h"
 
-Renderer2D::Renderer2D(Shader* shader, float width, float height) :
+Renderer2D::Renderer2D(float width, float height) :
 	mProjection(glm::ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f)),
-	mShader(shader),
+	mFont(),
+	mShader(nullptr),
 	mVertexBuffer(nullptr),
 	mWidth(width),
 	mHeight(height)
+{
+}
+
+Renderer2D::~Renderer2D()
+{
+	std::cout << "Deleted SpriteRenderer\n";
+
+	delete mVertexBuffer;
+}
+
+bool Renderer2D::Init()
 {
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
 	VertexScreenQuad quadVertices[] =
@@ -29,13 +42,15 @@ Renderer2D::Renderer2D(Shader* shader, float width, float height) :
 		glm::vec2(0.5f, -0.5f), glm::vec2(1.0f, 0.0f)
 	};
 	mVertexBuffer = new VertexBuffer(quadVertices, 0, sizeof(quadVertices), 0, sizeof(quadVertices) / sizeof(VertexScreenQuad), 0, VertexLayout::VertexScreenQuad);
-}
 
-Renderer2D::~Renderer2D()
-{
-	std::cout << "Deleted SpriteRenderer\n";
+	
+	if (FT_Init_FreeType(&mFont))
+	{
+		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+		return false;
+	}
 
-	delete mVertexBuffer;
+	return true;
 }
 
 void Renderer2D::DrawSprites()
