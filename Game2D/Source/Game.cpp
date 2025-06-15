@@ -86,6 +86,7 @@ void Game::Shutdown()
 void Game::LoadShaders() const
 {
 	AssetManager::LoadShader("sprite", "Shaders/sprite.vert", "Shaders/sprite.frag");
+	AssetManager::LoadShader("text", "Shaders/text.vert", "Shaders/text.frag");
 }
 
 void Game::LoadGameData()

@@ -7,12 +7,15 @@ in VS_OUT {
 } fs_in;
 
 // Uniform sampler
-uniform sampler2D sprite;
+uniform sampler2D text;
+
+// Uniform for color
+uniform vec3 textColor;
 
 // Final fragment color
 out vec4 fragColor;
 
 void main() 
 {
-	fragColor = texture(sprite, fs_in.textureCoord);
+	fragColor = vec4(textColor, 1.0) * vec4(1.0, 1.0, 1.0, texture(text, fs_in.textureCoord).r);
 }
