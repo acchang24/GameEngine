@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <glad/glad.h>
 
 // Enum class for texture types and its corresponding texture unit
 enum class TextureType
@@ -36,7 +37,6 @@ public:
 	~Texture();
 
 	// Generates a texture to the currently bound texture
-	// @param - TextureType for the type of texture
 	// @param - GLenum for target texture. Typically use GL_TEXTURE_2D for textures, frame buffers and shadow maps (TextureTypes 1-5, 7, 9, 10)
 	// and use GL_TEXTURE_CUBE_MAP_POSITIVE_X for cube maps, point shadow maps (TextureType 6, 8)
 	// @param - int for texture width
@@ -45,13 +45,14 @@ public:
 	// Use GL_FLOAT for shadow/point shadow maps
 	// @param - const void* for the pointer to the image data
 	// @param - bool for if this texture should automatically generate mip maps
+	// @param - bool for flipping texture
 	// @param - int for number of channels for this texture
 	// @param - GLenum for the wrap s parameter
 	// @param - GLenum for the wrap t parameter
 	// @param - GLenum for min texture filtering
 	// @param - GLenum for max texture filtering
-	static void GenerateTexture(TextureType type, GLenum target, int width, int height, GLenum dataType, const void* data,
-		bool generatesMipMap, int numChannels, GLenum wrapS, GLenum wrapT, GLenum minFilter, GLenum maxFilter);
+	void GenerateTexture(GLenum target, int width, int height, GLenum dataType, const void* data,
+		bool generatesMipMap, bool flipTexture, int numChannels, GLenum wrapS, GLenum wrapT, GLenum minFilter, GLenum maxFilter);
 
 	// Bind it to so any subsequent texture commands will use the currently bound texture
 	// Binding after activating a texture unit will bind the texture to that unit
