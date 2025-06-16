@@ -13,12 +13,14 @@
 Renderer2D::Renderer2D(float width, float height) :
 	mProjection(glm::ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f)),
 	mSpriteShader(nullptr),
-	mTextRenderer(new Text()),
+	mTextRenderer(nullptr),
 	mTextShader(nullptr),
 	mVertexBuffer(nullptr),
 	mWidth(width),
 	mHeight(height)
 {
+	mTextRenderer = new Text(this);
+
 	// Vertex attributes for screen quad that fills the entire screen in Normalized Device Coordinates
 	VertexScreenQuad quadVertices[] =
 	{
@@ -40,13 +42,6 @@ Renderer2D::~Renderer2D()
 	delete mTextRenderer;
 
 	delete mVertexBuffer;
-}
-
-bool Renderer2D::Init()
-{
-	
-
-	return true;
 }
 
 void Renderer2D::DrawSprites()

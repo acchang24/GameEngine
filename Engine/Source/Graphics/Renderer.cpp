@@ -81,12 +81,6 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	// Create renderer 2D
 	mRenderer2D = new Renderer2D(mWindowWidth, mWindowHeight);
 
-	// Init renderer2D
-	if(!mRenderer2D->Init())
-	{
-		return false;
-	}
-
 	if (mMode == RendererMode::MODE_3D)
 	{
 		// Create a material buffer in 3D mode

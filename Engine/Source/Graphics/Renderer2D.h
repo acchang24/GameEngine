@@ -18,10 +18,6 @@ public:
 	Renderer2D(float width, float height);
 	~Renderer2D();
 
-	// Inits Renderer2D: Inits FreeType library
-	// @return - bool for if Renderer2D was initialized
-	bool Init();
-
 	// Loops through sprite component vector and draws each sprite
 	void DrawSprites();
 
@@ -35,6 +31,10 @@ public:
 	// Gets the text renderer
 	// @return - Text* for the text renderer
 	Text* GetTextRenderer() { return mTextRenderer; }
+
+	// Gets the renderer projection matrix
+	// @return - const glm::mat4& for the projection
+	const glm::mat4& GetProjection() const { return mProjection; }
 
 	// Gets the renderer width
 	// @return - float for width

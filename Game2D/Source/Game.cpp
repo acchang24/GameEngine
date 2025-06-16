@@ -116,6 +116,7 @@ void Game::LoadGameData()
 
 	// Set 2d renderer shader
 	mRenderer.GetRenderer2D()->SetSpriteShader(AssetManager::LoadShader("sprite"));
+	mRenderer.GetRenderer2D()->SetTextShader(AssetManager::LoadShader("text"));
 
 	// Set font
 	mRenderer.GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 48);

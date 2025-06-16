@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
+class Renderer2D;
 class Shader;
 class Texture;
 
@@ -19,7 +20,7 @@ struct Character
 class Text
 {
 public:
-	Text();
+	Text(Renderer2D* renderer);
 	~Text();
 
 	// Loads/sets text font and font size by pixel height
@@ -39,12 +40,21 @@ public:
 
 	// Sets the shader used for text rendering
 	// @param - Shader* for the new shader
-	void SetShader(Shader* shader) { mTextShader = shader; }
+	void SetShader(Shader* shader) { mShader = shader; }
 
 private:
 	// Map of char to Character glyph
 	std::unordered_map<char, Character> mCharacterMap;
 
+	// 2D renderer pointer
+	Renderer2D* mRenderer;
+
 	// Shader used for rendering text
-	Shader* mTextShader;
+	Shader* mShader;
+
+	unsigned int mVAO;
+	unsigned int mVBO;
+
+	// Max bearing Y to align text
+	int mMaxBearingY;
 };

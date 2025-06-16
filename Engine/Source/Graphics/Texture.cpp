@@ -1,7 +1,6 @@
 #include "Texture.h"
 #include <iostream>
 #include "stb_image.h"
-#include "../MemoryManager/AssetManager.h"
 
 Texture::Texture(TextureType type) :
 	mName(),
@@ -42,6 +41,8 @@ Texture::~Texture()
 void Texture::GenerateTexture(GLenum target, int width, int height, GLenum dataType, const void* data, 
 	bool generatesMipMap, bool flipTexture, int numChannels, GLenum wrapS, GLenum wrapT, GLenum minFilter, GLenum maxFilter)
 {
+	BindTexture();
+
 	// Re-adjust width height and num channels if they haven't been loaded
 	if (mWidth == 0 && mHeight == 0 && mNumChannels == 0)
 	{
@@ -56,8 +57,8 @@ void Texture::GenerateTexture(GLenum target, int width, int height, GLenum dataT
 	// GL_CLAMP_TO_EDGE: Clamps coordinates between 0 and 1. Higher coordinates become
 	// clamped to the edge, resulting in a stretched edge pattern.
 	// GL_CLAMP_TO_BORDER: Coordinates outside the range are now given a user specifed vorder color
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
+	glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapS);
+	glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapT);
 	// Add wrap r for cube maps and point shadow maps
 	if (mType == TextureType::CubeMap || mType == TextureType::PointShadow)
 	{
@@ -65,8 +66,8 @@ void Texture::GenerateTexture(GLenum target, int width, int height, GLenum dataT
 	}
 
 	// Set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
+	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, maxFilter);
 
 	// Flip image
 	stbi_set_flip_vertically_on_load(flipTexture);
@@ -88,7 +89,7 @@ void Texture::GenerateTexture(GLenum target, int width, int height, GLenum dataT
 		swizzleMask[2] = GL_RED;
 		swizzleMask[3] = GL_ONE;
 		// Add swizzling mask for 1 and 2 channel textures (treat both as RGB)
-		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		glTexParameteriv(target, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		break;
 	case 2:
 		dataFormat = GL_RG;
@@ -98,7 +99,7 @@ void Texture::GenerateTexture(GLenum target, int width, int height, GLenum dataT
 		swizzleMask[2] = GL_ZERO;
 		swizzleMask[3] = GL_ONE;
 		// Add swizzling mask for 1 and 2 channel textures (treat both as RGB)
-		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		glTexParameteriv(target, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		break;
 	case 3:
 		dataFormat = GL_RGB;
@@ -158,8 +159,6 @@ void Texture::BindTexture() const
 
 void Texture::LoadTexture()
 {
-	BindTexture();
-
 	// Load in texture file with stbi_load:
 	unsigned char* data = stbi_load(mName.c_str(), &mWidth, &mHeight, &mNumChannels, 0);
 
