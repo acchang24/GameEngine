@@ -4,6 +4,7 @@
 class Keyboard;
 class Logger;
 class Mouse;
+class Renderer2D;
 class Text;
 
 class Console
@@ -18,8 +19,9 @@ public:
 	void ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse);
 
 	// Renders the console
+	// @param - Renderer2D* to render console box
 	// @param - Text* for the text renderer
-	void Render(Text* textRenderer);
+	void Render(Renderer2D* renderer, Text* textRenderer);
 
 	// Toggles the visibility of the console
 	void ToggleConsole() { mIsVisible = !mIsVisible; };

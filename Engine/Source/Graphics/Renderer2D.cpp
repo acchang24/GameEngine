@@ -87,6 +87,33 @@ void Renderer2D::DrawSprites()
 	}
 }
 
+void Renderer2D::DrawRect(float x, float y, float width, float height, const glm::vec3& color)
+{
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(x + width * 0.5f, y + height * 0.5f, 0.0f));
+	model = glm::scale(model, glm::vec3(width, height, 1.0f));
+
+	mSpriteShader->SetActive();
+	mSpriteShader->SetMat4("model", model);
+	mSpriteShader->SetMat4("projection", mProjection);
+	mSpriteShader->SetVec3("color", color);
+
+	mVertexBuffer->Draw();
+}
+
+void Renderer2D::DrawRectOutline(float x, float y, float width, float height, const glm::vec4& color, float thickness)
+{
+	DrawRect(x, y, width, thickness, color);							// Top
+	DrawRect(x, y + height - thickness, width, thickness, color);		// Bottom
+	DrawRect(x, y, thickness, height, color);							// Left
+	DrawRect(x + width - thickness, y, thickness, height, color);		// Right
+}
+
+void Renderer2D::DrawText(const std::string& text, float x, float y, float size, const glm::vec3& color)
+{
+	mTextRenderer->RenderText(text, x, y, size, color);
+}
+
 void Renderer2D::AddSprite(SpriteComponent* sprite)
 {
 	mSprites.emplace_back(sprite);

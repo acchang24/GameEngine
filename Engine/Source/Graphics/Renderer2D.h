@@ -21,6 +21,31 @@ public:
 	// Loops through sprite component vector and draws each sprite
 	void DrawSprites();
 
+	// Draws rectangle to screen
+	// @param - float for x position
+	// @param - float for y position
+	// @param - float for width
+	// @param - float for height
+	// @param - const glm::vec3& for color of rectangle
+	void DrawRect(float x, float y, float width, float height, const glm::vec3& color);
+
+	// Draws rectangle outline
+	// @param - float for x position
+	// @param - float for y position
+	// @param - float for width
+	// @param - float for height
+	// @param - const glm::vec3& for color of rectangle
+	// @param - float for optional thickness (defaults to 1.0f)
+	void DrawRectOutline(float x, float y, float width, float height, const glm::vec4& color, float thickness = 1.0f);
+	
+	// Renders a string of text using pre-compiled font textures
+	// @param - const std::string& for the text
+	// @param - float for x position
+	// @param - float for y position
+	// @param - float for the scale
+	// @param - const glm::vec3& for the color of the font (optional, defaults to white)
+	void DrawText(const std::string& text, float x, float y, float size, const glm::vec3& color);
+
 	// Adds a sprite to the sprite renderer, sorting it by draw order (lower means further back)
 	// @param - SpriteComponent* for the new sprite
 	void AddSprite(SpriteComponent* sprite);

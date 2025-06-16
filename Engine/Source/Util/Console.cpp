@@ -3,6 +3,7 @@
 #include <deque>
 #include <iostream>
 #include <glm/glm.hpp>
+#include "../Graphics/Renderer2D.h"
 #include "../Graphics/Text.h"
 #include "../Input/Keyboard.h"
 #include "../Input/Mouse.h"
@@ -48,12 +49,17 @@ void Console::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mous
 	keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_DOWN);
 }
 
-void Console::Render(Text* textRenderer)
+void Console::Render(Renderer2D* renderer, Text* textRenderer)
 {
 	if (!mIsVisible)
 	{
 		return;
 	}
+
+	float screenWidth = renderer->GetWidth();
+	float sreenHeight = renderer->GetHeight();
+
+	float consoleY = 0.0f;
 
 	// TODO: Draw rectangle here
 

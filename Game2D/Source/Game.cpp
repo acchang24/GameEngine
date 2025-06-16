@@ -365,7 +365,7 @@ void Game::Render()
 
 	mRenderer.Draw2D();
 
-	mConsole->Render(mRenderer.GetRenderer2D()->GetTextRenderer());
+	mConsole->Render(mRenderer.GetRenderer2D(), mRenderer.GetRenderer2D()->GetTextRenderer());
 
 	mRenderer.EndFrame();
 }
