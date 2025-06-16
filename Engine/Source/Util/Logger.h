@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <deque>
 
 enum class LogLevel
 {
@@ -18,18 +18,22 @@ struct LogMessage
 class Logger
 {
 public:
-	Logger();
+	Logger(size_t maxMessages = 1000);
 	~Logger();
 
-	// Logs a message and its level by adding it to the vector of LogMessages
+	// Logs a message and its level by adding it to the deque of LogMessages
 	// @param - const std::string& for the message
 	// @param - LogLevel for the message's level
 	void Log(const std::string& message, LogLevel level);
 
 	// Gets the logger messages
-	// @return - const std::vector<LogMessage>& for the messages
-	const std::vector<LogMessage>& GetMessages() const { return mMessages; }
+	// @return - const std::deque<LogMessage>& for the messages
+	const std::deque<LogMessage>& GetMessages() const { return mMessages; }
 
 private:
-	std::vector<LogMessage> mMessages;
+	// Deque of messages
+	std::deque<LogMessage> mMessages;
+
+	// Maximum number of messages
+	size_t mMaxMessages;
 };

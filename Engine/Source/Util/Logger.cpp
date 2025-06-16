@@ -1,7 +1,8 @@
 #include "Logger.h"
 #include <iostream>
 
-Logger::Logger()
+Logger::Logger(size_t maxMessages):
+	mMaxMessages(maxMessages)
 {
 }
 
@@ -12,6 +13,10 @@ Logger::~Logger()
 
 void Logger::Log(const std::string& message, LogLevel level)
 {
-	LogMessage newMessage = { message, level };
-	mMessages.emplace_back(newMessage);
+	if (mMaxMessages >= mMessages.size())
+	{
+		// Remove the front (oldest message)
+		mMessages.pop_front();
+	}
+	mMessages.push_back({ message, level });
 }
