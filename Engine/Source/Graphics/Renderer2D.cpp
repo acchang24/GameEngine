@@ -14,7 +14,6 @@ Renderer2D::Renderer2D(float width, float height) :
 	mProjection(glm::ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f)),
 	mSpriteShader(nullptr),
 	mTextRenderer(nullptr),
-	mTextShader(nullptr),
 	mVertexBuffer(nullptr),
 	mWidth(width),
 	mHeight(height)

@@ -65,9 +65,6 @@ private:
 	// Shader used to render sprites
 	Shader* mSpriteShader;
 
-	// Shader used to render text
-	Shader* mTextShader;
-
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;
 

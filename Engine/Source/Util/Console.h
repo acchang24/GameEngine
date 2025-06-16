@@ -4,6 +4,7 @@
 class Keyboard;
 class Logger;
 class Mouse;
+class Text;
 
 class Console
 {
@@ -14,10 +15,11 @@ public:
 	~Console();
 
 	// Process inputs for console
-	void ProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse);
+	void ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse);
 
 	// Renders the console
-	void Render();
+	// @param - Text* for the text renderer
+	void Render(Text* textRenderer);
 
 	// Toggles the visibility of the console
 	void ToggleConsole() { mIsVisible = !mIsVisible; };

@@ -14,7 +14,7 @@ public:
 	~Ship();
 
 	// Override for ship's process input
-	void OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse) override;
+	void OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse) override;
 
 	// Override for ship's update
 	void OnUpdate(float deltaTime) override;

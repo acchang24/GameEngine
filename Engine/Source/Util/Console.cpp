@@ -3,6 +3,7 @@
 #include <deque>
 #include <iostream>
 #include <glm/glm.hpp>
+#include "../Graphics/Text.h"
 #include "../Input/Keyboard.h"
 #include "../Input/Mouse.h"
 #include "Logger.h"
@@ -22,7 +23,7 @@ Console::~Console()
 	std::cout << "Deleted Console\n";
 }
 
-void Console::ProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
+void Console::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
 {
 	if (!mIsVisible)
 	{
@@ -30,23 +31,26 @@ void Console::ProcessInput(const Uint8* keyState, const Keyboard* keyboard, cons
 	}
 
 	// Scroll based on arrow key or mouse
-	if (keyState[SDL_SCANCODE_UP] || mouse->GetScrollDir() >= 1)
+	if (keyboard->HasLeadingEdge(keyState, SDL_SCANCODE_UP) || mouse->GetScrollDir() >= 1)
 	{
-		mScrollOffset += 1;
+		mScrollOffset += 2;
 	}
-	if (keyState[SDL_SCANCODE_DOWN] || mouse->GetScrollDir() <= -1)
+	if (keyboard->HasLeadingEdge(keyState, SDL_SCANCODE_DOWN) || mouse->GetScrollDir() <= -1)
 	{
-		mScrollOffset -= 1;
+		mScrollOffset -= 2;
 	}
 
 	// Clamp scroll offset
 	int maxScroll = std::max(0, static_cast<int>(mLogger->GetNumMessages()) - mMaxVisibleLines);
 	mScrollOffset = std::clamp(mScrollOffset, 0, maxScroll);
+
+	keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_UP);
+	keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_DOWN);
 }
 
-void Console::Render()
+void Console::Render(Text* textRenderer)
 {
-	if (mIsVisible)
+	if (!mIsVisible)
 	{
 		return;
 	}
@@ -77,8 +81,9 @@ void Console::Render()
 			break;
 		}
 
-		// TODO: Draw text here
+		// TODO: Draw text here: Add const x offset???
+		textRenderer->RenderText(m.message, 10.0f, y, 1.0f, color);
 
-		y += mLineHeight;
+		y += mLineHeight + 4;
 	}
 }

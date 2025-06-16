@@ -9,11 +9,13 @@ Logger::Logger(size_t maxMessages):
 Logger::~Logger()
 {
 	std::cout << "Deleted Logger\n";
+
+	mMessages.clear();
 }
 
 void Logger::Log(const std::string& message, LogLevel level)
 {
-	if (mMaxMessages >= mMessages.size())
+	if (mMessages.size() >= mMaxMessages)
 	{
 		// Remove the front (oldest message)
 		mMessages.pop_front();

@@ -24,4 +24,6 @@ private:
 	CollisionComponent* mCollisionCircle;
 
 	Renderer2D* mRenderer;
+
+	Game* mGame;
 };

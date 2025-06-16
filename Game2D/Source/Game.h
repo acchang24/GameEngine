@@ -10,10 +10,10 @@
 #include "Physics/Physics.h"
 
 class AssetManager;
+class Console;
 class Entity;
 class JobManager;
-class AABBComponent2D;
-class Asteroid;
+class Logger;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
 class Game
@@ -81,6 +81,8 @@ public:
 	// @return - AudioSystem* for the audio system
 	AudioSystem* GetAudio() { return &mAudio; }
 
+	Logger* GetLogger() { return mLogger; }
+
 private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
@@ -93,6 +95,10 @@ private:
 
 	// Pointer to a static asset manager
 	AssetManager* mAssetManager;
+
+	Logger* mLogger;
+
+	Console* mConsole;
 
 	// Game's keyboard input
 	Keyboard mKeyboard;

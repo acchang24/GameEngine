@@ -22,14 +22,14 @@ Entity2D::~Entity2D()
 {
 }
 
-void Entity2D::ProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
+void Entity2D::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
 {
 	Entity::ProcessInput(keyState, keyboard, mouse);
 
 	OnProcessInput(keyState, keyboard, mouse);
 }
 
-void Entity2D::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
+void Entity2D::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
 {
 }
 

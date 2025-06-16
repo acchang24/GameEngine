@@ -14,6 +14,8 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
+#include "Util/Console.h"
+#include "Util/Logger.h"
 #include "Util/Random.h"
 #include "Asteroid.h"
 #include "Ship.h"
@@ -32,6 +34,8 @@ Game::Game() :
 	mRenderer(RendererMode::MODE_2D),
 	mJobManager(JobManager::Get()),
 	mAssetManager(AssetManager::Get()),
+	mLogger(new Logger()),
+	mConsole(new Console(mLogger)),
 	mKeyboard(),
 	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
 	mPhysics(),
@@ -77,6 +81,10 @@ void Game::Shutdown()
 	mRenderer.Shutdown();
 
 	mAudio.Shutdown();
+
+	delete mLogger;
+
+	delete mConsole;
 	
 	mJobManager->End();
 
@@ -119,7 +127,15 @@ void Game::LoadGameData()
 	mRenderer.GetRenderer2D()->SetTextShader(AssetManager::LoadShader("text"));
 
 	// Set font
-	mRenderer.GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 48);
+	mRenderer.GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
+
+
+
+	// Test logger
+	mLogger->Log("Logger test", LogLevel::Info);
+	mLogger->Log("Is this some info?", LogLevel::Info);
+	mLogger->Log("WARNING", LogLevel::Warning);
+	mLogger->Log("ERROR", LogLevel::Error);
 }
 
 void Game::UnloadGameData()
@@ -198,10 +214,19 @@ void Game::ProcessInput()
 		mIsRunning = false;
 	}
 
+	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_GRAVE))
+	{
+		mConsole->ToggleConsole();
+	}
+
 	for (size_t i =0; i<mEntities.size(); ++i)
 	{
 		mEntities[i]->ProcessInput(keyboardState, &mKeyboard, &mMouse);
 	}
+
+	mConsole->ProcessInput(keyboardState, &mKeyboard, &mMouse);
+
+	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_GRAVE);
 }
 
 void Game::ProcessMouseInput(Mouse* mouse)
@@ -339,6 +364,8 @@ void Game::Render()
 	mRenderer.ClearBuffers();
 
 	mRenderer.Draw2D();
+
+	mConsole->Render(mRenderer.GetRenderer2D()->GetTextRenderer());
 
 	mRenderer.EndFrame();
 }

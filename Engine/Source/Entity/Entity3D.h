@@ -34,9 +34,9 @@ public:
 
 	// Entity3D override of Entity::ProcessInput()
 	// @param - const Uint8* for the keyboard state
-	// @param - const Keyboard* for the keyboard
+	// @param - Keyboard* for the keyboard
 	// @param - const Mouse* for the mouse
-	void ProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse) override;
+	void ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse) override;
 
 	// Override update function for 3D entities
 	// @param - float for delta time
@@ -50,9 +50,9 @@ public:
 
 	// Entity specific ProcessInput code (overridable)
 	// @param - const Uint8* for the keyboard state
-	// @param - const Keyboard* for the keyboard
+	// @param - Keyboard* for the keyboard
 	// @param - const Mouse* for the mouse
-	virtual void OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse);
+	virtual void OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse);
 
 	// Entity specific update code (overridable)
 	// This OnUpdate updates the view matrix

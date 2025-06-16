@@ -54,7 +54,7 @@ Ship::~Ship()
 	std::cout << "Deleted Ship\n";
 }
 
-void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
+void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
 {
 	// Reset movement speed
 	float moveSpeed = 0.0f;
@@ -109,7 +109,7 @@ void Ship::OnProcessInput(const Uint8* keyState, const Keyboard* keyboard, const
 		mMovement->SetRotationSpeed(rotationSpeed);
 	}
 
-	mGame->GetKeyboard()->SavePrevKeyState(keyState, SDL_SCANCODE_W);
+	keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_W);
 }
 
 void Ship::OnUpdate(float deltaTime)

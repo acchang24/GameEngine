@@ -21,7 +21,7 @@ Entity::~Entity()
 	mComponents.clear();
 }
 
-void Entity::ProcessInput(const Uint8* keyState, const Keyboard* keyboard, const Mouse* mouse)
+void Entity::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
 {
 	if (mState == EntityState::Active)
 	{

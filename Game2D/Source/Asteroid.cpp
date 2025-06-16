@@ -4,6 +4,7 @@
 #include "Components/SpriteComponent.h"
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
+#include "Util/Logger.h"
 #include "Util/Random.h"
 #include "Game.h"
 
@@ -12,7 +13,8 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 	mSprite(new SpriteComponent(this, renderer)),
 	mMovement(new MoveComponent2D(this)),
 	mCollisionCircle(nullptr),
-	mRenderer(renderer)
+	mRenderer(renderer),
+	mGame(game)
 {
 	// Add and set asteroid sprite texture
 	Texture* asteroidSprite = AssetManager::LoadTexture("Assets/Asteroid.png", TextureType::Sprite);
@@ -58,6 +60,7 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 Asteroid::~Asteroid()
 {
 	std::cout << "Deleted Asteroid\n";
+	mGame->GetLogger()->Log("Destroyed Asteroid", LogLevel::Info);
 }
 
 void Asteroid::OnUpdate(float deltaTime)
