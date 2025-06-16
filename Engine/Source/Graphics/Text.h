@@ -30,7 +30,8 @@ public:
 
 	// Renders a string of text using pre-compiled font textures
 	// @param - const std::string& for the text
-	// TODO: Add param comments
+	// @param - float for x position
+	// @param - float for y position
 	// @param - float for the scale
 	// @param - const glm::vec3& for the color of the font (optional, defaults to white)
 	void RenderText(const std::string& text, float x, float y, float scale, const glm::vec3& color = glm::vec3(1.0f));
