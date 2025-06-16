@@ -26,6 +26,10 @@ public:
 	// @param - LogLevel for the message's level
 	void Log(const std::string& message, LogLevel level);
 
+	// Gets the number of messages from the logger
+	// @return - size_t for the number of messages
+	size_t GetNumMessages() const { return mMessages.size(); }
+
 	// Gets the logger messages
 	// @return - const std::deque<LogMessage>& for the messages
 	const std::deque<LogMessage>& GetMessages() const { return mMessages; }
