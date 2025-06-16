@@ -2,12 +2,12 @@
 #version 450 core
 
 // Uniform for color
-uniform vec3 color;
+uniform vec4 color;
 
 // Final fragment color
 out vec4 fragColor;
 
 void main() 
 {
-	fragColor = vec4(color, 1.0);
+	fragColor = color;
 }

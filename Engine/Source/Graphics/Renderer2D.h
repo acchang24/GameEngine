@@ -27,7 +27,7 @@ public:
 	// @param - float for width
 	// @param - float for height
 	// @param - const glm::vec3& for color of rectangle
-	void DrawRect(float x, float y, float width, float height, const glm::vec3& color);
+	void DrawRect(float x, float y, float width, float height, const glm::vec4& color);
 
 	// Draws rectangle outline
 	// @param - float for x position

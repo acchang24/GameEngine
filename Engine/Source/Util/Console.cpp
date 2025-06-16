@@ -62,7 +62,7 @@ void Console::Render(Renderer2D* renderer, Text* textRenderer)
 	float consoleY = 0.0f;
 
 	// Title height 32
-	renderer->DrawRect(0.0, consoleY, consoleWidth, 32.0f, glm::vec3(0.175f, 0.175f, 0.175f));
+	renderer->DrawRect(0.0, consoleY, consoleWidth, 32.0f, glm::vec4(0.175f, 0.175f, 0.175f, 1.0f));
 	// Padding 6.0f
 	renderer->DrawText("Debug Console", 6.0f, consoleY + 6.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
@@ -75,7 +75,7 @@ void Console::Render(Renderer2D* renderer, Text* textRenderer)
 
 	float logY = consoleY + 32;
 	float logHeight = consoleHeight + 56;
-	renderer->DrawRect(0, logY, consoleWidth, logHeight, glm::vec3(0.175f, 0.175f, 0.175f));
+	renderer->DrawRect(0, logY, consoleWidth, logHeight, glm::vec4(0.175f, 0.175f, 0.175f, 0.1f));
 
 	const std::deque<LogMessage>& messages = mLogger->GetMessages();
 
@@ -107,6 +107,6 @@ void Console::Render(Renderer2D* renderer, Text* textRenderer)
 
 	// --- Input text box ---
 	float inputY = logY + logHeight;
-	renderer->DrawRect(0, inputY, consoleWidth, 24.0f, glm::vec3(0.175f, 0.175f, 0.175f));
+	renderer->DrawRect(0, inputY, consoleWidth, 24.0f, glm::vec4(0.175f, 0.175f, 0.175f, 1.0f));
 	renderer->DrawText("> ", 6.0f, inputY + 4.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }

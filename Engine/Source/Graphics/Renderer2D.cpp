@@ -88,7 +88,7 @@ void Renderer2D::DrawSprites()
 	}
 }
 
-void Renderer2D::DrawRect(float x, float y, float width, float height, const glm::vec3& color)
+void Renderer2D::DrawRect(float x, float y, float width, float height, const glm::vec4& color)
 {
 	if (mUIBoxShader)
 	{
@@ -99,7 +99,7 @@ void Renderer2D::DrawRect(float x, float y, float width, float height, const glm
 		mUIBoxShader->SetActive();
 		mUIBoxShader->SetMat4("model", model);
 		mUIBoxShader->SetMat4("projection", mProjection);
-		mUIBoxShader->SetVec3("color", color);
+		mUIBoxShader->SetVec4("color", color);
 		
 		mVertexBuffer->Draw();
 	}
