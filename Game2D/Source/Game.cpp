@@ -95,6 +95,7 @@ void Game::LoadShaders() const
 {
 	AssetManager::LoadShader("sprite", "Shaders/sprite.vert", "Shaders/sprite.frag");
 	AssetManager::LoadShader("text", "Shaders/text.vert", "Shaders/text.frag");
+	AssetManager::LoadShader("uiBox", "Shaders/uiBox.vert", "Shaders/uiBox.frag");
 }
 
 void Game::LoadGameData()
@@ -125,6 +126,7 @@ void Game::LoadGameData()
 	// Set 2d renderer shader
 	mRenderer.GetRenderer2D()->SetSpriteShader(AssetManager::LoadShader("sprite"));
 	mRenderer.GetRenderer2D()->SetTextShader(AssetManager::LoadShader("text"));
+	mRenderer.GetRenderer2D()->SetUIBoxShader(AssetManager::LoadShader("uiBox"));
 
 	// Set font
 	mRenderer.GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);

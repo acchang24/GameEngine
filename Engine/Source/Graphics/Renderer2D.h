@@ -77,6 +77,10 @@ public:
 	// @param - Shader* for the new shader
 	void SetTextShader(Shader* shader) { mTextRenderer->SetShader(shader);}
 
+	// Sets the ui shader
+	// @param - Shader* for the new shader
+	void SetUIBoxShader(Shader* shader) { mUIBoxShader = shader; }
+
 private:
 	// Array of sprites
 	std::vector<SpriteComponent*> mSprites;
@@ -89,6 +93,9 @@ private:
 
 	// Shader used to render sprites
 	Shader* mSpriteShader;
+
+	// Shader used for ui
+	Shader* mUIBoxShader;
 
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;

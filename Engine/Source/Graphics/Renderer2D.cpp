@@ -13,6 +13,7 @@
 Renderer2D::Renderer2D(float width, float height) :
 	mProjection(glm::ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f)),
 	mSpriteShader(nullptr),
+	mUIBoxShader(nullptr),
 	mTextRenderer(nullptr),
 	mVertexBuffer(nullptr),
 	mWidth(width),
@@ -89,16 +90,19 @@ void Renderer2D::DrawSprites()
 
 void Renderer2D::DrawRect(float x, float y, float width, float height, const glm::vec3& color)
 {
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(x + width * 0.5f, y + height * 0.5f, 0.0f));
-	model = glm::scale(model, glm::vec3(width, height, 1.0f));
+	if (mUIBoxShader)
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(x + width * 0.5f, y + height * 0.5f, 0.0f));
+		model = glm::scale(model, glm::vec3(width, height, 1.0f));
 
-	mSpriteShader->SetActive();
-	mSpriteShader->SetMat4("model", model);
-	mSpriteShader->SetMat4("projection", mProjection);
-	mSpriteShader->SetVec3("color", color);
-
-	mVertexBuffer->Draw();
+		mUIBoxShader->SetActive();
+		mUIBoxShader->SetMat4("model", model);
+		mUIBoxShader->SetMat4("projection", mProjection);
+		mUIBoxShader->SetVec3("color", color);
+		
+		mVertexBuffer->Draw();
+	}
 }
 
 void Renderer2D::DrawRectOutline(float x, float y, float width, float height, const glm::vec4& color, float thickness)

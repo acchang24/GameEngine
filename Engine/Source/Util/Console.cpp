@@ -56,13 +56,26 @@ void Console::Render(Renderer2D* renderer, Text* textRenderer)
 		return;
 	}
 
-	float screenWidth = renderer->GetWidth();
-	float sreenHeight = renderer->GetHeight();
+	float consoleWidth = renderer->GetWidth() * 0.25f;
+	float consoleHeight = mMaxVisibleLines * mLineHeight + 32;
 
 	float consoleY = 0.0f;
 
-	// TODO: Draw rectangle here
+	// Title height 32
+	renderer->DrawRect(0.0, consoleY, consoleWidth, 32.0f, glm::vec3(0.175f, 0.175f, 0.175f));
+	// Padding 6.0f
+	renderer->DrawText("Debug Console", 6.0f, consoleY + 6.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
+	// Exit button (top-right)
+	float buttonW = 24.0f;
+	float buttonH = 20.0f;
+	float buttonX = consoleWidth - buttonW - 6.0f;
+	float buttonY = consoleY + (32.0f - buttonH) / 2.0f;
+	renderer->DrawText("X", buttonX + 6.0f, buttonY + 2.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+	float logY = consoleY + 32;
+	float logHeight = consoleHeight + 56;
+	renderer->DrawRect(0, logY, consoleWidth, logHeight, glm::vec3(0.175f, 0.175f, 0.175f));
 
 	const std::deque<LogMessage>& messages = mLogger->GetMessages();
 
@@ -70,7 +83,7 @@ void Console::Render(Renderer2D* renderer, Text* textRenderer)
 	int startIndex = std::max(0, static_cast<int>(messages.size() - mMaxVisibleLines) - mScrollOffset);
 	int endIndex = std::min(startIndex + mMaxVisibleLines, static_cast<int>(messages.size()));
 
-	float y = 10.0f;
+	float y = logY + 6.0f;
 	for (int i = startIndex; i < endIndex; ++i)
 	{
 		const LogMessage& m = messages[i];
@@ -87,9 +100,13 @@ void Console::Render(Renderer2D* renderer, Text* textRenderer)
 			break;
 		}
 
-		// TODO: Draw text here: Add const x offset???
-		textRenderer->RenderText(m.message, 10.0f, y, 1.0f, color);
+		textRenderer->RenderText(m.message, 6.0f, y, 1.0f, color);
 
 		y += mLineHeight + 4;
 	}
+
+	// --- Input text box ---
+	float inputY = logY + logHeight;
+	renderer->DrawRect(0, inputY, consoleWidth, 24.0f, glm::vec3(0.175f, 0.175f, 0.175f));
+	renderer->DrawText("> ", 6.0f, inputY + 4.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
