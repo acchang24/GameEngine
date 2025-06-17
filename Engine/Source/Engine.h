@@ -5,10 +5,11 @@
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 #include "Physics/Physics.h"
+#include "UI/EditorUI.h"
+#include "Util/Logger.h"
 
 class AssetManager;
 class JobManager;
-class Logger;
 
 // Engine class is the central system for game framework. 
 // Manages core subsystems like rendering, audio, input, asset loading,
@@ -37,17 +38,17 @@ public:
 	// De-allocates any resources
 	void Shutdown();
 
-	// Gets the logger
-	// @return - Logger* for the logger
-	Logger* GetLogger() { return mLogger; }
-
 	// Gets the engine's renderer
 	// @return - Renderer* for the renderer
-	Renderer* GetRenderer() { return mRenderer; }
+	Renderer* GetRenderer() { return &mRenderer; }
 
 	// Gets the keyboard
 	// @return - Keyboard* for the keyboard
 	Keyboard* GetKeyboard() { return &mKeyboard; }
+
+	// Gets the logger
+	// @return - Logger* for the logger
+	Logger* GetLogger() { return &mLogger; }
 
 	// Gets the mouse
 	// @return - Mouse* for the mouse
@@ -57,16 +58,29 @@ public:
 	// @return - Physics* for the physics system
 	Physics* GetPhysics() { return &mPhysics; }
 
+	// Gets the EditorUI system
+	// @return - EditorUI* for the editor
+	EditorUI* GetEditorUI() { return &mEditorUI; }
+
 	// Gets the audio system
 	// @return - Audio* for the audio
 	AudioSystem* GetAudio() { return &mAudio; }
 
 private:
-	// Logger to log messages
-	Logger* mLogger;
-
 	// Renderer for 2D/3D graphics output
-	Renderer* mRenderer;
+	Renderer mRenderer;
+
+	// Keyboard
+	Keyboard mKeyboard;
+
+	// Logger to log messages
+	Logger mLogger;
+
+	// Mouse
+	Mouse mMouse;
+
+	// Physics system
+	Physics mPhysics;
 
 	// Pointer to a static JobManager for multi threading
 	JobManager* mJobManager;
@@ -74,14 +88,8 @@ private:
 	// Pointer to a static AssetManager to load/cache assets on demand
 	AssetManager* mAssetManager;
 
-	// Keyboard
-	Keyboard mKeyboard;
-
-	// Mouse
-	Mouse mMouse;
-
-	// Physics system
-	Physics mPhysics;
+	// Editor UI system
+	EditorUI mEditorUI;
 
 	// Audio system
 	AudioSystem mAudio;

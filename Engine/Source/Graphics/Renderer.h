@@ -75,16 +75,23 @@ public:
 	// @param - Shader* for the framebuffer's shader
 	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples, Shader* shader);
 
-	// Gets the Renderer2D
-	// @return - Renderer2D* for 2D renderer
-	Renderer2D* GetRenderer2D() { return mRenderer2D; }
-
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active
 	// @param - unsigned int for a reference to the first texture
 	// @param - unsigned int for a reference to the second texture
 	// @param - int for the texture unit to activate
 	void CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit);
+
+	// Gets the Renderer2D
+	// @return - Renderer2D* for 2D renderer
+	Renderer2D* GetRenderer2D() { return mRenderer2D; }
+
+	// Gets the window
+	// @return - SDL_Window* for the window
+	SDL_Window* GetWindow() const { return mWindow; }
+
+	// Gets the OpenGL context
+	SDL_GLContext GetContext() const { return mContext; }
 
 	// Gets the window's width
 	// @return - int for the width

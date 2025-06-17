@@ -1,37 +1,38 @@
 #include "Engine.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
-#include "Util/Logger.h"
-
 
 Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
-	mLogger(new Logger()),
-	mRenderer(new Renderer(renderMode)),
-	mJobManager(JobManager::Get()),
-	mAssetManager(AssetManager::Get()),
+	mRenderer(renderMode),
 	mKeyboard(),
+	mLogger(),
 	mMouse(mouseSensitivity),
 	mPhysics(),
+	mJobManager(JobManager::Get()),
+	mAssetManager(AssetManager::Get()),
+	mEditorUI(this),
 	mAudio()
 {
-	mLogger->Log("Started engine", LogLevel::Info);
+	mLogger.Log("Started engine", LogLevel::Info);
 }
 
 Engine::~Engine()
 {
-	delete mLogger;
-
-	delete mRenderer;
 }
 
 bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, SDL_bool mouseCaptured, const char* gameName)
 {
-	if (!mRenderer->Init(windowWidth, windowHeight, subSamples, v_sync, fullscreen, mouseCaptured, gameName))
+	if (!mRenderer.Init(windowWidth, windowHeight, subSamples, v_sync, fullscreen, mouseCaptured, gameName))
 	{
 		return false;
 	}
 
 	mJobManager->Begin();
+
+	if (!mEditorUI.Init())
+	{
+		return false;
+	}
 
 	if (!mAudio.Init())
 	{
@@ -43,9 +44,13 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 
 void Engine::Shutdown()
 {
-	mLogger->Log("Shutting down engine", LogLevel::Info);
+	mLogger.Log("Shutting down engine", LogLevel::Info);
 
-	mRenderer->Shutdown();
+	mAudio.Shutdown();
+
+	mEditorUI.Shutdown();
+
+	mRenderer.Shutdown();
 
 	mJobManager->End();
 
