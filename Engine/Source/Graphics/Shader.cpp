@@ -47,7 +47,7 @@ Shader::Shader(const std::string& name, const char* vertexFile, const char* frag
 
 Shader::~Shader()
 {
-    std::cout << "Deleted shader: " << mShaderID << "\n";
+    std::cout << "Deleted shader: " << mName << " "  << mShaderID << "\n";
     glDeleteProgram(mShaderID);
     mShaderID = 0;
 }

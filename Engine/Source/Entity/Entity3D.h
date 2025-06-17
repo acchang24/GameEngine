@@ -22,7 +22,7 @@ public:
 	// to the entity's vector of components.
 	// @param - const std::string& for the model's file name
 	Entity3D(const std::string& fileName);
-	~Entity3D();
+	virtual ~Entity3D();
 
 	// Makes this an instanced entity so that multiple instances of the same
 	// vertices can be rendered with one draw function call. This generates 

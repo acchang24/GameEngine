@@ -9,17 +9,21 @@
 #include "Audio/Sound.h"
 #include "Components/SpriteComponent.h"
 #include "Entity/Entity2D.h"
+#include "Graphics/Renderer.h"
+#include "Graphics/Renderer2D.h"
 #include "Graphics/Text.h"
 #include "Graphics/Texture.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
+#include "Physics/Physics.h"
 #include "Util/Console.h"
 #include "Util/Logger.h"
 #include "Util/Random.h"
 #include "Asteroid.h"
 #include "Ship.h"
-
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
@@ -31,18 +35,9 @@ const char* TITLE = "Game2D";
 SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 
 Game::Game() :
-	mRenderer(RendererMode::MODE_2D),
-	mJobManager(JobManager::Get()),
-	mAssetManager(AssetManager::Get()),
-	mLogger(new Logger()),
-	mConsole(new Console(mLogger)),
-	mKeyboard(),
-	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
-	mPhysics(),
-	mAudio(),
+	mEngine(RendererMode::MODE_2D, MOUSE_SENSITIVITY),
 	mIsRunning(true)
 {
-	mAssetManager->SetRenderer(&mRenderer);
 }
 
 Game::~Game()
@@ -53,14 +48,7 @@ bool Game::Init()
 {
 	Random::Init();
 
-	mJobManager->Begin();
-
-	if (!mRenderer.Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
-	{
-		return false;
-	}
-
-	if (!mAudio.Init())
+	if (!mEngine.Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
 	{
 		return false;
 	}
@@ -78,17 +66,7 @@ void Game::Shutdown()
 {
 	UnloadGameData();
 
-	mRenderer.Shutdown();
-
-	mAudio.Shutdown();
-
-	delete mLogger;
-
-	delete mConsole;
-	
-	mJobManager->End();
-
-	mAssetManager->Shutdown();
+	mEngine.Shutdown();
 }
 
 void Game::LoadShaders() const
@@ -100,7 +78,8 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Ship* ship = new Ship(mRenderer.GetRenderer2D(), this);
+	Renderer2D* renderer2D = mEngine.GetRenderer()->GetRenderer2D();
+	Ship* ship = new Ship(renderer2D, this);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
@@ -108,7 +87,7 @@ void Game::LoadGameData()
 	// Load 10 asteroids
 	for (int i = 0; i < 1; ++i)
 	{
-		Asteroid* a = new Asteroid(mRenderer.GetRenderer2D(), this);
+		Asteroid* a = new Asteroid(renderer2D, this);
 	}
 
 	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
@@ -116,28 +95,27 @@ void Game::LoadGameData()
 	music->Play(-1);
 
 	// Background
-	Entity2D* background = new Entity2D(static_cast<float>(mRenderer.GetWidth()), static_cast<float>(mRenderer.GetHeight()));
-	background->SetPosition(glm::vec2(static_cast<float>(mRenderer.GetWidth() / 2), static_cast<float>(mRenderer.GetHeight() / 2)));
-	SpriteComponent* backgroundSC = new SpriteComponent(background, mRenderer.GetRenderer2D(), 50);
+	Entity2D* background = new Entity2D(static_cast<float>(mEngine.GetRenderer()->GetWidth()), static_cast<float>(mEngine.GetRenderer()->GetHeight()));
+	background->SetPosition(glm::vec2(static_cast<float>(mEngine.GetRenderer()->GetWidth() / 2), static_cast<float>(mEngine.GetRenderer()->GetHeight() / 2)));
+	SpriteComponent* backgroundSC = new SpriteComponent(background, renderer2D, 50);
 	backgroundSC->AddSprite(AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
 	AddGameEntity(background);
 
 	// Set 2d renderer shader
-	mRenderer.GetRenderer2D()->SetSpriteShader(AssetManager::LoadShader("sprite"));
-	mRenderer.GetRenderer2D()->SetTextShader(AssetManager::LoadShader("text"));
-	mRenderer.GetRenderer2D()->SetUIBoxShader(AssetManager::LoadShader("uiBox"));
+	renderer2D->SetSpriteShader(AssetManager::LoadShader("sprite"));
+	renderer2D->SetTextShader(AssetManager::LoadShader("text"));
+	renderer2D->SetUIBoxShader(AssetManager::LoadShader("uiBox"));
 
 	// Set font
-	mRenderer.GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
+	mEngine.GetRenderer()->GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
 
 
-
-	// Test logger
-	mLogger->Log("Logger test", LogLevel::Info);
-	mLogger->Log("Is this some info?", LogLevel::Info);
-	mLogger->Log("WARNING", LogLevel::Warning);
-	mLogger->Log("ERROR", LogLevel::Error);
+	//// Test logger
+	//mLogger->Log("Logger test", LogLevel::Info);
+	//mLogger->Log("Is this some info?", LogLevel::Info);
+	//mLogger->Log("WARNING", LogLevel::Warning);
+	//mLogger->Log("ERROR", LogLevel::Error);
 }
 
 void Game::UnloadGameData()
@@ -175,7 +153,10 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
-	mMouse.ResetState();
+	Mouse* mouse = mEngine.GetMouse();
+	Keyboard* keyboard = mEngine.GetKeyboard();
+
+	mouse->ResetState();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -194,41 +175,42 @@ void Game::ProcessInput()
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			// Mouse click down
-			mMouse.SetButtonDown(event.button.button);
+			mouse->SetButtonDown(event.button.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
 			// Mouse click release
-			mMouse.SetButtonUp(event.button.button);
+			mouse->SetButtonUp(event.button.button);
 			break;
 		case SDL_MOUSEWHEEL:
 			// Mouse wheel scroll
-			mMouse.SetScrollDir(event.wheel.y);
+			mouse->SetScrollDir(event.wheel.y);
 			break;
 		}
 	}
 
-	ProcessMouseInput(&mMouse);
+	ProcessMouseInput(mouse);
 
-	const Uint8* keyboardState = mKeyboard.GetState();
+	const Uint8* keyboardState = keyboard->GetState();
 
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 	{
 		mIsRunning = false;
 	}
 
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_GRAVE))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_GRAVE))
 	{
-		mConsole->ToggleConsole();
+		std::cout << "TOGGLE CONSOLE\n";
+		//mConsole->ToggleConsole();
 	}
 
 	for (size_t i =0; i<mEntities.size(); ++i)
 	{
-		mEntities[i]->ProcessInput(keyboardState, &mKeyboard, &mMouse);
+		mEntities[i]->ProcessInput(keyboardState, keyboard, mouse);
 	}
 
-	mConsole->ProcessInput(keyboardState, &mKeyboard, &mMouse);
+	//mConsole->ProcessInput(keyboardState, &mKeyboard, &mMouse);
 
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_GRAVE);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_GRAVE);
 }
 
 void Game::ProcessMouseInput(Mouse* mouse)
@@ -326,9 +308,9 @@ void Game::ProcessMouseInput(Mouse* mouse)
 		std::cout << "Scroll Down\n";
 	}
 
-	if (mMouse.MouseCaptured() == SDL_TRUE)
+	if (mouse->MouseCaptured() == SDL_TRUE)
 	{
-		mMouse.CalculateMovement();
+		mouse->CalculateMovement();
 	}
 }
 
@@ -353,23 +335,25 @@ void Game::Update(float deltaTime)
 		RemoveGameEntity(d);
 	}
 
-	mPhysics.Update(deltaTime);
+	mEngine.GetPhysics()->Update(deltaTime);
 
 	PROFILE_SCOPE(WAIT_JOBS);
-	mJobManager->WaitForJobs();
+	JobManager::Get()->WaitForJobs();
 }
 
 void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
 
-	mRenderer.ClearBuffers();
+	Renderer* renderer = mEngine.GetRenderer();
 
-	mRenderer.Draw2D();
+	renderer->ClearBuffers();
 
-	mConsole->Render(mRenderer.GetRenderer2D(), mRenderer.GetRenderer2D()->GetTextRenderer());
+	renderer->Draw2D();
 
-	mRenderer.EndFrame();
+	//mConsole->Render(mRenderer.GetRenderer2D(), mRenderer.GetRenderer2D()->GetTextRenderer());
+
+	renderer->EndFrame();
 }
 
 void Game::ResizeWindow(const SDL_Event& event)
@@ -388,12 +372,14 @@ void Game::ResizeWindow(const SDL_Event& event)
 
 		printf("Window width: %i, Window height: %i\n", width, height);
 
+		Renderer* renderer = mEngine.GetRenderer();
+
 		// Set new window dimensions
-		mRenderer.SetWidth(width);
-		mRenderer.SetHeight(height);
+		renderer->SetWidth(width);
+		renderer->SetHeight(height);
 
 		// Resize frame buffers
-		mRenderer.ResizeFrameBuffers();
+		renderer->ResizeFrameBuffers();
 	}
 }
 

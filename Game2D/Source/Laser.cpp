@@ -10,14 +10,15 @@
 #include "Physics/Physics.h"
 #include "Util/Logger.h"
 #include "Asteroid.h"
+#include "Engine.h"
 #include "Game.h"
 
 Laser::Laser(Renderer2D* renderer, Game* game) :
 	Entity2D(),
 	mLaserSprite(new SpriteComponent(this, renderer)),
 	mLaserMovement(new MoveComponent2D(this)),
-	mBox(new OBBComponent2D(this, game->GetPhysics(), BodyType::Intersect)),
-	mGame(game),
+	mBox(new OBBComponent2D(this, game->GetEngine()->GetPhysics(), BodyType::Intersect)),
+	mEngine(game->GetEngine()),
 	mLaserDecay(0.0f)
 {
 	// Add and set laser sprite texture
@@ -40,10 +41,10 @@ Laser::Laser(Renderer2D* renderer, Game* game) :
 		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
 		if (asteroid)
 		{
-			mGame->GetAudio()->PlaySFX("Assets/Sounds/AsteroidExplode.wav");
+			mEngine->GetAudio()->PlaySFX("Assets/Sounds/AsteroidExplode.wav");
 			asteroid->SetEntityState(EntityState::Destroy);
 			mState = EntityState::Destroy;
-			mGame->GetLogger()->Log("Laser hit Asteroid", LogLevel::Info);
+			mEngine->GetLogger()->Log("Laser hit Asteroid", LogLevel::Info);
 		}
 	});
 
@@ -53,7 +54,7 @@ Laser::Laser(Renderer2D* renderer, Game* game) :
 
 Laser::~Laser()
 {
-	mGame->GetLogger()->Log("Deleted Laser", LogLevel::Info);
+	mEngine->GetLogger()->Log("Deleted Laser", LogLevel::Info);
 }
 
 void Laser::OnUpdate(float deltaTime)

@@ -37,7 +37,7 @@ Renderer2D::Renderer2D(float width, float height) :
 
 Renderer2D::~Renderer2D()
 {
-	std::cout << "Deleted SpriteRenderer\n";
+	std::cout << "Deleted Renderer2D\n";
 
 	delete mTextRenderer;
 

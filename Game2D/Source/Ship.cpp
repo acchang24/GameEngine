@@ -6,6 +6,7 @@
 #include "Graphics/Texture.h"
 #include "Input/Keyboard.h"
 #include "MemoryManager/AssetManager.h"
+#include "Engine.h"
 #include "Game.h"
 #include "Laser.h"
 
@@ -15,6 +16,7 @@ Ship::Ship(Renderer2D* renderer, Game* game) :
 	mMovement(new MoveComponent2D(this)),
 	mCollisionBox(nullptr),
 	mRenderer(renderer),
+	mEngine(game->GetEngine()),
 	mGame(game),
 	mLaserCooldown(1.0f)
 {
@@ -27,7 +29,7 @@ Ship::Ship(Renderer2D* renderer, Game* game) :
 	// Set the entity size to the ship sprite size
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
-	AABBComponent2D* box = new AABBComponent2D(this, game->GetPhysics());
+	AABBComponent2D* box = new AABBComponent2D(this, game->GetEngine()->GetPhysics());
 	box->SetBoxSize(glm::vec2(100.0f, 90.0f));
 	
 	//CircleComponent* box = new CircleComponent(this, game->GetPhysics(), 50.0f);
@@ -41,9 +43,9 @@ Ship::Ship(Renderer2D* renderer, Game* game) :
 	//mCollisionBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
 
 	// Fire off loop sfx so this sound chunk can pause/resume later
-	mGame->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
+	mEngine->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
 	// Pause sound immediately
-	mGame->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
+	mEngine->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
 
 	// Add to game
 	game->AddGameEntity(this);
@@ -61,9 +63,9 @@ void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse
 
 	if (keyState[SDL_SCANCODE_W])
 	{
-		if (mGame->GetKeyboard()->HasLeadingEdge(keyState, SDL_SCANCODE_W))
+		if (mEngine->GetKeyboard()->HasLeadingEdge(keyState, SDL_SCANCODE_W))
 		{
-			mGame->GetAudio()->ResumeSFX("Assets/Sounds/ShipThrust.wav");
+			mEngine->GetAudio()->ResumeSFX("Assets/Sounds/ShipThrust.wav");
 		}
 		moveSpeed += 200.0f;
 	}
@@ -79,7 +81,7 @@ void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse
 	else
 	{
 		mSprite->SetSprite(mSprite->GetSprite("Assets/Ship.png"));
-		mGame->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
+		mEngine->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
 	}
 
 	float rotationSpeed = 0.0f;
@@ -94,7 +96,7 @@ void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse
 
 	if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown > 1.0f)
 	{
-		mGame->GetAudio()->PlaySFX("Assets/Sounds/Shoot.wav");
+		mEngine->GetAudio()->PlaySFX("Assets/Sounds/Shoot.wav");
 
 		Laser* laser = new Laser(mRenderer, mGame);
 		laser->SetPosition(mPosition);

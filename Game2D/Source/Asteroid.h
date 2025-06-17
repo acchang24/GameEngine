@@ -2,6 +2,7 @@
 #include "Entity/Entity2D.h"
 
 class CollisionComponent;
+class Engine;
 class Game;
 class MoveComponent2D;
 class SpriteComponent;
@@ -25,5 +26,5 @@ private:
 
 	Renderer2D* mRenderer;
 
-	Game* mGame;
+	Engine* mEngine;
 };

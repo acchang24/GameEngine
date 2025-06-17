@@ -62,9 +62,9 @@ Entity3D::Entity3D(const std::string& fileName):
 
 Entity3D::~Entity3D()
 {
-	glDeleteBuffers(1, &mInstanceBuffer);
-
 	std::cout << "Deleted entity 3D\n";
+
+	glDeleteBuffers(1, &mInstanceBuffer);
 }
 
 void Entity3D::MakeInstance(unsigned int numInstances, const void* data)

@@ -6,6 +6,7 @@
 #include "MemoryManager/AssetManager.h"
 #include "Util/Logger.h"
 #include "Util/Random.h"
+#include "Engine.h"
 #include "Game.h"
 
 Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
@@ -14,7 +15,7 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 	mMovement(new MoveComponent2D(this)),
 	mCollisionCircle(nullptr),
 	mRenderer(renderer),
-	mGame(game)
+	mEngine(game->GetEngine())
 {
 	// Add and set asteroid sprite texture
 	Texture* asteroidSprite = AssetManager::LoadTexture("Assets/Asteroid.png", TextureType::Sprite);
@@ -35,7 +36,7 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 
 	mPosition = glm::vec2(400.0f, 400.0f);
 
-	AABBComponent2D* collision = new AABBComponent2D(this, game->GetPhysics(), BodyType::Static);
+	AABBComponent2D* collision = new AABBComponent2D(this, game->GetEngine()->GetPhysics(), BodyType::Static);
 	collision->SetBoxSize(mSize);
 
 	mCollisionCircle = collision;
@@ -60,7 +61,7 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 Asteroid::~Asteroid()
 {
 	std::cout << "Deleted Asteroid\n";
-	mGame->GetLogger()->Log("Destroyed Asteroid", LogLevel::Info);
+	mEngine->GetLogger()->Log("Destroyed Asteroid", LogLevel::Info);
 }
 
 void Asteroid::OnUpdate(float deltaTime)

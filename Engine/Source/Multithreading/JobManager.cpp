@@ -18,6 +18,8 @@ void JobManager::Begin()
 
 void JobManager::End()
 {
+    std::cout << "Ending JobManager\n";
+
     mIsRunning = false;
     mCondition.notify_all();
 

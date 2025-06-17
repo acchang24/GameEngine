@@ -11,7 +11,7 @@ public:
 	// @param - float for width of entity
 	// @param - float for height of entity
 	Entity2D(float width, float height);
-	~Entity2D();
+	virtual ~Entity2D();
 
 	// Entity2D override of Entity::ProcessInput()
 	// @param - const Uint8* for the keyboard state

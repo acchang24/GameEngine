@@ -27,6 +27,8 @@ bool AudioSystem::Init()
 
 void AudioSystem::Shutdown()
 {
+	std::cout << "Shutting down AudioSystem\n";
+
 	// Close Audio
 	Mix_CloseAudio();
 }

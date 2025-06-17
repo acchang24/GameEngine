@@ -1,4 +1,5 @@
 #include "Entity2D.h"
+#include <iostream>
 
 Entity2D::Entity2D() :
 	Entity(),
@@ -20,6 +21,7 @@ Entity2D::Entity2D(float width, float height) :
 
 Entity2D::~Entity2D()
 {
+	std::cout << "Deleted Entity2D\n";
 }
 
 void Entity2D::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)

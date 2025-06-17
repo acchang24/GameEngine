@@ -1,19 +1,9 @@
 #pragma once
 #include <vector>
 #include <SDL2/SDL.h>
-#include "Audio/AudioSystem.h"
-#include "Graphics/Camera.h"
-#include "Graphics/Lights.h"
-#include "Graphics/Renderer.h"
-#include "Input/Keyboard.h"
-#include "Input/Mouse.h"
-#include "Physics/Physics.h"
+#include "Engine.h"
 
-class AssetManager;
-class Console;
 class Entity;
-class JobManager;
-class Logger;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
 class Game
@@ -69,48 +59,16 @@ public:
 	// @param - Entity* for the entity to remove
 	void RemoveGameEntity(Entity* e);
 
-	// Gets the game's keyboard
-	// @return - Keyboard* for the game's keyboard
-	Keyboard* GetKeyboard() { return &mKeyboard; }
-
-	// Gets the game's physics system
-	// @return - Physics* for the game physics
-	Physics* GetPhysics() { return &mPhysics; }
-
-	// Gets the game's audio system
-	// @return - AudioSystem* for the audio system
-	AudioSystem* GetAudio() { return &mAudio; }
-
-	Logger* GetLogger() { return mLogger; }
+	// Gets the game engine
+	// @return - Engine* for the engine
+	Engine* GetEngine() { return &mEngine; }
 
 private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
 
-	// Renderer for graphics output
-	Renderer mRenderer;
-
-	// Pointer to a static JobManager
-	JobManager* mJobManager;
-
-	// Pointer to a static asset manager
-	AssetManager* mAssetManager;
-
-	Logger* mLogger;
-
-	Console* mConsole;
-
-	// Game's keyboard input
-	Keyboard mKeyboard;
-
-	// Game's mouse input
-	Mouse mMouse;
-
-	// Game's physics
-	Physics mPhysics;
-
-	// Audio system
-	AudioSystem mAudio;
+	// Game Engine systems
+	Engine mEngine;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

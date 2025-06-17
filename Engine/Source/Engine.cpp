@@ -14,6 +14,8 @@ Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
 	mAudio()
 {
 	mLogger.Log("Started engine", LogLevel::Info);
+
+	mAssetManager->SetRenderer(&mRenderer);
 }
 
 Engine::~Engine()
@@ -22,12 +24,12 @@ Engine::~Engine()
 
 bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, SDL_bool mouseCaptured, const char* gameName)
 {
+	mJobManager->Begin();
+
 	if (!mRenderer.Init(windowWidth, windowHeight, subSamples, v_sync, fullscreen, mouseCaptured, gameName))
 	{
 		return false;
 	}
-
-	mJobManager->Begin();
 
 	if (!mEditorUI.Init())
 	{

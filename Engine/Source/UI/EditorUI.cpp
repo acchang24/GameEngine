@@ -1,4 +1,5 @@
 #include "EditorUI.h"
+#include <iostream>
 #include <glad/glad.h>
 #include "../Util/Logger.h"
 #include "../Engine.h"
@@ -48,7 +49,8 @@ bool EditorUI::Init()
 
 void EditorUI::Shutdown()
 {
-    mEngine->GetLogger()->Log("Deleted EditorUI", LogLevel::Info);
+    std::cout << "Shutting down EditorUI\n";
+    mEngine->GetLogger()->Log("Shutting down EditorUI", LogLevel::Info);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
