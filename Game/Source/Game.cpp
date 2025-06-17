@@ -16,6 +16,7 @@
 #include "Graphics/MaterialCubeMap.h"
 #include "Graphics/Mesh.h"
 #include "Graphics/Model.h"
+#include "Graphics/Renderer.h"
 #include "Graphics/Shader.h"
 #include "Graphics/ShadowMap.h"
 #include "Graphics/Skybox.h"
@@ -23,10 +24,13 @@
 #include "Graphics/UniformBuffer.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
 #include "Util/Random.h"
+
 
 float size = 30.0f;
 float near = 1.0f;
@@ -45,9 +49,7 @@ const char* TITLE = "Game";
 SDL_bool MOUSE_CAPTURED = SDL_TRUE;
 
 Game::Game() :
-	mRenderer(RendererMode::MODE_3D),
-	mAssetManager(AssetManager::Get()),
-	mJobManager(JobManager::Get()),
+	mEngine(RendererMode::MODE_3D, MOUSE_SENSITIVITY),
 	mCamera(nullptr),
 	mLights(),
 	mShadowMap(nullptr),
@@ -57,13 +59,10 @@ Game::Game() :
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
 	mBloomBlendFrameBuffer(nullptr),
-	mMouse(MOUSE_SENSITIVITY, MOUSE_CAPTURED),
-	mKeyboard(),
 	mIsRunning(true),
 	hdr(false),
 	bloom(false)
 {
-	mAssetManager->SetRenderer(&mRenderer);
 }
 
 Game::~Game()
@@ -74,17 +73,17 @@ bool Game::Init()
 {
 	Random::Init();
 
-	mJobManager->Begin();
-
-	if (!mRenderer.Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
+	if (!mEngine.Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
 	{
 		return false;
 	}
 
-	mCamera = new Camera(&mRenderer);
+	Renderer* renderer = mEngine.GetRenderer();
+
+	mCamera = new Camera(mEngine.GetRenderer());
 	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	mLights.CreateBuffer(&mRenderer);
+	mLights.CreateBuffer(mEngine.GetRenderer());
 
 	mShadowMap = new ShadowMap();
 
@@ -92,15 +91,15 @@ bool Game::Init()
 
 	LoadShaders();
 
-	int width = mRenderer.GetWidth();
-	int height = mRenderer.GetHeight();
+	int width = renderer->GetWidth();
+	int height = renderer->GetHeight();
 
 	// Create frame buffers
-	mMainFrameBuffer = mRenderer.CreateMultiSampledFrameBuffer(width, height, mRenderer.GetNumSubsamples(), mAssetManager->LoadShader("hdrGamma"));
-	mBloomMaskFrameBuffer = mRenderer.CreateFrameBuffer(width / 2, height / 2, mAssetManager->LoadShader("bloomMask"));
-	mBloomBlurHorizontalFrameBuffer = mRenderer.CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurHorizontal"));
-	mBloomBlurVerticalFrameBuffer = mRenderer.CreateFrameBuffer(width / 4, height / 4, mAssetManager->LoadShader("bloomBlurVertical"));
-	mBloomBlendFrameBuffer = mRenderer.CreateFrameBuffer(width, height, mAssetManager->LoadShader("bloomBlend"));
+	mMainFrameBuffer = renderer->CreateMultiSampledFrameBuffer(width, height, renderer->GetNumSubsamples(), AssetManager::LoadShader("hdrGamma"));
+	mBloomMaskFrameBuffer = renderer->CreateFrameBuffer(width / 2, height / 2, AssetManager::LoadShader("bloomMask"));
+	mBloomBlurHorizontalFrameBuffer = renderer->CreateFrameBuffer(width / 4, height / 4, AssetManager::LoadShader("bloomBlurHorizontal"));
+	mBloomBlurVerticalFrameBuffer = renderer->CreateFrameBuffer(width / 4, height / 4, AssetManager::LoadShader("bloomBlurVertical"));
+	mBloomBlendFrameBuffer = renderer->CreateFrameBuffer(width, height, AssetManager::LoadShader("bloomBlend"));
 
 	LoadGameData();
 
@@ -109,8 +108,6 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
-	mRenderer.Shutdown();
-
 	UnloadGameData();
 
 	delete mCamera;
@@ -119,9 +116,7 @@ void Game::Shutdown()
 
 	delete mSkybox;
 
-	mJobManager->End();
-
-	mAssetManager->Shutdown();
+	mEngine.Shutdown();
 }
 
 void Game::LoadShaders() const
@@ -166,7 +161,7 @@ void Game::LoadGameData()
 	Material* lightSphereMaterial = new Material();
 	lightSphereMaterial->SetShader(AssetManager::LoadShader("texture"));
 	lightSphereMaterial->AddTexture(AssetManager::LoadTexture("Assets/lightSphere.png"));
-	mAssetManager->SaveMaterial("lightSphere", lightSphereMaterial);
+	AssetManager::Get()->SaveMaterial("lightSphere", lightSphereMaterial);
 
 	// Skybox
 	std::vector<std::string> faceNames
@@ -183,13 +178,13 @@ void Game::LoadGameData()
 	CubeMap* sky = mSkybox->GetCubeMap();
 	MaterialCubeMap* reflectiveMat = new MaterialCubeMap();
 	reflectiveMat->SetCubeMap(sky);
-	reflectiveMat->SetShader(mAssetManager->LoadShader("reflection"));
-	mAssetManager->SaveMaterial("reflection", reflectiveMat);
+	reflectiveMat->SetShader(AssetManager::LoadShader("reflection"));
+	AssetManager::Get()->SaveMaterial("reflection", reflectiveMat);
 
 	MaterialCubeMap* refractiveMat = new MaterialCubeMap();
 	refractiveMat->SetCubeMap(sky);
-	refractiveMat->SetShader(mAssetManager->LoadShader("refraction"));
-	mAssetManager->SaveMaterial("refraction", refractiveMat);
+	refractiveMat->SetShader(AssetManager::LoadShader("refraction"));
+	AssetManager::Get()->SaveMaterial("refraction", refractiveMat);
 
 	//Texture* rockTexture = AssetManager::LoadTexture("Assets/models/rock/rock.png");
 	//rockTexture->SetType(TextureType::Diffuse);
@@ -328,7 +323,7 @@ void Game::LoadGameData()
 
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 	glm::vec3 lightPosition = lightDir * -dist;
-	mShadowMap->SetShader(mAssetManager->LoadShader("shadowDepth"));
+	mShadowMap->SetShader(AssetManager::LoadShader("shadowDepth"));
 	pos = lightPosition;
 
 	DirectionalLight* dirLight = mLights.AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -358,7 +353,7 @@ void Game::LoadGameData()
 	AddGameEntity(lightSphere3);
 
 	// Since all ShaderProgram objects are attached to a Shader object, it's safe to de-allocate them here
-	mAssetManager->ClearShaderPrograms();
+	AssetManager::Get()->ClearShaderPrograms();
 }
 
 void Game::UnloadGameData()
@@ -396,7 +391,10 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
-	mMouse.ResetState();
+	Mouse* mouse = mEngine.GetMouse();
+	Keyboard* keyboard = mEngine.GetKeyboard();
+
+	mouse->ResetState();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -415,22 +413,22 @@ void Game::ProcessInput()
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			// Mouse click down
-			mMouse.SetButtonDown(event.button.button);
+			mouse->SetButtonDown(event.button.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
 			// Mouse click release
-			mMouse.SetButtonUp(event.button.button);
+			mouse->SetButtonUp(event.button.button);
 			break;
 		case SDL_MOUSEWHEEL:
 			// Mouse wheel scroll
-			mMouse.SetScrollDir(event.wheel.y);
+			mouse->SetScrollDir(event.wheel.y);
 			break;
 		}
 	}
 
-	ProcessMouseInput(&mMouse);
+	ProcessMouseInput(mouse);
 
-	const Uint8* keyboardState = mKeyboard.GetState();
+	const Uint8* keyboardState = keyboard->GetState();
 
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 	{
@@ -486,37 +484,37 @@ void Game::ProcessInput()
 	mCamera->SetPanDir(camPanDir);
 
 	// Toggle camera modes
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_V))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_V))
 	{
 		mCamera->ToggleCameraModes();
 	}
 
 	// Toggle the main directional light
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_SPACE))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_SPACE))
 	{
 		bool light = mLights.GetLights().directionalLight[0].data.isEnabled;
 		mLights.GetLights().directionalLight[0].data.isEnabled = !light;
 	}
 
 	// Capture mouse
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_M))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_M))
 	{
-		mMouse.ToggleMouseCapture();
+		mouse->ToggleMouseCapture();
 	}
 
 	// HDR/Exposure
-	Shader* shader = mAssetManager->LoadShader("hdrGamma");
-	Shader* bloomAdd = mAssetManager->LoadShader("bloomBlend");
+	Shader* shader = AssetManager::LoadShader("hdrGamma");
+	Shader* bloomAdd = AssetManager::LoadShader("bloomBlend");
 
 	// Toggle hdr
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_H))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_H))
 	{
 		hdr = !hdr;
 		shader->SetActive();
 		shader->SetBool("hdr", hdr);
 	}
 	// Toggle bloom
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_B))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_B))
 	{
 		bloom = !bloom;
 
@@ -556,28 +554,28 @@ void Game::ProcessInput()
 	}
 
 	// Shadow debug inputs
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_UP))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_UP))
 	{
 		size += 10.0f;
 	}
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_DOWN))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_DOWN))
 	{
 		size -= 10.0f;
 	}
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_LEFT))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_LEFT))
 	{
 		far -= 10.0f;
 	}
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_RIGHT))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_RIGHT))
 	{
 		far += 10.0f;
 	}
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_L))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_L))
 	{
 		dist -= 10.0f;
 		pos = (lightDir * -dist);
 	}
-	if (mKeyboard.HasLeadingEdge(keyboardState, SDL_SCANCODE_K))
+	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_K))
 	{
 		dist += 10.0f;
 		pos = (lightDir * -dist);
@@ -625,21 +623,21 @@ void Game::ProcessInput()
 	}
 
 	// Save previous key inputs
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_V);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_SPACE);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_H);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_B);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_UP);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_DOWN);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_LEFT);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_RIGHT);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_L);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_K);
-	mKeyboard.SavePrevKeyState(keyboardState, SDL_SCANCODE_M);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_V);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_SPACE);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_H);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_B);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_UP);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_DOWN);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_LEFT);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_RIGHT);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_L);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_K);
+	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_M);
 
 	for (auto e : mEntities)
 	{
-		e->ProcessInput(keyboardState, &mKeyboard, &mMouse);
+		e->ProcessInput(keyboardState, keyboard, mouse);
 	}
 }
 
@@ -738,9 +736,9 @@ void Game::ProcessMouseInput(Mouse* mouse)
 		std::cout << "Scroll Down\n";
 	}
 
-	if (mMouse.MouseCaptured() == SDL_TRUE)
+	if (mouse->MouseCaptured() == SDL_TRUE)
 	{
-		mMouse.CalculateMovement();
+		mouse->CalculateMovement();
 	}
 }
 
@@ -753,10 +751,10 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mCamera->Update(deltaTime, &mMouse);
+	mCamera->Update(deltaTime, mEngine.GetMouse());
 
 	PROFILE_SCOPE(WAIT_JOBS);
-	mJobManager->WaitForJobs();
+	JobManager::Get()->WaitForJobs();
 }
 
 void Game::Render()
@@ -767,7 +765,9 @@ void Game::Render()
 
 	mLights.SetBuffer();
 
-	mRenderer.ClearBuffers();
+	Renderer* renderer = mEngine.GetRenderer();
+
+	renderer->ClearBuffers();
 
 	{
 		PROFILE_SCOPE(RENDER_SHADOW_MAP);
@@ -779,9 +779,9 @@ void Game::Render()
 		RenderScene(mShadowMap->GetShader());
 
 		// End shadow render pass
-		mShadowMap->End(mRenderer.GetWidth(), mRenderer.GetHeight());
-		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("phong"), "textureSamplers.shadow");
-		mShadowMap->BindShadowMapToShader(mAssetManager->LoadShader("skinned"), "textureSamplers.shadow");
+		mShadowMap->End(renderer->GetWidth(), renderer->GetHeight());
+		mShadowMap->BindShadowMapToShader(AssetManager::LoadShader("phong"), "textureSamplers.shadow");
+		mShadowMap->BindShadowMapToShader(AssetManager::LoadShader("skinned"), "textureSamplers.shadow");
 	}
 
 	// Draw to main multisampled frame buffer
@@ -796,27 +796,27 @@ void Game::Render()
 	mBloomMaskFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Use the masked off texture and blur horizontally and readjust shader width
 	mBloomBlurHorizontalFrameBuffer->SetActive();
-	mBloomBlurHorizontalFrameBuffer->GetShader()->SetFloat("width", static_cast<float>(mRenderer.GetWidth() / 4));
+	mBloomBlurHorizontalFrameBuffer->GetShader()->SetFloat("width", static_cast<float>(renderer->GetWidth() / 4));
 	mBloomBlurHorizontalFrameBuffer->Draw(mBloomMaskFrameBuffer->GetTexture());
 	// Use the horizontally blurred texture to blur vertically to create the blurred image and readjust shader height
 	mBloomBlurVerticalFrameBuffer->SetActive();
-	mBloomBlurVerticalFrameBuffer->GetShader()->SetFloat("height", static_cast<float>(mRenderer.GetHeight() / 4));
+	mBloomBlurVerticalFrameBuffer->GetShader()->SetFloat("height", static_cast<float>(renderer->GetHeight() / 4));
 	mBloomBlurVerticalFrameBuffer->Draw(mBloomBlurHorizontalFrameBuffer->GetTexture());
 	// Use the multisampled texture and the blurred texture to additively blend them
 	mBloomBlendFrameBuffer->SetActive();
-	mRenderer.CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureType::FrameBuffer));
+	renderer->CreateBlend(mBloomBlendFrameBuffer->GetShader(), mMainFrameBuffer->GetTexture(), mBloomBlurVerticalFrameBuffer->GetTexture(), static_cast<int>(TextureType::FrameBuffer));
 	mBloomBlendFrameBuffer->Draw(mMainFrameBuffer->GetTexture());
 	// Draw the final image
-	mRenderer.SetDefaultFrameBuffer();
+	renderer->SetDefaultFrameBuffer();
 	// Set the main frame buffer's shader active here (since SetDefaultFrameBuffer() does not activate a shader) and add HDR/gamma correction
 	mMainFrameBuffer->GetShader()->SetActive();
 	mMainFrameBuffer->Draw(mBloomBlendFrameBuffer->GetTexture());
 
 
-	mShadowMap->DrawDebug(mAssetManager->LoadShader("shadowDebug"));
-	glViewport(0, 0, mRenderer.GetWidth(), mRenderer.GetHeight());
+	mShadowMap->DrawDebug(AssetManager::LoadShader("shadowDebug"));
+	glViewport(0, 0, renderer->GetWidth(), renderer->GetHeight());
 
-	mRenderer.EndFrame();
+	renderer->EndFrame();
 }
 
 void Game::RenderScene()
@@ -859,12 +859,14 @@ void Game::ResizeWindow(const SDL_Event& event)
 
 		printf("Window width: %i, Window height: %i\n", width, height);
 
+		Renderer* renderer = mEngine.GetRenderer();
+
 		// Set new window dimensions
-		mRenderer.SetWidth(width);
-		mRenderer.SetHeight(height);
+		renderer->SetWidth(width);
+		renderer->SetHeight(height);
 
 		// Resize frame buffers
-		mRenderer.ResizeFrameBuffers();
+		renderer->ResizeFrameBuffers();
 	}
 }
 

@@ -5,19 +5,14 @@
 #include <SDL2/SDL.h>
 #include "Graphics/Camera.h"
 #include "Graphics/Lights.h"
-#include "Graphics/Renderer.h"
-#include "Input/Keyboard.h"
-#include "Input/Mouse.h"
+#include "Engine.h"
 
-class AssetManager;
 class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
-class JobManager;
 class Shader;
 class ShadowMap;
 class Skybox;
-class Texture;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
 class Game
@@ -77,18 +72,15 @@ public:
 	// @param - Entity* for the entity to remove
 	void RemoveGameEntity(Entity* e);
 
+	// Gets the game engine
+	// @return - Engine* for the engine
+	Engine* GetEngine() { return &mEngine; }
+
 private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
 
-	// Renderer for graphics output
-	Renderer mRenderer;
-
-	// Pointer to a static asset manager
-	AssetManager* mAssetManager;
-
-	// Pointer to a static JobManager
-	JobManager* mJobManager;
+	Engine mEngine;
 
 	// The game's camera
 	Camera* mCamera;
@@ -114,12 +106,6 @@ private:
 	FrameBuffer* mBloomBlendFrameBuffer;
 
 	std::vector<class Entity3D*> vampires;
-
-	// Game's mouse input
-	Mouse mMouse;
-
-	// Game's keyboard input
-	Keyboard mKeyboard;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;
