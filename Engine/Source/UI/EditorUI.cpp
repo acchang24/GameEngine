@@ -8,7 +8,9 @@
 #include "imgui_impl_opengl3.h"
 
 EditorUI::EditorUI(Engine* engine) :
-    mEngine(engine)
+    mEngine(engine),
+    mWindow(engine->GetRenderer()->GetWindow()),
+    mVisible(true)
 {
 }
 
@@ -24,6 +26,10 @@ bool EditorUI::Init()
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+    //io.ConfigViewportsNoAutoMerge = true;
+    //io.ConfigViewportsNoTaskBarIcon = true;
 
     // Setup Dear ImGui style
     SetImGuiStyle();
@@ -62,8 +68,20 @@ void EditorUI::ProcessSDLEvent(const SDL_Event& event)
     ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
-void EditorUI::Display()
+void EditorUI::SetUI()
 {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::ShowDemoWindow(&mVisible);
+}
+
+void EditorUI::Render()
+{
+    // Rendering
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void EditorUI::SetImGuiStyle()

@@ -19,6 +19,7 @@
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
 #include "Physics/Physics.h"
+#include "UI/EditorUI.h"
 #include "Util/Console.h"
 #include "Util/Logger.h"
 #include "Util/Random.h"
@@ -161,6 +162,7 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
+		mEngine.GetEditorUI()->ProcessSDLEvent(event);
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -345,6 +347,8 @@ void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
 
+	mEngine.GetEditorUI()->SetUI();
+
 	Renderer* renderer = mEngine.GetRenderer();
 
 	renderer->ClearBuffers();
@@ -352,6 +356,8 @@ void Game::Render()
 	renderer->Draw2D();
 
 	//mConsole->Render(mRenderer.GetRenderer2D(), mRenderer.GetRenderer2D()->GetTextRenderer());
+
+	mEngine.GetEditorUI()->Render();
 
 	renderer->EndFrame();
 }

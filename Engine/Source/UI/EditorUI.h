@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include "imgui.h"
 
 class Engine;
 
@@ -22,7 +23,9 @@ public:
 	// @param - const SDL_Event& for the polled event
 	void ProcessSDLEvent(const SDL_Event& event);
 
-	void Display();
+	void SetUI();
+
+	void Render();
 
 private:
 	// Sets the ImGui style
@@ -30,4 +33,8 @@ private:
 
 	// Pointer to the game engine
 	Engine* mEngine;
+
+	SDL_Window* mWindow;
+
+	bool mVisible;
 };
