@@ -74,7 +74,7 @@ void EditorUI::SetUI()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow(&mVisible);
+    //ImGui::ShowDemoWindow(&mVisible);
 }
 
 void EditorUI::Render()

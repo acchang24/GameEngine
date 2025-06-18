@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
+#include "Util/Console.h"
 
 Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
 	mRenderer(renderMode),
@@ -11,7 +12,8 @@ Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
 	mJobManager(JobManager::Get()),
 	mAssetManager(AssetManager::Get()),
 	mEditorUI(this),
-	mAudio()
+	mAudio(),
+	mConsole(new TestConsole(&mLogger))
 {
 	mLogger.Log("Started engine", LogLevel::Info);
 
@@ -57,4 +59,6 @@ void Engine::Shutdown()
 	mJobManager->End();
 
 	mAssetManager->Shutdown();
+
+	delete mConsole;
 }

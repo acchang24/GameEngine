@@ -7,7 +7,86 @@
 #include "../Graphics/Text.h"
 #include "../Input/Keyboard.h"
 #include "../Input/Mouse.h"
-#include "Logger.h"
+
+
+//struct TestConsole
+//{
+//	Logger* logger; // External message source
+//	char inputBuf[256];
+//	bool autoScroll = true;
+//	bool scrollToBottom = false;
+//
+//	TestConsole(Logger* logger) : logger(logger)
+//	{
+//		memset(inputBuf, 0, sizeof(inputBuf));
+//	}
+//
+//	void Draw(const char* title, bool* p_open)
+//	{
+//		ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
+//		if (!ImGui::Begin(title, p_open))
+//		{
+//			ImGui::End();
+//			return;
+//		}
+//
+//		// Main scroll region
+//		if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true))
+//		{
+//			for (const LogMessage& msg : logger->GetMessages())
+//			{
+//				ImVec4 color = GetColorForLevel(msg.level);
+//				ImGui::PushStyleColor(ImGuiCol_Text, color);
+//				ImGui::TextUnformatted(msg.message.c_str());
+//				ImGui::PopStyleColor();
+//			}
+//
+//			if (scrollToBottom || (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
+//				ImGui::SetScrollHereY(1.0f);
+//			scrollToBottom = false;
+//		}
+//		ImGui::EndChild();
+//
+//		// Command line
+//		if (ImGui::InputText("Command", inputBuf, IM_ARRAYSIZE(inputBuf),
+//			ImGuiInputTextFlags_EnterReturnsTrue))
+//		{
+//			if (inputBuf[0])
+//			{
+//				ExecuteCommand(inputBuf);
+//				strcpy(inputBuf, "");
+//				scrollToBottom = true;
+//			}
+//		}
+//
+//		ImGui::End();
+//	}
+//
+//	void ExecuteCommand(const std::string& command)
+//	{
+//		logger->Log("# " + command, LogLevel::Info);
+//
+//		if (command == "clear")
+//		{
+//			logger->Clear();
+//		}
+//		else if (command == "hi")
+//		{
+//			logger->Log("hi fucker", LogLevel::Info);
+//		}
+//	}
+//
+//	ImVec4 GetColorForLevel(LogLevel level)
+//	{
+//		switch (level)
+//		{
+//		case LogLevel::Info:    return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+//		case LogLevel::Warning: return ImVec4(1.0f, 1.0f, 0.4f, 1.0f);
+//		case LogLevel::Error:   return ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+//		default:                return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+//		}
+//	}
+//};
 
 //struct ExampleAppConsole
 //{

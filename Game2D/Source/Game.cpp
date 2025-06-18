@@ -112,11 +112,11 @@ void Game::LoadGameData()
 	mEngine.GetRenderer()->GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
 
 
-	//// Test logger
-	//mLogger->Log("Logger test", LogLevel::Info);
-	//mLogger->Log("Is this some info?", LogLevel::Info);
-	//mLogger->Log("WARNING", LogLevel::Warning);
-	//mLogger->Log("ERROR", LogLevel::Error);
+	// Test logger
+	mEngine.GetLogger()->Log("Logger test", LogLevel::Info);
+	mEngine.GetLogger()->Log("Is this some info?", LogLevel::Info);
+	mEngine.GetLogger()->Log("WARNING", LogLevel::Warning);
+	mEngine.GetLogger()->Log("ERROR", LogLevel::Error);
 }
 
 void Game::UnloadGameData()
@@ -201,8 +201,7 @@ void Game::ProcessInput()
 
 	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_GRAVE))
 	{
-		std::cout << "TOGGLE CONSOLE\n";
-		//mConsole->ToggleConsole();
+		mEngine.GetConsole()->ToggleConsole();
 	}
 
 	for (size_t i =0; i<mEntities.size(); ++i)
@@ -354,6 +353,8 @@ void Game::Render()
 	renderer->ClearBuffers();
 
 	renderer->Draw2D();
+
+	mEngine.GetConsole()->Draw("Console");
 
 	//mConsole->Render(mRenderer.GetRenderer2D(), mRenderer.GetRenderer2D()->GetTextRenderer());
 

@@ -34,6 +34,8 @@ public:
 	// @return - const std::deque<LogMessage>& for the messages
 	const std::deque<LogMessage>& GetMessages() const { return mMessages; }
 
+	void Clear() { mMessages.clear(); }
+
 private:
 	// Deque of messages
 	std::deque<LogMessage> mMessages;
