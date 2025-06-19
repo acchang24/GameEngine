@@ -199,19 +199,12 @@ void Game::ProcessInput()
 		mIsRunning = false;
 	}
 
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_GRAVE))
-	{
-		mEngine.GetConsole()->ToggleConsole();
-	}
-
 	for (size_t i =0; i<mEntities.size(); ++i)
 	{
 		mEntities[i]->ProcessInput(keyboardState, keyboard, mouse);
 	}
 
-	//mConsole->ProcessInput(keyboardState, &mKeyboard, &mMouse);
-
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_GRAVE);
+	mEngine.GetConsole()->ProcessInput(keyboardState, keyboard, mouse);
 }
 
 void Game::ProcessMouseInput(Mouse* mouse)
@@ -353,10 +346,6 @@ void Game::Render()
 	renderer->ClearBuffers();
 
 	renderer->Draw2D();
-
-	mEngine.GetConsole()->Draw("Console");
-
-	//mConsole->Render(mRenderer.GetRenderer2D(), mRenderer.GetRenderer2D()->GetTextRenderer());
 
 	mEngine.GetEditorUI()->Render();
 

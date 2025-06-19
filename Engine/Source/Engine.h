@@ -9,7 +9,7 @@
 #include "Util/Logger.h"
 
 class AssetManager;
-struct TestConsole;
+class Console;
 class JobManager;
 
 // Engine class is the central system for game framework. 
@@ -67,7 +67,7 @@ public:
 	// @return - Audio* for the audio
 	AudioSystem* GetAudio() { return &mAudio; }
 
-	TestConsole* GetConsole() { return mConsole; }
+	Console* GetConsole() { return mConsole; }
 
 private:
 	// Renderer for 2D/3D graphics output
@@ -97,5 +97,5 @@ private:
 	// Audio system
 	AudioSystem mAudio;
 
-	TestConsole* mConsole;
+	Console* mConsole;
 };

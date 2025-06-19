@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
+#include "../Util/Console.h"
 
 EditorUI::EditorUI(Engine* engine) :
     mEngine(engine),
@@ -74,13 +75,18 @@ void EditorUI::SetUI()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
+    // TODO: Render all editor panels
+
     //ImGui::ShowDemoWindow(&mVisible);
+
+    mEngine->GetConsole()->SetConsole();
+
+    // Finalize ImGui draw data
+    ImGui::Render();
 }
 
 void EditorUI::Render()
 {
-    // Rendering
-    ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 

@@ -13,7 +13,7 @@ Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
 	mAssetManager(AssetManager::Get()),
 	mEditorUI(this),
 	mAudio(),
-	mConsole(new TestConsole(&mLogger))
+	mConsole(new Console(&mLogger))
 {
 	mLogger.Log("Started engine", LogLevel::Info);
 
