@@ -1,15 +1,11 @@
 #pragma once
-#include <SDL2/SDL_stdinc.h>
-#include "../UI/EditorUI.h"
-#include "../UI/imgui.h"
 #include <string>
+#include <SDL2/SDL_stdinc.h>
+#include "../EngineUI/imgui.h"
 #include "Logger.h"
 
 class Keyboard;
-class Logger;
 class Mouse;
-class Renderer2D;
-class Text;
 
 class Console
 {
@@ -23,7 +19,7 @@ public:
 	void ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse);
 
 	// Sets the console window and all of its components
-	void SetConsole();
+	void SetConsoleUI();
 
 	// Executes a console command
 	// @param - const std::string& for the command

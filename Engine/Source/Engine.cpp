@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
+#include "EngineUI/Editor.h"
 #include "Util/Console.h"
 
 Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
@@ -11,9 +12,10 @@ Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
 	mPhysics(),
 	mJobManager(JobManager::Get()),
 	mAssetManager(AssetManager::Get()),
-	mEditorUI(this),
+	mEngineUI(this),
 	mAudio(),
 	mConsole(new Console(&mLogger))
+	//mEditor(new Editor())
 {
 	mLogger.Log("Started engine", LogLevel::Info);
 
@@ -33,7 +35,7 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 		return false;
 	}
 
-	if (!mEditorUI.Init())
+	if (!mEngineUI.Init())
 	{
 		return false;
 	}
@@ -52,7 +54,7 @@ void Engine::Shutdown()
 
 	mAudio.Shutdown();
 
-	mEditorUI.Shutdown();
+	mEngineUI.Shutdown();
 
 	mRenderer.Shutdown();
 
@@ -61,4 +63,6 @@ void Engine::Shutdown()
 	mAssetManager->Shutdown();
 
 	delete mConsole;
+
+	//delete mEditor;
 }

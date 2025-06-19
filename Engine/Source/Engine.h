@@ -1,15 +1,16 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include "Audio/AudioSystem.h"
+#include "EngineUI/EngineUI.h"
 #include "Graphics/Renderer.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
 #include "Physics/Physics.h"
-#include "UI/EditorUI.h"
 #include "Util/Logger.h"
 
 class AssetManager;
 class Console;
+class Editor;
 class JobManager;
 
 // Engine class is the central system for game framework. 
@@ -59,15 +60,17 @@ public:
 	// @return - Physics* for the physics system
 	Physics* GetPhysics() { return &mPhysics; }
 
-	// Gets the EditorUI system
-	// @return - EditorUI* for the editor
-	EditorUI* GetEditorUI() { return &mEditorUI; }
+	// Gets the EngineUI system
+	// @return - EngineUI* for the engine ui
+	EngineUI* GetEngineUI() { return &mEngineUI; }
 
 	// Gets the audio system
 	// @return - Audio* for the audio
 	AudioSystem* GetAudio() { return &mAudio; }
 
 	Console* GetConsole() { return mConsole; }
+
+	//Editor* GetEditor() { return mEditor; }
 
 private:
 	// Renderer for 2D/3D graphics output
@@ -91,11 +94,13 @@ private:
 	// Pointer to a static AssetManager to load/cache assets on demand
 	AssetManager* mAssetManager;
 
-	// Editor UI system
-	EditorUI mEditorUI;
+	// Engine UI system
+	EngineUI mEngineUI;
 
 	// Audio system
 	AudioSystem mAudio;
 
 	Console* mConsole;
+
+	//Editor* mEditor;
 };

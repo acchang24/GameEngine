@@ -8,6 +8,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include "Audio/Sound.h"
 #include "Components/SpriteComponent.h"
+#include "EngineUI/EngineUI.h"
 #include "Entity/Entity2D.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/Renderer2D.h"
@@ -19,7 +20,6 @@
 #include "Multithreading/JobManager.h"
 #include "Profiler/Profiler.h"
 #include "Physics/Physics.h"
-#include "UI/EditorUI.h"
 #include "Util/Console.h"
 #include "Util/Logger.h"
 #include "Util/Random.h"
@@ -162,7 +162,7 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		mEngine.GetEditorUI()->ProcessSDLEvent(event);
+		mEngine.GetEngineUI()->ProcessSDLEvent(event);
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -339,7 +339,7 @@ void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
 
-	mEngine.GetEditorUI()->SetUI();
+	mEngine.GetEngineUI()->SetUI();
 
 	Renderer* renderer = mEngine.GetRenderer();
 
@@ -347,7 +347,7 @@ void Game::Render()
 
 	renderer->Draw2D();
 
-	mEngine.GetEditorUI()->Render();
+	mEngine.GetEngineUI()->Render();
 
 	renderer->EndFrame();
 }

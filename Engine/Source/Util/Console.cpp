@@ -33,7 +33,7 @@ void Console::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mous
 	keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_GRAVE);
 }
 
-void Console::SetConsole()
+void Console::SetConsoleUI()
 {
 	if (mIsVisible)
 	{

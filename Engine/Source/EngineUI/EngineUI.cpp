@@ -1,25 +1,25 @@
-#include "EditorUI.h"
+#include "EngineUI.h"
 #include <iostream>
 #include <glad/glad.h>
+#include "../Util/Console.h"
 #include "../Util/Logger.h"
 #include "../Engine.h"
+#include "Editor.h"
 #include "imgui.h"
-#include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
-#include "../Util/Console.h"
+#include "imgui_impl_sdl2.h"
 
-EditorUI::EditorUI(Engine* engine) :
+EngineUI::EngineUI(Engine* engine) :
     mEngine(engine),
-    mWindow(engine->GetRenderer()->GetWindow()),
-    mVisible(true)
+    mWindow(engine->GetRenderer()->GetWindow())
 {
 }
 
-EditorUI::~EditorUI()
+EngineUI::~EngineUI()
 {
 }
 
-bool EditorUI::Init()
+bool EngineUI::Init()
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -54,7 +54,7 @@ bool EditorUI::Init()
     return true;
 }
 
-void EditorUI::Shutdown()
+void EngineUI::Shutdown()
 {
     std::cout << "Shutting down EditorUI\n";
     mEngine->GetLogger()->Log("Shutting down EditorUI", LogLevel::Info);
@@ -64,33 +64,31 @@ void EditorUI::Shutdown()
     ImGui::DestroyContext();
 }
 
-void EditorUI::ProcessSDLEvent(const SDL_Event& event)
+void EngineUI::ProcessSDLEvent(const SDL_Event& event)
 {
     ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
-void EditorUI::SetUI()
+void EngineUI::SetUI()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    // TODO: Render all editor panels
+    //mEngine->GetEditor()->SetEditorUI();
 
-    //ImGui::ShowDemoWindow(&mVisible);
-
-    mEngine->GetConsole()->SetConsole();
+    mEngine->GetConsole()->SetConsoleUI();
 
     // Finalize ImGui draw data
     ImGui::Render();
 }
 
-void EditorUI::Render()
+void EngineUI::Render()
 {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void EditorUI::SetImGuiStyle()
+void EngineUI::SetImGuiStyle()
 {
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();

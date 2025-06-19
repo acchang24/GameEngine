@@ -1,16 +1,15 @@
 #pragma once
 #include <SDL2/SDL.h>
-#include "imgui.h"
 
 class Engine;
 
-class EditorUI
+class EngineUI
 {
 public:
 	// EditorUI constructor:
 	// @param - Engine* for the game engine
-	EditorUI(Engine* engine);
-	~EditorUI();
+	EngineUI(Engine* engine);
+	~EngineUI();
 
 	// Initializes the ImGUI library and returns true if intialized
 	// @return - bool for if ImGUI initialized properly
@@ -34,7 +33,6 @@ private:
 	// Pointer to the game engine
 	Engine* mEngine;
 
+	// Pointer to the window
 	SDL_Window* mWindow;
-
-	bool mVisible;
 };
