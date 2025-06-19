@@ -13,6 +13,13 @@ Logger::~Logger()
 	mMessages.clear();
 }
 
+Logger* Logger::Get()
+{
+	static Logger s_Logger;
+
+	return &s_Logger;
+}
+
 void Logger::Log(const std::string& message, LogLevel level)
 {
 	if (mMessages.size() >= mMaxMessages)

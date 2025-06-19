@@ -4,7 +4,7 @@
 #include "../Animation/BoneData.h"
 #include "../Animation/Skeleton.h"
 #include "../Engine.h"
-#include "../Util/Logger.h"
+#include "../Util/LoggerMacros.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
 #include "FrameBufferMultiSampled.h"
@@ -94,7 +94,7 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 
 void Renderer::Shutdown()
 {
-	mEngine->GetLogger()->Log("Shutting down Renderer", LogLevel::Info);
+	LOG_INFO("Shutting down Renderer");
 	std::cout << "Shutting down Renderer3D\n";
 	
 	for (auto& ub : mUniformBuffers)
@@ -233,7 +233,7 @@ bool Renderer::InitSDL() const
 	{
 		std::string error = SDL_GetError();
 
-		mEngine->GetLogger()->Log("Could not initialize SDL video or audio: " + error, LogLevel::Error);
+		LOG_ERROR("Could not initialize SDL video or audio: " + error);
 		std::cout << "Could not initialize SDL: " << error << "\n";
 		return false;
 	}
@@ -297,7 +297,7 @@ bool Renderer::CreateWindow()
 	if (!mWindow)
 	{
 		std::string error = SDL_GetError();
-		mEngine->GetLogger()->Log("Failed to create a window: " + error, LogLevel::Error);
+		LOG_ERROR("Failed to create a window: " + error);
 		std::cout << "Failed to create a window: " << error << "\n";
 		return false;
 	}
@@ -310,7 +310,7 @@ bool Renderer::CreateContext()
 	if (mContext == NULL)
 	{
 		std::string error = SDL_GetError();
-		mEngine->GetLogger()->Log("Failed to create an OpenGL context: " + error, LogLevel::Error);
+		LOG_ERROR("Failed to create an OpenGL context: " + error);
 		std::cout << "Failed to create an OpenGL context: " << error << "\n";
 		return false;
 	}
@@ -321,14 +321,14 @@ void Renderer::LoadGLAD() const
 {
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-	Logger* logger = mEngine->GetLogger();
-	logger->Log("OpenGL loaded", LogLevel::Info);
+	Logger* logger = Logger::Get();
+	LOG_INFO("OpenGL loaded");
 	std::string vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-	logger->Log("Vendor: " + vendor, LogLevel::Info);
+	LOG_INFO(std::string("Vendor: " + vendor));
 	std::string renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-	logger->Log("Graphics: " + renderer, LogLevel::Info);
+	LOG_INFO(std::string("Graphics: " + renderer));
 	std::string version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-	logger->Log("Version: " + version, LogLevel::Info);
+	LOG_INFO(std::string("Version: " + version));
 
 	std::cout << "OpenGL loaded\n";
 	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";

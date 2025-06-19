@@ -4,7 +4,7 @@
 #include "Components/SpriteComponent.h"
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
-#include "Util/Logger.h"
+#include "Util/LoggerMacros.h"
 #include "Util/Random.h"
 #include "Engine.h"
 #include "Game.h"
@@ -61,7 +61,8 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 Asteroid::~Asteroid()
 {
 	std::cout << "Deleted Asteroid\n";
-	mEngine->GetLogger()->Log("Destroyed Asteroid", LogLevel::Info);
+
+	LOG_DEBUG("Destroyed Asteroid");
 }
 
 void Asteroid::OnUpdate(float deltaTime)

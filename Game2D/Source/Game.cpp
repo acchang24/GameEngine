@@ -20,7 +20,7 @@
 #include "Multithreading/JobManager.h"
 #include "Physics/Physics.h"
 #include "Util/Console.h"
-#include "Util/Logger.h"
+#include "Util/LoggerMacros.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
 #include "Asteroid.h"
@@ -110,6 +110,9 @@ void Game::LoadGameData()
 
 	// Set font
 	mEngine.GetRenderer()->GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
+
+	LOG_WARNING("WARNING TEST");
+	LOG_ERROR("ERROR TEST");
 }
 
 void Game::UnloadGameData()

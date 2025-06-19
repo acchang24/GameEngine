@@ -3,21 +3,22 @@
 #include "Multithreading/JobManager.h"
 #include "EngineUI/Editor.h"
 #include "Util/Console.h"
+#include "Util/LoggerMacros.h"
 
 Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
 	mRenderer(renderMode, this),
 	mKeyboard(),
-	mLogger(),
 	mMouse(mouseSensitivity),
 	mPhysics(),
 	mJobManager(JobManager::Get()),
 	mAssetManager(AssetManager::Get()),
+	mLogger(Logger::Get()),
 	mEngineUI(this),
 	mAudio(),
-	mConsole(new Console(&mLogger))
+	mConsole(new Console(mLogger))
 	//mEditor(new Editor())
 {
-	mLogger.Log("Started engine", LogLevel::Info);
+	LOG_DEBUG("Started engine");
 
 	mAssetManager->SetRenderer(&mRenderer);
 }
@@ -50,7 +51,7 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 
 void Engine::Shutdown()
 {
-	mLogger.Log("Shutting down engine", LogLevel::Info);
+	LOG_DEBUG("Shutting down engine");
 
 	mAudio.Shutdown();
 

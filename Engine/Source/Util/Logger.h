@@ -6,7 +6,8 @@ enum class LogLevel
 {
 	Info,		// Message that logs info
 	Warning,	// Message that logs a warning
-	Error		// Message that logs an error
+	Error,		// Message that logs an error
+	Debug,		// Message that logs a debug
 };
 
 struct LogMessage
@@ -18,8 +19,8 @@ struct LogMessage
 class Logger
 {
 public:
-	Logger(size_t maxMessages = 1000);
-	~Logger();
+	// Gets the static logger (singleton)
+	static Logger* Get();
 
 	// Logs a message and its level by adding it to the deque of LogMessages
 	// @param - const std::string& for the message
@@ -37,6 +38,9 @@ public:
 	void Clear() { mMessages.clear(); }
 
 private:
+	Logger(size_t maxMessages = 1000);
+	~Logger();
+
 	// Deque of messages
 	std::deque<LogMessage> mMessages;
 

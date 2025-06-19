@@ -8,7 +8,7 @@
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
 #include "Physics/Physics.h"
-#include "Util/Logger.h"
+#include "Util/LoggerMacros.h"
 #include "Asteroid.h"
 #include "Engine.h"
 #include "Game.h"
@@ -44,7 +44,8 @@ Laser::Laser(Renderer2D* renderer, Game* game) :
 			mEngine->GetAudio()->PlaySFX("Assets/Sounds/AsteroidExplode.wav");
 			asteroid->SetEntityState(EntityState::Destroy);
 			mState = EntityState::Destroy;
-			mEngine->GetLogger()->Log("Laser hit Asteroid", LogLevel::Info);
+
+			LOG_DEBUG("Laser hit Asteroid");
 		}
 	});
 
@@ -54,7 +55,7 @@ Laser::Laser(Renderer2D* renderer, Game* game) :
 
 Laser::~Laser()
 {
-	mEngine->GetLogger()->Log("Deleted Laser", LogLevel::Info);
+	LOG_DEBUG("Deleted Laser");
 }
 
 void Laser::OnUpdate(float deltaTime)

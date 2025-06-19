@@ -48,10 +48,6 @@ public:
 	// @return - Keyboard* for the keyboard
 	Keyboard* GetKeyboard() { return &mKeyboard; }
 
-	// Gets the logger
-	// @return - Logger* for the logger
-	Logger* GetLogger() { return &mLogger; }
-
 	// Gets the mouse
 	// @return - Mouse* for the mouse
 	Mouse* GetMouse() { return &mMouse; }
@@ -79,9 +75,6 @@ private:
 	// Keyboard
 	Keyboard mKeyboard;
 
-	// Logger to log messages
-	Logger mLogger;
-
 	// Mouse
 	Mouse mMouse;
 
@@ -93,6 +86,9 @@ private:
 
 	// Pointer to a static AssetManager to load/cache assets on demand
 	AssetManager* mAssetManager;
+
+	// Logger to log messages
+	Logger* mLogger;
 
 	// Engine UI system
 	EngineUI mEngineUI;
