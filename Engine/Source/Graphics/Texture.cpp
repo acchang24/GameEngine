@@ -165,6 +165,10 @@ void Texture::LoadTexture()
 
 	if (data)
 	{
+		std::cout << "Loading texture: " << mName << "\n";
+
+		LOG_DEBUG("Loading texture file: " + mName);
+
 		bool generatesMipMap = true;
 		bool flipTexture = true;
 		GLenum minFilter = GL_LINEAR_MIPMAP_LINEAR;

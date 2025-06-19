@@ -49,6 +49,8 @@ GLenum ShaderProgram::LoadType(const std::string& shaderFile)
 
 const std::string ShaderProgram::ReadShaderFile(const char* shaderFileName) const
 {
+    LOG_DEBUG("Loading shader file: " + std::string(shaderFileName));
+
 	std::string shaderCode;
 
 	std::ifstream shaderFile(shaderFileName);

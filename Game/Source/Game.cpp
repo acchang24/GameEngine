@@ -650,95 +650,95 @@ void Game::ProcessMouseInput(Mouse* mouse)
 	Uint8 buttonDown = mouse->GetButtonDown();
 	Uint8 buttonUp = mouse->GetButtonUp();
 	Sint32 scroll = mouse->GetScrollDir();
-	// Single left click
-	if (buttonDown == SDL_BUTTON_LEFT)
-	{
-		std::cout << "Left Click\n";
-	}
-	// Single right click
-	if (buttonDown == SDL_BUTTON_RIGHT)
-	{
-		std::cout << "Right Click\n";
-	}
-	// Single scroll wheel click (mouse 3 click)
-	if (buttonDown == SDL_BUTTON_MIDDLE)
-	{
-		std::cout << "Scroll Click\n";
-	}
-	// Single mouse 4 click
-	if (buttonDown == SDL_BUTTON_X1)
-	{
-		std::cout << "Mouse 4 Click\n";
-	}
-	// Single mouse 5 click
-	if (buttonDown == SDL_BUTTON_X2)
-	{
-		std::cout << "Mouse 5 Click\n";
-	}
+	//// Single left click
+	//if (buttonDown == SDL_BUTTON_LEFT)
+	//{
+	//	std::cout << "Left Click\n";
+	//}
+	//// Single right click
+	//if (buttonDown == SDL_BUTTON_RIGHT)
+	//{
+	//	std::cout << "Right Click\n";
+	//}
+	//// Single scroll wheel click (mouse 3 click)
+	//if (buttonDown == SDL_BUTTON_MIDDLE)
+	//{
+	//	std::cout << "Scroll Click\n";
+	//}
+	//// Single mouse 4 click
+	//if (buttonDown == SDL_BUTTON_X1)
+	//{
+	//	std::cout << "Mouse 4 Click\n";
+	//}
+	//// Single mouse 5 click
+	//if (buttonDown == SDL_BUTTON_X2)
+	//{
+	//	std::cout << "Mouse 5 Click\n";
+	//}
 
-	Uint8 mouse_state = SDL_GetMouseState(NULL, NULL);
-	// Left click hold
-	if (mouse_state & SDL_BUTTON_LMASK)
-	{
-		std::cout << "Left Click hold\n";
-	}
-	// Right click hold
-	if (mouse_state & SDL_BUTTON_RMASK)
-	{
-		std::cout << "Right Click hold\n";
-	}
-	// Scroll click hold
-	if (mouse_state & SDL_BUTTON_MMASK)
-	{
-		std::cout << "Scroll Click hold\n";
-	}
-	// Mouse 4 click hold
-	if (mouse_state & SDL_BUTTON_X1MASK)
-	{
-		std::cout << "Mouse 4 Click hold\n";
-	}
-	// Mouse 5 click hold
-	if (mouse_state & SDL_BUTTON_X2MASK)
-	{
-		std::cout << "Mouse 5 Click hold\n";
-	}
+	//Uint8 mouse_state = SDL_GetMouseState(NULL, NULL);
+	//// Left click hold
+	//if (mouse_state & SDL_BUTTON_LMASK)
+	//{
+	//	std::cout << "Left Click hold\n";
+	//}
+	//// Right click hold
+	//if (mouse_state & SDL_BUTTON_RMASK)
+	//{
+	//	std::cout << "Right Click hold\n";
+	//}
+	//// Scroll click hold
+	//if (mouse_state & SDL_BUTTON_MMASK)
+	//{
+	//	std::cout << "Scroll Click hold\n";
+	//}
+	//// Mouse 4 click hold
+	//if (mouse_state & SDL_BUTTON_X1MASK)
+	//{
+	//	std::cout << "Mouse 4 Click hold\n";
+	//}
+	//// Mouse 5 click hold
+	//if (mouse_state & SDL_BUTTON_X2MASK)
+	//{
+	//	std::cout << "Mouse 5 Click hold\n";
+	//}
 
-	// Left click release
-	if (buttonUp == SDL_BUTTON_LEFT)
-	{
-		std::cout << "Left Click Release\n";
-	}
-	// Right click release
-	if (buttonUp == SDL_BUTTON_RIGHT)
-	{
-		std::cout << "Right Click Release\n";
-	}
-	// Scroll click release
-	if (buttonUp == SDL_BUTTON_MIDDLE)
-	{
-		std::cout << "Scroll Click Release\n";
-	}
-	// Mouse 4 click release
-	if (buttonUp == SDL_BUTTON_X1)
-	{
-		std::cout << "Mouse 4 Click Release\n";
-	}
-	// Mouse 5 click release
-	if (buttonUp == SDL_BUTTON_X2)
-	{
-		std::cout << "Mouse 5 Click Release\n";
-	}
+	//// Left click release
+	//if (buttonUp == SDL_BUTTON_LEFT)
+	//{
+	//	std::cout << "Left Click Release\n";
+	//}
+	//// Right click release
+	//if (buttonUp == SDL_BUTTON_RIGHT)
+	//{
+	//	std::cout << "Right Click Release\n";
+	//}
+	//// Scroll click release
+	//if (buttonUp == SDL_BUTTON_MIDDLE)
+	//{
+	//	std::cout << "Scroll Click Release\n";
+	//}
+	//// Mouse 4 click release
+	//if (buttonUp == SDL_BUTTON_X1)
+	//{
+	//	std::cout << "Mouse 4 Click Release\n";
+	//}
+	//// Mouse 5 click release
+	//if (buttonUp == SDL_BUTTON_X2)
+	//{
+	//	std::cout << "Mouse 5 Click Release\n";
+	//}
 
-	// Scroll wheel up
-	if (scroll >= 1)
-	{
-		std::cout << "Scroll Up\n";
-	}
-	// Scroll wheel down
-	if (scroll <= -1)
-	{
-		std::cout << "Scroll Down\n";
-	}
+	//// Scroll wheel up
+	//if (scroll >= 1)
+	//{
+	//	std::cout << "Scroll Up\n";
+	//}
+	//// Scroll wheel down
+	//if (scroll <= -1)
+	//{
+	//	std::cout << "Scroll Down\n";
+	//}
 
 	if (mouse->MouseCaptured() == SDL_TRUE)
 	{
