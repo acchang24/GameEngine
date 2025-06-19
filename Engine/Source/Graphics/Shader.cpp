@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "../MemoryManager/AssetManager.h"
+#include "../Util/LoggerMacros.h"
 #include "Renderer.h"
 #include "ShaderProgram.h"
 
@@ -38,6 +39,8 @@ Shader::Shader(const std::string& name, const char* vertexFile, const char* frag
     {
         glGetProgramInfoLog(mShaderID, 512, NULL, infoLog);
         std::cout << "Shader program creation failed\n" << infoLog << "\n";
+
+        LOG_ERROR("Shader program creation failed\nOpenGL " + std::string(infoLog));
     }
     else
     {
@@ -48,6 +51,9 @@ Shader::Shader(const std::string& name, const char* vertexFile, const char* frag
 Shader::~Shader()
 {
     std::cout << "Deleted shader: " << mName << " "  << mShaderID << "\n";
+
+    LOG_DEBUG("Deleted shader: " + mName + " " + std::to_string(mShaderID));
+
     glDeleteProgram(mShaderID);
     mShaderID = 0;
 }

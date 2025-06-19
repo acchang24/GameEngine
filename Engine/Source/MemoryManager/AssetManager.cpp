@@ -1,6 +1,7 @@
 #include "AssetManager.h"
 #include <iostream>
 #include "../Graphics/Renderer.h"
+#include "../Util/LoggerMacros.h"
 
 AssetManager::AssetManager() :
 	mRenderer(nullptr),
@@ -57,6 +58,18 @@ AssetManager* AssetManager::Get()
 	static AssetManager s_AssetManager;
 
 	return &s_AssetManager;
+}
+
+Shader* AssetManager::LoadShader(const std::string& shaderName)
+{
+	Shader* shader = AssetManager::Get()->mShaderCache->Get(shaderName);
+
+	if (!shader)
+	{
+		LOG_WARNING("Could not find shader name: " + shaderName);
+	}
+
+	return shader;
 }
 
 Shader* AssetManager::LoadShader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile)

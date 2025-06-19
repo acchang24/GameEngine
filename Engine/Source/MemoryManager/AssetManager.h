@@ -48,7 +48,7 @@ public:
 	// Call AssetManager::DeleteShader() if you need to delete/remove a shader by name
 	// @param - const std::string& for the shader's name.
 	// @return - Shader* for the desired shader retrieved from the shader cache map
-	static Shader* LoadShader(const std::string& shaderName) { return AssetManager::Get()->mShaderCache->Get(shaderName); }
+	static Shader* LoadShader(const std::string& shaderName);
 
 	// Creates and returns a shader, saving it in the shader cache's map if it doesn't exist.
 	// Ownership of any Shader* returned from this method is handled by the AssetManager. Don't need to free memory manually.

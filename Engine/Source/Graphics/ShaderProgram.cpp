@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include "../MemoryManager/AssetManager.h"
+#include "../Util/LoggerMacros.h"
 
 ShaderProgram::ShaderProgram(const std::string& shaderFile) :
     mType(LoadType(shaderFile)),
@@ -13,7 +14,10 @@ ShaderProgram::ShaderProgram(const std::string& shaderFile) :
 
 ShaderProgram::~ShaderProgram()
 {
+    LOG_DEBUG(std::string("Deleted shader program: \"" + mPath + "\" " + std::to_string(mShaderID)));
+    
     std::cout << "Deleted shader program: \"" << mPath << "\" " << mShaderID << "\n";
+
 	glDeleteShader(mShaderID);
 }
 
@@ -61,6 +65,7 @@ const std::string ShaderProgram::ReadShaderFile(const char* shaderFileName) cons
     if (shaderCode.empty())
     {
         std::cout << "Could not open the shader file: " << shaderFileName << "\n";
+        LOG_ERROR("Could not open the shader file: " + std::string(shaderFileName));
     }
     
 	return shaderCode;
@@ -103,7 +108,10 @@ unsigned int ShaderProgram::CompileShader(const char* shaderCode, GLenum type) c
             typeString = "Geometry";
             break;
         }
-        std::cout << typeString << " shader compilation failed: \"" << mPath << "\"\n" << infoLog << "\n";
+
+        std::string error = (typeString + " shader compilation failed: \"" + mPath + "\"\n" + infoLog);
+        std::cout << error << "\n";
+        LOG_ERROR(error);
     }
 
     return shader;

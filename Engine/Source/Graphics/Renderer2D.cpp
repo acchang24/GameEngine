@@ -76,10 +76,13 @@ void Renderer2D::DrawSprites()
 
 				mSpriteShader->SetMat4("projection", mProjection);
 
-				mSpriteShader->SetInt("sprite", tex->GetTextureUnit());
+				if (tex)
+				{
+					mSpriteShader->SetInt("sprite", tex->GetTextureUnit());
 
-				// Bind the texture
-				tex->BindTexture();
+					// Bind the texture
+					tex->BindTexture();
+				}
 
 				// Draw
 				mVertexBuffer->Draw();
