@@ -5,7 +5,7 @@
 #include "Util/Console.h"
 
 Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
-	mRenderer(renderMode),
+	mRenderer(renderMode, this),
 	mKeyboard(),
 	mLogger(),
 	mMouse(mouseSensitivity),

@@ -110,13 +110,6 @@ void Game::LoadGameData()
 
 	// Set font
 	mEngine.GetRenderer()->GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
-
-
-	// Test logger
-	mEngine.GetLogger()->Log("Logger test", LogLevel::Info);
-	mEngine.GetLogger()->Log("Is this some info?", LogLevel::Info);
-	mEngine.GetLogger()->Log("WARNING", LogLevel::Warning);
-	mEngine.GetLogger()->Log("ERROR", LogLevel::Error);
 }
 
 void Game::UnloadGameData()

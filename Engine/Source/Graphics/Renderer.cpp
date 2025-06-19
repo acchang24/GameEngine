@@ -3,19 +3,21 @@
 #include <glad/glad.h>
 #include "../Animation/BoneData.h"
 #include "../Animation/Skeleton.h"
+#include "../Engine.h"
+#include "../Util/Logger.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
 #include "FrameBufferMultiSampled.h"
 #include "Material.h"
 #include "Shader.h"
-#include "stb_image.h"
 #include "VertexBuffer.h"
 
-Renderer::Renderer(RendererMode mode) :
+Renderer::Renderer(RendererMode mode, Engine* engine) :
 	mRenderer2D(nullptr),
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
+	mEngine(engine),
 	mWindowTitle(),
 	mNumSubsamples(0),
 	mVSync(1),
@@ -92,6 +94,7 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 
 void Renderer::Shutdown()
 {
+	mEngine->GetLogger()->Log("Shutting down Renderer", LogLevel::Info);
 	std::cout << "Shutting down Renderer3D\n";
 	
 	for (auto& ub : mUniformBuffers)
@@ -228,7 +231,10 @@ bool Renderer::InitSDL() const
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
-		std::cout << "Could not initialize SDL: " << SDL_GetError() << "\n";
+		std::string error = SDL_GetError();
+
+		mEngine->GetLogger()->Log("Could not initialize SDL video or audio: " + error, LogLevel::Error);
+		std::cout << "Could not initialize SDL: " << error << "\n";
 		return false;
 	}
 	return true;
@@ -290,7 +296,9 @@ bool Renderer::CreateWindow()
 	}
 	if (!mWindow)
 	{
-		std::cout << "Failed to create a window " << SDL_GetError() << "\n";
+		std::string error = SDL_GetError();
+		mEngine->GetLogger()->Log("Failed to create a window: " + error, LogLevel::Error);
+		std::cout << "Failed to create a window: " << error << "\n";
 		return false;
 	}
 	return true;
@@ -301,7 +309,9 @@ bool Renderer::CreateContext()
 	mContext = SDL_GL_CreateContext(mWindow);
 	if (mContext == NULL)
 	{
-		std::cout << "Failed to create an OpenGL context " << SDL_GetError() << "\n";
+		std::string error = SDL_GetError();
+		mEngine->GetLogger()->Log("Failed to create an OpenGL context: " + error, LogLevel::Error);
+		std::cout << "Failed to create an OpenGL context: " << error << "\n";
 		return false;
 	}
 	return true;
@@ -310,6 +320,15 @@ bool Renderer::CreateContext()
 void Renderer::LoadGLAD() const
 {
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
+
+	Logger* logger = mEngine->GetLogger();
+	logger->Log("OpenGL loaded", LogLevel::Info);
+	std::string vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+	logger->Log("Vendor: " + vendor, LogLevel::Info);
+	std::string renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+	logger->Log("Graphics: " + renderer, LogLevel::Info);
+	std::string version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+	logger->Log("Version: " + version, LogLevel::Info);
 
 	std::cout << "OpenGL loaded\n";
 	std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
