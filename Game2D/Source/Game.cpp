@@ -110,9 +110,6 @@ void Game::LoadGameData()
 
 	// Set font
 	mEngine.GetRenderer()->GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
-
-	LOG_WARNING("WARNING TEST");
-	LOG_ERROR("ERROR TEST");
 }
 
 void Game::UnloadGameData()

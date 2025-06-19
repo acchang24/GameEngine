@@ -1,5 +1,6 @@
 #include "Texture.h"
 #include <iostream>
+#include "../Util/LoggerMacros.h"
 #include "stb_image.h"
 
 Texture::Texture(TextureType type) :
@@ -179,6 +180,7 @@ void Texture::LoadTexture()
 	}
 	else
 	{
+		LOG_WARNING("Failed to load texture: " + mName);
 		std::cout << "Failed to load texture: " << mName << "\n";
 	}
 

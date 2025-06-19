@@ -1,6 +1,7 @@
 #include "Sound.h"
 #include <algorithm>
 #include <iostream>
+#include "../Util/LoggerMacros.h"
 
 SFX::SFX(const std::string& fileName):
 	mName(fileName),
@@ -12,6 +13,7 @@ SFX::SFX(const std::string& fileName):
 
 	if (!mSoundChunk)
 	{
+		LOG_WARNING("Failed to load sound file: " + fileName);
 		std::cout << "Failed to load sound file: " << fileName << "\n";
 	}
 }
@@ -63,6 +65,7 @@ Music::Music(const std::string& fileName) :
 
 	if (!mMusic)
 	{
+		LOG_WARNING("Failed to load music file: " + fileName);
 		std::cout << "Failed to load sound file: " << fileName << "\n";
 	}
 }
