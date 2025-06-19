@@ -9,6 +9,7 @@ SFX::SFX(const std::string& fileName):
 	mChannel(0),
 	mVolume(MIX_MAX_VOLUME)
 {
+	LOG_DEBUG("Loading SFX file: " + fileName);
 	mSoundChunk = Mix_LoadWAV(fileName.c_str());
 
 	if (!mSoundChunk)
@@ -61,6 +62,8 @@ Music::Music(const std::string& fileName) :
 	mMusic(nullptr),
 	mVolume(MIX_MAX_VOLUME)
 {
+	LOG_DEBUG("Loading music file: " + fileName);
+
 	mMusic = Mix_LoadMUS(fileName.c_str());
 
 	if (!mMusic)
