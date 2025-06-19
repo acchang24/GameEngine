@@ -18,7 +18,7 @@ public:
 	// Cleans up ImGUI resources
 	void Shutdown();
 
-	// Processes any SDL events for the editor's UI
+	// Processes any SDL events for the engine's UI
 	// @param - const SDL_Event& for the polled event
 	void ProcessSDLEvent(const SDL_Event& event);
 

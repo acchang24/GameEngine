@@ -28,6 +28,7 @@
 #include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
+#include "Util/Console.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
 
@@ -399,6 +400,7 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
+		mEngine.GetEngineUI()->ProcessSDLEvent(event);
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -639,6 +641,8 @@ void Game::ProcessInput()
 	{
 		e->ProcessInput(keyboardState, keyboard, mouse);
 	}
+
+	mEngine.GetConsole()->ProcessInput(keyboardState, keyboard, mouse);
 }
 
 void Game::ProcessMouseInput(Mouse* mouse)
@@ -761,6 +765,8 @@ void Game::Render()
 {
 	PROFILE_SCOPE(RENDER);
 
+	mEngine.GetEngineUI()->SetUI();
+
 	mCamera->SetBuffer();
 
 	mLights.SetBuffer();
@@ -815,6 +821,8 @@ void Game::Render()
 
 	mShadowMap->DrawDebug(AssetManager::LoadShader("shadowDebug"));
 	glViewport(0, 0, renderer->GetWidth(), renderer->GetHeight());
+
+	mEngine.GetEngineUI()->Render();
 
 	renderer->EndFrame();
 }
