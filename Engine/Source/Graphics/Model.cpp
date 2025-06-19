@@ -11,7 +11,6 @@
 #include "../MemoryManager/AssetManager.h"
 #include "../Animation/Skeleton.h"
 #include "../Graphics/UniformBuffer.h"
-#include "../Profiler/Profiler.h"
 #include "../Components/AnimationComponent.h"
 
 Model::Model(const std::string& fileName, Entity3D* entity) :

@@ -28,7 +28,7 @@
 #include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
-#include "Profiler/Profiler.h"
+#include "Util/Profiler.h"
 #include "Util/Random.h"
 
 

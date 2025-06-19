@@ -5,7 +5,6 @@
 #include "../Graphics/Renderer.h"
 #include "../Graphics/UniformBuffer.h"
 #include "../MemoryManager/AssetManager.h"
-#include "../Profiler/Profiler.h"
 
 AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, const std::string& fileName) :
 	Component(entity),
@@ -90,9 +89,6 @@ void AnimationComponent::LoadAnimations(const aiScene* scene, const std::string&
 
 void AnimationComponent::Update(float deltaTime)
 {
-	PROFILE_SCOPE(ANIMATE);
-
-
 	if (mCurrentAnimation)
 	{
 		mCurrentTime += mCurrentAnimation->GetTicksPerSecond() * deltaTime;
