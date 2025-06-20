@@ -179,7 +179,7 @@ bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComp
 	float distance = glm::length(v);
 
 	// Get the total radius between a and b
-	float radiusSum = a->GetCircle().radius + b->GetCircle().radius;
+	float radiusSum = a->GetRadius() + b->GetRadius();
 
 	// if distance is less than radius sum then it intersects
 	if (distance < radiusSum)
@@ -299,12 +299,12 @@ bool Physics::IntersectCircleVsAABB2D(const CircleComponent* circle, const AABBC
 	// Direction from that vector
 	glm::vec2 direction = glm::normalize(v);
 
-	float overlap = circle->GetCircle().radius - distance;
+	float overlap = circle->GetRadius() - distance;
 	offset = direction * overlap;
 
 	// Use squared distance to compare with radius squared
 	float distanceSq = glm::dot(v, v);
-	float radius = circle->GetCircle().radius;
+	float radius = circle->GetRadius();
 
 	return distanceSq < radius * radius;
 }
@@ -314,7 +314,6 @@ bool Physics::IntersectCircleVsOBB2D(const CircleComponent* circle, const OBBCom
 	// Find the closest point of OBB to circle center and check if that point lies in the circle's radius
 
 	const OBB_2D& box = obb->GetOBB();
-	const Circle2D& c = circle->GetCircle();
 
 	const glm::vec2& circleCenter = circle->GetCenter();
 
@@ -345,7 +344,7 @@ bool Physics::IntersectCircleVsOBB2D(const CircleComponent* circle, const OBBCom
 
 	// Distance of closest point to circle center
 	float distance = glm::length(v);
-	float radius = c.radius;
+	float radius = circle->GetRadius();
 
 	// If distance is less than radius, they intersect
 	if (distance < radius)

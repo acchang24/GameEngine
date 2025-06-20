@@ -29,10 +29,10 @@ Ship::Ship(Renderer2D* renderer, Game* game) :
 	// Set the entity size to the ship sprite size
 	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
 
-	AABBComponent2D* box = new AABBComponent2D(this, game->GetEngine()->GetPhysics());
-	box->SetBoxSize(glm::vec2(100.0f, 90.0f));
+	//AABBComponent2D* box = new AABBComponent2D(this, game->GetEngine()->GetPhysics());
+	//box->SetBoxSize(glm::vec2(100.0f, 90.0f));
 	
-	//CircleComponent* box = new CircleComponent(this, game->GetPhysics(), 50.0f);
+	CircleComponent* box = new CircleComponent(this, mEngine->GetPhysics(), 50.0f);
 
 	//OBBComponent2D* box = new OBBComponent2D(this, game->GetPhysics());
 	//box->SetBoxSize(glm::vec2(100.0f, 90.0f));

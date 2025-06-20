@@ -211,13 +211,13 @@ public:
 	// @return - Entity2D* for the owner
 	Entity2D* GetOwner() { return mOwner2D; }
 
-	// Gets the the entity's collision circle
-	// @return - const Cirlce2D& for the circle
-	const Circle2D& GetCircle() const { return mCircle; }
-
 	// Gets the center of the circle box
 	// @return - const glm::vec2& for the center position
 	const glm::vec2& GetCenter() const { return mOwner2D->GetPosition(); }
+
+	// Gets the radius
+	// @return - float for circle's radius
+	float GetRadius() const { return mCircle.radius * mOwner2D->GetScale(); }
 
 	// Sets the circle's radius
 	// @param - float for the new radius
