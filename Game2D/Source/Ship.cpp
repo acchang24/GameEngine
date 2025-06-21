@@ -32,10 +32,10 @@ Ship::Ship(Renderer2D* renderer, Game* game) :
 	//AABBComponent2D* box = new AABBComponent2D(this, game->GetEngine()->GetPhysics());
 	//box->SetBoxSize(glm::vec2(100.0f, 90.0f));
 	
-	CircleComponent* box = new CircleComponent(this, mEngine->GetPhysics(), 50.0f);
+	//CircleComponent* box = new CircleComponent(this, mEngine->GetPhysics(), 50.0f);
 
-	//OBBComponent2D* box = new OBBComponent2D(this, game->GetPhysics());
-	//box->SetBoxSize(glm::vec2(100.0f, 90.0f));
+	OBBComponent2D* box = new OBBComponent2D(this, mEngine->GetPhysics());
+	box->SetBoxSize(glm::vec2(100.0f, 90.0f));
 
 	mCollisionBox = box;
 
