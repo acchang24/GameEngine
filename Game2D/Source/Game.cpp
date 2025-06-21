@@ -84,9 +84,8 @@ void Game::LoadGameData()
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
-
 	// Load 10 asteroids
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
 		Asteroid* a = new Asteroid(renderer2D, this);
 	}

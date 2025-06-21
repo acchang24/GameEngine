@@ -95,24 +95,22 @@ OBBComponent2D::~OBBComponent2D()
 	std::cout << "Deleted OOBBComponent2D\n";
 }
 
-void OBBComponent2D::Update(float deltaTime)
+std::array<glm::vec2, 4> OBBComponent2D::GetCorners() const
 {
-	mOBB.center = mOwner2D->GetPosition();
-	mOBB.rotation = glm::radians(mOwner2D->GetRotation());
-}
+	float rotation = glm::radians(mOwner2D->GetRotation());
 
-std::array<glm::vec2, 4> OBB_2D::GetCorners() const
-{
 	// Get the box's local x axis (positive width direction)
 	glm::vec2 xAxis = glm::vec2(cos(rotation), sin(rotation));
 	// Get the box's local y axis (positive height direction)
 	glm::vec2 yAxis = glm::vec2(-sin(rotation), cos(rotation));
 
+	const glm::vec2& halfExtents = GetHalfExtents();
 	// Scale axis by half of box width
 	glm::vec2 hx = xAxis * halfExtents.x;
 	// Scale axis by half of box height
 	glm::vec2 hy = yAxis * halfExtents.y;
 
+	const glm::vec2& center = mOwner2D->GetPosition();
 	std::array<glm::vec2, 4> corners = {
 		center - hx - hy, // Bottom-left
 		center + hx - hy, // Bottom-right

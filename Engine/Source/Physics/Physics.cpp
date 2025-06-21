@@ -208,13 +208,9 @@ bool Physics::IntersectCircleVsCircle(const CircleComponent* a, const CircleComp
 
 bool Physics::IntersectOBB2DvsOBB2D(const OBBComponent2D* a, const OBBComponent2D* b, glm::vec2& offset)
 {
-	// Get the OBB of each component
-	const OBB_2D& obbA = a->GetOBB();
-	const OBB_2D& obbB = b->GetOBB();
-
 	// Get the array of corners of each OBB
-	std::array<glm::vec2, 4> cornersA = obbA.GetCorners();
-	std::array<glm::vec2, 4> cornersB = obbB.GetCorners();
+	std::array<glm::vec2, 4> cornersA = a->GetCorners();
+	std::array<glm::vec2, 4> cornersB = b->GetCorners();
 
 	// Define the normalized axes to test (two from each box: local x and local y)
 	glm::vec2 axes[4] = {};
@@ -257,7 +253,7 @@ bool Physics::IntersectOBB2DvsOBB2D(const OBBComponent2D* a, const OBBComponent2
 			minOverlap = overlap;
 
 			// Get the direction from A to B
-			glm::vec2 direction = obbB.center - obbA.center;
+			glm::vec2 direction = b->GetCenter() - a->GetCenter();
 			direction = glm::normalize(direction);
 			// greater than 90 degrees
 			if (glm::dot(direction, axis) < 0)
@@ -313,15 +309,15 @@ bool Physics::IntersectCircleVsOBB2D(const CircleComponent* circle, const OBBCom
 {
 	// Find the closest point of OBB to circle center and check if that point lies in the circle's radius
 
-	const OBB_2D& box = obb->GetOBB();
-
 	const glm::vec2& circleCenter = circle->GetCenter();
 
+	const glm::vec2& boxCenter = obb->GetCenter();
+
 	// Get the vector from OBB to circle
-	glm::vec2 obbToCircle = circleCenter - box.center;
+	glm::vec2 obbToCircle = circleCenter - boxCenter;
 
 	// Get the box corners
-	std::array<glm::vec2, 4> corners = box.GetCorners();
+	std::array<glm::vec2, 4> corners = obb->GetCorners();
 
 	// Project that vector onto OBB's local axes to get coordinates in box space
 	// OBB local x axis
@@ -332,12 +328,14 @@ bool Physics::IntersectCircleVsOBB2D(const CircleComponent* circle, const OBBCom
 	float localXCoord = glm::dot(obbToCircle, localX);
 	float localYCoord = glm::dot(obbToCircle, localY);
 
+	const glm::vec2 halfExtents = obb->GetHalfExtents();
+
 	// Clamp to box extents
-	float clampedX = glm::clamp(localXCoord, -box.halfExtents.x, box.halfExtents.x);
-	float clampedY = glm::clamp(localYCoord, -box.halfExtents.y, box.halfExtents.y);
+	float clampedX = glm::clamp(localXCoord, -halfExtents.x, halfExtents.x);
+	float clampedY = glm::clamp(localYCoord, -halfExtents.y, halfExtents.y);
 
 	// Get the closest point on OBB
-	glm::vec2 closestPoint = box.center + (localX * clampedX) + (localY * clampedY);
+	glm::vec2 closestPoint = obb->GetCenter() + (localX * clampedX) + (localY * clampedY);
 
 	// Get vector from closest point to circle center
 	glm::vec2 v = circleCenter - closestPoint;
@@ -364,11 +362,8 @@ bool Physics::IntersectCircleVsOBB2D(const CircleComponent* circle, const OBBCom
 
 bool Physics::IntersectOBB2DvsAABB2D(const OBBComponent2D* obb, const AABBComponent2D* aabb, glm::vec2& offset)
 {
-	const OBB_2D& obbBox = obb->GetOBB();
-	const AABB_2D& aabbBox = aabb->GetBox();
-
 	// OBB corners
-	std::array<glm::vec2, 4> obbCorners = obbBox.GetCorners();
+	std::array<glm::vec2, 4> obbCorners = obb->GetCorners();
 
 	// AABB corners
 	glm::vec2 aabbMin = aabb->GetMin();
@@ -474,57 +469,22 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 		{
 			result.sideA = CollisionSide::Bottom;
 			result.sideB = CollisionSide::Top;
-			std::cout << "SHIP BOTTOM\n";
 		}
 		else if (offset.y > 0.0f)
 		{
 			result.sideA = CollisionSide::Top;
 			result.sideB = CollisionSide::Bottom;
-			std::cout << "SHIP TOP\n";
 		}
 		else if (offset.x < 0.0f)
 		{
 			result.sideA = CollisionSide::Right;
 			result.sideB = CollisionSide::Left;
-			std::cout << "SHIP RIGHT\n";
 		}
 		else if (offset.x > 0.0f)
 		{
 			result.sideA = CollisionSide::Left;
 			result.sideB = CollisionSide::Right;
-			std::cout << "SHIP LEFT\n";
 		}
-
-		/*if (std::abs(offset.x) > std::abs(offset.y) + 0.001f)
-		{
-			if (offset.x < 0.0f)
-			{
-				result.sideA = CollisionSide::Right;
-				result.sideB = CollisionSide::Left;
-				std::cout << "SHIP RIGHT\n";
-			}
-			else if (offset.x > 0.0f)
-			{
-				result.sideA = CollisionSide::Left;
-				result.sideB = CollisionSide::Right;
-				std::cout << "SHIP LEFT\n";
-			}
-		}
-		else if (std::abs(offset.y) > std::abs(offset.x) + 0.001f)
-		{
-			if (offset.y < 0.0f)
-			{
-				result.sideA = CollisionSide::Bottom;
-				result.sideB = CollisionSide::Top;
-				std::cout << "SHIP BOTTOM\n";
-			}
-			else if (offset.y > 0.0f)
-			{
-				result.sideA = CollisionSide::Top;
-				result.sideB = CollisionSide::Bottom;
-				std::cout << "SHIP TOP\n";
-			}
-		}*/
 
 		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
 
@@ -546,8 +506,6 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 		Entity2D* ownerA = a->GetOwner();
 		Entity2D* ownerB = b->GetOwner();
 
-		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
-
 		// Get side for circle
 		glm::vec2 diff = a->GetCenter() - b->GetCenter();
 
@@ -558,14 +516,12 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 			{
 				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
-				std::cout << "SHIP LEFT\n";
 
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
-				std::cout << "SHIP RIGHT\n";
 			}
 		}
 		else
@@ -575,15 +531,15 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 			{
 				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
-				std::cout << "SHIP TOP\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
-				std::cout << "SHIP BOTTOM\n";
 			}
 		}
+
+		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
 
 		a->OnCollision(ownerB, result);
 		b->OnCollision(ownerA, result);
@@ -637,13 +593,11 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Left;
 				result.sideB = CollisionSide::Right;
-				std::cout << "CIRCLE LEFT BOX RIGHT\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
 				result.sideB = CollisionSide::Left;
-				std::cout << "CIRCLE RIGHT BOX LEFT\n";
 			}
 		}
 		else
@@ -653,13 +607,11 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 			{
 				result.sideA = CollisionSide::Top;
 				result.sideB = CollisionSide::Bottom;
-				std::cout << "CIRCLE TOP BOX BOTTOM\n";
 			} 
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
 				result.sideB = CollisionSide::Top;
-				std::cout << "CIRCLE BOTTOM BOX TOP\n";
 			}
 		}
 
@@ -693,12 +645,10 @@ CollisionResult Physics::HandleCircleVsOBB2D(CircleComponent* circle, OBBCompone
 			if (diff.x > 0)
 			{
 				result.sideA = CollisionSide::Left;
-				std::cout << "CIRCLE LEFT\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Right;
-				std::cout << "CIRCLE RIGHT\n";
 			}
 		}
 		else
@@ -707,12 +657,10 @@ CollisionResult Physics::HandleCircleVsOBB2D(CircleComponent* circle, OBBCompone
 			if (diff.y > 0)
 			{
 				result.sideA = CollisionSide::Top;
-				std::cout << "CIRCLE TOP\n";
 			}
 			else
 			{
 				result.sideA = CollisionSide::Bottom;
-				std::cout << "CIRCLE BOTTOM\n";
 			}
 		}
 
@@ -775,6 +723,12 @@ void Physics::ApplyOffset2D(Entity2D* a, Entity2D* b, BodyType bodyA, BodyType b
 		b->SetPosition(b->GetPosition() - offset);
 	}
 	else if (bodyA == BodyType::Dynamic && bodyB == BodyType::Dynamic)
+	{
+		// Split offset to both if they are both dynamic
+		a->SetPosition(a->GetPosition() + offset * 0.5f);
+		b->SetPosition(b->GetPosition() - offset * 0.5f);
+	}
+	else if (bodyA == BodyType::Static && bodyB == BodyType::Static)
 	{
 		// Split offset to both if they are both dynamic
 		a->SetPosition(a->GetPosition() + offset * 0.5f);

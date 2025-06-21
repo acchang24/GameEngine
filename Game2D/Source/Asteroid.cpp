@@ -26,23 +26,16 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 	mSize = glm::vec2(asteroidSprite->GetWidth(), asteroidSprite->GetHeight());
 	
 	// Set a random movement speed between 50 and 150
-	mMovement->SetMovementSpeed(0.0f);
+	mMovement->SetMovementSpeed(Random::GetFloatRange(50.0f, 150.0f));
 	
 	// Get random rotation degree
 	mRotation = Random::GetFloatRange(0.0f, 360.0f);
 
 	// Get random position
-	//mPosition = Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(renderer->GetWidth(), renderer->GetHeight()));
-
-	mPosition = glm::vec2(400.0f, 400.0f);
-
-	AABBComponent2D* collision = new AABBComponent2D(this, mEngine->GetPhysics(), BodyType::Static);
-	collision->SetBoxSize(mSize);
-
-	mCollisionCircle = collision;
+	mPosition = Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(renderer->GetWidth(), renderer->GetHeight()));
 
 	// Set the collision circle radius
-	//mCollisionCircle = new CircleComponent(this, mEngine->GetPhysics(), asteroidSprite->GetWidth() * 0.5f, BodyType::Static);
+	mCollisionCircle = new CircleComponent(this, mEngine->GetPhysics(), asteroidSprite->GetWidth() * 0.5f);
 
 	// Set the on collision callback
 	mCollisionCircle->SetOnCollision([this](Entity2D* other, const CollisionResult& result) {
