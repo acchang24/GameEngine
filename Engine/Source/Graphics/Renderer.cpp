@@ -204,6 +204,23 @@ void Renderer::CreateBlend(Shader* shader, unsigned int texture1, unsigned int t
 	glBindTexture(GL_TEXTURE_2D, texture2);
 }
 
+void Renderer::Resize(int width, int height)
+{
+	mWindowWidth = width;
+	mWindowHeight = height;
+
+	// Set new viewport dimensions
+	glViewport(0, 0, mWindowWidth, mWindowHeight);
+
+	LOG_DEBUG("Window width: " + std::to_string(mWindowWidth) + " Window height: " + std::to_string(mWindowHeight));
+
+	ResizeFrameBuffers();
+
+	mRenderer2D->SetProjection(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight));
+
+	// TODO: Camera resize if in 3d (this is done after this function for now I will add later)
+}
+
 void Renderer::ResizeFrameBuffers()
 {
 	for (auto fb : mFrameBuffers)

@@ -29,6 +29,7 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Util/Console.h"
+#include "Util/LoggerMacros.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
 
@@ -857,24 +858,12 @@ void Game::ResizeWindow(const SDL_Event& event)
 		int width = event.window.data1;
 		int height = event.window.data2;
 
+		mEngine.GetRenderer()->Resize(width, height);
+
 		float ratio = static_cast<float>(width) / static_cast<float>(height);
 
 		// Set new camera aspect ratio
 		mCamera->SetAspectRatio(ratio);
-
-		// Set new viewport dimensions
-		glViewport(0, 0, width, height);
-
-		printf("Window width: %i, Window height: %i\n", width, height);
-
-		Renderer* renderer = mEngine.GetRenderer();
-
-		// Set new window dimensions
-		renderer->SetWidth(width);
-		renderer->SetHeight(height);
-
-		// Resize frame buffers
-		renderer->ResizeFrameBuffers();
 	}
 }
 

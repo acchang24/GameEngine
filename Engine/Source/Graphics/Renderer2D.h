@@ -61,6 +61,11 @@ public:
 	// @return - const glm::mat4& for the projection
 	const glm::mat4& GetProjection() const { return mProjection; }
 
+	// Sets the projection to the new width and height
+	// @param - float for the new width
+	// @param - float for the new height
+	void SetProjection(float width, float height);
+
 	// Sets the sprite renderer's shader
 	// @param - Shader* for the new shader
 	void SetSpriteShader(Shader* shader) { mSpriteShader = shader; }

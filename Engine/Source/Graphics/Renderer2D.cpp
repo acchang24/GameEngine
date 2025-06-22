@@ -137,3 +137,8 @@ void Renderer2D::RemoveSprite(SpriteComponent* sprite)
 		mSprites.erase(iter);
 	}
 }
+
+void Renderer2D::SetProjection(float width, float height)
+{
+	mProjection = glm::ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
+}

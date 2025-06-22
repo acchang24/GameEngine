@@ -105,6 +105,11 @@ public:
 	// @return - RendererMode for mode
 	RendererMode GetMode() const { return mMode; }
 
+	// Resizes renderer/renderer2D based on new window dimensions
+	// @param - int for new width
+	// @param - int for new height
+	void Resize(int width, int height);
+
 	// Resizes all the frame buffers to the new dimensions
 	void ResizeFrameBuffers();
 
