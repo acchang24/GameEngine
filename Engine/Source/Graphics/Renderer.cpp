@@ -12,6 +12,7 @@
 #include "VertexBuffer.h"
 
 Renderer::Renderer(RendererMode mode) :
+	mCamera(nullptr),
 	mRenderer2D(nullptr),
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
@@ -85,6 +86,9 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	{
 		// Create a material buffer in 3D mode
 		CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+	
+		// Create a camera for 3D
+		mCamera = new Camera(this);
 	}
 	
 	return true;
@@ -106,6 +110,8 @@ void Renderer::Shutdown()
 		delete fb;
 	}
 	mFrameBuffers.clear();
+
+	delete mCamera;
 
 	delete mRenderer2D;
 
@@ -218,7 +224,14 @@ void Renderer::Resize(int width, int height)
 
 	mRenderer2D->SetProjection(static_cast<float>(mWindowWidth), static_cast<float>(mWindowHeight));
 
-	// TODO: Camera resize if in 3d (this is done after this function for now I will add later)
+	// Camera resize if in 3d
+	if (mMode == RendererMode::MODE_3D && mCamera)
+	{
+		float ratio = static_cast<float>(width) / static_cast<float>(height);
+
+		// Set new camera aspect ratio
+		mCamera->SetAspectRatio(ratio);
+	}
 }
 
 void Renderer::ResizeFrameBuffers()

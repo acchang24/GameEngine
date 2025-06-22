@@ -3,7 +3,6 @@
 #include <vector>
 #include <glad/glad.h>
 #include <SDL2/SDL.h>
-#include "Graphics/Camera.h"
 #include "Graphics/Lights.h"
 #include "Engine.h"
 
@@ -80,10 +79,8 @@ private:
 	// std::vector of game entities
 	std::vector<Entity*> mEntities;
 
+	// Engine used by game
 	Engine mEngine;
-
-	// The game's camera
-	Camera* mCamera;
 
 	// Game's lighting
 	Lights mLights;

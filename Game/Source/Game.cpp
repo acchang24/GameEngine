@@ -10,6 +10,7 @@
 #include "3dPrimitives/Sphere.h"
 #include "Components/AnimationComponent.h"
 #include "Entity/Entity3D.h"
+#include "Graphics/Camera.h"
 #include "Graphics/FrameBuffer.h"
 #include "Graphics/FrameBufferMultiSampled.h"
 #include "Graphics/Material.h"
@@ -52,7 +53,6 @@ SDL_bool MOUSE_CAPTURED = SDL_TRUE;
 
 Game::Game() :
 	mEngine(RendererMode::MODE_3D, MOUSE_SENSITIVITY),
-	mCamera(nullptr),
 	mLights(),
 	mShadowMap(nullptr),
 	mSkybox(nullptr),
@@ -82,8 +82,8 @@ bool Game::Init()
 
 	Renderer* renderer = mEngine.GetRenderer();
 
-	mCamera = new Camera(mEngine.GetRenderer());
-	mCamera->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+	// Set camera initial position
+	renderer->GetCamera()->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
 	mLights.CreateBuffer(mEngine.GetRenderer());
 
@@ -111,8 +111,6 @@ bool Game::Init()
 void Game::Shutdown()
 {
 	UnloadGameData();
-
-	delete mCamera;
 
 	delete mShadowMap;
 
@@ -439,9 +437,11 @@ void Game::ProcessInput()
 	}
 
 	// Camera
-	CameraMode mode = mCamera->GetCameraMode();
-	glm::vec3 right = mCamera->GetRight();
-	glm::vec3 up = mCamera->GetUp();
+	Camera* camera = mEngine.GetRenderer()->GetCamera();
+
+	CameraMode mode = camera->GetCameraMode();
+	glm::vec3 right = camera->GetRight();
+	glm::vec3 up = camera->GetUp();
 
 	glm::vec3 camPanDir = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -454,7 +454,7 @@ void Game::ProcessInput()
 			camPanDir += glm::normalize(glm::cross(up, right));
 			break;
 		case CameraMode::Fly:
-			camPanDir += mCamera->GetForward();
+			camPanDir += camera->GetForward();
 			break;
 		}
 	}
@@ -466,7 +466,7 @@ void Game::ProcessInput()
 			camPanDir -= glm::normalize(glm::cross(up, right));
 			break;
 		case CameraMode::Fly:
-			camPanDir -= mCamera->GetForward();
+			camPanDir -= camera->GetForward();
 			break;
 		}
 	}
@@ -484,12 +484,12 @@ void Game::ProcessInput()
 			camPanDir += right;
 		}
 	}
-	mCamera->SetPanDir(camPanDir);
+	camera->SetPanDir(camPanDir);
 
 	// Toggle camera modes
 	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_V))
 	{
-		mCamera->ToggleCameraModes();
+		camera->ToggleCameraModes();
 	}
 
 	// Toggle the main directional light
@@ -756,7 +756,7 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mCamera->Update(deltaTime, mEngine.GetMouse());
+	mEngine.GetRenderer()->GetCamera()->Update(deltaTime, mEngine.GetMouse());
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	JobManager::Get()->WaitForJobs();
@@ -768,7 +768,7 @@ void Game::Render()
 
 	mEngine.GetEngineUI()->SetUI();
 
-	mCamera->SetBuffer();
+	mEngine.GetRenderer()->GetCamera()->SetBuffer();
 
 	mLights.SetBuffer();
 
@@ -837,7 +837,9 @@ void Game::RenderScene()
 		e->Draw();
 	}
 
-	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
+	Camera* camera = mEngine.GetRenderer()->GetCamera();
+
+	mSkybox->Draw(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 }
 
 void Game::RenderScene(Shader* shader)
@@ -847,7 +849,9 @@ void Game::RenderScene(Shader* shader)
 		static_cast<Entity3D*>(e)->Draw(shader);
 	}
 
-	mSkybox->Draw(mCamera->GetViewMatrix(), mCamera->GetProjectionMatrix());
+	Camera* camera = mEngine.GetRenderer()->GetCamera();
+
+	mSkybox->Draw(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 }
 
 void Game::ResizeWindow(const SDL_Event& event)
@@ -859,11 +863,6 @@ void Game::ResizeWindow(const SDL_Event& event)
 		int height = event.window.data2;
 
 		mEngine.GetRenderer()->Resize(width, height);
-
-		float ratio = static_cast<float>(width) / static_cast<float>(height);
-
-		// Set new camera aspect ratio
-		mCamera->SetAspectRatio(ratio);
 	}
 }
 

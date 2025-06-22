@@ -355,8 +355,6 @@ void Game::ResizeWindow(const SDL_Event& event)
 
 		mEngine.GetRenderer()->Resize(width, height);
 
-		float ratio = static_cast<float>(width) / static_cast<float>(height);
-
 		// TODO: Add sprite background resize
 	}
 }

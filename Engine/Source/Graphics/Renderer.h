@@ -12,6 +12,7 @@ enum class RendererMode
 	MODE_3D  // Represents 3D rendering mode
 };
 
+class Camera;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
@@ -81,6 +82,10 @@ public:
 	// @param - unsigned int for a reference to the second texture
 	// @param - int for the texture unit to activate
 	void CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit);
+
+	// Gets the camera
+	// @retur - Camera* for the 3D camera
+	Camera* GetCamera() { return mCamera; }
 
 	// Gets the Renderer2D
 	// @return - Renderer2D* for 2D renderer
@@ -177,6 +182,9 @@ private:
 
 	// Vector of frame buffers used by the renderer
 	std::vector<FrameBuffer*> mFrameBuffers;
+
+	// Camera for different camera modes and view/projection matrix for 3D
+	Camera* mCamera;
 
 	// Renderer2D for sprites, text, and UI
 	Renderer2D* mRenderer2D;
