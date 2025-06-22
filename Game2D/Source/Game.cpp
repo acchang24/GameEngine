@@ -79,20 +79,21 @@ void Game::LoadShaders() const
 
 void Game::LoadGameData()
 {
-	Renderer2D* renderer2D = mEngine.GetRenderer()->GetRenderer2D();
-	Ship* ship = new Ship(renderer2D, this);
+	Ship* ship = new Ship(this);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
 	ship->SetRotation(45.0f);
 
 	// Load 10 asteroids
 	for (int i = 0; i < 10; ++i)
 	{
-		Asteroid* a = new Asteroid(renderer2D, this);
+		Asteroid* a = new Asteroid(this);
 	}
 
 	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
 	music->SetVolume(90);
 	music->Play(-1);
+
+	Renderer2D* renderer2D = mEngine.GetRenderer()->GetRenderer2D();
 
 	// Background
 	Entity2D* background = new Entity2D(static_cast<float>(mEngine.GetRenderer()->GetWidth()), static_cast<float>(mEngine.GetRenderer()->GetHeight()));

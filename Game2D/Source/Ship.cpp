@@ -6,16 +6,16 @@
 #include "Graphics/Texture.h"
 #include "Input/Keyboard.h"
 #include "MemoryManager/AssetManager.h"
+#include "Util/LoggerMacros.h"
 #include "Engine.h"
 #include "Game.h"
 #include "Laser.h"
 
-Ship::Ship(Renderer2D* renderer, Game* game) :
+Ship::Ship(Game* game) :
 	Entity2D(),
-	mSprite(new SpriteComponent(this, renderer)),
+	mSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
 	mMovement(new MoveComponent2D(this)),
 	mCollisionBox(nullptr),
-	mRenderer(renderer),
 	mEngine(game->GetEngine()),
 	mGame(game),
 	mLaserCooldown(1.0f)
@@ -46,7 +46,7 @@ Ship::Ship(Renderer2D* renderer, Game* game) :
 
 Ship::~Ship()
 {
-	std::cout << "Deleted Ship\n";
+	LOG_DEBUG("Deleted Ship");
 }
 
 void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
@@ -91,7 +91,7 @@ void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse
 	{
 		mEngine->GetAudio()->PlaySFX("Assets/Sounds/Shoot.wav");
 
-		Laser* laser = new Laser(mRenderer, mGame);
+		Laser* laser = new Laser(mGame);
 		laser->SetPosition(mPosition);
 		laser->SetRotation(mRotation);
 
@@ -115,17 +115,17 @@ void Ship::OnUpdate(float deltaTime)
 	// Wrap screen if out of bounds
 	if (mPosition.x < 0.0f)
 	{
-		mPosition.x = mRenderer->GetWidth();
+		mPosition.x = mEngine->GetRenderer()->GetWidth();
 	}
-	if (mPosition.x > mRenderer->GetWidth())
+	if (mPosition.x > mEngine->GetRenderer()->GetWidth())
 	{
 		mPosition.x = 0.0f;
 	}
 	if (mPosition.y < 0.0f)
 	{
-		mPosition.y = mRenderer->GetHeight();
+		mPosition.y = mEngine->GetRenderer()->GetHeight();
 	}
-	if (mPosition.y > mRenderer->GetHeight())
+	if (mPosition.y > mEngine->GetRenderer()->GetHeight())
 	{
 		mPosition.y = 0.0f;
 	}

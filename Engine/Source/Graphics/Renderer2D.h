@@ -61,14 +61,6 @@ public:
 	// @return - const glm::mat4& for the projection
 	const glm::mat4& GetProjection() const { return mProjection; }
 
-	// Gets the renderer width
-	// @return - float for width
-	float GetWidth() const { return mWidth; }
-
-	// Gets the renderer height
-	// @return - float for height
-	float GetHeight() const { return mHeight; }
-
 	// Sets the sprite renderer's shader
 	// @param - Shader* for the new shader
 	void SetSpriteShader(Shader* shader) { mSpriteShader = shader; }
@@ -99,10 +91,4 @@ private:
 
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;
-
-	// Width of renderer
-	float mWidth;
-
-	// Height of renderer
-	float mHeight;
 };

@@ -6,7 +6,7 @@
 #include "Util/LoggerMacros.h"
 
 Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
-	mRenderer(renderMode, this),
+	mRenderer(renderMode),
 	mKeyboard(),
 	mMouse(mouseSensitivity),
 	mPhysics(),

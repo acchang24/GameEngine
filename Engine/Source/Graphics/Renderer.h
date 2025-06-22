@@ -12,7 +12,6 @@ enum class RendererMode
 	MODE_3D  // Represents 3D rendering mode
 };
 
-class Engine;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
@@ -21,7 +20,7 @@ class VertexBuffer;
 class Renderer
 {
 public:
-	Renderer(RendererMode mode, Engine* engine);
+	Renderer(RendererMode mode);
 	~Renderer();
 
 	// Initializes SDL, sets OpenGL attributes, creates the game window, creates the OpenGL context, and sets up GLAD.
@@ -185,9 +184,6 @@ private:
 
 	// OpenGL context
 	SDL_GLContext mContext;
-
-	// Pointer to main engine
-	Engine* mEngine;
 
 	// Title used for the window
 	std::string mWindowTitle;

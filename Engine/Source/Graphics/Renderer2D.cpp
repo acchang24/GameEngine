@@ -15,9 +15,7 @@ Renderer2D::Renderer2D(float width, float height) :
 	mSpriteShader(nullptr),
 	mUIBoxShader(nullptr),
 	mTextRenderer(nullptr),
-	mVertexBuffer(nullptr),
-	mWidth(width),
-	mHeight(height)
+	mVertexBuffer(nullptr)
 {
 	mTextRenderer = new Text(this);
 

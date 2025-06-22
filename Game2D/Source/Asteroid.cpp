@@ -9,12 +9,11 @@
 #include "Engine.h"
 #include "Game.h"
 
-Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
+Asteroid::Asteroid(Game* game) :
 	Entity2D(),
-	mSprite(new SpriteComponent(this, renderer)),
+	mSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
 	mMovement(new MoveComponent2D(this)),
 	mCollisionCircle(nullptr),
-	mRenderer(renderer),
 	mEngine(game->GetEngine())
 {
 	// Add and set asteroid sprite texture
@@ -32,7 +31,7 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 	mRotation = Random::GetFloatRange(0.0f, 360.0f);
 
 	// Get random position
-	mPosition = Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(renderer->GetWidth(), renderer->GetHeight()));
+	mPosition = Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(mEngine->GetRenderer()->GetWidth(), mEngine->GetRenderer()->GetHeight()));
 
 	// Set the collision circle radius
 	mCollisionCircle = new CircleComponent(this, mEngine->GetPhysics(), asteroidSprite->GetWidth() * 0.5f);
@@ -53,8 +52,6 @@ Asteroid::Asteroid(Renderer2D* renderer, Game* game) :
 
 Asteroid::~Asteroid()
 {
-	std::cout << "Deleted Asteroid\n";
-
 	LOG_DEBUG("Destroyed Asteroid");
 }
 
@@ -63,17 +60,17 @@ void Asteroid::OnUpdate(float deltaTime)
 	// Wrap the screen if asteroid goes out of bounds
 	if (mPosition.x < 0.0f)
 	{
-		mPosition.x = mRenderer->GetWidth();
+		mPosition.x = mEngine->GetRenderer()->GetWidth();
 	}
-	if (mPosition.x > mRenderer->GetWidth())
+	if (mPosition.x > mEngine->GetRenderer()->GetWidth())
 	{
 		mPosition.x = 0.0f;
 	}
 	if (mPosition.y < 0.0f)
 	{
-		mPosition.y = mRenderer->GetHeight();
+		mPosition.y = mEngine->GetRenderer()->GetHeight();
 	}
-	if (mPosition.y > mRenderer->GetHeight())
+	if (mPosition.y > mEngine->GetRenderer()->GetHeight())
 	{
 		mPosition.y = 0.0f;
 	}

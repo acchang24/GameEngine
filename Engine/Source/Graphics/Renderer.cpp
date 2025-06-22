@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 #include "../Animation/BoneData.h"
 #include "../Animation/Skeleton.h"
-#include "../Engine.h"
 #include "../Util/LoggerMacros.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
@@ -12,12 +11,11 @@
 #include "Shader.h"
 #include "VertexBuffer.h"
 
-Renderer::Renderer(RendererMode mode, Engine* engine) :
+Renderer::Renderer(RendererMode mode) :
 	mRenderer2D(nullptr),
 	mVertexBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
-	mEngine(engine),
 	mWindowTitle(),
 	mNumSubsamples(0),
 	mVSync(1),

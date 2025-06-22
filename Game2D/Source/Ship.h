@@ -6,12 +6,11 @@ class Engine;
 class Game;
 class MoveComponent2D;
 class SpriteComponent;
-class Renderer2D;
 
 class Ship : public Entity2D
 {
 public:
-	Ship(Renderer2D* renderer, Game* game);
+	Ship(Game* game);
 	~Ship();
 
 	// Override for ship's process input
@@ -26,8 +25,6 @@ private:
 	MoveComponent2D* mMovement;
 
 	CollisionComponent* mCollisionBox;
-
-	Renderer2D* mRenderer;
 
 	Engine* mEngine;
 

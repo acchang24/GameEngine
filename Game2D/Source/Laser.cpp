@@ -1,5 +1,4 @@
 #include "Laser.h"
-#include <iostream>
 #include <glm/glm.hpp>
 #include "Audio/AudioSystem.h"
 #include "Components/CollisionComponent.h"
@@ -13,9 +12,9 @@
 #include "Engine.h"
 #include "Game.h"
 
-Laser::Laser(Renderer2D* renderer, Game* game) :
+Laser::Laser(Game* game) :
 	Entity2D(),
-	mLaserSprite(new SpriteComponent(this, renderer)),
+	mLaserSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
 	mLaserMovement(new MoveComponent2D(this)),
 	mBox(new OBBComponent2D(this, game->GetEngine()->GetPhysics(), BodyType::Intersect)),
 	mEngine(game->GetEngine()),
