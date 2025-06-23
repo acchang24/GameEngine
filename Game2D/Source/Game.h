@@ -4,6 +4,7 @@
 #include "Engine.h"
 
 class Entity;
+class Entity2D;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
 class Game
@@ -69,6 +70,8 @@ private:
 
 	// Game Engine systems
 	Engine mEngine;
+
+	Entity2D* mBackground;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

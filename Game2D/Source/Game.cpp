@@ -37,6 +37,7 @@ SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 
 Game::Game() :
 	mEngine(RendererMode::MODE_2D, MOUSE_SENSITIVITY),
+	mBackground(nullptr),
 	mIsRunning(true)
 {
 }
@@ -96,12 +97,12 @@ void Game::LoadGameData()
 	Renderer2D* renderer2D = mEngine.GetRenderer()->GetRenderer2D();
 
 	// Background
-	Entity2D* background = new Entity2D(static_cast<float>(mEngine.GetRenderer()->GetWidth()), static_cast<float>(mEngine.GetRenderer()->GetHeight()));
-	background->SetPosition(glm::vec2(static_cast<float>(mEngine.GetRenderer()->GetWidth() / 2), static_cast<float>(mEngine.GetRenderer()->GetHeight() / 2)));
-	SpriteComponent* backgroundSC = new SpriteComponent(background, renderer2D, 50);
+	mBackground = new Entity2D(static_cast<float>(mEngine.GetRenderer()->GetWidth()), static_cast<float>(mEngine.GetRenderer()->GetHeight()));
+	mBackground->SetPosition(glm::vec2(static_cast<float>(mEngine.GetRenderer()->GetWidth() / 2), static_cast<float>(mEngine.GetRenderer()->GetHeight() / 2)));
+	SpriteComponent* backgroundSC = new SpriteComponent(mBackground, renderer2D, 50);
 	backgroundSC->AddSprite(AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
-	AddGameEntity(background);
+	AddGameEntity(mBackground);
 
 	// Set 2d renderer shader
 	renderer2D->SetSpriteShader(AssetManager::LoadShader("sprite"));
@@ -233,7 +234,7 @@ void Game::ProcessMouseInput(Mouse* mouse)
 
 	Uint8 mouse_state = SDL_GetMouseState(NULL, NULL);
 	// Left click hold
-	if (mouse_state & SDL_BUTTON_LMASK)
+	if (mouse_state == SDL_BUTTON_LMASK)
 	{
 		std::cout << "Left Click hold\n";
 	}
@@ -355,7 +356,9 @@ void Game::ResizeWindow(const SDL_Event& event)
 
 		mEngine.GetRenderer()->Resize(width, height);
 
-		// TODO: Add sprite background resize
+		// Sprite background resize
+		mBackground->SetSize(glm::vec2(width, height));
+		mBackground->SetPosition(glm::vec2(width / 2, height / 2));
 	}
 }
 
