@@ -95,8 +95,14 @@ void Camera::SetAspectRatio(float ratio)
 
 void Camera::Update(float deltaTime, Mouse* mouse)
 {
-	double mouseX = mouse->GetX();
-	double mouseY = mouse->GetY();
+	double mouseX = 0.0;
+	double mouseY = 0.0;
+
+	if (mouse->MouseIsCaptured() == SDL_TRUE)
+	{
+		mouseX = mouse->GetX();
+		mouseY = mouse->GetY();
+	}
 
 	Sint32 scrollDir = mouse->GetScrollDir();
 

@@ -44,10 +44,6 @@ public:
 	// Typically called near the beginning of the render loop.
 	void ProcessInput();
 
-	// Processes and handles any mouse movement, clicks, and scrolls
-	// @param - Mouse* for the mouse
-	void ProcessMouseInput(Mouse* mouse);
-
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames
 	void Update(float deltaTime);

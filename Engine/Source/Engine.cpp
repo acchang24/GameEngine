@@ -5,10 +5,10 @@
 #include "Util/Console.h"
 #include "Util/LoggerMacros.h"
 
-Engine::Engine(RendererMode renderMode, double mouseSensitivity) :
+Engine::Engine(RendererMode renderMode, double mouseSensitivity, SDL_bool mouseCaptured) :
 	mRenderer(renderMode),
 	mKeyboard(),
-	mMouse(mouseSensitivity),
+	mMouse(mouseSensitivity, mouseCaptured),
 	mPhysics(),
 	mJobManager(JobManager::Get()),
 	mAssetManager(AssetManager::Get()),
@@ -45,6 +45,8 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 	{
 		return false;
 	}
+
+	mMouse.CenterMouse(mRenderer.GetWindow());
 
 	return true;
 }

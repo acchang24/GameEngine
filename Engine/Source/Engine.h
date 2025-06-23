@@ -23,7 +23,8 @@ public:
 	// Engine constructor: creates subsystem objects and starts logger
 	// @param - RendererMode for 2D or 3D game
 	// @param - double for initial mouse sensitivity
-	Engine(RendererMode renderMode, double mouseSensitivity);
+	// @param - SDL_bool for if the mouse is captured by the screen
+	Engine(RendererMode renderMode, double mouseSensitivity, SDL_bool mouseCaptured);
 	~Engine();
 
 	// Initializes the game engine subsystems. Returns true after successful initialization
