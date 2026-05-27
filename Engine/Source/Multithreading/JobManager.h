@@ -12,9 +12,16 @@ public:
     class Job
 	{
 	public:
+           Job(bool autoDelete = false) : 
+               mAutoDelete(autoDelete)
+           {}
+
 		// Abstract function to do a job
 		virtual void DoJob() = 0;
         virtual ~Job() = default;
+
+        // Auto delete flag: JobManager will decide if it should delete immediately after the job is done or not
+        const bool mAutoDelete;
 	private:
 	};
 

@@ -102,6 +102,12 @@ void JobManager::WorkerThread()
         if (job)
         {
             job->DoJob();
+
+            if (job->mAutoDelete)
+            {
+                delete job;
+            }
+
             {
                 std::lock_guard<std::mutex> lock(mQueueMutex);
 
