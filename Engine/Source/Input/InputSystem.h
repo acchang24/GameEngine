@@ -54,72 +54,53 @@ public:
 	void ResetKeyboard() const { mKeyboard.ResetKeyboard(); }
 
 
+
 	// MOUSE API
+	
 	// Checks if a mouse button is clicked this frame, but was not clicked the last frame
 	// @param - Uint8 for the button to check
 	// @return - bool for if the button is clicked this frame, but was not clicked the last frame
-	bool IsMouseSingleClick(Uint8 button) const;
+	bool IsMouseSingleClick(Uint8 button) const { return mMouse.IsSingleClick(button); }
 
 	// Checks if a mouse button is held down/clicked
 	// @param - Uint8 for the button to check
 	// @return - bool for if the button is held down
-	bool IsMouseHeld(Uint8 button) const;
+	bool IsMouseHeld(Uint8 button) const { return mMouse.IsButtonHeld(button); }
 
 	// Checks if a mouse button is released
 	// @param - Uint8 for the button to check
 	// @return - bool for if the button is released
-	bool IsMouseRelease(Uint8 button) const;
+	bool IsMouseRelease(Uint8 button) const { return mMouse.IsButtonRelease(button); }
 
 	// Gets the mouse x movement for the current frame
 	// @return - double for the mouse x movement
-	double GetMouseX() const { return mMouseX; }
+	double GetMouseX() const { return mMouse.GetX(); }
 
 	// Gets the mouse y movement for the current frame
 	// @return - double for the mouse y movement
-	double GetMouseY() const { return mMouseY; }
+	double GetMouseY() const { return mMouse.GetY();; }
 
 	// Gets the mouse scroll direction
 	// @return - Sint32 for the scroll direction
-	Sint32 GetMouseScrollDir() const { return mScrollDir; }
+	Sint32 GetMouseScrollDir() const { return mMouse.GetScrollDir(); }
 
 	// Toggles the mouse capture mode
-	void ToggleMouseCapture();
+	void ToggleMouseCapture() { mMouse.ToggleMouseCapture(mWindow); }
 
 	// Centers the mouse in the window
-	void CenterMouse();
+	void CenterMouse() { mMouse.CenterMouse(mWindow); }
 
 	// Returns true if mouse is captured by the window, false if not
 	// @return - bool for if the mouse is captured by the window
-	bool MouseIsCaptured() const { return mMouseCaptured == SDL_TRUE; }
+	bool MouseIsCaptured() const { return mMouse.IsCaptured(); }
 
 private:
 	// Keyboard device
 	Keyboard mKeyboard;
 
+	// Mouse device
+	Mouse mMouse;
+
 	// Pointer to the game window
 	SDL_Window* mWindow;
-
-	// Mouse x movement
-	double mMouseX;
-
-	// Mouse y movement
-	double mMouseY;
-
-	// Mouse sensitivity
-	double mMouseSensitivity;
-
-	// Current frame's mouse state
-	Uint32 mMouseState;
-
-	// Previous frame's mouse state
-	Uint32 mPrevMouseState;
-
-	// Mouse scroll direction
-	Sint32 mScrollDir;
-
-	// Bool for if the mouse is captured by the window
-	SDL_bool mMouseCaptured;
-
-	// Mouse mode (relative or absolute)
-	MouseMode mMouseMode;
 };

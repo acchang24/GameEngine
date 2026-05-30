@@ -1,8 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-const size_t MAX_MOUSE_BUTTONS = 6;
-
 enum class MouseMode
 {
 	Absolute,	// UI, 2D gameplay, etc
@@ -12,29 +10,44 @@ enum class MouseMode
 class Mouse
 {
 public:
-	// Mouse constructor:
-	// @param - double for the mouses's sensitivity
-	// @param - SDL_bool for if the mouse is captured or not
-	Mouse(double sensitivity, SDL_bool capture);
+	Mouse();
 	~Mouse();
 
-	// Gets mouse state and calculates the mouses's x and y axis movement
+	// Gets mouse movement by calculating the mouses's x and y axis movement.
+	// It will then store the current frame's mouse state
 	void CalculateMovement();
+
+
+	// Mouse Clicks
+
+	// Checks if a mouse button is clicked this frame, but was not clicked the last frame
+	// Useful for actions that should only happen once per click, such as shooting a single round per click for a gun, or opening a door, etc.
+	// @param - Uint8 for the button to check
+	// @return - bool for if the button is clicked this frame, but was not clicked the last frame
+	bool IsSingleClick(Uint8 button) const;
+
+	// Checks if a mouse button is held down/clicked
+	// @param - Uint8 for the button to check
+	// @return - bool for if the button is held down
+	bool IsButtonHeld(Uint8 button) const;
+
+	// Checks if a mouse button is released
+	// @param - Uint8 for the button to check
+	// @return - bool for if the button is released
+	bool IsButtonRelease(Uint8 button) const;
+
 
 	// Toggles between if the mouse is captured or not
 	// @param - SDL_Window* for the window if mouse needs to center
 	void ToggleMouseCapture(SDL_Window* window);
 
-	// Sets all button states back to 0
+	// Save the last frame's state and resets the scroll delta
 	void ResetState();
 
 	// Centers the mouse in the window
 	// @param - SDL_Window* for the window
 	void CenterMouse(SDL_Window* window);
 
-	// Gets the mouse state
-	// @return - Uint8 for the mouse state
-	Uint8 GetState() const { return mState; }
 
 	// Gets the mouse's x offset
 	// @return - double for x mouse offset
@@ -48,51 +61,36 @@ public:
 	// @return - double for the mouse sensitivity
 	double GetSensitivity() const { return mSensitivity; }
 
-	// Gets the mouse's captured status
-	// @return - SDL_bool for the mouse capture status
-	SDL_bool MouseIsCaptured() const { return mCaptured; }
-
-	// Gets the mouse mode
-	// @return - MouseMode for the mode
-	//MouseMode GetMouseMode() const { return mMouseMode; }
-
 	// Gets the mouse's scroll direction
 	// @return - Sint32 for the scroll direction
 	Sint32 GetScrollDir() const { return mScrollDir; }
 
-	// Get the mouse's button down state
-	// @return - Uint8 for the button state
-	bool IsButtonDown(Uint8 button) const { return mButtonsDown[button]; }
+	// Gets the mouse's captured status
+	// @return - SDL_bool for the mouse capture status
+	SDL_bool IsCaptured() const { return mCaptured; }
 
-	// Get the mouse's button up state
-	// @return - Uint8 for the button state
-	bool IsButtonUp(Uint8 button) const { return mButtonsUp[button]; }
+	// Gets the mouse mode
+	// @return - MouseMode for the mode
+	MouseMode GetMouseMode() const { return mMode; }
+
 
 	// Sets the mouse's sensitivity
 	// @param - double for the mouse sensitivity
 	void SetSensitivity(double sensitivity) { mSensitivity = sensitivity; }
 
+	// Sets the mouse's scroll direction
+	// @param - Sint32 for the scroll direction
+	void SetScrollDir(Sint32 scrollDir) { mScrollDir = scrollDir; }
+
 	// Sets the mouse's capture status
 	// @param - SDL_bool for the status
 	void SetCapture(SDL_bool status) { mCaptured = status; }
 
-	// Sets the mouse's scroll dir
-	// @param - Sint32 for the scroll dir
-	void SetScrollDir(Sint32 dir) { mScrollDir = dir; }
-
-	// Sets the mouse's button down state for the specified button
-	// @param - Uint8 for the specified button
-	void SetButtonDown(Uint8 down) { mButtonsDown[down] = true; }
-
-	// Sets the mouse's button up state for the specified button
-	// @param - Uint8 for the specified button
-	void SetButtonUp(Uint8 up) { mButtonsUp[up] = true; }
+	// Sets the mouse mode
+	// @param - MouseMode for the mode
+	void SetMode(MouseMode mode) { mMode = mode; }
 
 private:
-	// Gets the mouse mode from the mouse captured status
-	// @param - SDL_bool for mouse captured
-	//MouseMode GetModeFromCapture(SDL_bool mouseCaptured);
-	
 	// x-axis movement
 	double mPosX;
 
@@ -102,21 +100,18 @@ private:
 	// Mouse sensitivity
 	double mSensitivity;
 
-	// Mouse state (for button holds)
-	Uint8 mState;
+	// Current frame's mouse state
+	Uint32 mCurrentState;
 
-	// Mouse button down
-	bool mButtonsDown[MAX_MOUSE_BUTTONS];
+	// Previous frame's mouse state
+	Uint32 mPreviousState;
 
-	// Mouse button up
-	bool mButtonsUp[MAX_MOUSE_BUTTONS];
+	// Mouse scroll delta representing the direction
+	Sint32 mScrollDir;
 
 	// Bool for if the mouse is captured by the window
 	SDL_bool mCaptured;
 
-	// Mouse movement mode
-	//MouseMode mMouseMode;
-
-	// Scroll direction
-	Sint32 mScrollDir;
+	// Mouse mode (relative or absolute)
+	MouseMode mMode;
 };

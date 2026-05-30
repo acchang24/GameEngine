@@ -2,16 +2,15 @@
 #include <algorithm>
 #include <iostream>
 
-Mouse::Mouse(double sensitivity, SDL_bool capture) :
+Mouse::Mouse() :
 	mPosX(0.0),
 	mPosY(0.0),
-	mSensitivity(sensitivity),
-	mState(0),
-	mButtonsDown(),
-	mButtonsUp(),
-	mCaptured(capture),
-	//mMouseMode(GetModeFromCapture(capture)),
-	mScrollDir(0)
+	mSensitivity(0.0),
+	mCurrentState(0),
+	mPreviousState(0),
+	mScrollDir(0),
+	mCaptured(SDL_FALSE),
+	mMode(MouseMode::Absolute)
 {
 	
 }
@@ -25,33 +24,62 @@ void Mouse::CalculateMovement()
 {
 	int x = 0;
 	int y = 0;
-	//if (mMouseMode == MouseMode::Relative)
+	if (mMode == MouseMode::Relative)
 	{
-		mState = SDL_GetRelativeMouseState(&x, &y);
+		mCurrentState = SDL_GetRelativeMouseState(&x, &y);
+
+		// Apply sensitivity and flip y-axis for typical screen coordinates
 		mPosX = x * mSensitivity;
 		mPosY = -y * mSensitivity;
 	}
-	//else
+	else
 	{
-		mState = SDL_GetMouseState(&x, &y);
+		mCurrentState = SDL_GetMouseState(&x, &y);
 		mPosX = x;
 		mPosY = y;
 	}
+}
+
+bool Mouse::IsSingleClick(Uint8 button) const
+{
+	// Current frame click state for the button
+	bool isClicked = (mCurrentState & SDL_BUTTON(button)) != 0;
+
+	// Previous frame click state for the button
+	bool prevClick = (mPreviousState & SDL_BUTTON(button)) != 0;
+
+	return isClicked && !prevClick;
+}
+
+bool Mouse::IsButtonHeld(Uint8 button) const
+{
+	return ((mCurrentState & SDL_BUTTON(button)) != 0);
+}
+
+bool Mouse::IsButtonRelease(Uint8 button) const
+{
+	// Current frame click state for the button
+	bool isClicked = (mCurrentState & SDL_BUTTON(button)) != 0;
+
+	// Previous frame click state for the button
+	bool prevClick = (mPreviousState & SDL_BUTTON(button)) != 0;
+
+	return !isClicked && prevClick;
 }
 
 void Mouse::ToggleMouseCapture(SDL_Window* window)
 {
 	if (mCaptured == SDL_TRUE)
 	{
-		//mMouseMode = MouseMode::Absolute;
+		mMode = MouseMode::Absolute;
 		mCaptured = SDL_FALSE;
 	}
 	else
 	{
-		//mMouseMode = MouseMode::Relative;
+		mMode = MouseMode::Relative;
 		mCaptured = SDL_TRUE;
 	}
-	
+
 	mPosX = 0;
 	mPosY = 0;
 
@@ -65,9 +93,11 @@ void Mouse::ToggleMouseCapture(SDL_Window* window)
 
 void Mouse::ResetState()
 {
+	// Save the last frame's mouse state
+	mPreviousState = mCurrentState;
+
+	// Reset the scroll delta for new frame
 	mScrollDir = 0;
-	std::fill(std::begin(mButtonsDown), std::end(mButtonsDown), false);
-	std::fill(std::begin(mButtonsUp), std::end(mButtonsUp), false);
 }
 
 void Mouse::CenterMouse(SDL_Window* window)
@@ -80,15 +110,3 @@ void Mouse::CenterMouse(SDL_Window* window)
 		SDL_WarpMouseInWindow(window, windowW / 2, windowH / 2);
 	}
 }
-
-//MouseMode Mouse::GetModeFromCapture(SDL_bool mouseCaptured)
-//{
-//	if (mouseCaptured == SDL_TRUE)
-//	{
-//		return MouseMode::Relative;
-//	}
-//	else
-//	{
-//		return MouseMode::Absolute;
-//	}
-//}
