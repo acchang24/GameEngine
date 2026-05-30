@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include <cstring>
 
 class Keyboard
 {
@@ -7,21 +8,34 @@ public:
 	Keyboard();
 	~Keyboard();
 
-	// Gets the keyboard's state
-	const Uint8* GetState();
+	// Checks if a key is pressed
+	// @param - SDL_Scancode for the key to check
+	// @return - bool for if the key is pressed
+	bool IsKeyPressed(SDL_Scancode code) const { return mCurrentKeyState[code] != 0; }
 
-	// Detects if a key was pressed in the last frame
-	bool PressedLastFrame(SDL_Scancode code) const;
+	// Checks if a key is released
+	// @param - SDL_Scancode for the key to check
+	// @return - bool for if the key is released
+	bool IsKeyReleased(SDL_Scancode code) const { return mCurrentKeyState[code] == 0; }
 
-	// Detects if a key is currently pressed, while being unpressed in the last frame
-	bool HasLeadingEdge(const Uint8* state, SDL_Scancode code) const;
+	// Checks if a key is pressed this frame, but was not pressed the last frame
+	// @param - SDL_Scancode for the key to check
+	// @return - bool for if the key is pressed this frame, but was not pressed the last frame
+	bool IsKeyLeadingEdge(SDL_Scancode code) const { return ((mCurrentKeyState[code] != 0) && (mPrevKeyState[code] == 0)); }
 
-	// Saves a key's state for reference in the next frame (use at end of ProcessInput)
-	void SavePrevKeyState(const Uint8* state, SDL_Scancode code);
+	// Saves the current frame's key state
+	void SaveCurrentKeyState(const Uint8* state) { std::memcpy(mCurrentKeyState, state, sizeof(Uint8) * SDL_NUM_SCANCODES); }
 
-	void ResetKeyboard();
+	// Saves the previous frame's key state
+	void SavePrevKeyState() { std::memcpy(mPrevKeyState, mCurrentKeyState, sizeof(Uint8) * SDL_NUM_SCANCODES); }
+	
+	// Resets the keyboard state
+	void ResetKeyboard() const { SDL_ResetKeyboard(); }
 
 private:
-	// Array of previous key inputs to see if they are pressed or not
-	bool mPrevKeyInputs[SDL_NUM_SCANCODES / 2];
+	// Current frame's keyboard state
+	Uint8 mCurrentKeyState[SDL_NUM_SCANCODES];
+
+	// Previous frame's keyboard state
+	Uint8 mPrevKeyState[SDL_NUM_SCANCODES];
 };

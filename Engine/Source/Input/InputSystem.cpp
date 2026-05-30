@@ -3,8 +3,7 @@
 #include <iostream>
 
 InputSystem::InputSystem() :
-	mCurrentKeyState(),
-	mPrevKeyState(),
+	mKeyboard(),
 	mWindow(nullptr),
 	mMouseX(0.0),
 	mMouseY(0.0),
@@ -41,8 +40,7 @@ bool InputSystem::Init(SDL_Window* window, double mouseSensitivity, SDL_bool cap
 
 void InputSystem::StartFrame()
 {
-	// Save the last frame's keyboard state for leading edge detection
-	std::memcpy(mPrevKeyState, mCurrentKeyState, sizeof(Uint8) * SDL_NUM_SCANCODES);
+	mKeyboard.SavePrevKeyState();
 
 	// Save the last frame's mouse state
 	mPrevMouseState = mMouseState;
@@ -57,7 +55,7 @@ void InputSystem::GetCurrentState()
 	const Uint8* state = SDL_GetKeyboardState(NULL);
 
 	// Copy that state into mCurrentKeyState
-	std::memcpy(mCurrentKeyState, state, sizeof(Uint8) * SDL_NUM_SCANCODES);
+	mKeyboard.SaveCurrentKeyState(state);
 
 	// Calculate mouse movement
 	int x = 0;
@@ -87,26 +85,6 @@ void InputSystem::HandleEvent(const SDL_Event& event)
 	{
 		mScrollDir = event.wheel.y;
 	}
-}
-
-bool InputSystem::IsKeyPressed(SDL_Scancode code) const
-{
-	return mCurrentKeyState[code] != 0;
-}
-
-bool InputSystem::IsKeyReleased(SDL_Scancode code) const
-{
-	return mCurrentKeyState[code] == 0;
-}
-
-bool InputSystem::IsKeyLeadingEdge(SDL_Scancode code) const
-{
-	return ((mCurrentKeyState[code] != 0) && (mPrevKeyState[code] == 0));
-}
-
-void InputSystem::ResetKeyboard() const
-{
-	SDL_ResetKeyboard();
 }
 
 bool InputSystem::IsMouseSingleClick(Uint8 button) const

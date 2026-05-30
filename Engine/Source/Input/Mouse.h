@@ -3,11 +3,11 @@
 
 const size_t MAX_MOUSE_BUTTONS = 6;
 
-//enum class MouseMode
-//{
-//	Absolute,	// UI, 2D gameplay, etc
-//	Relative,	// Used for calculating mouse deltas (FPS camera, free look)
-//};
+enum class MouseMode
+{
+	Absolute,	// UI, 2D gameplay, etc
+	Relative,	// Used for calculating mouse deltas (FPS camera, free look)
+};
 
 class Mouse
 {

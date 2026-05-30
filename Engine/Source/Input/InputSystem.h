@@ -1,11 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
-
-enum class MouseMode
-{
-	Absolute,	// UI, 2D gameplay, etc
-	Relative,	// Used for calculating mouse deltas (FPS camera, free look)
-};
+#include "Keyboard.h"
+#include "Mouse.h"
 
 class InputSystem
 {
@@ -21,7 +17,7 @@ public:
 	// @return - bool for if the input system was initialized properly
 	bool Init(SDL_Window* window, double mouseSensitivity, SDL_bool capture);
 
-	// Saves the keystate from the previous frame, resets the mouse state, and gets the current keystate and mouse movement for the current frame
+	// Saves the keystate from the previous frame, resets the mouse state
 	// This should be called at the beginning of the game loop's Game::ProcessInput() function
 	void StartFrame();
 
@@ -32,29 +28,30 @@ public:
 	// This shuld be called at the very end of the game loop's Game::ProcessInput() function
 	void EndFrame();
 
-
+	// Handles any events that are polled, such as mouse scroll events
+	// @param - const SDL_Event& for the event to handle
 	void HandleEvent(const SDL_Event& event);
 
 
-
 	// KEYBOARD API
+	
 	// Checks if a key is pressed
 	// @param - SDL_Scancode for the key to check
 	// @return - bool for if the key is pressed
-	bool IsKeyPressed(SDL_Scancode code) const;
+	bool IsKeyPressed(SDL_Scancode code) const { return mKeyboard.IsKeyPressed(code); }
 
 	// Checks if a key is released
 	// @param - SDL_Scancode for the key to check
 	// @return - bool for if the key is released
-	bool IsKeyReleased(SDL_Scancode code) const;
+	bool IsKeyReleased(SDL_Scancode code) const { return mKeyboard.IsKeyReleased(code); }
 
 	// Checks if a key is pressed this frame, but was not pressed the last frame
 	// @param - SDL_Scancode for the key to check
 	// @return - bool for if the key is pressed this frame, but was not pressed the last frame
-	bool IsKeyLeadingEdge(SDL_Scancode code) const;
+	bool IsKeyLeadingEdge(SDL_Scancode code) const { return mKeyboard.IsKeyLeadingEdge(code); }
 
 	// Resets the keyboard state
-	void ResetKeyboard() const;
+	void ResetKeyboard() const { mKeyboard.ResetKeyboard(); }
 
 
 	// MOUSE API
@@ -96,11 +93,8 @@ public:
 	bool MouseIsCaptured() const { return mMouseCaptured == SDL_TRUE; }
 
 private:
-	// Current frame's keyboard state
-	Uint8 mCurrentKeyState[SDL_NUM_SCANCODES];
-
-	// Previous frame's keyboard state
-	Uint8 mPrevKeyState[SDL_NUM_SCANCODES];
+	// Keyboard device
+	Keyboard mKeyboard;
 
 	// Pointer to the game window
 	SDL_Window* mWindow;
