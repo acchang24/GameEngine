@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../Entity/Entity.h"
 #include "../Input/Mouse.h"
+#include "../Input/InputSystem.h"
 
 Component::Component(Entity* owner) : 
 	mOwner(owner)
@@ -14,7 +15,7 @@ Component::~Component()
 	std::cout << "Deleted component\n";
 }
 
-void Component::ProcessInput(const Uint8* keyState, const Mouse* mouse)
+void Component::ProcessInput(const InputSystem* input)
 {
 
 }

@@ -26,7 +26,7 @@ struct CameraConsts
 	float padding;			  // padding for allignment
 };
 
-class Mouse;
+class InputSystem;
 class Renderer;
 class UniformBuffer;
 
@@ -157,8 +157,8 @@ public:
 
 	// Update the camera's pos and rotation
 	// @param - float for the delta time
-	// @param - Mouse* for the mouse
-	void Update(float deltaTime, Mouse* mouse);
+	// @param - InputSystem* to check mouse movement
+	void Update(float deltaTime, InputSystem* input);
 
 	// Toggles between all the camera modes
 	void ToggleCameraModes();

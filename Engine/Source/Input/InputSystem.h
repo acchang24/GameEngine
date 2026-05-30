@@ -10,13 +10,23 @@ enum class MouseMode
 class InputSystem
 {
 public:
-	InputSystem(SDL_Window* window, double mouseSensitivity, SDL_bool capture);
+	InputSystem();
 
 	~InputSystem();
+
+	// Initializes the input system, setting the window
+	// @param - SDL_Window* for the window
+	// @param - double for the mouse sensitivity
+	// @param - SDL_bool for if the mouse is captured by the window
+	// @return - bool for if the input system was initialized properly
+	bool Init(SDL_Window* window, double mouseSensitivity, SDL_bool capture);
 
 	// Saves the keystate from the previous frame, resets the mouse state, and gets the current keystate and mouse movement for the current frame
 	// This should be called at the beginning of the game loop's Game::ProcessInput() function
 	void StartFrame();
+
+	// Gets the current snapshot of keyboard and mouse movement
+	void GetCurrentState();
 
 	// Clears temporary, non-persistent states right before the frame changes. 
 	// This shuld be called at the very end of the game loop's Game::ProcessInput() function
@@ -63,12 +73,27 @@ public:
 	// @return - bool for if the button is released
 	bool IsMouseRelease(Uint8 button) const;
 
+	// Gets the mouse x movement for the current frame
+	// @return - double for the mouse x movement
+	double GetMouseX() const { return mMouseX; }
+
+	// Gets the mouse y movement for the current frame
+	// @return - double for the mouse y movement
+	double GetMouseY() const { return mMouseY; }
+
+	// Gets the mouse scroll direction
+	// @return - Sint32 for the scroll direction
+	Sint32 GetMouseScrollDir() const { return mScrollDir; }
 
 	// Toggles the mouse capture mode
 	void ToggleMouseCapture();
 
 	// Centers the mouse in the window
 	void CenterMouse();
+
+	// Returns true if mouse is captured by the window, false if not
+	// @return - bool for if the mouse is captured by the window
+	bool MouseIsCaptured() const { return mMouseCaptured == SDL_TRUE; }
 
 private:
 	// Current frame's keyboard state
@@ -80,6 +105,14 @@ private:
 	// Pointer to the game window
 	SDL_Window* mWindow;
 
+	// Mouse x movement
+	double mMouseX;
+
+	// Mouse y movement
+	double mMouseY;
+
+	// Mouse sensitivity
+	double mMouseSensitivity;
 
 	// Current frame's mouse state
 	Uint32 mMouseState;
@@ -90,18 +123,9 @@ private:
 	// Mouse scroll direction
 	Sint32 mScrollDir;
 
-	// Mouse x movement
-	double mMouseX;
-
-	// Mouse y movement
-	double mMouseY;
-
-	// Mouse sensitivity
-	double mMouseSensitivity;
+	// Bool for if the mouse is captured by the window
+	SDL_bool mMouseCaptured;
 
 	// Mouse mode (relative or absolute)
 	MouseMode mMouseMode;
-
-	// Bool for if the mouse is captured by the window
-	SDL_bool mMouseCaptured;
 };

@@ -10,7 +10,7 @@ Mouse::Mouse(double sensitivity, SDL_bool capture) :
 	mButtonsDown(),
 	mButtonsUp(),
 	mCaptured(capture),
-	mMouseMode(GetModeFromCapture(capture)),
+	//mMouseMode(GetModeFromCapture(capture)),
 	mScrollDir(0)
 {
 	
@@ -25,13 +25,13 @@ void Mouse::CalculateMovement()
 {
 	int x = 0;
 	int y = 0;
-	if (mMouseMode == MouseMode::Relative)
+	//if (mMouseMode == MouseMode::Relative)
 	{
 		mState = SDL_GetRelativeMouseState(&x, &y);
 		mPosX = x * mSensitivity;
 		mPosY = -y * mSensitivity;
 	}
-	else
+	//else
 	{
 		mState = SDL_GetMouseState(&x, &y);
 		mPosX = x;
@@ -43,12 +43,12 @@ void Mouse::ToggleMouseCapture(SDL_Window* window)
 {
 	if (mCaptured == SDL_TRUE)
 	{
-		mMouseMode = MouseMode::Absolute;
+		//mMouseMode = MouseMode::Absolute;
 		mCaptured = SDL_FALSE;
 	}
 	else
 	{
-		mMouseMode = MouseMode::Relative;
+		//mMouseMode = MouseMode::Relative;
 		mCaptured = SDL_TRUE;
 	}
 	
@@ -81,14 +81,14 @@ void Mouse::CenterMouse(SDL_Window* window)
 	}
 }
 
-MouseMode Mouse::GetModeFromCapture(SDL_bool mouseCaptured)
-{
-	if (mouseCaptured == SDL_TRUE)
-	{
-		return MouseMode::Relative;
-	}
-	else
-	{
-		return MouseMode::Absolute;
-	}
-}
+//MouseMode Mouse::GetModeFromCapture(SDL_bool mouseCaptured)
+//{
+//	if (mouseCaptured == SDL_TRUE)
+//	{
+//		return MouseMode::Relative;
+//	}
+//	else
+//	{
+//		return MouseMode::Absolute;
+//	}
+//}

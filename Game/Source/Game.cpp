@@ -25,8 +25,9 @@
 #include "Graphics/UniformBuffer.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
-#include "Input/Keyboard.h"
-#include "Input/Mouse.h"
+#include "Input/InputSystem.h"
+//#include "Input/Keyboard.h"
+//#include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Util/Console.h"
@@ -52,7 +53,7 @@ const char* TITLE = "Game";
 SDL_bool MOUSE_CAPTURED = SDL_TRUE;
 
 Game::Game() :
-	mEngine(RendererMode::MODE_3D, MOUSE_SENSITIVITY, MOUSE_CAPTURED),
+	mEngine(RendererMode::MODE_3D),
 	mLights(),
 	mShadowMap(nullptr),
 	mSkybox(nullptr),
@@ -75,7 +76,7 @@ bool Game::Init()
 {
 	Random::Init();
 
-	if (!mEngine.Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_CAPTURED, TITLE))
+	if (!mEngine.Init(WINDOW_WIDTH, WINDOW_HEIGHT, SUB_SAMPLES, VSYNC, IS_FULLSCREEN, MOUSE_SENSITIVITY, MOUSE_CAPTURED, TITLE))
 	{
 		return false;
 	}
@@ -391,15 +392,17 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
-	Mouse* mouse = mEngine.GetMouse();
-	Keyboard* keyboard = mEngine.GetKeyboard();
+	InputSystem* input = mEngine.GetInputSystem();
 
-	mouse->ResetState();
+	input->StartFrame();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
+		mEngine.GetInputSystem()->HandleEvent(event);
+
 		mEngine.GetEngineUI()->ProcessSDLEvent(event);
+
 		switch (event.type)
 		{
 		case SDL_QUIT:
@@ -412,99 +415,102 @@ void Game::ProcessInput()
 				ResizeWindow(event);
 			}
 			break;
-		case SDL_MOUSEBUTTONDOWN:
-			// Mouse click down
-			mouse->SetButtonDown(event.button.button);
-			break;
-		case SDL_MOUSEBUTTONUP:
-			// Mouse click release
-			mouse->SetButtonUp(event.button.button);
-			break;
-		case SDL_MOUSEWHEEL:
-			// Mouse wheel scroll
-			mouse->SetScrollDir(event.wheel.y);
-			break;
+		//case SDL_MOUSEBUTTONDOWN:
+		//	// Mouse click down
+		//	mouse->SetButtonDown(event.button.button);
+		//	break;
+		//case SDL_MOUSEBUTTONUP:
+		//	// Mouse click release
+		//	mouse->SetButtonUp(event.button.button);
+		//	break;
+		//case SDL_MOUSEWHEEL:
+		//	// Mouse wheel scroll
+		//	mouse->SetScrollDir(event.wheel.y);
+		//	break;
 		}
 	}
 
-	mouse->CalculateMovement();
+	//mouse->CalculateMovement();
+	input->GetCurrentState();
 
-	Sint32 scroll = mouse->GetScrollDir();
+
+	Sint32 scroll = input->GetMouseScrollDir();
+
 	// Single left click
-	if (mouse->IsButtonDown(SDL_BUTTON_LEFT))
+	if (input->IsMouseSingleClick(SDL_BUTTON_LEFT))
 	{
 		LOG_DEBUG("Left click");
 	}
 	// Single right click
-	if (mouse->IsButtonDown(SDL_BUTTON_RIGHT))
+	if (input->IsMouseSingleClick(SDL_BUTTON_RIGHT))
 	{
 		LOG_DEBUG("Right click");
 	}
 	// Single scroll wheel click (mouse 3 click)
-	if (mouse->IsButtonDown(SDL_BUTTON_MIDDLE))
+	if (input->IsMouseSingleClick(SDL_BUTTON_MIDDLE))
 	{
 		LOG_DEBUG("Scroll click");
 	}
 	// Single mouse 4 click
-	if (mouse->IsButtonDown(SDL_BUTTON_X1))
+	if (input->IsMouseSingleClick(SDL_BUTTON_X1))
 	{
 		LOG_DEBUG("Mouse 4 click");
 	}
 	// Single mouse 5 click
-	if (mouse->IsButtonDown(SDL_BUTTON_X2))
+	if (input->IsMouseSingleClick(SDL_BUTTON_X2))
 	{
 		LOG_DEBUG("Mouse 5 click");
 	}
 
-	Uint8 mouse_state = mouse->GetState();
+	//Uint8 mouse_state = mouse->GetState();
 	// Left click hold
-	if (mouse_state & SDL_BUTTON_LMASK)
+	if (input->IsMouseHeld(SDL_BUTTON_LEFT))
 	{
 		LOG_DEBUG("Left click hold");
 	}
 	// Right click hold
-	if (mouse_state & SDL_BUTTON_RMASK)
+	if (input->IsMouseHeld(SDL_BUTTON_RIGHT))
 	{
 		LOG_DEBUG("Right click hold");
 	}
 	// Scroll click hold
-	if (mouse_state & SDL_BUTTON_MMASK)
+	if (input->IsMouseHeld(SDL_BUTTON_MIDDLE))
 	{
 		LOG_DEBUG("Scroll click hold");
 	}
 	// Mouse 4 click hold
-	if (mouse_state & SDL_BUTTON_X1MASK)
+	if (input->IsMouseHeld(SDL_BUTTON_X1))
 	{
 		LOG_DEBUG("Mouse 4 click hold");
 	}
 	// Mouse 5 click hold
-	if (mouse_state & SDL_BUTTON_X2MASK)
+	if (input->IsMouseHeld(SDL_BUTTON_X2))
 	{
 		LOG_DEBUG("Mouse 5 click hold");
 	}
 
 	// Left click release
-	if (mouse->IsButtonUp(SDL_BUTTON_LEFT))
+	if (input->IsMouseRelease(SDL_BUTTON_LEFT))
 	{
 		LOG_DEBUG("Left click release");
 	}
 	// Right click release
-	if (mouse->IsButtonUp(SDL_BUTTON_RIGHT))
+	if (input->IsMouseRelease(SDL_BUTTON_RIGHT))
 	{
 		LOG_DEBUG("Right click release");
 	}
 	// Scroll click release
-	if (mouse->IsButtonUp(SDL_BUTTON_MIDDLE))
+	if (input->IsMouseRelease(SDL_BUTTON_MIDDLE))
 	{
 		LOG_DEBUG("Scroll click release");
 	}
 	// Mouse 4 click release
-	if (mouse->IsButtonUp(SDL_BUTTON_X1))
+	if (input->IsMouseRelease(SDL_BUTTON_X1))
 	{
 		LOG_DEBUG("Mouse 4 click release");
 	}
 	// Mouse 5 click release
-	if (mouse->IsButtonUp(SDL_BUTTON_X2))
+	if (input->IsMouseRelease(SDL_BUTTON_X2))
 	{
 		LOG_DEBUG("Mouse 5 click release");
 	}
@@ -520,9 +526,9 @@ void Game::ProcessInput()
 		LOG_DEBUG("Scroll down " + std::to_string(scroll));
 	}
 
-	const Uint8* keyboardState = keyboard->GetState();
+	//const Uint8* keyboardState = keyboard->GetState();
 
-	if (keyboardState[SDL_SCANCODE_ESCAPE])
+	if (input->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		mIsRunning = false;
 	}
@@ -537,7 +543,7 @@ void Game::ProcessInput()
 	glm::vec3 camPanDir = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	// Move camera around
-	if (keyboardState[SDL_SCANCODE_W])
+	if (input->IsKeyPressed(SDL_SCANCODE_W))
 	{	
 		switch (mode)
 		{
@@ -549,7 +555,7 @@ void Game::ProcessInput()
 			break;
 		}
 	}
-	if (keyboardState[SDL_SCANCODE_S])
+	if (input->IsKeyPressed(SDL_SCANCODE_S))
 	{
 		switch (mode)
 		{
@@ -561,14 +567,14 @@ void Game::ProcessInput()
 			break;
 		}
 	}
-	if (keyboardState[SDL_SCANCODE_A])
+	if (input->IsKeyPressed(SDL_SCANCODE_A))
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
 			camPanDir -= right;
 		}
 	}
-	if (keyboardState[SDL_SCANCODE_D])
+	if (input->IsKeyPressed(SDL_SCANCODE_D))
 	{
 		if (mode == CameraMode::First || mode == CameraMode::Fly)
 		{
@@ -578,22 +584,22 @@ void Game::ProcessInput()
 	camera->SetPanDir(camPanDir);
 
 	// Toggle camera modes
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_V))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_V))
 	{
 		camera->ToggleCameraModes();
 	}
 
 	// Toggle the main directional light
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_SPACE))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_SPACE))
 	{
 		bool light = mLights.GetLights().directionalLight[0].data.isEnabled;
 		mLights.GetLights().directionalLight[0].data.isEnabled = !light;
 	}
 
 	// Capture mouse
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_M))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_M))
 	{
-		mouse->ToggleMouseCapture(mEngine.GetRenderer()->GetWindow());
+		input->ToggleMouseCapture();
 	}
 
 	// HDR/Exposure
@@ -601,14 +607,14 @@ void Game::ProcessInput()
 	Shader* bloomAdd = AssetManager::LoadShader("bloomBlend");
 
 	// Toggle hdr
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_H))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_H))
 	{
 		hdr = !hdr;
 		shader->SetActive();
 		shader->SetBool("hdr", hdr);
 	}
 	// Toggle bloom
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_B))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_B))
 	{
 		bloom = !bloom;
 
@@ -616,125 +622,125 @@ void Game::ProcessInput()
 		bloomAdd->SetBool("bloom", bloom);
 	}
 	// Exposure levels
-	if (keyboardState[SDL_SCANCODE_0])
+	if (input->IsKeyPressed(SDL_SCANCODE_0))
 	{
 		shader->SetActive();
 		shader->SetFloat("exposure", 0.1f);
 	}
-	if (keyboardState[SDL_SCANCODE_1])
+	if (input->IsKeyPressed(SDL_SCANCODE_1))
 	{
 		shader->SetActive();
 		shader->SetFloat("exposure", 1.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_2])
+	if (input->IsKeyPressed(SDL_SCANCODE_2))
 	{
 		shader->SetActive();
 		shader->SetFloat("exposure", 2.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_3])
+	if (input->IsKeyPressed(SDL_SCANCODE_3))
 	{
 		shader->SetActive();
 		shader->SetFloat("exposure", 3.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_4])
+	if (input->IsKeyPressed(SDL_SCANCODE_4))
 	{
 		shader->SetActive();
 		shader->SetFloat("exposure", 4.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_5])
+	if (input->IsKeyPressed(SDL_SCANCODE_5))
 	{
 		shader->SetActive();
 		shader->SetFloat("exposure", 5.0f);
 	}
 
 	// Shadow debug inputs
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_UP))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_UP))
 	{
 		size += 10.0f;
 	}
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_DOWN))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_DOWN))
 	{
 		size -= 10.0f;
 	}
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_LEFT))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_LEFT))
 	{
 		far -= 10.0f;
 	}
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_RIGHT))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_RIGHT))
 	{
 		far += 10.0f;
 	}
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_L))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_L))
 	{
 		dist -= 10.0f;
 		pos = (lightDir * -dist);
 	}
-	if (keyboard->HasLeadingEdge(keyboardState, SDL_SCANCODE_K))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_K))
 	{
 		dist += 10.0f;
 		pos = (lightDir * -dist);
 	}
 
-	if (keyboardState[SDL_SCANCODE_KP_0])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_0))
 	{
 		vampires[0]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_1])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_1))
 	{
 		vampires[1]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_2])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_2))
 	{
 		vampires[2]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_3])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_3))
 	{
 		vampires[3]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_4])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_4))
 	{
 		vampires[4]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_5])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_5))
 	{
 		vampires[5]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_6])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_6))
 	{
 		vampires[6]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_7])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_7))
 	{
 		vampires[7]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_8])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_8))
 	{
 		vampires[8]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
-	if (keyboardState[SDL_SCANCODE_KP_9])
+	if (input->IsKeyPressed(SDL_SCANCODE_KP_9))
 	{
 		vampires[9]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 
-	// Save previous key inputs
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_V);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_SPACE);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_H);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_B);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_UP);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_DOWN);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_LEFT);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_RIGHT);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_L);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_K);
-	keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_M);
+	//// Save previous key inputs
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_V);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_SPACE);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_H);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_B);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_UP);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_DOWN);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_LEFT);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_RIGHT);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_L);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_K);
+	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_M);
 
 	for (auto e : mEntities)
 	{
-		e->ProcessInput(keyboardState, keyboard, mouse);
+		e->ProcessInput(input);
 	}
 
-	mEngine.GetConsole()->ProcessInput(keyboardState, keyboard, mouse);
+	mEngine.GetConsole()->ProcessInput(input);
 }
 
 void Game::Update(float deltaTime)
@@ -746,7 +752,7 @@ void Game::Update(float deltaTime)
 		e->Update(deltaTime);
 	}
 
-	mEngine.GetRenderer()->GetCamera()->Update(deltaTime, mEngine.GetMouse());
+	mEngine.GetRenderer()->GetCamera()->Update(deltaTime, mEngine.GetInputSystem());
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	JobManager::Get()->WaitForJobs();

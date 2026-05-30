@@ -3,8 +3,7 @@
 #include "Audio/AudioSystem.h"
 #include "EngineUI/EngineUI.h"
 #include "Graphics/Renderer.h"
-#include "Input/Keyboard.h"
-#include "Input/Mouse.h"
+#include "Input/InputSystem.h"
 #include "Physics/Physics.h"
 #include "Util/Logger.h"
 
@@ -22,9 +21,7 @@ class Engine
 public:
 	// Engine constructor: creates subsystem objects and starts logger
 	// @param - RendererMode for 2D or 3D game
-	// @param - double for initial mouse sensitivity
-	// @param - SDL_bool for if the mouse is captured by the screen
-	Engine(RendererMode renderMode, double mouseSensitivity, SDL_bool mouseCaptured);
+	Engine(RendererMode renderMode);
 	~Engine();
 
 	// Initializes the game engine subsystems. Returns true after successful initialization
@@ -33,10 +30,11 @@ public:
 	// @param - int for initial number of sub samples used for anti aliasing (1, 2, 4, 8)
 	// @param - int for initial v sync (0 = immediate, 1 = sync, -1 = adaptive
 	// @param - bool for if the window is fullscreen
+	// @param - double for the mouse sensitivity
 	// @param - SDL_bool for if the mouse is captured by the screen
 	// @param - const char* for the game name
 	// @return - bool for if the engine was initialized properly
-	bool Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, SDL_bool mouseCaptured, const char* gameName);
+	bool Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, double mouseSensitivity, SDL_bool mouseCaptured, const char* gameName);
 
 	// De-allocates any resources
 	void Shutdown();
@@ -45,13 +43,17 @@ public:
 	// @return - Renderer* for the renderer
 	Renderer* GetRenderer() { return &mRenderer; }
 
+	// Gets the engine's input system
+	// @return - InputSystem* for the input system
+	InputSystem* GetInputSystem() { return &mInputSystem; }
+
 	// Gets the keyboard
 	// @return - Keyboard* for the keyboard
-	Keyboard* GetKeyboard() { return &mKeyboard; }
+	//Keyboard* GetKeyboard() { return &mKeyboard; }
 
 	// Gets the mouse
 	// @return - Mouse* for the mouse
-	Mouse* GetMouse() { return &mMouse; }
+	//Mouse* GetMouse() { return &mMouse; }
 
 	// Gets the physics system
 	// @return - Physics* for the physics system
@@ -73,11 +75,8 @@ private:
 	// Renderer for 2D/3D graphics output
 	Renderer mRenderer;
 
-	// Keyboard
-	Keyboard mKeyboard;
-
-	// Mouse
-	Mouse mMouse;
+	// Input system
+	InputSystem mInputSystem;
 
 	// Physics system
 	Physics mPhysics;

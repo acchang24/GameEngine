@@ -2,18 +2,18 @@
 #include <cstring>
 #include <iostream>
 
-InputSystem::InputSystem(SDL_Window* window, double mouseSensitivity, SDL_bool capture) :
+InputSystem::InputSystem() :
 	mCurrentKeyState(),
 	mPrevKeyState(),
-	mWindow(window),
+	mWindow(nullptr),
+	mMouseX(0.0),
+	mMouseY(0.0),
+	mMouseSensitivity(0.0),
 	mMouseState(0),
 	mPrevMouseState(0),
 	mScrollDir(0),
-	mMouseX(0.0),
-	mMouseY(0.0),
-	mMouseSensitivity(mouseSensitivity),
-	mMouseMode(capture == SDL_TRUE ? MouseMode::Relative : MouseMode::Absolute),
-	mMouseCaptured(capture)
+	mMouseCaptured(SDL_FALSE),
+	mMouseMode(MouseMode::Absolute)
 {
 
 }
@@ -21,6 +21,22 @@ InputSystem::InputSystem(SDL_Window* window, double mouseSensitivity, SDL_bool c
 InputSystem::~InputSystem()
 {
 	std::cout << "Deleted Input System\n";
+}
+
+bool InputSystem::Init(SDL_Window* window, double mouseSensitivity, SDL_bool capture)
+{
+	// Check if window exists. If it doesn't exist, fail and return false
+	if (!window)
+	{
+		return false;
+	}
+
+	mWindow = window;
+	mMouseSensitivity = mouseSensitivity;
+	mMouseCaptured = capture;
+	mMouseMode = (mMouseCaptured == SDL_TRUE ? MouseMode::Relative : MouseMode::Absolute);
+
+	return true;
 }
 
 void InputSystem::StartFrame()
@@ -33,7 +49,10 @@ void InputSystem::StartFrame()
 
 	// Reset the scroll delta for new frame
 	mScrollDir = 0;
+}
 
+void InputSystem::GetCurrentState()
+{
 	// Get the current snapshot of the keyboard state
 	const Uint8* state = SDL_GetKeyboardState(NULL);
 

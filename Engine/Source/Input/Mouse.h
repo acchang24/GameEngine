@@ -3,11 +3,11 @@
 
 const size_t MAX_MOUSE_BUTTONS = 6;
 
-enum class MouseMode
-{
-	Absolute,	// UI, 2D gameplay, etc
-	Relative,	// Used for calculating mouse deltas (FPS camera, free look)
-};
+//enum class MouseMode
+//{
+//	Absolute,	// UI, 2D gameplay, etc
+//	Relative,	// Used for calculating mouse deltas (FPS camera, free look)
+//};
 
 class Mouse
 {
@@ -54,7 +54,7 @@ public:
 
 	// Gets the mouse mode
 	// @return - MouseMode for the mode
-	MouseMode GetMouseMode() const { return mMouseMode; }
+	//MouseMode GetMouseMode() const { return mMouseMode; }
 
 	// Gets the mouse's scroll direction
 	// @return - Sint32 for the scroll direction
@@ -91,7 +91,7 @@ public:
 private:
 	// Gets the mouse mode from the mouse captured status
 	// @param - SDL_bool for mouse captured
-	MouseMode GetModeFromCapture(SDL_bool mouseCaptured);
+	//MouseMode GetModeFromCapture(SDL_bool mouseCaptured);
 	
 	// x-axis movement
 	double mPosX;
@@ -115,7 +115,7 @@ private:
 	SDL_bool mCaptured;
 
 	// Mouse movement mode
-	MouseMode mMouseMode;
+	//MouseMode mMouseMode;
 
 	// Scroll direction
 	Sint32 mScrollDir;

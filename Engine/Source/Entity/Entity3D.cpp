@@ -76,11 +76,11 @@ void Entity3D::MakeInstance(unsigned int numInstances, const void* data)
 	mModel->MakeInstance(numInstances);
 }
 
-void Entity3D::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
+void Entity3D::ProcessInput(const InputSystem* input)
 {
-	Entity::ProcessInput(keyState, keyboard, mouse);
+	Entity::ProcessInput(input);
 
-	OnProcessInput(keyState, keyboard, mouse);
+	OnProcessInput(input);
 }
 
 void Entity3D::Update(float deltaTime)
@@ -106,7 +106,7 @@ void Entity3D::Draw(Shader* shader)
 	}
 }
 
-void Entity3D::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
+void Entity3D::OnProcessInput(const InputSystem* input)
 {
 }
 

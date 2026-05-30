@@ -49,22 +49,22 @@ Ship::~Ship()
 	LOG_DEBUG("Deleted Ship");
 }
 
-void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
+void Ship::OnProcessInput(const InputSystem* input)
 {
 	// Reset movement speed
 	float moveSpeed = 0.0f;
 
-	if (keyState[SDL_SCANCODE_W])
+	if (input->IsKeyPressed(SDL_SCANCODE_W))
 	{
-		if (mEngine->GetKeyboard()->HasLeadingEdge(keyState, SDL_SCANCODE_W))
+		if (input->IsKeyLeadingEdge(SDL_SCANCODE_W))
 		{
 			mEngine->GetAudio()->ResumeSFX("Assets/Sounds/ShipThrust.wav");
 		}
 		moveSpeed += 200.0f;
 	}
-	if (keyState[SDL_SCANCODE_S])
+	if (input->IsKeyPressed(SDL_SCANCODE_S))
 	{
-		moveSpeed -= 40.0f;
+		moveSpeed -= 200.0f;
 	}
 
 	if (moveSpeed > 0.0f)
@@ -78,16 +78,16 @@ void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse
 	}
 
 	float rotationSpeed = 0.0f;
-	if (keyState[SDL_SCANCODE_A])
+	if (input->IsKeyPressed(SDL_SCANCODE_A))
 	{
 		rotationSpeed -= 100.0f;
 	}
-	if (keyState[SDL_SCANCODE_D])
+	if (input->IsKeyPressed(SDL_SCANCODE_D))
 	{
 		rotationSpeed += 100.0f;
 	}
 
-	if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown > 1.0f)
+	if (input->IsKeyPressed(SDL_SCANCODE_SPACE) && mLaserCooldown > 1.0f)
 	{
 		mEngine->GetAudio()->PlaySFX("Assets/Sounds/Shoot.wav");
 
@@ -104,7 +104,7 @@ void Ship::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse
 		mMovement->SetRotationSpeed(rotationSpeed);
 	}
 
-	keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_W);
+	//keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_W);
 }
 
 void Ship::OnUpdate(float deltaTime)

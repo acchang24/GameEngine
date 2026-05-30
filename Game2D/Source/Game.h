@@ -39,7 +39,7 @@ public:
 
 	// Processes and handles any mouse movement, clicks, and scrolls
 	// @param - Mouse* for the mouse
-	void ProcessMouseInput(Mouse* mouse);
+	void ProcessMouseInput(InputSystem* input);
 
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames

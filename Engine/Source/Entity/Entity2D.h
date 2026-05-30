@@ -17,13 +17,13 @@ public:
 	// @param - const Uint8* for the keyboard state
 	// @param - Keyboard* for the keyboard
 	// @param - const Mouse* for the mouse
-	void ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse) override;
+	void ProcessInput(const InputSystem* input) override;
 
 	// Entity specific ProcessInput code (overridable)
 	// @param - const Uint8* for the keyboard state
 	// @param - Keyboard* for the keyboard
 	// @param - const Mouse* for the mouse
-	virtual void OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse);
+	virtual void OnProcessInput(const InputSystem* input);
 
 	// Override update function for 3D entities
 	// @param - float for delta time

@@ -5,8 +5,9 @@
 #include <glm/glm.hpp>
 #include "../Graphics/Renderer2D.h"
 #include "../Graphics/Text.h"
-#include "../Input/Keyboard.h"
-#include "../Input/Mouse.h"
+//#include "../Input/Keyboard.h"
+//#include "../Input/Mouse.h"
+#include "../Input/InputSystem.h"
 
 Console::Console(Logger* logger) :
 	mInputBuffer(),
@@ -23,14 +24,14 @@ Console::~Console()
 	std::cout << "Deleted Console\n";
 }
 
-void Console::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
+void Console::ProcessInput(InputSystem* input)
 {
-	if (keyboard->HasLeadingEdge(keyState, SDL_SCANCODE_GRAVE))
+	if (input->IsKeyLeadingEdge(SDL_SCANCODE_GRAVE))
 	{
 		ToggleConsole();
 	}
 
-	keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_GRAVE);
+	//keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_GRAVE);
 }
 
 void Console::SetConsoleUI()

@@ -2,7 +2,8 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../Input/Mouse.h"
+//#include "../Input/Mouse.h"
+#include "../Input/InputSystem.h"
 #include "Renderer.h"
 #include "UniformBuffer.h"
 
@@ -93,18 +94,18 @@ void Camera::SetAspectRatio(float ratio)
 	SetProjectionMode(mProjectionMode);
 }
 
-void Camera::Update(float deltaTime, Mouse* mouse)
+void Camera::Update(float deltaTime, InputSystem* input)
 {
 	double mouseX = 0.0;
 	double mouseY = 0.0;
 
-	if (mouse->MouseIsCaptured() == SDL_TRUE)
+	if (input->MouseIsCaptured())
 	{
-		mouseX = mouse->GetX();
-		mouseY = mouse->GetY();
+		mouseX = input->GetMouseX();
+		mouseY = input->GetMouseY();
 	}
 
-	Sint32 scrollDir = mouse->GetScrollDir();
+	Sint32 scrollDir = input->GetMouseScrollDir();
 
 	if (scrollDir >= 1)
 	{

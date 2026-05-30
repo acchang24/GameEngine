@@ -5,10 +5,9 @@
 #include "Util/Console.h"
 #include "Util/LoggerMacros.h"
 
-Engine::Engine(RendererMode renderMode, double mouseSensitivity, SDL_bool mouseCaptured) :
+Engine::Engine(RendererMode renderMode) :
 	mRenderer(renderMode),
-	mKeyboard(),
-	mMouse(mouseSensitivity, mouseCaptured),
+	mInputSystem(),
 	mPhysics(),
 	mJobManager(JobManager::Get()),
 	mAssetManager(AssetManager::Get()),
@@ -27,11 +26,16 @@ Engine::~Engine()
 {
 }
 
-bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, SDL_bool mouseCaptured, const char* gameName)
+bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, double mouseSensitivity, SDL_bool mouseCaptured, const char* gameName)
 {
 	mJobManager->Begin();
 
 	if (!mRenderer.Init(windowWidth, windowHeight, subSamples, v_sync, fullscreen, mouseCaptured, gameName))
+	{
+		return false;
+	}
+
+	if (!mInputSystem.Init(mRenderer.GetWindow(), mouseSensitivity, mouseCaptured))
 	{
 		return false;
 	}
@@ -46,7 +50,10 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 		return false;
 	}
 
-	mMouse.CenterMouse(mRenderer.GetWindow());
+	// Center the mouse
+	mInputSystem.CenterMouse();
+
+	//mMouse.CenterMouse(mRenderer.GetWindow());
 
 	return true;
 }

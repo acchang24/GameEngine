@@ -4,8 +4,9 @@
 #include "../EngineUI/imgui.h"
 #include "Logger.h"
 
-class Keyboard;
-class Mouse;
+//class Keyboard;
+//class Mouse;
+class InputSystem;
 
 class Console
 {
@@ -16,7 +17,7 @@ public:
 	~Console();
 
 	// Process inputs for console
-	void ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse);
+	void ProcessInput(InputSystem* input);
 
 	// Sets the console window and all of its components
 	void SetConsoleUI();

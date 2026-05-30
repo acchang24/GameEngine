@@ -24,14 +24,14 @@ Entity2D::~Entity2D()
 	std::cout << "Deleted Entity2D\n";
 }
 
-void Entity2D::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
+void Entity2D::ProcessInput(const InputSystem* input)
 {
-	Entity::ProcessInput(keyState, keyboard, mouse);
+	Entity::ProcessInput(input);
 
-	OnProcessInput(keyState, keyboard, mouse);
+	OnProcessInput(input);
 }
 
-void Entity2D::OnProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
+void Entity2D::OnProcessInput(const InputSystem* input)
 {
 }
 

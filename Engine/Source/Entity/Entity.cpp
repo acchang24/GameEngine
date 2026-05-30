@@ -1,8 +1,9 @@
 #include "Entity.h"
 #include <iostream>
 #include "../Components/Component.h"
-#include "../Input/Keyboard.h"
-#include "../Input/Mouse.h"
+//#include "../Input/Keyboard.h"
+//#include "../Input/Mouse.h"
+#include "../Input/InputSystem.h"
 
 Entity::Entity() :
 	mState(EntityState::Active)
@@ -21,13 +22,13 @@ Entity::~Entity()
 	mComponents.clear();
 }
 
-void Entity::ProcessInput(const Uint8* keyState, Keyboard* keyboard, const Mouse* mouse)
+void Entity::ProcessInput(const InputSystem* input)
 {
 	if (mState == EntityState::Active)
 	{
 		for (auto c : mComponents)
 		{
-			c->ProcessInput(keyState, mouse);
+			c->ProcessInput(input);
 		}
 	}
 }
