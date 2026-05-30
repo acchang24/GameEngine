@@ -5,8 +5,6 @@
 #include <glm/glm.hpp>
 #include "../Graphics/Renderer2D.h"
 #include "../Graphics/Text.h"
-//#include "../Input/Keyboard.h"
-//#include "../Input/Mouse.h"
 #include "../Input/InputSystem.h"
 
 Console::Console(Logger* logger) :
@@ -30,8 +28,6 @@ void Console::ProcessInput(InputSystem* input)
 	{
 		ToggleConsole();
 	}
-
-	//keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_GRAVE);
 }
 
 void Console::SetConsoleUI()

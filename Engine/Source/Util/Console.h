@@ -4,8 +4,6 @@
 #include "../EngineUI/imgui.h"
 #include "Logger.h"
 
-//class Keyboard;
-//class Mouse;
 class InputSystem;
 
 class Console
@@ -17,6 +15,7 @@ public:
 	~Console();
 
 	// Process inputs for console
+	// @param - InputSystem* for the input system
 	void ProcessInput(InputSystem* input);
 
 	// Sets the console window and all of its components

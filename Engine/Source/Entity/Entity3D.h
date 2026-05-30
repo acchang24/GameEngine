@@ -33,9 +33,7 @@ public:
 	void MakeInstance(unsigned int numInstances, const void* data);
 
 	// Entity3D override of Entity::ProcessInput()
-	// @param - const Uint8* for the keyboard state
-	// @param - Keyboard* for the keyboard
-	// @param - const Mouse* for the mouse
+	// @param - const InputSystem* for the input system
 	void ProcessInput(const InputSystem* input) override;
 
 	// Override update function for 3D entities
@@ -49,9 +47,7 @@ public:
 	void Draw(Shader* shader);
 
 	// Entity specific ProcessInput code (overridable)
-	// @param - const Uint8* for the keyboard state
-	// @param - Keyboard* for the keyboard
-	// @param - const Mouse* for the mouse
+	// @param - const InputSystem* for the input system
 	virtual void OnProcessInput(const InputSystem* input);
 
 	// Entity specific update code (overridable)

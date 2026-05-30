@@ -2,7 +2,6 @@
 #include <SDL2/SDL_stdinc.h>
 
 class Entity;
-//class Mouse;
 class InputSystem;
 
 // The Component class defines a particular aspect or functionality
@@ -18,8 +17,7 @@ public:
 	virtual ~Component();
 
 	// Overridable process input function for this component if it's needed
-	// @param - const Uint8* for the keyboard state
-	// @param - const Mouse* for the mouse
+	// @param - const InputSystem for the input system
 	virtual void ProcessInput(const InputSystem* input);
 
 	// Overridable update function that updates a particular component

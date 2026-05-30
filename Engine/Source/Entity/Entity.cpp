@@ -1,8 +1,6 @@
 #include "Entity.h"
 #include <iostream>
 #include "../Components/Component.h"
-//#include "../Input/Keyboard.h"
-//#include "../Input/Mouse.h"
 #include "../Input/InputSystem.h"
 
 Entity::Entity() :
