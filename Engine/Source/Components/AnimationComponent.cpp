@@ -100,7 +100,7 @@ void AnimationComponent::Update(float deltaTime, const EngineContext& engineCont
 	}
 
 	// Calculate final bone matrices on separate threads (go to AnimationComponent::UpdateBoneJob::DoJob() and paste here if you want single thread)
-	JobManager::Get()->AddJob(&mJob);
+	engineContext.jobManager->AddJob(&mJob);
 }
 
 void AnimationComponent::UpdateSkeletonBuffer()

@@ -26,8 +26,6 @@
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexLayouts.h"
 #include "Input/InputSystem.h"
-//#include "Input/Keyboard.h"
-//#include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Util/Console.h"
@@ -745,7 +743,7 @@ void Game::Update(float deltaTime, const EngineContext& engineContext)
 	mEngine.GetRenderer()->GetCamera()->Update(deltaTime, mEngine.GetInputSystem());
 
 	PROFILE_SCOPE(WAIT_JOBS);
-	JobManager::Get()->WaitForJobs();
+	engineContext.jobManager->WaitForJobs();
 }
 
 void Game::Render()

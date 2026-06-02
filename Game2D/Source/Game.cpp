@@ -318,7 +318,7 @@ void Game::Update(float deltaTime, const EngineContext& engineContext)
 	mEngine.GetPhysics()->Update(deltaTime);
 
 	PROFILE_SCOPE(WAIT_JOBS);
-	JobManager::Get()->WaitForJobs();
+	engineContext.jobManager->WaitForJobs();
 }
 
 void Game::Render()

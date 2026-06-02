@@ -113,7 +113,7 @@ void Entity3D::OnProcessInput(const InputSystem* input, const EngineContext& eng
 void Entity3D::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
 	// Update model matrix on seprate thread		
-	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);
+	engineContext.jobManager->AddJob(&mUpdateModelMatrixJob);
 	
 	//CalculateWorldTransform();
 }

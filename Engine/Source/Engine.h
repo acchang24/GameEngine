@@ -3,6 +3,7 @@
 #include "Audio/AudioSystem.h"
 #include "EngineUI/EngineUI.h"
 #include "Graphics/Renderer.h"
+#include "Multithreading/JobManager.h"
 #include "Input/InputSystem.h"
 #include "Physics/Physics.h"
 #include "Util/Logger.h"
@@ -11,7 +12,6 @@
 class AssetManager;
 class Console;
 class Editor;
-class JobManager;
 
 // Engine class is the central system for game framework. 
 // Manages core subsystems like rendering, audio, input, asset loading,
@@ -79,7 +79,7 @@ private:
 	Physics mPhysics;
 
 	// Pointer to a static JobManager for multi threading
-	JobManager* mJobManager;
+	JobManager mJobManager;
 
 	// Pointer to a static AssetManager to load/cache assets on demand
 	AssetManager* mAssetManager;

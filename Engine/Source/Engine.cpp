@@ -9,7 +9,7 @@ Engine::Engine(RendererMode renderMode) :
 	mRenderer(renderMode),
 	mInputSystem(),
 	mPhysics(),
-	mJobManager(JobManager::Get()),
+	mJobManager(),
 	mAssetManager(AssetManager::Get()),
 	mLogger(Logger::Get()),
 	mEngineUI(this),
@@ -28,7 +28,7 @@ Engine::~Engine()
 
 bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, double mouseSensitivity, SDL_bool mouseCaptured, const char* gameName)
 {
-	mJobManager->Begin();
+	mJobManager.Begin();
 
 	if (!mRenderer.Init(windowWidth, windowHeight, subSamples, v_sync, fullscreen, mouseCaptured, gameName))
 	{
@@ -50,6 +50,15 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 		return false;
 	}
 
+	// Populate context
+	mContext.renderer = &mRenderer;
+	mContext.input = &mInputSystem;
+	mContext.physics = &mPhysics;
+	mContext.jobManager = &mJobManager;
+	mContext.assetManager = mAssetManager;
+	mContext.engineUI = &mEngineUI;
+	mContext.audio = &mAudio;
+
 	// Center the mouse
 	mInputSystem.CenterMouse();
 
@@ -68,7 +77,7 @@ void Engine::Shutdown()
 
 	mRenderer.Shutdown();
 
-	mJobManager->End();
+	mJobManager.End();
 
 	mAssetManager->Shutdown();
 

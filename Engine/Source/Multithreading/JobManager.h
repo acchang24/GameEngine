@@ -25,8 +25,9 @@ public:
 	private:
 	};
 
-    // Get the instance of the job manager
-    static JobManager* Get();
+    JobManager();
+
+    ~JobManager();
 
     // Create and start worker threads running JobManager::WorkerThread()
     void Begin();
@@ -41,9 +42,6 @@ public:
     void WaitForJobs();
 
 private:
-    JobManager();
-    ~JobManager();
-
     // Thread loop function that waits for a job in the queue. 
     // If there is one, it will execute that job and wait for the next one
     // Each thread will run this while loop until the JobManager object is destroyed

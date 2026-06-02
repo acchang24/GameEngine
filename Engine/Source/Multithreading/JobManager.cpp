@@ -1,11 +1,18 @@
 #include "JobManager.h"
 #include <iostream>
 
-JobManager* JobManager::Get()
+JobManager::JobManager() :
+    mIsRunning(true),
+    mNumJobs(0),
+    mNumThreads(std::thread::hardware_concurrency() / 2)
 {
-	static JobManager s_JobManager;
+    // Reserve half the amount of threads available from the cpu
+    mThreads.reserve(mNumThreads);
+}
 
-	return &s_JobManager;
+JobManager::~JobManager()
+{
+    std::cout << "Delete JobManager\n";
 }
 
 void JobManager::Begin()
@@ -61,20 +68,6 @@ void JobManager::WaitForJobs()
     {
         mIdleCondition.wait(lock);
     }
-}
-
-JobManager::JobManager() :
-    mIsRunning(true),
-    mNumJobs(0),
-    mNumThreads(std::thread::hardware_concurrency() / 2)
-{
-    // Reserve half the amount of threads available from the cpu
-    mThreads.reserve(mNumThreads);
-}
-
-JobManager::~JobManager()
-{
-    std::cout << "Delete JobManager\n";
 }
 
 void JobManager::WorkerThread()
