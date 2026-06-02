@@ -87,9 +87,9 @@ Sphere::~Sphere()
     delete mVertexBuffer;
 }
 
-void Sphere::OnUpdate(float deltaTime)
+void Sphere::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
-	Entity3D::OnUpdate(deltaTime);
+	Entity3D::OnUpdate(deltaTime, engineContext);
 }
 
 void Sphere::OnDraw()

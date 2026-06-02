@@ -34,11 +34,13 @@ public:
 
 	// Entity3D override of Entity::ProcessInput()
 	// @param - const InputSystem* for the input system
-	void ProcessInput(const InputSystem* input) override;
+	// @param - const EngineContext& for the engine context
+	void ProcessInput(const InputSystem* input, const EngineContext& engineContext) override;
 
 	// Override update function for 3D entities
 	// @param - float for delta time
-	void Update(float deltaTime) override;
+	// @param - const EngineContext& for the engine context
+	void Update(float deltaTime, const EngineContext& engineContext) override;
 
 	// Override draw function for 3D entities
 	void Draw() override;
@@ -48,12 +50,14 @@ public:
 
 	// Entity specific ProcessInput code (overridable)
 	// @param - const InputSystem* for the input system
-	virtual void OnProcessInput(const InputSystem* input);
+	// @param - const EngineContext& for the engine context
+	virtual void OnProcessInput(const InputSystem* input, const EngineContext& engineContext);
 
 	// Entity specific update code (overridable)
 	// This OnUpdate updates the view matrix
 	// @param - float for delta time
-	virtual void OnUpdate(float deltaTime);
+	// @param - const EngineContext& for the engine context
+	virtual void OnUpdate(float deltaTime, const EngineContext& engineContext);
 
 	// Entity specific draw code (overrideable)
 	virtual void OnDraw();

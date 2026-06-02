@@ -19,7 +19,7 @@ public:
 	void SetMaterial(Material* m) { mMaterial = m; }
 
 	// Cube specific update
-	void OnUpdate(float deltaTime) override;
+	void OnUpdate(float deltaTime, const EngineContext& engineContext) override;
 	// Cube specific draw
 	void OnDraw() override;
 

@@ -10,7 +10,9 @@ public:
 	~MoveComponent2D();
 
 	// Override of update
-	void Update(float deltaTime) override;
+	// @param - float for delta time
+	// @param - const EngineContext& for the engine context
+	void Update(float deltaTime, const EngineContext& engineContext) override;
 
 	// Gets the rotation/angular speed
 	// @return - float for the speed of rotation

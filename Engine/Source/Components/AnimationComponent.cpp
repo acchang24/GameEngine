@@ -87,7 +87,7 @@ void AnimationComponent::LoadAnimations(const aiScene* scene, const std::string&
 	}
 }
 
-void AnimationComponent::Update(float deltaTime)
+void AnimationComponent::Update(float deltaTime, const EngineContext& engineContext)
 {
 	if (mCurrentAnimation)
 	{

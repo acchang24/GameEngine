@@ -2,6 +2,7 @@
 #include <vector>
 #include <SDL2/SDL_stdinc.h>
 #include <glm/glm.hpp>
+#include "../EngineContext.h"
 
 enum class EntityState
 {
@@ -26,12 +27,14 @@ public:
 	// Virtual ProcessInput that checks if the entity is active.
 	// If so, it will Call ProcessInput on all of its components
 	// @param - const InputSystem* for the input system
-	virtual void ProcessInput(const InputSystem* input);
+	// @param - const EngineContext& for the engine context
+	virtual void ProcessInput(const InputSystem* input, const EngineContext& engineContext);
 
 	// Virtual Update function that updates and handles the entity's own unique attributes.
 	// This base/parent class Update function simply loops through the vector of components updates them.
 	// @param - float representing delta time
-	virtual void Update(float deltaTime);
+	// @param - const EngineContext& for the engine context
+	virtual void Update(float deltaTime, const EngineContext& engineContext);
 
 	// Virtual Draw function that draws/presents the object to the screen
 	virtual void Draw();

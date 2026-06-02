@@ -15,19 +15,23 @@ public:
 
 	// Entity2D override of Entity::ProcessInput()
 	// @param - const InputSystem* for the input system
-	void ProcessInput(const InputSystem* input) override;
+	// @param - const EngineContext& for the engine context
+	void ProcessInput(const InputSystem* input, const EngineContext& engineContext) override;
 
 	// Entity specific ProcessInput code (overridable)
 	// @param - const InputSystem* for the input system
-	virtual void OnProcessInput(const InputSystem* input);
+	// @param - const EngineContext& for the engine context
+	virtual void OnProcessInput(const InputSystem* input, const EngineContext& engineContext);
 
 	// Override update function for 3D entities
 	// @param - float for delta time
-	void Update(float deltaTime) override;
+	// @param - const EngineContext& for the engine context
+	void Update(float deltaTime, const EngineContext& engineContext) override;
 
 	// Entity specific update code (overridable)
 	// @param - float for delta time
-	virtual void OnUpdate(float deltaTime);
+	// @param - const EngineContext& for the engine context
+	virtual void OnUpdate(float deltaTime, const EngineContext& engineContext);
 
 	// Gets the entity's forward facing direction based on its rotation
 	// @return - const glm::vec2 for the forward facing direction

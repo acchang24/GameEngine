@@ -14,7 +14,9 @@ public:
 	~Laser();
 
 	// OnUpdate override
-	void OnUpdate(float deltaTime) override;
+	// @param - float for delta time
+	// @param - const EngineContext& for the engine context
+	void OnUpdate(float deltaTime, const EngineContext& engineContext) override;
 
 private:
 	SpriteComponent* mLaserSprite;

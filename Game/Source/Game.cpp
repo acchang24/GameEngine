@@ -370,6 +370,8 @@ void Game::Run()
 {
 	std::chrono::high_resolution_clock::time_point frameStart = std::chrono::high_resolution_clock::now();
 
+	const EngineContext& engineContext = mEngine.GetContext();
+
 	while (mIsRunning)
 	{
 		Profiler::Get()->ResetAll();
@@ -382,15 +384,15 @@ void Game::Run()
 		float deltaTime = static_cast<float>(0.000000001 * duration);
 		frameStart = frameEnd;
 
-		ProcessInput();
+		ProcessInput(engineContext);
 
-		Update(deltaTime);
+		Update(deltaTime, engineContext);
 
 		Render();
 	}
 }
 
-void Game::ProcessInput()
+void Game::ProcessInput(const EngineContext& engineContext)
 {
 	InputSystem* input = mEngine.GetInputSystem();
 
@@ -415,18 +417,6 @@ void Game::ProcessInput()
 				ResizeWindow(event);
 			}
 			break;
-		//case SDL_MOUSEBUTTONDOWN:
-		//	// Mouse click down
-		//	mouse->SetButtonDown(event.button.button);
-		//	break;
-		//case SDL_MOUSEBUTTONUP:
-		//	// Mouse click release
-		//	mouse->SetButtonUp(event.button.button);
-		//	break;
-		//case SDL_MOUSEWHEEL:
-		//	// Mouse wheel scroll
-		//	mouse->SetScrollDir(event.wheel.y);
-		//	break;
 		}
 	}
 
@@ -737,19 +727,19 @@ void Game::ProcessInput()
 
 	for (auto e : mEntities)
 	{
-		e->ProcessInput(input);
+		e->ProcessInput(input, engineContext);
 	}
 
 	mEngine.GetConsole()->ProcessInput(input);
 }
 
-void Game::Update(float deltaTime)
+void Game::Update(float deltaTime, const EngineContext& engineContext)
 {
 	PROFILE_SCOPE(UPDATE);
 
 	for (auto e : mEntities)
 	{
-		e->Update(deltaTime);
+		e->Update(deltaTime, engineContext);
 	}
 
 	mEngine.GetRenderer()->GetCamera()->Update(deltaTime, mEngine.GetInputSystem());

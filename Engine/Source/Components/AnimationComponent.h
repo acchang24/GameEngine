@@ -38,7 +38,9 @@ public:
 
 	// Override update for animation component specific updates
 	// Updates the animation time and gets the skeletons final pose at that time
-	void Update(float deltaTime) override;
+	// @param - float for delta time
+	// @param - const EngineContext& for the engine context
+	void Update(float deltaTime, const EngineContext& engineContext) override;
 
 	// Updates the skeleton buffer with the final bone matrices array
 	void UpdateSkeletonBuffer();

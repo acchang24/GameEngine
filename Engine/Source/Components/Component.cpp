@@ -14,12 +14,12 @@ Component::~Component()
 	std::cout << "Deleted component\n";
 }
 
-void Component::ProcessInput(const InputSystem* input)
+void Component::ProcessInput(const InputSystem* input, const EngineContext& engineContext)
 {
 
 }
 
-void Component::Update(float deltaTime)
+void Component::Update(float deltaTime, const EngineContext& engineContext)
 {
 
 }

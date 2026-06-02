@@ -57,7 +57,7 @@ Laser::~Laser()
 	LOG_DEBUG("Deleted Laser");
 }
 
-void Laser::OnUpdate(float deltaTime)
+void Laser::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
 	mLaserDecay += deltaTime;
 

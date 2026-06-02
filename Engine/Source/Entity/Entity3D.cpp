@@ -76,20 +76,20 @@ void Entity3D::MakeInstance(unsigned int numInstances, const void* data)
 	mModel->MakeInstance(numInstances);
 }
 
-void Entity3D::ProcessInput(const InputSystem* input)
+void Entity3D::ProcessInput(const InputSystem* input, const EngineContext& engineContext)
 {
-	Entity::ProcessInput(input);
+	Entity::ProcessInput(input, engineContext);
 
-	OnProcessInput(input);
+	OnProcessInput(input, engineContext);
 }
 
-void Entity3D::Update(float deltaTime)
+void Entity3D::Update(float deltaTime, const EngineContext& engineContext)
 {
-	Entity::Update(deltaTime);
+	Entity::Update(deltaTime, engineContext);
 
 	if (mInstanceBuffer == 0)
 	{
-		OnUpdate(deltaTime);
+		OnUpdate(deltaTime, engineContext);
 	}
 }
 
@@ -106,11 +106,11 @@ void Entity3D::Draw(Shader* shader)
 	}
 }
 
-void Entity3D::OnProcessInput(const InputSystem* input)
+void Entity3D::OnProcessInput(const InputSystem* input, const EngineContext& engineContext)
 {
 }
 
-void Entity3D::OnUpdate(float deltaTime)
+void Entity3D::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
 	// Update model matrix on seprate thread		
 	JobManager::Get()->AddJob(&mUpdateModelMatrixJob);

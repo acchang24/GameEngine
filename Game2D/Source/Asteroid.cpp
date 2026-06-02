@@ -55,7 +55,7 @@ Asteroid::~Asteroid()
 	LOG_DEBUG("Destroyed Asteroid");
 }
 
-void Asteroid::OnUpdate(float deltaTime)
+void Asteroid::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
 	// Wrap the screen if asteroid goes out of bounds
 	if (mPosition.x < 0.0f)

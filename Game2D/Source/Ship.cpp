@@ -49,7 +49,7 @@ Ship::~Ship()
 	LOG_DEBUG("Deleted Ship");
 }
 
-void Ship::OnProcessInput(const InputSystem* input)
+void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineContext)
 {
 	// Reset movement speed
 	float moveSpeed = 0.0f;
@@ -107,7 +107,7 @@ void Ship::OnProcessInput(const InputSystem* input)
 	//keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_W);
 }
 
-void Ship::OnUpdate(float deltaTime)
+void Ship::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
 	// Update laser cool down
 	mLaserCooldown += deltaTime;

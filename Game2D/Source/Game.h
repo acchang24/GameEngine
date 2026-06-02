@@ -35,7 +35,8 @@ public:
 
 	// Processes any keyboard, mouse, or controller inputs.
 	// Typically called near the beginning of the render loop.
-	void ProcessInput();
+	// @param - const EngineContext& for the engine context
+	void ProcessInput(const EngineContext& engineContext);
 
 	// Processes and handles any mouse movement, clicks, and scrolls
 	// @param - Mouse* for the mouse
@@ -43,7 +44,8 @@ public:
 
 	// Updates all the game logic such as player position/movement, enemies, AI, etc.
 	// @param - A float representing delta time: the change in time between frames
-	void Update(float deltaTime);
+	// @param - const EngineContext& for the engine context
+	void Update(float deltaTime, const EngineContext& engineContext);
 
 	// Sets all the buffers, swap chain, textures, vertex array objects, and renders to screen
 	void Render();

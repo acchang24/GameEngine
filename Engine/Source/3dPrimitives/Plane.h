@@ -20,7 +20,7 @@ public:
 	void SetMaterial(Material* m) { mMaterial = m; }
 
 	// Plane specific Update
-	void OnUpdate(float deltaTime) override;
+	void OnUpdate(float deltaTime, const EngineContext& engineContext) override;
 	// Plane specific Draw
 	void OnDraw() override;
 

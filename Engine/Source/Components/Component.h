@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL2/SDL_stdinc.h>
+#include "../EngineContext.h"
 
 class Entity;
 class InputSystem;
@@ -18,11 +19,13 @@ public:
 
 	// Overridable process input function for this component if it's needed
 	// @param - const InputSystem for the input system
-	virtual void ProcessInput(const InputSystem* input);
+	// @param - const EngineContext& for the engine context
+	virtual void ProcessInput(const InputSystem* input, const EngineContext& engineContext);
 
 	// Overridable update function that updates a particular component
 	// @param - float for delta time
-	virtual void Update(float deltaTime);
+	// @param - const EngineContext& for the engine context
+	virtual void Update(float deltaTime, const EngineContext& engineContext);
 
 	// Getter for entity
 	// @return - Entity* for the component's entity

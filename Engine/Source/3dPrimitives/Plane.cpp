@@ -31,9 +31,9 @@ Plane::~Plane()
 	delete mVertexBuffer;
 }
 
-void Plane::OnUpdate(float deltaTime)
+void Plane::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
-	Entity3D::OnUpdate(deltaTime);
+	Entity3D::OnUpdate(deltaTime, engineContext);
 }
 
 void Plane::OnDraw()

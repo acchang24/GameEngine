@@ -15,7 +15,7 @@ MoveComponent2D::~MoveComponent2D()
 	std::cout << "Deleted MoveComponent2D\n";
 }
 
-void MoveComponent2D::Update(float deltaTime)
+void MoveComponent2D::Update(float deltaTime, const EngineContext& engineContext)
 {
 	mOwner2D->SetRotation(mOwner2D->GetRotation() + mRotationSpeed * deltaTime);
 

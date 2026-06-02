@@ -20,7 +20,7 @@ CollisionComponent::~CollisionComponent()
 	mPhysics->RemoveCollider(this);
 }
 
-void CollisionComponent::Update(float deltaTime)
+void CollisionComponent::Update(float deltaTime, const EngineContext& engineContext)
 {
 }
 
@@ -36,7 +36,7 @@ AABBComponent2D::~AABBComponent2D()
 	std::cout << "Deleted AABBComponent2D\n";
 }
 
-void AABBComponent2D::Update(float deltaTime)
+void AABBComponent2D::Update(float deltaTime, const EngineContext& engineContext)
 {
 	// Update the box location
 	mBox.min = GetMin();

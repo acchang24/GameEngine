@@ -6,22 +6,12 @@
 #include "Input/InputSystem.h"
 #include "Physics/Physics.h"
 #include "Util/Logger.h"
+#include "EngineContext.h"
 
 class AssetManager;
 class Console;
 class Editor;
 class JobManager;
-
-struct EngineContext
-{
-	Renderer* renderer = nullptr;
-	InputSystem* input = nullptr;
-	Physics* physics = nullptr;
-	JobManager* jobManager = nullptr;
-	AssetManager* assetManager = nullptr;
-	EngineUI* engineUI = nullptr;
-	AudioSystem* audio = nullptr;
-};
 
 // Engine class is the central system for game framework. 
 // Manages core subsystems like rendering, audio, input, asset loading,
@@ -74,6 +64,10 @@ public:
 
 	//Editor* GetEditor() { return mEditor; }
 
+	// Gets the engine context
+	// @return - const EngineContext& for the engine context
+	const EngineContext& GetContext() { return mContext; }
+
 private:
 	// Renderer for 2D/3D graphics output
 	Renderer mRenderer;
@@ -100,6 +94,8 @@ private:
 	AudioSystem mAudio;
 
 	Console* mConsole;
+
+	EngineContext mContext;
 
 	//Editor* mEditor;
 };

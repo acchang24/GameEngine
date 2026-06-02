@@ -68,9 +68,9 @@ Cube::~Cube()
     delete mVertexBuffer;
 }
 
-void Cube::OnUpdate(float deltaTime)
+void Cube::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
-    Entity3D::OnUpdate(deltaTime);
+    Entity3D::OnUpdate(deltaTime, engineContext);
 }
 
 void Cube::OnDraw()

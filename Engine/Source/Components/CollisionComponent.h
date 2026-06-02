@@ -100,7 +100,9 @@ public:
 
 	// Override of Component::Update() for collision. 
 	// This is a virtual function (overridable)
-	virtual void Update(float deltaTime) override;
+	// @param - float for delta time
+	// @param - const EngineContext& for the engine context
+	virtual void Update(float deltaTime, const EngineContext& engineContext) override;
 
 	// Gets the collision component's shape type
 	// @return - CollisionShapeType for the shape type
@@ -149,7 +151,7 @@ public:
 	// Override Update for collision: 
 	// Updates the collision box location based on owner's position
 	// @param - float for delta time
-	void Update(float deltaTime) override;
+	void Update(float deltaTime, const EngineContext& engineContext) override;
 
 	// Gets the min x and y values of the box where an object can intersect
 	// @return - const glm::vec2 for the min

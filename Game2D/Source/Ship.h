@@ -14,10 +14,14 @@ public:
 	~Ship();
 
 	// Override for ship's process input
-	void OnProcessInput(const InputSystem* input) override;
+	// @param - const InputSystem* for the input system
+	// @param - const EngineContext& for the engine context
+	void OnProcessInput(const InputSystem* input, const EngineContext& engineContext) override;
 
 	// Override for ship's update
-	void OnUpdate(float deltaTime) override;
+	// @param - float for delta time
+	// @param - const EngineContext& for the engine context
+	void OnUpdate(float deltaTime, const EngineContext& engineContext) override;
 
 private:
 	SpriteComponent* mSprite;

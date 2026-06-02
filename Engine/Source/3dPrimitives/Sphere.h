@@ -19,7 +19,7 @@ public:
 	void SetMaterial(Material* m) { mMaterial = m; }
 
 	// Sphere specific update
-	void OnUpdate(float deltaTime) override;
+	void OnUpdate(float deltaTime, const EngineContext& engineContext) override;
 	// Sphere specific draw
 	void OnDraw() override;
 	void OnDraw(Shader* s) override;

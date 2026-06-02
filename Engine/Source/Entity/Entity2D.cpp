@@ -24,24 +24,24 @@ Entity2D::~Entity2D()
 	std::cout << "Deleted Entity2D\n";
 }
 
-void Entity2D::ProcessInput(const InputSystem* input)
+void Entity2D::ProcessInput(const InputSystem* input, const EngineContext& engineContext)
 {
-	Entity::ProcessInput(input);
+	Entity::ProcessInput(input, engineContext);
 
-	OnProcessInput(input);
+	OnProcessInput(input, engineContext);
 }
 
-void Entity2D::OnProcessInput(const InputSystem* input)
+void Entity2D::OnProcessInput(const InputSystem* input, const EngineContext& engineContext)
 {
 }
 
-void Entity2D::Update(float deltaTime)
+void Entity2D::Update(float deltaTime, const EngineContext& engineContext)
 {
-	Entity::Update(deltaTime);
+	Entity::Update(deltaTime, engineContext);
 
-	OnUpdate(deltaTime);
+	OnUpdate(deltaTime, engineContext);
 }
 
-void Entity2D::OnUpdate(float deltaTime)
+void Entity2D::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
 }

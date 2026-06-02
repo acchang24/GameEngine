@@ -20,24 +20,24 @@ Entity::~Entity()
 	mComponents.clear();
 }
 
-void Entity::ProcessInput(const InputSystem* input)
+void Entity::ProcessInput(const InputSystem* input, const EngineContext& engineContext)
 {
 	if (mState == EntityState::Active)
 	{
 		for (auto c : mComponents)
 		{
-			c->ProcessInput(input);
+			c->ProcessInput(input, engineContext);
 		}
 	}
 }
 
-void Entity::Update(float deltaTime)
+void Entity::Update(float deltaTime, const EngineContext& engineContext)
 {
 	if (mState == EntityState::Active)
 	{
 		for (auto c : mComponents)
 		{
-			c->Update(deltaTime);
+			c->Update(deltaTime, engineContext);
 		}
 	}
 }
