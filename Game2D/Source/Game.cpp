@@ -14,8 +14,6 @@
 #include "Graphics/Renderer2D.h"
 #include "Graphics/Text.h"
 #include "Graphics/Texture.h"
-#include "Input/Keyboard.h"
-#include "Input/Mouse.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Physics/Physics.h"
@@ -23,6 +21,7 @@
 #include "Util/LoggerMacros.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
+#include "EngineContext.h"
 #include "Asteroid.h"
 #include "Ship.h"
 
@@ -55,9 +54,15 @@ bool Game::Init()
 		return false;
 	}
 
+	const EngineContext& engineContext = mEngine.GetContext();
+
+	AssetManager* assetManager = engineContext.assetManager;
+
 	PROFILE_SCOPE(LOAD_DATA);
 
-	LoadShaders();
+	LoadShaders(assetManager);
+
+	LoadAssets(assetManager);
 
 	LoadGameData();
 
@@ -71,11 +76,16 @@ void Game::Shutdown()
 	mEngine.Shutdown();
 }
 
-void Game::LoadShaders() const
+void Game::LoadShaders(AssetManager* assetManager) const
 {
 	AssetManager::LoadShader("sprite", "Shaders/sprite.vert", "Shaders/sprite.frag");
 	AssetManager::LoadShader("text", "Shaders/text.vert", "Shaders/text.frag");
 	AssetManager::LoadShader("uiBox", "Shaders/uiBox.vert", "Shaders/uiBox.frag");
+}
+
+void Game::LoadAssets(AssetManager* assetManager) const
+{
+	
 }
 
 void Game::LoadGameData()

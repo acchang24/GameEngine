@@ -32,7 +32,7 @@
 #include "Util/LoggerMacros.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
-
+#include "EngineContext.h"
 
 float size = 30.0f;
 float near = 1.0f;
@@ -79,7 +79,11 @@ bool Game::Init()
 		return false;
 	}
 
-	Renderer* renderer = mEngine.GetRenderer();
+	const EngineContext& engineContext = mEngine.GetContext();
+
+	Renderer* renderer = engineContext.renderer;
+
+	AssetManager* assetManager = engineContext.assetManager;
 
 	// Set camera initial position
 	renderer->GetCamera()->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -90,7 +94,9 @@ bool Game::Init()
 
 	PROFILE_SCOPE(LOAD_DATA);
 
-	LoadShaders();
+	LoadShaders(assetManager);
+
+	LoadAssets(assetManager);
 
 	int width = renderer->GetWidth();
 	int height = renderer->GetHeight();
@@ -118,7 +124,7 @@ void Game::Shutdown()
 	mEngine.Shutdown();
 }
 
-void Game::LoadShaders() const
+void Game::LoadShaders(AssetManager* assetManager) const
 {
 	AssetManager::LoadShader("color", "Shaders/color.vert", "Shaders/color.frag");
 	AssetManager::LoadShader("phong", "Shaders/phong.vert", "Shaders/phong.frag");
@@ -145,6 +151,11 @@ void Game::LoadShaders() const
 	AssetManager::LoadShader("reflection", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/reflection.frag");
 	AssetManager::LoadShader("refraction", "Shaders/EnvironmentMapping/environmentMap.vert", "Shaders/EnvironmentMapping/refraction.frag");
 	AssetManager::LoadShader("skybox", "Shaders/skybox.vert", "Shaders/skybox.frag");
+}
+
+void Game::LoadAssets(AssetManager* assetManager) const
+{
+
 }
 
 void Game::LoadGameData()

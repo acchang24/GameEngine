@@ -1,11 +1,10 @@
 #pragma once
-#include <algorithm>
 #include <vector>
-#include <glad/glad.h>
 #include <SDL2/SDL.h>
 #include "Graphics/Lights.h"
 #include "Engine.h"
 
+class AssetManager;
 class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
@@ -28,7 +27,12 @@ public:
 	void Shutdown();
 
 	// Loads any shaders used for the game
-	void LoadShaders() const;
+	// @param - AssetManager* for the asset manager
+	void LoadShaders(AssetManager* assetManager) const;
+
+	// Loads any assets used by the game
+	// @param - AssetManager* for the asset manager
+	void LoadAssets(AssetManager* assetManager) const;
 
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
 	void LoadGameData();

@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include "Engine.h"
 
+class AssetManager;
 class Entity;
 class Entity2D;
 
@@ -21,7 +22,12 @@ public:
 	void Shutdown();
 
 	// Loads any shaders used for the game
-	void LoadShaders() const;
+	// @param - AssetManager* for the asset manager
+	void LoadShaders(AssetManager* assetManager) const;
+
+	// Loads any assets used by the game
+	// @param - AssetManager* for the asset manager
+	void LoadAssets(AssetManager* assetManager) const;
 
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
 	void LoadGameData();
