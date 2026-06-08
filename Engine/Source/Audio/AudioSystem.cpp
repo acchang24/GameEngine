@@ -35,7 +35,7 @@ void AudioSystem::Shutdown()
 
 int AudioSystem::PlaySFX(const std::string& sfxName, int channel, int loops)
 {
-	SFX* sfx = AssetManager::LoadSFX(sfxName);
+	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
 
 	if (!sfx)
 	{
@@ -47,7 +47,7 @@ int AudioSystem::PlaySFX(const std::string& sfxName, int channel, int loops)
 
 void AudioSystem::StopSFX(const std::string& sfxName)
 {
-	SFX* sfx = AssetManager::LoadSFX(sfxName);
+	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
 
 	if (sfx)
 	{
@@ -57,7 +57,7 @@ void AudioSystem::StopSFX(const std::string& sfxName)
 
 void AudioSystem::PauseSFX(const std::string& sfxName)
 {
-	SFX* sfx = AssetManager::LoadSFX(sfxName);
+	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
 
 	if (sfx)
 	{
@@ -67,7 +67,7 @@ void AudioSystem::PauseSFX(const std::string& sfxName)
 
 void AudioSystem::ResumeSFX(const std::string& sfxName)
 {
-	SFX* sfx = AssetManager::LoadSFX(sfxName);
+	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
 
 	if (sfx)
 	{
@@ -77,7 +77,7 @@ void AudioSystem::ResumeSFX(const std::string& sfxName)
 
 void AudioSystem::PlayMusic(const std::string& musicName, int loops)
 {
-	Music* music = AssetManager::LoadMusic(musicName);
+	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
 
 	if (music)
 	{
@@ -87,7 +87,7 @@ void AudioSystem::PlayMusic(const std::string& musicName, int loops)
 
 void AudioSystem::StopMusic(const std::string& musicName)
 {
-	Music* music = AssetManager::LoadMusic(musicName);
+	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
 
 	if (music)
 	{
@@ -97,7 +97,7 @@ void AudioSystem::StopMusic(const std::string& musicName)
 
 void AudioSystem::PauseMusic(const std::string& musicName)
 {
-	Music* music = AssetManager::LoadMusic(musicName);
+	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
 
 	if (music)
 	{
@@ -107,7 +107,7 @@ void AudioSystem::PauseMusic(const std::string& musicName)
 
 void AudioSystem::ResumeMusic(const std::string& musicName)
 {
-	Music* music = AssetManager::LoadMusic(musicName);
+	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
 
 	if (music)
 	{

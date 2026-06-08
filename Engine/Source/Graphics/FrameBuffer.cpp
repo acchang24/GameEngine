@@ -9,7 +9,7 @@
 
 FrameBuffer::FrameBuffer(int width, int height, Renderer* renderer, Shader* shader) :
 	mShader(shader),
-	mVertexBuffer(AssetManager::Get()->GetRenderer()->GetVertexBuffer()),
+	mVertexBuffer(AssetBridge::ActiveManager->GetRenderer()->GetVertexBuffer()),
 	mFrameBuffer(0),
 	mTexture(0),
 	mRenderBuffer(0),

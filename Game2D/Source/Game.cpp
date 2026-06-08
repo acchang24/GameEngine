@@ -64,7 +64,7 @@ bool Game::Init()
 
 	LoadAssets(assetManager);
 
-	LoadGameData();
+	LoadGameData(assetManager);
 
 	return true;
 }
@@ -78,9 +78,9 @@ void Game::Shutdown()
 
 void Game::LoadShaders(AssetManager* assetManager) const
 {
-	AssetManager::LoadShader("sprite", "Shaders/sprite.vert", "Shaders/sprite.frag");
-	AssetManager::LoadShader("text", "Shaders/text.vert", "Shaders/text.frag");
-	AssetManager::LoadShader("uiBox", "Shaders/uiBox.vert", "Shaders/uiBox.frag");
+	assetManager->LoadShader("sprite", "Shaders/sprite.vert", "Shaders/sprite.frag");
+	assetManager->LoadShader("text", "Shaders/text.vert", "Shaders/text.frag");
+	assetManager->LoadShader("uiBox", "Shaders/uiBox.vert", "Shaders/uiBox.frag");
 }
 
 void Game::LoadAssets(AssetManager* assetManager) const
@@ -88,7 +88,7 @@ void Game::LoadAssets(AssetManager* assetManager) const
 	
 }
 
-void Game::LoadGameData()
+void Game::LoadGameData(AssetManager* assetManager)
 {
 	Ship* ship = new Ship(this);
 	ship->SetPosition(glm::vec2(200.0f, 200.0f));
@@ -100,7 +100,7 @@ void Game::LoadGameData()
 		Asteroid* a = new Asteroid(this);
 	}
 
-	Music* music = AssetManager::LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
+	Music* music = assetManager->LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
 	music->SetVolume(90);
 	music->Play(-1);
 
@@ -114,14 +114,14 @@ void Game::LoadGameData()
 	mBackground = new Entity2D(static_cast<float>(renderer->GetWidth()), static_cast<float>(renderer->GetHeight()));
 	mBackground->SetPosition(glm::vec2(static_cast<float>(renderer->GetWidth() / 2), static_cast<float>(renderer->GetHeight() / 2)));
 	SpriteComponent* backgroundSC = new SpriteComponent(mBackground, renderer2D, 50);
-	backgroundSC->AddSprite(AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite));
+	backgroundSC->AddSprite(assetManager->LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
 	AddGameEntity(mBackground);
 
 	// Set 2d renderer shader
-	renderer2D->SetSpriteShader(AssetManager::LoadShader("sprite"));
-	renderer2D->SetTextShader(AssetManager::LoadShader("text"));
-	renderer2D->SetUIBoxShader(AssetManager::LoadShader("uiBox"));
+	renderer2D->SetSpriteShader(assetManager->LoadShader("sprite"));
+	renderer2D->SetTextShader(assetManager->LoadShader("text"));
+	renderer2D->SetUIBoxShader(assetManager->LoadShader("uiBox"));
 
 	// Set font
 	renderer2D->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);

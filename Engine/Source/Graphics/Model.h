@@ -61,15 +61,13 @@ public:
 	// @param - aiMesh*
 	// @param - const aiScene*
 	// @param - Skeleton* if there is a skeleton for this model
-	// @param - AssetManager* to save the model's materials
-	Material* LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* am);
+	Material* LoadMaterial(const aiScene* scene, aiMesh* mesh);
 
 	// Loads the textures of the material
 	// @param - aiMaterial*
 	// @param - aiTextureType
 	// @param - Material* for the material
-	// @param - AssetManager* to save the model's textures
-	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am);
+	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material);
 
 	// Adds a mesh to the model's vector of meshes
 	// @param - Mesh* for the new mesh

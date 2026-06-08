@@ -21,8 +21,8 @@ Ship::Ship(Game* game) :
 	mLaserCooldown(1.0f)
 {
 	// Load and set ship sprites
-	Texture* shipSprite = AssetManager::LoadTexture("Assets/Ship.png", TextureType::Sprite);
-	mSprite->AddSprite(AssetManager::LoadTexture("Assets/ShipThrust.png", TextureType::Sprite));
+	Texture* shipSprite = AssetBridge::ActiveManager->LoadTexture("Assets/Ship.png", TextureType::Sprite);
+	mSprite->AddSprite(AssetBridge::ActiveManager->LoadTexture("Assets/ShipThrust.png", TextureType::Sprite));
 	mSprite->AddSprite(shipSprite);
 	mSprite->SetSprite(shipSprite);
 

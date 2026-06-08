@@ -17,7 +17,7 @@ Asteroid::Asteroid(Game* game) :
 	mEngine(game->GetEngine())
 {
 	// Add and set asteroid sprite texture
-	Texture* asteroidSprite = AssetManager::LoadTexture("Assets/Asteroid.png", TextureType::Sprite);
+	Texture* asteroidSprite = AssetBridge::ActiveManager->LoadTexture("Assets/Asteroid.png", TextureType::Sprite);
 	mSprite->AddSprite(asteroidSprite);
 	mSprite->SetSprite(asteroidSprite);
 	

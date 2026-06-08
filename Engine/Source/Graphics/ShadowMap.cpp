@@ -18,8 +18,8 @@ float shadowFarPlane = 1000.0f;
 ShadowMap::ShadowMap() :
 	mShadowConsts({}),
 	mShader(nullptr),
-	mVertexBuffer(AssetManager::Get()->GetRenderer()->GetVertexBuffer()),
-	mShadowBuffer(AssetManager::Get()->GetRenderer()->CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
+	mVertexBuffer(AssetBridge::ActiveManager->GetRenderer()->GetVertexBuffer()),
+	mShadowBuffer(AssetBridge::ActiveManager->GetRenderer()->CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0),
 	mTextureUnit(static_cast<int>(TextureType::Shadow))

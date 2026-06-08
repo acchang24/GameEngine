@@ -21,7 +21,7 @@ Laser::Laser(Game* game) :
 	mLaserDecay(0.0f)
 {
 	// Add and set laser sprite texture
-	Texture* laserSprite = AssetManager::LoadTexture("Assets/Laser.png", TextureType::Sprite);
+	Texture* laserSprite = AssetBridge::ActiveManager->LoadTexture("Assets/Laser.png", TextureType::Sprite);
 	mLaserSprite->AddSprite(laserSprite);
 	mLaserSprite->SetSprite(laserSprite);
 

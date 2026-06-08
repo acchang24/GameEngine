@@ -14,17 +14,17 @@ Shader::Shader(const std::string& name, const char* vertexFile, const char* frag
     mShaderID = glCreateProgram();
 
     // Load and attach vertex shader
-    ShaderProgram* vertexProgram = AssetManager::LoadShaderProgram(vertexFile);
+    ShaderProgram* vertexProgram = AssetBridge::ActiveManager->LoadShaderProgram(vertexFile);
     glAttachShader(mShaderID, vertexProgram->GetShaderID());
 
     // Load and attach fragment shader
-    ShaderProgram* fragmentProgram = AssetManager::LoadShaderProgram(fragmentFile);
+    ShaderProgram* fragmentProgram = AssetBridge::ActiveManager->LoadShaderProgram(fragmentFile);
     glAttachShader(mShaderID, fragmentProgram->GetShaderID());
 
     // Load and attach geometry shader if it exists
     if (geometryFile != nullptr)
     {
-        ShaderProgram* geometryProgram = AssetManager::LoadShaderProgram(geometryFile);
+        ShaderProgram* geometryProgram = AssetBridge::ActiveManager->LoadShaderProgram(geometryFile);
         glAttachShader(mShaderID, geometryProgram->GetShaderID());
     }
 
@@ -79,7 +79,7 @@ void Shader::LinkShadersToUniformBlocks() const
         // Get the index of the uniform block
         int uniformBlockindex = glGetUniformBlockIndex(mShaderID, nameString.c_str());
 
-        UniformBuffer* ub = AssetManager::Get()->GetRenderer()->GetUniformBuffer(nameString);
+        UniformBuffer* ub = AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer(nameString);
 
         if (ub)
         {

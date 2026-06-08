@@ -8,8 +8,7 @@
 #include "Util/Logger.h"
 #include "EngineContext.h"
 #include "EngineUI/Editor.h"
-
-class AssetManager;
+#include "MemoryManager/AssetManager.h"
 
 // Engine class is the central system for game framework. 
 // Manages core subsystems like rendering, audio, input, asset loading,
@@ -67,11 +66,11 @@ private:
 	// Physics system
 	Physics mPhysics;
 
-	// Pointer to a static JobManager for multi threading
+	// Job manager for multi threading
 	JobManager mJobManager;
 
-	// Pointer to a static AssetManager to load/cache assets on demand
-	AssetManager* mAssetManager;
+	// AssetManager to load/cache assets on demand
+	AssetManager mAssetManager;
 
 	// Engine UI system
 	EngineUI mEngineUI;

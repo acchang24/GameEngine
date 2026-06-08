@@ -21,7 +21,7 @@ Model::Model(const std::string& fileName, Entity3D* entity) :
 {
 	if (LoadModel(fileName, entity))
 	{
-		AssetManager::Get()->SaveModel(fileName, this);
+		AssetBridge::ActiveManager->SaveModel(fileName, this);
 	}
 }
 
@@ -103,15 +103,13 @@ void Model::ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton)
 
 Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 {
-	AssetManager* am = AssetManager::Get();
-
 	std::string meshName = mesh->mName.C_Str();
 
 	LOG_DEBUG("Loading mesh: " + meshName);
 	std::cout << "Loading mesh: " << meshName << "\n";
 
 	// Check to see if mesh has already been loaded
-	Mesh* newMesh = am->LoadMesh(meshName);
+	Mesh* newMesh = AssetBridge::ActiveManager->LoadMesh(meshName);
 
 	if (!newMesh)
 	{
@@ -195,11 +193,11 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton)
 		}
 
 		// Load material
-		Material* mat = LoadMaterial(scene, mesh, am);
+		Material* mat = LoadMaterial(scene, mesh);
 
 		newMesh = new Mesh(vb, mat);
 
-		am->SaveMesh(meshName, newMesh);
+		AssetBridge::ActiveManager->SaveMesh(meshName, newMesh);
 	}
 
 	return newMesh;
@@ -233,7 +231,7 @@ const Vertex Model::GetVertexData(const aiMesh* mesh, bool hasTextures, unsigned
 	return vertex;
 }
 
-Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* am)
+Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh)
 {
 	if (mesh->mMaterialIndex >= 0)
 	{
@@ -241,7 +239,7 @@ Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* 
 		std::string name = material->GetName().C_Str();
 
 		// Check to see if it's in the asset manager map
-		Material* mat = am->LoadMaterial(name);
+		Material* mat = AssetBridge::ActiveManager->LoadMaterial(name);
 
 		// Create a new material if it's not in the asset manager
 		if (!mat)
@@ -250,23 +248,23 @@ Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* 
 			std::cout << "Loading material: " << name << " " << mesh->mMaterialIndex << "\n";
 			++mNumMaterials;
 			mat = new Material();
-			mat->SetShader(am->LoadShader("phong"));
+			mat->SetShader(AssetBridge::ActiveManager->LoadShader("phong"));
 			if (mHasAnimations)
 			{
-				mat->SetShader(am->LoadShader("skinned"));
+				mat->SetShader(AssetBridge::ActiveManager->LoadShader("skinned"));
 			}
 
 			mMaterialMap[name] = mat;
 			// Diffuse textures
-			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat, am);
+			LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat);
 			// Specular textures
-			LoadMaterialTextures(material, aiTextureType_SPECULAR, mat, am);
+			LoadMaterialTextures(material, aiTextureType_SPECULAR, mat);
 			// Emissive textures
-			LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat, am);
+			LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat);
 			// Normal textures
-			LoadMaterialTextures(material, aiTextureType_NORMALS, mat, am);
+			LoadMaterialTextures(material, aiTextureType_NORMALS, mat);
 
-			am->SaveMaterial(name, mat);
+			AssetBridge::ActiveManager->SaveMaterial(name, mat);
 		}
 
 		return mat;
@@ -275,7 +273,7 @@ Material* Model::LoadMaterial(const aiScene* scene, aiMesh* mesh, AssetManager* 
 	return nullptr;
 }
 
-void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, AssetManager* am)
+void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material)
 {
 	aiString str;
 	std::string path = mDirectory.substr(0, mDirectory.find_last_of('/') + 1);
@@ -304,7 +302,7 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, M
 				break;
 			}
 			// Load the texture
-			Texture* t = AssetManager::LoadTexture(path, type);
+			Texture* t = AssetBridge::ActiveManager->LoadTexture(path, type);
 
 			++mNumTextures;
 			

@@ -1,7 +1,4 @@
 #include "Engine.h"
-#include "MemoryManager/AssetManager.h"
-#include "Multithreading/JobManager.h"
-#include "EngineUI/Editor.h"
 
 Engine::Engine(RendererMode renderMode) :
 	mLogger(),
@@ -9,14 +6,14 @@ Engine::Engine(RendererMode renderMode) :
 	mInputSystem(),
 	mPhysics(),
 	mJobManager(),
-	mAssetManager(AssetManager::Get()),
+	mAssetManager(),
 	mEngineUI(this),
 	mAudio(),
 	mEditor()
 {
 	LOG_DEBUG("Started engine");
 
-	mAssetManager->SetRenderer(&mRenderer);
+	mAssetManager.SetRenderer(&mRenderer);
 }
 
 Engine::~Engine()
@@ -53,7 +50,7 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 	mContext.input = &mInputSystem;
 	mContext.physics = &mPhysics;
 	mContext.jobManager = &mJobManager;
-	mContext.assetManager = mAssetManager;
+	mContext.assetManager = &mAssetManager;
 	mContext.engineUI = &mEngineUI;
 	mContext.audio = &mAudio;
 	mContext.logger = &mLogger;
@@ -61,6 +58,8 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 
 	// Bridge logger macro system to this engine's logger instance
 	Log::ActiveLogger = &mLogger;
+
+	AssetBridge::ActiveManager = &mAssetManager;
 
 	// Center the mouse
 	mInputSystem.CenterMouse();
@@ -80,5 +79,5 @@ void Engine::Shutdown()
 
 	mJobManager.End();
 
-	mAssetManager->Shutdown();
+	mAssetManager.Shutdown();
 }

@@ -29,7 +29,7 @@ Entity3D::Entity3D(const std::string& fileName):
 	mModel(nullptr),
 	mInstanceBuffer(0)
 {
-	Model* model = AssetManager::LoadModel(fileName);
+	Model* model = AssetBridge::ActiveManager->LoadModel(fileName);
 
 	if (model)
 	{
@@ -40,7 +40,7 @@ Entity3D::Entity3D(const std::string& fileName):
 		if (model->HasAnimations())
 		{
 			// Check to see the skeleton is already loaded
-			Skeleton* skeleton = AssetManager::LoadSkeleton(fileName);
+			Skeleton* skeleton = AssetBridge::ActiveManager->LoadSkeleton(fileName);
 
 			if (skeleton)
 			{

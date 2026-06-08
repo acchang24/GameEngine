@@ -1,5 +1,6 @@
 #pragma once
 #include "Cache.h"
+#include <string>
 #include "../Animation/Animation.h"
 #include "../Animation/Skeleton.h"
 #include "../Audio/Sound.h"
@@ -20,15 +21,14 @@ class Renderer;
 class AssetManager
 {
 public:
+	AssetManager();
+	~AssetManager();
+
 	// Goes to each of the asset caches and calls the cache's Clear()
 	void Clear();
 
 	// Deletes the shader caches
 	void Shutdown();
-
-	// Returns the instance of an AssetManager
-	// @return - AssetManager* for the instance of an AssetManager
-	static AssetManager* Get();
 
 	// Sets a pointer to the renderer
 	void SetRenderer(Renderer* renderer) { mRenderer = renderer; }
@@ -48,7 +48,7 @@ public:
 	// Call AssetManager::DeleteShader() if you need to delete/remove a shader by name
 	// @param - const std::string& for the shader's name.
 	// @return - Shader* for the desired shader retrieved from the shader cache map
-	static Shader* LoadShader(const std::string& shaderName);
+	Shader* LoadShader(const std::string& shaderName);
 
 	// Creates and returns a shader, saving it in the shader cache's map if it doesn't exist.
 	// Ownership of any Shader* returned from this method is handled by the AssetManager. Don't need to free memory manually.
@@ -58,7 +58,7 @@ public:
 	// @param - const char* for the fragment shader name/file path
 	// @param - const char* for the geometry shader name/file path if it exists (defaults to nullptr)
 	// @return - Shader* for the newly created shader
-	static Shader* LoadShader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
+	Shader* LoadShader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 
 	// Deletes/clears each element from the shader cache's map
 	void ClearShaders() { mShaderCache->Clear(); }
@@ -78,7 +78,7 @@ public:
 	// Call AssetManager::DeleteTexture() if you need to delete/remove a texture by name
 	// @param - const std::string& for the texture name
 	// @return - Texture* for the desired texture
-	static Texture* LoadTexture(const std::string& textureFileName) { return AssetManager::Get()->mTextureCache->Get(textureFileName); }
+	Texture* LoadTexture(const std::string& textureFileName) { return mTextureCache->Get(textureFileName); }
 
 	// Creates and returns a texture, saving it in the texture cache's map if it doesn't exist.
 	// Ownership of any Texture* returned from this method is handled by the AssetManager. Don't need to free memory manually.
@@ -86,7 +86,7 @@ public:
 	// @param - const std::string& for the texture name
 	// @param - TextureType for the type
 	// @return - Texture* for the desired texture
-	static Texture* LoadTexture(const std::string& textureFileName, TextureType type);
+	Texture* LoadTexture(const std::string& textureFileName, TextureType type);
 
 	// Deletes/clears each element from the texture cache's map
 	void ClearTextures() { mShaderCache->Clear(); }
@@ -146,7 +146,7 @@ public:
 	// Call AssetManager::DeleteModel() if you need to delete/remove a model by name
 	// @param - const std::string& for the model's name
 	// @return - Model* for the desired model retrieved from the model cache map
-	static Model* LoadModel(const std::string& modelName) { return AssetManager::Get()->mModelCache->Get(modelName); }
+	Model* LoadModel(const std::string& modelName) { return mModelCache->Get(modelName); }
 
 	// Deletes/clears each element from the model cache map
 	void ClearModels() { mModelCache->Clear(); }
@@ -159,14 +159,14 @@ public:
 	// Saves an animation into the animation cache's map
 	// @param - const std::string& for the animation's name
 	// @param - Animation* for the animation to save
-	static void SaveAnimation(const std::string& animationName, Animation* animation) { AssetManager::Get()->mAnimationCache->StoreCache(animationName, animation); }
+	void SaveAnimation(const std::string& animationName, Animation* animation) { mAnimationCache->StoreCache(animationName, animation); }
 
 	// Loads an animation from the animation cache's map if it exists, nullptr if not.
 	// Ownership of any Animation* returned from this method is handled by the AssetManager. Don't need to free memory manually.
 	// Call AssetManager::DeleteAnimation() if you need to delete/remove a animation by name
 	// @param - const std::string& for the animation's name
 	// @return - Animation* for the desired animation retrieved from the animation cache map
-	static Animation* LoadAnimation(const std::string& animName) { return AssetManager::Get()->mAnimationCache->Get(animName); }
+	Animation* LoadAnimation(const std::string& animName) { return mAnimationCache->Get(animName); }
 
 	// Deletes/clears each element from the animation cache map
 	void ClearAnimations() { mAnimationCache->Clear(); }
@@ -179,14 +179,14 @@ public:
 	// Saves an skeleton into the skeleton cache's map
 	// @param - const std::string& for the skeleton's name
 	// @param - Skeleton* for the skeleton to save
-	static void SaveSkeleton(const std::string& skeletonName, Skeleton* skeleton) { AssetManager::Get()->mSkeletonCache->StoreCache(skeletonName, skeleton); }
+	void SaveSkeleton(const std::string& skeletonName, Skeleton* skeleton) { mSkeletonCache->StoreCache(skeletonName, skeleton); }
 	
 	// Loads an skeleton from the skeleton cache's map if it exists, nullptr if not.
 	// Ownership of any Skeleton* returned from this method is handled by the AssetManager. Don't need to free memory manually.
 	// Call AssetManager::DeleteSkeleton() if you need to delete/remove a skeleton by name
 	// @param - const std::string& for the skeleton's name
 	// @return - Skeleton* for the desired skeleton retrieved from the skeleton cache map
-	static Skeleton* LoadSkeleton(const std::string& skeletonName) { return AssetManager::Get()->mSkeletonCache->Get(skeletonName); }
+	Skeleton* LoadSkeleton(const std::string& skeletonName) { return mSkeletonCache->Get(skeletonName); }
 	
 	// Deletes/clears each element from the skeleton cache map
 	void ClearSkeletons() { mSkeletonCache->Clear(); }
@@ -206,7 +206,7 @@ public:
 	// Call AssetManager::DeleteShaderProgram() if you need to delete/remove a ShaderProgram by name
 	// @param - const std::string& for the ShaderProgram's name
 	// @return - ShaderProgram* for the desired ShaderProgram retrieved from the ShaderProgram cache map
-	static ShaderProgram* LoadShaderProgram(const std::string& shaderFileName);
+	ShaderProgram* LoadShaderProgram(const std::string& shaderFileName);
 
 	// Deletes/clears each element from the shader program cache map
 	void ClearShaderPrograms() { mShaderProgramCache->Clear(); }
@@ -226,7 +226,7 @@ public:
 	// Call AssetManager::DeleteSFX() if you need to delete/remove an SFX by name
 	// @param - const std::string& for the SFX file name
 	// @return - SFX* for the desired SFX retrieved from the SFX cache map
-	static SFX* LoadSFX(const std::string& fileName);
+	SFX* LoadSFX(const std::string& fileName);
 
 	// Deletes/clears each element from the sfx cache map
 	void ClearSFX() { mSfxCache->Clear(); }
@@ -246,7 +246,7 @@ public:
 	// Call AssetManager::DeleteMusic() if you need to delete/remove an Music by name
 	// @param - const std::string& for the Music file name
 	// @return - Music* for the desired Music retrieved from the SFX cache map
-	static Music* LoadMusic(const std::string& fileName);
+	Music* LoadMusic(const std::string& fileName);
 
 	// Deletes/clears each element from the music cache map
 	void ClearMusic() { mMusicCache->Clear(); }
@@ -256,13 +256,6 @@ public:
 	void DeleteMusic(const std::string& fileName) { mMusicCache->Delete(fileName); }
 
 private:
-	AssetManager();
-	~AssetManager();
-	AssetManager(const AssetManager&) = delete; // Makes sure the class can't be copied
-	AssetManager(AssetManager&&) = delete; // No move constructor
-	AssetManager& operator=(const AssetManager&) = delete; // Makes sure the class is not assignable
-	AssetManager& operator=(AssetManager&&) = delete; // No move assignment
-
 	// Pointer to the game's renderer (does not own the renderer, Game will take care of deleting this pointer)
 	Renderer* mRenderer;
 
@@ -296,3 +289,14 @@ private:
 	// Music sound track cache
 	Cache<Music>* mMusicCache;
 };
+
+
+// ============================================================================
+// TEMPORARY COMPILATION BRIDGE SYSTEM
+// ============================================================================
+namespace AssetBridge
+{
+	// C++17 inline pointer allows your entire engine to compile instantly 
+	// while you migrate your entity classes step-by-step
+	inline AssetManager* ActiveManager = nullptr;
+}

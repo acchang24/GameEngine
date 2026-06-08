@@ -53,16 +53,9 @@ void AssetManager::Clear()
 	mMusicCache->Clear();
 }
 
-AssetManager* AssetManager::Get()
-{
-	static AssetManager s_AssetManager;
-
-	return &s_AssetManager;
-}
-
 Shader* AssetManager::LoadShader(const std::string& shaderName)
 {
-	Shader* shader = AssetManager::Get()->mShaderCache->Get(shaderName);
+	Shader* shader = mShaderCache->Get(shaderName);
 
 	if (!shader)
 	{
@@ -74,15 +67,13 @@ Shader* AssetManager::LoadShader(const std::string& shaderName)
 
 Shader* AssetManager::LoadShader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile)
 {
-	AssetManager* am = AssetManager::Get();
-
-	Shader* shader = am->mShaderCache->Get(name);
+	Shader* shader = mShaderCache->Get(name);
 
 	if (!shader)
 	{
 		shader = new Shader(name, vertexFile, fragmentFile, geometryFile);
 
-		am->SaveShader(name, shader);
+		SaveShader(name, shader);
 	}
 
 	return shader;
@@ -90,14 +81,12 @@ Shader* AssetManager::LoadShader(const std::string& name, const char* vertexFile
 
 Texture* AssetManager::LoadTexture(const std::string& textureFileName, TextureType type)
 {
-	AssetManager* am = AssetManager::Get();
-
-	Texture* texture = am->mTextureCache->Get(textureFileName);
+	Texture* texture = mTextureCache->Get(textureFileName);
 
 	if (!texture)
 	{
 		texture = new Texture(textureFileName, type);
-		am->SaveTexture(textureFileName, texture);
+		SaveTexture(textureFileName, texture);
 	}
 
 	return texture;
@@ -105,14 +94,12 @@ Texture* AssetManager::LoadTexture(const std::string& textureFileName, TextureTy
 
 ShaderProgram* AssetManager::LoadShaderProgram(const std::string& shaderFileName)
 {
-	AssetManager* am = AssetManager::Get();
-
-	ShaderProgram* shaderProgram = am->mShaderProgramCache->Get(shaderFileName);
+	ShaderProgram* shaderProgram = mShaderProgramCache->Get(shaderFileName);
 
 	if (!shaderProgram)
 	{
 		shaderProgram = new ShaderProgram(shaderFileName);
-		am->SaveShaderProgram(shaderFileName, shaderProgram);
+		SaveShaderProgram(shaderFileName, shaderProgram);
 	}
 
 	return shaderProgram;
@@ -120,14 +107,12 @@ ShaderProgram* AssetManager::LoadShaderProgram(const std::string& shaderFileName
 
 SFX* AssetManager::LoadSFX(const std::string& fileName)
 {
-	AssetManager* am = AssetManager::Get();
-
-	SFX* sfx = am->mSfxCache->Get(fileName);
+	SFX* sfx = mSfxCache->Get(fileName);
 
 	if (!sfx)
 	{
 		sfx = new SFX(fileName);
-		am->SaveSFX(fileName, sfx);
+		SaveSFX(fileName, sfx);
 	}
 
 	return sfx;
@@ -135,14 +120,12 @@ SFX* AssetManager::LoadSFX(const std::string& fileName)
 
 Music* AssetManager::LoadMusic(const std::string& fileName)
 {
-	AssetManager* am = AssetManager::Get();
-
-	Music* music = am->mMusicCache->Get(fileName);
+	Music* music = mMusicCache->Get(fileName);
 
 	if (!music)
 	{
 		music = new Music(fileName);
-		am->SaveMusic(fileName, music);
+		SaveMusic(fileName, music);
 	}
 
 	return music;

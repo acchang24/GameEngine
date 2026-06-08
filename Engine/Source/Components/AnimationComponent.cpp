@@ -11,12 +11,12 @@ AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, con
 	mSkeletonConsts({}),
 	mSkeleton(nullptr),
 	mCurrentAnimation(nullptr),
-	mSkeletonBuffer(AssetManager::Get()->GetRenderer()->GetUniformBuffer("SkeletonBuffer")),
+	mSkeletonBuffer(AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer("SkeletonBuffer")),
 	mJob(this),
 	mCurrentTime(0.0f)
 {
 	// Check to see if skeleton was already loaded
-	mSkeleton = AssetManager::LoadSkeleton(fileName);
+	mSkeleton = AssetBridge::ActiveManager->LoadSkeleton(fileName);
 
 	if (!mSkeleton)
 	{
@@ -24,7 +24,7 @@ AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, con
 		mSkeleton = new Skeleton(scene, fileName);
 
 		// Save skeleton into AssetManager
-		AssetManager::SaveSkeleton(fileName, mSkeleton);
+		AssetBridge::ActiveManager->SaveSkeleton(fileName, mSkeleton);
 
 		LoadAnimations(scene, fileName);
 	}
@@ -40,7 +40,7 @@ AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, con
 	if (!mSkeletonBuffer)
 	{
 		// Create a new skeleton buffer within renderer (this component will not have ownership)
-		mSkeletonBuffer = AssetManager::Get()->GetRenderer()->CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
+		mSkeletonBuffer = AssetBridge::ActiveManager->GetRenderer()->CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 	}
 }
 
@@ -49,7 +49,7 @@ AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton) :
 	mSkeletonConsts({}),
 	mSkeleton(skeleton),
 	mCurrentAnimation(nullptr),
-	mSkeletonBuffer(AssetManager::Get()->GetRenderer()->GetUniformBuffer("SkeletonBuffer")),
+	mSkeletonBuffer(AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer("SkeletonBuffer")),
 	mJob(this),
 	mCurrentTime(0.0f)
 {
@@ -71,7 +71,7 @@ void AnimationComponent::LoadAnimations(const aiScene* scene, const std::string&
 		std::string animName = fileName + "/" + scene->mAnimations[i]->mName.C_Str();
 
 		// Check to see if animation was already loaded
-		Animation* anim = AssetManager::LoadAnimation(animName);
+		Animation* anim = AssetBridge::ActiveManager->LoadAnimation(animName);
 
 		if (!anim)
 		{
@@ -79,7 +79,7 @@ void AnimationComponent::LoadAnimations(const aiScene* scene, const std::string&
 			anim = new Animation(scene->mAnimations[i], mSkeleton, animName);
 
 			// Save the animation into AssetManager
-			AssetManager::SaveAnimation(animName, anim);
+			AssetBridge::ActiveManager->SaveAnimation(animName, anim);
 		}
 
 		// Add the anim to map
