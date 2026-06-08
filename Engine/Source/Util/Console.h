@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "../EngineUI/imgui.h"
+#include "../EngineContext.h"
 #include "Logger.h"
 
 class InputSystem;
@@ -8,9 +9,7 @@ class InputSystem;
 class Console
 {
 public:
-	// Console constructor:
-	// @param - Logger* for messages
-	Console(Logger* logger);
+	Console();
 	~Console();
 
 	// Process inputs for console
@@ -18,11 +17,13 @@ public:
 	void ProcessInput(InputSystem* input);
 
 	// Sets the console window and all of its components
-	void SetConsoleUI();
+	// @param - const EngineContext& for the engine context
+	void SetConsoleUI(const EngineContext& engineContext);
 
 	// Executes a console command
 	// @param - const std::string& for the command
-	void ExecuteCommand(const std::string& command);
+	// @param - Logger* for the engine's logger
+	void ExecuteCommand(const std::string& command, Logger* logger);
 
 	// Gets a color for ImGUI text
 	// @param - LogLevel for the log message's level
@@ -42,9 +43,6 @@ private:
 
 	// Name of console window
 	std::string mName;
-
-	// Logger to keep track of messages in the console
-	Logger* mLogger;
 
 	// Toggle if console is visible
 	bool mIsVisible;

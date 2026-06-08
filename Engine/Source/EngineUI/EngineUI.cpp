@@ -76,15 +76,13 @@ void EngineUI::SetUI()
     ImGui::NewFrame();
 
     //mEngine->GetEditor()->SetEditorUI();
-
-    mEngine->GetConsole()->SetConsoleUI();
-
-    // Finalize ImGui draw data
-    ImGui::Render();
 }
 
 void EngineUI::Render()
 {
+    // Finalize ImGui draw data
+    ImGui::Render();
+
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 

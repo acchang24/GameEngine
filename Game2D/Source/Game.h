@@ -2,6 +2,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include "Engine.h"
+#include "Util/Console.h"
 
 class AssetManager;
 class Entity;
@@ -80,6 +81,9 @@ private:
 
 	// Game Engine systems
 	Engine mEngine;
+
+	// Console for game info/debugging
+	Console mConsole;
 
 	Entity2D* mBackground;
 

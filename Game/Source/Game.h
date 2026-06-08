@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include "Graphics/Lights.h"
 #include "Engine.h"
+#include "Util/Console.h"
 
 class AssetManager;
 class Entity;
@@ -85,6 +86,9 @@ private:
 
 	// Engine used by game
 	Engine mEngine;
+
+	// Console for game info/debugging
+	Console mConsole;
 
 	// Game's lighting
 	Lights mLights;

@@ -11,6 +11,7 @@ enum class LogLevel
 	Warning,	// Message that logs a warning
 	Error,		// Message that logs an error
 	Debug,		// Message that logs a debug
+	Prompt,		// Message that logs a prompt
 };
 
 // Struct defining a log message
@@ -76,3 +77,4 @@ namespace Log
 #define LOG_INFO(msg)     if(Log::ActiveLogger) Log::ActiveLogger->Log("[INFO] " + std::string(msg), LogLevel::Info)
 #define LOG_WARNING(msg)     if(Log::ActiveLogger) Log::ActiveLogger->Log("[WARNING] " + std::string(msg), LogLevel::Warning)
 #define LOG_ERROR(msg)    if(Log::ActiveLogger) Log::ActiveLogger->Log("[ERROR] " + std::string(msg), LogLevel::Error)
+#define LOG_PROMPT(msg) if(Log::ActiveLogger) Log::ActiveLogger->Log("# " + std::string(msg), LogLevel::Prompt)

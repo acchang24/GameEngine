@@ -3,10 +3,9 @@
 #include <iostream>
 #include "../Input/InputSystem.h"
 
-Console::Console(Logger* logger) :
+Console::Console() :
 	mInputBuffer(),
 	mName("Console"),
-	mLogger(logger),
 	mIsVisible(false),
 	mAutoScroll(true),
 	mScrollToBottom(false)
@@ -26,8 +25,10 @@ void Console::ProcessInput(InputSystem* input)
 	}
 }
 
-void Console::SetConsoleUI()
+void Console::SetConsoleUI(const EngineContext& engineContext)
 {
+	Logger* logger = engineContext.logger;
+
 	if (mIsVisible)
 	{
 		ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
@@ -40,7 +41,7 @@ void Console::SetConsoleUI()
 		// Main scroll region
 		if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true))
 		{
-			mLogger->AccessMessages([this](const std::deque<LogMessage>& messages)
+			logger->AccessMessages([this](const std::deque<LogMessage>& messages)
 			{
 				for (const auto& msg : messages)
 				{
@@ -67,7 +68,7 @@ void Console::SetConsoleUI()
 		{
 			if (mInputBuffer[0])
 			{
-				ExecuteCommand(mInputBuffer);
+				ExecuteCommand(mInputBuffer, logger);
 				strcpy(mInputBuffer, "");
 				mScrollToBottom = true;
 				reclaim_focus = true;
@@ -85,17 +86,17 @@ void Console::SetConsoleUI()
 	}
 }
 
-void Console::ExecuteCommand(const std::string& command)
+void Console::ExecuteCommand(const std::string& command, Logger* logger)
 {
-	mLogger->Log("# " + command, LogLevel::Info);
+	LOG_PROMPT(command);
 
 	if (command == "clear")
 	{
-		mLogger->Clear();
+		logger->Clear();
 	}
 	else if (command == "hi")
 	{
-		mLogger->Log("hi fucker", LogLevel::Info);
+		LOG_INFO("hi fucker");
 	}
 }
 
@@ -111,6 +112,8 @@ ImVec4 Console::GetColorForLevel(LogLevel level)
 		return ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
 	case LogLevel::Debug:
 		return ImVec4(0.0f, 0.9f, 1.0f, 1.0f);
+	case LogLevel::Prompt:
+		return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	default:
 		return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}

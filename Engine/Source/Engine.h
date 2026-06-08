@@ -1,5 +1,4 @@
 #pragma once
-#include <SDL2/SDL.h>
 #include "Audio/AudioSystem.h"
 #include "EngineUI/EngineUI.h"
 #include "Graphics/Renderer.h"
@@ -10,7 +9,6 @@
 #include "EngineContext.h"
 
 class AssetManager;
-class Console;
 class Editor;
 
 // Engine class is the central system for game framework. 
@@ -52,8 +50,6 @@ public:
 	// @return - Audio* for the audio
 	AudioSystem* GetAudio() { return &mAudio; }
 
-	Console* GetConsole() { return mConsole; }
-
 	// Gets the engine context
 	// @return - const EngineContext& for the engine context
 	const EngineContext& GetContext() { return mContext; }
@@ -83,8 +79,7 @@ private:
 	// Audio system
 	AudioSystem mAudio;
 
-	Console* mConsole;
-
+	// Engine context
 	EngineContext mContext;
 
 	//Editor* mEditor;

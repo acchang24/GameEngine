@@ -17,7 +17,6 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Physics/Physics.h"
-#include "Util/Console.h"
 #include "Util/Logger.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
@@ -36,6 +35,7 @@ SDL_bool MOUSE_CAPTURED = SDL_FALSE;
 
 Game::Game() :
 	mEngine(RendererMode::MODE_2D),
+	mConsole(),
 	mBackground(nullptr),
 	mIsRunning(true)
 {
@@ -194,8 +194,6 @@ void Game::ProcessInput(const EngineContext& engineContext)
 
 	ProcessMouseInput(input);
 
-	//const Uint8* keyboardState = keyboard->GetState();
-
 	if (input->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		mIsRunning = false;
@@ -206,13 +204,11 @@ void Game::ProcessInput(const EngineContext& engineContext)
 		mEntities[i]->ProcessInput(input, engineContext);
 	}
 
-	mEngine.GetConsole()->ProcessInput(input);
+	mConsole.ProcessInput(input);
 }
 
 void Game::ProcessMouseInput(InputSystem* input)
 {
-	//mouse->CalculateMovement();
-
 	Sint32 scroll = input->GetMouseScrollDir();
 
 	// Single left click
@@ -241,8 +237,6 @@ void Game::ProcessMouseInput(InputSystem* input)
 		LOG_DEBUG("Mouse 5 click");
 	}
 
-	//Uint8 mouse_state = mouse->GetState();
-	
 
 	// Left click hold
 	if (input->IsMouseHeld(SDL_BUTTON_LEFT))
@@ -344,6 +338,8 @@ void Game::Render(const EngineContext& engineContext)
 	EngineUI* ui = engineContext.engineUI;
 
 	ui->SetUI();
+
+	mConsole.SetConsoleUI(engineContext);
 
 	renderer->ClearBuffers();
 

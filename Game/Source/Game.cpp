@@ -28,7 +28,6 @@
 #include "Input/InputSystem.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
-#include "Util/Console.h"
 #include "Util/Logger.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
@@ -52,6 +51,7 @@ SDL_bool MOUSE_CAPTURED = SDL_TRUE;
 
 Game::Game() :
 	mEngine(RendererMode::MODE_3D),
+	mConsole(),
 	mLights(),
 	mShadowMap(nullptr),
 	mSkybox(nullptr),
@@ -429,7 +429,6 @@ void Game::ProcessInput(const EngineContext& engineContext)
 		}
 	}
 
-	//mouse->CalculateMovement();
 	input->GetCurrentState();
 
 
@@ -461,7 +460,7 @@ void Game::ProcessInput(const EngineContext& engineContext)
 		LOG_DEBUG("Mouse 5 click");
 	}
 
-	//Uint8 mouse_state = mouse->GetState();
+
 	// Left click hold
 	if (input->IsMouseHeld(SDL_BUTTON_LEFT))
 	{
@@ -524,8 +523,6 @@ void Game::ProcessInput(const EngineContext& engineContext)
 	{
 		LOG_DEBUG("Scroll down " + std::to_string(scroll));
 	}
-
-	//const Uint8* keyboardState = keyboard->GetState();
 
 	if (input->IsKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
@@ -721,25 +718,13 @@ void Game::ProcessInput(const EngineContext& engineContext)
 		vampires[9]->GetComponent<AnimationComponent>()->SetTime(0.0f);
 	}
 
-	//// Save previous key inputs
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_V);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_SPACE);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_H);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_B);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_UP);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_DOWN);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_LEFT);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_RIGHT);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_L);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_K);
-	//keyboard->SavePrevKeyState(keyboardState, SDL_SCANCODE_M);
 
 	for (auto e : mEntities)
 	{
 		e->ProcessInput(input, engineContext);
 	}
 
-	mEngine.GetConsole()->ProcessInput(input);
+	mConsole.ProcessInput(input);
 }
 
 void Game::Update(float deltaTime, const EngineContext& engineContext)
@@ -764,6 +749,8 @@ void Game::Render(const EngineContext& engineContext)
 	Renderer* renderer = engineContext.renderer;
 
 	engineContext.engineUI->SetUI();
+
+	mConsole.SetConsoleUI(engineContext);
 
 	renderer->GetCamera()->SetBuffer();
 

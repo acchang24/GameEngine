@@ -2,7 +2,6 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "EngineUI/Editor.h"
-#include "Util/Console.h"
 
 Engine::Engine(RendererMode renderMode) :
 	mLogger(),
@@ -12,8 +11,7 @@ Engine::Engine(RendererMode renderMode) :
 	mJobManager(),
 	mAssetManager(AssetManager::Get()),
 	mEngineUI(this),
-	mAudio(),
-	mConsole(new Console(&mLogger))
+	mAudio()
 	//mEditor(new Editor())
 {
 	LOG_DEBUG("Started engine");
@@ -23,6 +21,7 @@ Engine::Engine(RendererMode renderMode) :
 
 Engine::~Engine()
 {
+	std::cout << "Deleted engine\n";
 }
 
 bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync, bool fullscreen, double mouseSensitivity, SDL_bool mouseCaptured, const char* gameName)
@@ -81,8 +80,6 @@ void Engine::Shutdown()
 	mJobManager.End();
 
 	mAssetManager->Shutdown();
-
-	delete mConsole;
 
 	//delete mEditor;
 }
