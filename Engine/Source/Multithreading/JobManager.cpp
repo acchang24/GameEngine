@@ -2,21 +2,35 @@
 #include <iostream>
 
 JobManager::JobManager() :
-    mIsRunning(true),
+    mIsRunning(false),
     mNumJobs(0),
-    mNumThreads(std::thread::hardware_concurrency() / 2)
+    mNumThreads(std::thread::hardware_concurrency() / 2) // default to half the number of threads available on cpu
 {
-    // Reserve half the amount of threads available from the cpu
+    // Ensure at least 1 worker thread on lower end systems
+    if (mNumThreads == 0)
+    {
+        mNumThreads = 1;
+    }
+
+    // Reserve the amount of threads available from the cpu
     mThreads.reserve(mNumThreads);
 }
 
 JobManager::~JobManager()
 {
+    // End here in case End() wasn't called
+    if (mIsRunning)
+    {
+        End();
+    }
+
     std::cout << "Delete JobManager\n";
 }
 
 void JobManager::Begin()
 {
+    mIsRunning = true;
+
     for (size_t i = 0; i < mNumThreads; ++i)
     {
         mThreads.emplace_back(&JobManager::WorkerThread, this);
@@ -27,24 +41,43 @@ void JobManager::End()
 {
     std::cout << "Ending JobManager\n";
 
-    mIsRunning = false;
+    {
+        std::lock_guard<std::mutex> lock(mQueueMutex);
+        mIsRunning = false;
+    }
+
+    // Wake up all threads so they notice mRunning is false
     mCondition.notify_all();
 
     // Join each thread
-    for (size_t i = 0; i < mNumThreads; ++i)
+    for (auto& thread : mThreads)
     {
-        if (mThreads[i].joinable())
+        if (thread.joinable())
         {
-            mThreads[i].join();
+            thread.join();
         }
     }
     mThreads.clear();
 
     // Clear the job queue just in case
+
+    std::lock_guard<std::mutex> lock(mQueueMutex);
     while (!mJobQueue.empty())
     {
+        Job* leftOverJob = mJobQueue.front();
         mJobQueue.pop();
+
+        if (leftOverJob)
+        {
+            // Check if the job deletes itself here
+            if (leftOverJob->mAutoDelete)
+            {
+                delete leftOverJob;
+            }
+        }
     }
+
+    mNumJobs = 0;
 }
 
 void JobManager::AddJob(Job* job)
@@ -64,10 +97,10 @@ void JobManager::WaitForJobs()
 {
     std::unique_lock<std::mutex> lock(mQueueMutex);
 
-    while (!(mJobQueue.empty() && mNumJobs == 0))
-    {
-        mIdleCondition.wait(lock);
-    }
+    // Main thread safely block here until all jobs hit true 0
+    mIdleCondition.wait(lock, [this]() {
+        return mJobQueue.empty() && mNumJobs == 0;
+    });
 }
 
 void JobManager::WorkerThread()
@@ -79,19 +112,25 @@ void JobManager::WorkerThread()
         {
             // Lock mutex with unique lock
             std::unique_lock<std::mutex> lock(mQueueMutex);
-            // If there is a job, pop from queue, if not just wait for a job
-            if (mJobQueue.empty())
+
+            // Safe Predicate Wait: Handles spurious wakeups and shutdown
+            mCondition.wait(lock, [this]() {
+                return !mJobQueue.empty() || !mIsRunning;
+            });
+
+            // If the engine is stopping and the queue is clear, exit the thread loop!
+            if (!mIsRunning && mJobQueue.empty()) 
             {
-                mCondition.wait(lock);
+                return;
             }
-            else 
-            {
-                job = mJobQueue.front();
-                mJobQueue.pop();
-                --mNumJobs;
-            }
+
+            job = mJobQueue.front();
+            mJobQueue.pop();
+
             // Mutex auto unlocks here
         }
+
+        // Execute the job outside of the mutex lock
         if (job)
         {
             job->DoJob();
@@ -102,8 +141,13 @@ void JobManager::WorkerThread()
             }
 
             {
+                // Lock mutex in new scope
                 std::lock_guard<std::mutex> lock(mQueueMutex);
 
+                // Decrement job count after the work is finished
+                --mNumJobs;
+
+                // If last job remaning, notify the main thread
                 if (mJobQueue.empty() && mNumJobs == 0)
                 {
                     mIdleCondition.notify_all();
