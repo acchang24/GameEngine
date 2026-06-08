@@ -1,4 +1,5 @@
 #include "Editor.h"
+#include <iostream>
 #include "imgui.h"
 
 Editor::Editor() :
@@ -8,6 +9,7 @@ Editor::Editor() :
 
 Editor::~Editor()
 {
+	std::cout << "Deleted editor\n";
 }
 
 void Editor::SetEditorUI()

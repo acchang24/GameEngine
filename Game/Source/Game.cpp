@@ -750,6 +750,8 @@ void Game::Render(const EngineContext& engineContext)
 
 	engineContext.engineUI->SetUI();
 
+	engineContext.editor->SetEditorUI();
+
 	mConsole.SetConsoleUI(engineContext);
 
 	renderer->GetCamera()->SetBuffer();

@@ -341,6 +341,8 @@ void Game::Render(const EngineContext& engineContext)
 
 	mConsole.SetConsoleUI(engineContext);
 
+	engineContext.editor->SetEditorUI();
+
 	renderer->ClearBuffers();
 
 	renderer->Draw2D();

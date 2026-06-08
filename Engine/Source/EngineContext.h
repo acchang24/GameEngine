@@ -8,6 +8,7 @@ class AssetManager;
 class EngineUI;
 class AudioSystem;
 class Logger;
+class Editor;
 
 struct EngineContext
 {
@@ -19,4 +20,5 @@ struct EngineContext
 	EngineUI* engineUI = nullptr;
 	AudioSystem* audio = nullptr;
 	Logger* logger = nullptr;
+	Editor* editor = nullptr;
 };

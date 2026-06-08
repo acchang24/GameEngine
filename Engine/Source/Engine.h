@@ -7,9 +7,9 @@
 #include "Physics/Physics.h"
 #include "Util/Logger.h"
 #include "EngineContext.h"
+#include "EngineUI/Editor.h"
 
 class AssetManager;
-class Editor;
 
 // Engine class is the central system for game framework. 
 // Manages core subsystems like rendering, audio, input, asset loading,
@@ -82,5 +82,6 @@ private:
 	// Engine context
 	EngineContext mContext;
 
-	//Editor* mEditor;
+	// Engine editor
+	Editor mEditor;
 };

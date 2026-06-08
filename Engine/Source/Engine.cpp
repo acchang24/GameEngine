@@ -11,8 +11,8 @@ Engine::Engine(RendererMode renderMode) :
 	mJobManager(),
 	mAssetManager(AssetManager::Get()),
 	mEngineUI(this),
-	mAudio()
-	//mEditor(new Editor())
+	mAudio(),
+	mEditor()
 {
 	LOG_DEBUG("Started engine");
 
@@ -57,6 +57,7 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 	mContext.engineUI = &mEngineUI;
 	mContext.audio = &mAudio;
 	mContext.logger = &mLogger;
+	mContext.editor = &mEditor;
 
 	// Bridge logger macro system to this engine's logger instance
 	Log::ActiveLogger = &mLogger;
@@ -80,6 +81,4 @@ void Engine::Shutdown()
 	mJobManager.End();
 
 	mAssetManager->Shutdown();
-
-	//delete mEditor;
 }
