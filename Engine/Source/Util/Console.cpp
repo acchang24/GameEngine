@@ -1,10 +1,6 @@
 #include "Console.h"
-#include <algorithm>
 #include <deque>
 #include <iostream>
-#include <glm/glm.hpp>
-#include "../Graphics/Renderer2D.h"
-#include "../Graphics/Text.h"
 #include "../Input/InputSystem.h"
 
 Console::Console(Logger* logger) :
@@ -44,13 +40,16 @@ void Console::SetConsoleUI()
 		// Main scroll region
 		if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true))
 		{
-			for (const LogMessage& msg : mLogger->GetMessages())
+			mLogger->AccessMessages([this](const std::deque<LogMessage>& messages)
 			{
-				ImVec4 color = GetColorForLevel(msg.level);
-				ImGui::PushStyleColor(ImGuiCol_Text, color);
-				ImGui::TextUnformatted(msg.message.c_str());
-				ImGui::PopStyleColor();
-			}
+				for (const auto& msg : messages)
+				{
+					ImVec4 color = GetColorForLevel(msg.level);
+					ImGui::PushStyleColor(ImGuiCol_Text, color);
+					ImGui::TextUnformatted(msg.message.c_str());
+					ImGui::PopStyleColor();
+				}
+			});
 
 			if (mScrollToBottom || (mAutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
 			{
@@ -116,4 +115,3 @@ ImVec4 Console::GetColorForLevel(LogLevel level)
 		return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
-

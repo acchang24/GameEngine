@@ -34,6 +34,15 @@ size_t Logger::GetNumMessages() const
 	return mMessages.size();
 }
 
+void Logger::AccessMessages(const std::function<void(const std::deque<LogMessage>&)>& getMessage) const 
+{
+	// Lock mutex
+	std::lock_guard<std::mutex> lock(mMutex);
+
+	// Pass mMessages into function
+	getMessage(mMessages);
+}
+
 void Logger::Clear()
 {
 	// Lock mutex

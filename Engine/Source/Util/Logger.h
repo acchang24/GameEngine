@@ -1,8 +1,10 @@
 #pragma once
 #include <deque>
+#include <functional>
 #include <string>
 #include <mutex>
 
+// Enum describing the different levels a log message can have
 enum class LogLevel
 {
 	Info,		// Message that logs info
@@ -11,12 +13,15 @@ enum class LogLevel
 	Debug,		// Message that logs a debug
 };
 
+// Struct defining a log message
 struct LogMessage
 {
 	std::string message;
 	LogLevel level;
 };
 
+
+// Thread-safe central diagnostics system for game engine that keeps track of log messages
 class Logger
 {
 public:
@@ -34,9 +39,9 @@ public:
 	// @return - size_t for the number of messages
 	size_t GetNumMessages() const;
 
-	// Gets the logger messages
-	// @return - const std::deque<LogMessage>& for the messages
-	const std::deque<LogMessage>& GetMessages() const { return mMessages; }
+	// Accesses the messages of the logger
+	// @param const std::function<void(const std::deque<LogMessage>&)>& getMessage) for a function that messages get passed into as a parameter
+	void AccessMessages(const std::function<void(const std::deque<LogMessage>&)>& getMessage) const;
 
 	// Removes all log messages from the deque
 	void Clear();

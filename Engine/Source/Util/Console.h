@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <SDL2/SDL_stdinc.h>
 #include "../EngineUI/imgui.h"
 #include "Logger.h"
 
