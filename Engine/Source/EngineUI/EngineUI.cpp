@@ -1,6 +1,6 @@
 #include "EngineUI.h"
 #include <iostream>
-#include <glad/glad.h>
+#include <SDL2/SDL_video.h>
 #include "../Util/Console.h"
 #include "../Util/Logger.h"
 #include "../Engine.h"
@@ -8,10 +8,10 @@
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl2.h"
+#include "../Graphics/Renderer.h"
 
 EngineUI::EngineUI(Engine* engine) :
-    mEngine(engine),
-    mWindow(engine->GetRenderer()->GetWindow())
+    mEngine(engine)
 {
 }
 
@@ -19,7 +19,7 @@ EngineUI::~EngineUI()
 {
 }
 
-bool EngineUI::Init()
+bool EngineUI::Init(Renderer* renderer)
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -36,8 +36,8 @@ bool EngineUI::Init()
     SetImGuiStyle();
 
     // Setup Platform/Renderer backends
-    SDL_Window* window = mEngine->GetRenderer()->GetWindow();
-    SDL_GLContext context = mEngine->GetRenderer()->GetContext();
+    SDL_Window* window = renderer->GetWindow();
+    SDL_GLContext context = renderer->GetContext();
     
     if (!ImGui_ImplSDL2_InitForOpenGL(window, context))
     {

@@ -39,7 +39,7 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 		return false;
 	}
 
-	if (!mEngineUI.Init())
+	if (!mEngineUI.Init(&mRenderer))
 	{
 		return false;
 	}

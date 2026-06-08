@@ -55,15 +55,17 @@ public:
 	void Update(float deltaTime, const EngineContext& engineContext);
 
 	// Sets all the buffers, swap chain, textures, vertex array objects, and renders to screen
-	void Render();
+	// @param - const EngineContext& for the engine context
+	void Render(const EngineContext& engineContext);
 
-	void RenderScene();
+	void RenderScene(const EngineContext& engineContext);
 
-	void RenderScene(Shader* shader);
+	void RenderScene(const EngineContext& engineContext, Shader* shader);
 
 	// Resizes the window, updates viewport, and resizes all frame buffers
 	// @param - const SDL_Event& for the resize window event
-	void ResizeWindow(const SDL_Event& event);
+	// @param - const EngineContext& for the engine context
+	void ResizeWindow(const SDL_Event& event, const EngineContext& engineContext);
 
 	// Adds an entity to the game's vector of entities
 	// @param - Entity* for the new entity

@@ -88,7 +88,7 @@ bool Game::Init()
 	// Set camera initial position
 	renderer->GetCamera()->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
 
-	mLights.CreateBuffer(mEngine.GetRenderer());
+	mLights.CreateBuffer(engineContext.renderer);
 
 	mShadowMap = new ShadowMap();
 
@@ -397,22 +397,22 @@ void Game::Run()
 
 		Update(deltaTime, engineContext);
 
-		Render();
+		Render(engineContext);
 	}
 }
 
 void Game::ProcessInput(const EngineContext& engineContext)
 {
-	InputSystem* input = mEngine.GetInputSystem();
+	InputSystem* input = engineContext.input;
 
 	input->StartFrame();
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		mEngine.GetInputSystem()->HandleEvent(event);
+		input->HandleEvent(event);
 
-		mEngine.GetEngineUI()->ProcessSDLEvent(event);
+		engineContext.engineUI->ProcessSDLEvent(event);
 
 		switch (event.type)
 		{
@@ -423,7 +423,7 @@ void Game::ProcessInput(const EngineContext& engineContext)
 		case SDL_WINDOWEVENT:
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 			{
-				ResizeWindow(event);
+				ResizeWindow(event, engineContext);
 			}
 			break;
 		}
@@ -533,7 +533,7 @@ void Game::ProcessInput(const EngineContext& engineContext)
 	}
 
 	// Camera
-	Camera* camera = mEngine.GetRenderer()->GetCamera();
+	Camera* camera = engineContext.renderer->GetCamera();
 
 	CameraMode mode = camera->GetCameraMode();
 	glm::vec3 right = camera->GetRight();
@@ -751,23 +751,23 @@ void Game::Update(float deltaTime, const EngineContext& engineContext)
 		e->Update(deltaTime, engineContext);
 	}
 
-	mEngine.GetRenderer()->GetCamera()->Update(deltaTime, mEngine.GetInputSystem());
+	engineContext.renderer->GetCamera()->Update(deltaTime, engineContext.input);
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	engineContext.jobManager->WaitForJobs();
 }
 
-void Game::Render()
+void Game::Render(const EngineContext& engineContext)
 {
 	PROFILE_SCOPE(RENDER);
 
-	mEngine.GetEngineUI()->SetUI();
+	Renderer* renderer = engineContext.renderer;
 
-	mEngine.GetRenderer()->GetCamera()->SetBuffer();
+	engineContext.engineUI->SetUI();
+
+	renderer->GetCamera()->SetBuffer();
 
 	mLights.SetBuffer();
-
-	Renderer* renderer = mEngine.GetRenderer();
 
 	renderer->ClearBuffers();
 
@@ -778,7 +778,7 @@ void Game::Render()
 
 		// Render to shadow map
 		mShadowMap->SetActive(size, near, far, pos, glm::vec3(0.0f, 0.0f, 0.0f));
-		RenderScene(mShadowMap->GetShader());
+		RenderScene(engineContext, mShadowMap->GetShader());
 
 		// End shadow render pass
 		mShadowMap->End(renderer->GetWidth(), renderer->GetHeight());
@@ -790,7 +790,7 @@ void Game::Render()
 	mMainFrameBuffer->SetActive();
 
 	// Render scene as normal
-	RenderScene();
+	RenderScene(engineContext);
 	
 	mMainFrameBuffer->BlitBuffers();
 	// Use the multisampled texture and mask off dark spots
@@ -818,12 +818,12 @@ void Game::Render()
 	mShadowMap->DrawDebug(AssetManager::LoadShader("shadowDebug"));
 	glViewport(0, 0, renderer->GetWidth(), renderer->GetHeight());
 
-	mEngine.GetEngineUI()->Render();
+	engineContext.engineUI->Render();
 
 	renderer->EndFrame();
 }
 
-void Game::RenderScene()
+void Game::RenderScene(const EngineContext& engineContext)
 {
 	PROFILE_SCOPE(RENDER_SCENE_NORMAL);
 
@@ -832,24 +832,24 @@ void Game::RenderScene()
 		e->Draw();
 	}
 
-	Camera* camera = mEngine.GetRenderer()->GetCamera();
+	Camera* camera = engineContext.renderer->GetCamera();
 
 	mSkybox->Draw(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 }
 
-void Game::RenderScene(Shader* shader)
+void Game::RenderScene(const EngineContext& engineContext, Shader* shader)
 {
 	for (auto e : mEntities)
 	{
 		static_cast<Entity3D*>(e)->Draw(shader);
 	}
 
-	Camera* camera = mEngine.GetRenderer()->GetCamera();
+	Camera* camera = engineContext.renderer->GetCamera();
 
 	mSkybox->Draw(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 }
 
-void Game::ResizeWindow(const SDL_Event& event)
+void Game::ResizeWindow(const SDL_Event& event, const EngineContext& engineContext)
 {
 	SDL_Window* window = SDL_GetWindowFromID(event.window.windowID);
 	if (window)
@@ -857,7 +857,7 @@ void Game::ResizeWindow(const SDL_Event& event)
 		int width = event.window.data1;
 		int height = event.window.data2;
 
-		mEngine.GetRenderer()->Resize(width, height);
+		engineContext.renderer->Resize(width, height);
 	}
 }
 

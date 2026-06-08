@@ -44,25 +44,15 @@ public:
 	// @return - Renderer* for the renderer
 	Renderer* GetRenderer() { return &mRenderer; }
 
-	// Gets the engine's input system
-	// @return - InputSystem* for the input system
-	InputSystem* GetInputSystem() { return &mInputSystem; }
-
 	// Gets the physics system
 	// @return - Physics* for the physics system
 	Physics* GetPhysics() { return &mPhysics; }
-
-	// Gets the EngineUI system
-	// @return - EngineUI* for the engine ui
-	EngineUI* GetEngineUI() { return &mEngineUI; }
 
 	// Gets the audio system
 	// @return - Audio* for the audio
 	AudioSystem* GetAudio() { return &mAudio; }
 
 	Console* GetConsole() { return mConsole; }
-
-	//Editor* GetEditor() { return mEditor; }
 
 	// Gets the engine context
 	// @return - const EngineContext& for the engine context

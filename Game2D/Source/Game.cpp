@@ -104,11 +104,15 @@ void Game::LoadGameData()
 	music->SetVolume(90);
 	music->Play(-1);
 
-	Renderer2D* renderer2D = mEngine.GetRenderer()->GetRenderer2D();
+	const EngineContext& engineContext = mEngine.GetContext();
+
+	Renderer* renderer = engineContext.renderer;
+
+	Renderer2D* renderer2D = renderer->GetRenderer2D();
 
 	// Background
-	mBackground = new Entity2D(static_cast<float>(mEngine.GetRenderer()->GetWidth()), static_cast<float>(mEngine.GetRenderer()->GetHeight()));
-	mBackground->SetPosition(glm::vec2(static_cast<float>(mEngine.GetRenderer()->GetWidth() / 2), static_cast<float>(mEngine.GetRenderer()->GetHeight() / 2)));
+	mBackground = new Entity2D(static_cast<float>(renderer->GetWidth()), static_cast<float>(renderer->GetHeight()));
+	mBackground->SetPosition(glm::vec2(static_cast<float>(renderer->GetWidth() / 2), static_cast<float>(renderer->GetHeight() / 2)));
 	SpriteComponent* backgroundSC = new SpriteComponent(mBackground, renderer2D, 50);
 	backgroundSC->AddSprite(AssetManager::LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
@@ -120,7 +124,7 @@ void Game::LoadGameData()
 	renderer2D->SetUIBoxShader(AssetManager::LoadShader("uiBox"));
 
 	// Set font
-	mEngine.GetRenderer()->GetRenderer2D()->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
+	renderer2D->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
 }
 
 void Game::UnloadGameData()
@@ -154,13 +158,13 @@ void Game::Run()
 
 		Update(deltaTime, engineContext);
 
-		Render();
+		Render(engineContext);
 	}
 }
 
 void Game::ProcessInput(const EngineContext& engineContext)
 {
-	InputSystem* input = mEngine.GetInputSystem();
+	InputSystem* input = engineContext.input;
 
 	input->StartFrame();
 
@@ -169,7 +173,7 @@ void Game::ProcessInput(const EngineContext& engineContext)
 	{
 		input->HandleEvent(event);
 
-		mEngine.GetEngineUI()->ProcessSDLEvent(event);
+		engineContext.engineUI->ProcessSDLEvent(event);
 
 		switch (event.type)
 		{
@@ -180,7 +184,7 @@ void Game::ProcessInput(const EngineContext& engineContext)
 		case SDL_WINDOWEVENT:
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 			{
-				ResizeWindow(event);
+				ResizeWindow(event, engineContext);
 			}
 			break;
 		}
@@ -325,30 +329,32 @@ void Game::Update(float deltaTime, const EngineContext& engineContext)
 		RemoveGameEntity(d);
 	}
 
-	mEngine.GetPhysics()->Update(deltaTime);
+	engineContext.physics->Update(deltaTime);
 
 	PROFILE_SCOPE(WAIT_JOBS);
 	engineContext.jobManager->WaitForJobs();
 }
 
-void Game::Render()
+void Game::Render(const EngineContext& engineContext)
 {
 	PROFILE_SCOPE(RENDER);
 
-	mEngine.GetEngineUI()->SetUI();
+	Renderer* renderer = engineContext.renderer;
 
-	Renderer* renderer = mEngine.GetRenderer();
+	EngineUI* ui = engineContext.engineUI;
+
+	ui->SetUI();
 
 	renderer->ClearBuffers();
 
 	renderer->Draw2D();
 
-	mEngine.GetEngineUI()->Render();
+	ui->Render();
 
 	renderer->EndFrame();
 }
 
-void Game::ResizeWindow(const SDL_Event& event)
+void Game::ResizeWindow(const SDL_Event& event, const EngineContext& engineContext)
 {
 	SDL_Window* window = SDL_GetWindowFromID(event.window.windowID);
 	if (window)
@@ -356,7 +362,7 @@ void Game::ResizeWindow(const SDL_Event& event)
 		int width = event.window.data1;
 		int height = event.window.data2;
 
-		mEngine.GetRenderer()->Resize(width, height);
+		engineContext.renderer->Resize(width, height);
 
 		// Sprite background resize
 		mBackground->SetSize(glm::vec2(width, height));

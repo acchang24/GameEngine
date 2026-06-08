@@ -58,7 +58,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 	{
 		if (input->IsKeyLeadingEdge(SDL_SCANCODE_W))
 		{
-			mEngine->GetAudio()->ResumeSFX("Assets/Sounds/ShipThrust.wav");
+			engineContext.audio->ResumeSFX("Assets/Sounds/ShipThrust.wav");
 		}
 		moveSpeed += 200.0f;
 	}
@@ -74,7 +74,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 	else
 	{
 		mSprite->SetSprite(mSprite->GetSprite("Assets/Ship.png"));
-		mEngine->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
+		engineContext.audio->PauseSFX("Assets/Sounds/ShipThrust.wav");
 	}
 
 	float rotationSpeed = 0.0f;
@@ -89,7 +89,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 
 	if (input->IsKeyPressed(SDL_SCANCODE_SPACE) && mLaserCooldown > 1.0f)
 	{
-		mEngine->GetAudio()->PlaySFX("Assets/Sounds/Shoot.wav");
+		engineContext.audio->PlaySFX("Assets/Sounds/Shoot.wav");
 
 		Laser* laser = new Laser(mGame);
 		laser->SetPosition(mPosition);
@@ -115,17 +115,17 @@ void Ship::OnUpdate(float deltaTime, const EngineContext& engineContext)
 	// Wrap screen if out of bounds
 	if (mPosition.x < 0.0f)
 	{
-		mPosition.x = mEngine->GetRenderer()->GetWidth();
+		mPosition.x = engineContext.renderer->GetWidth();
 	}
-	if (mPosition.x > mEngine->GetRenderer()->GetWidth())
+	if (mPosition.x > engineContext.renderer->GetWidth())
 	{
 		mPosition.x = 0.0f;
 	}
 	if (mPosition.y < 0.0f)
 	{
-		mPosition.y = mEngine->GetRenderer()->GetHeight();
+		mPosition.y = engineContext.renderer->GetHeight();
 	}
-	if (mPosition.y > mEngine->GetRenderer()->GetHeight())
+	if (mPosition.y > engineContext.renderer->GetHeight())
 	{
 		mPosition.y = 0.0f;
 	}

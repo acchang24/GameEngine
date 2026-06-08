@@ -1,7 +1,8 @@
 #pragma once
-#include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 
 class Engine;
+class Renderer;
 
 class EngineUI
 {
@@ -12,8 +13,9 @@ public:
 	~EngineUI();
 
 	// Initializes the ImGUI library and returns true if intialized
+	// @param - Renderer* for the engine's renderer subsystem
 	// @return - bool for if ImGUI initialized properly
-	bool Init();
+	bool Init(Renderer* renderer);
 
 	// Cleans up ImGUI resources
 	void Shutdown();
@@ -32,7 +34,4 @@ private:
 
 	// Pointer to the game engine
 	Engine* mEngine;
-
-	// Pointer to the window
-	SDL_Window* mWindow;
 };
