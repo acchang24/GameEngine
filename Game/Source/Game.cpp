@@ -29,7 +29,7 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Util/Console.h"
-#include "Util/LoggerMacros.h"
+#include "Util/Logger.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
 #include "EngineContext.h"

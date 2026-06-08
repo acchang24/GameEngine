@@ -4,7 +4,7 @@
 #include "Components/SpriteComponent.h"
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
-#include "Util/LoggerMacros.h"
+#include "Util/Logger.h"
 #include "Util/Random.h"
 #include "Engine.h"
 #include "Game.h"

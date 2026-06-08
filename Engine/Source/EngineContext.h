@@ -7,6 +7,7 @@ class JobManager;
 class AssetManager;
 class EngineUI;
 class AudioSystem;
+class Logger;
 
 struct EngineContext
 {
@@ -17,4 +18,5 @@ struct EngineContext
 	AssetManager* assetManager = nullptr;
 	EngineUI* engineUI = nullptr;
 	AudioSystem* audio = nullptr;
+	Logger* logger = nullptr;
 };

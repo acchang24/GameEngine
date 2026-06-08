@@ -7,7 +7,7 @@
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
 #include "Physics/Physics.h"
-#include "Util/LoggerMacros.h"
+#include "Util/Logger.h"
 #include "Asteroid.h"
 #include "Engine.h"
 #include "Game.h"

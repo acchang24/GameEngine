@@ -69,6 +69,9 @@ public:
 	const EngineContext& GetContext() { return mContext; }
 
 private:
+	// Logger to log messages
+	Logger mLogger;
+
 	// Renderer for 2D/3D graphics output
 	Renderer mRenderer;
 
@@ -83,9 +86,6 @@ private:
 
 	// Pointer to a static AssetManager to load/cache assets on demand
 	AssetManager* mAssetManager;
-
-	// Logger to log messages
-	Logger* mLogger;
 
 	// Engine UI system
 	EngineUI mEngineUI;

@@ -1,7 +1,7 @@
 #include "AssetManager.h"
 #include <iostream>
 #include "../Graphics/Renderer.h"
-#include "../Util/LoggerMacros.h"
+#include "../Util/Logger.h"
 
 AssetManager::AssetManager() :
 	mRenderer(nullptr),

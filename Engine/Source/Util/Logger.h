@@ -1,6 +1,7 @@
 #pragma once
-#include <string>
 #include <deque>
+#include <string>
+#include <mutex>
 
 enum class LogLevel
 {
@@ -19,8 +20,10 @@ struct LogMessage
 class Logger
 {
 public:
-	// Gets the static logger (singleton)
-	static Logger* Get();
+	// Logger constructor:
+	// @param - size_t for the max number of messages a logger can hold (defaults to 1000)
+	Logger(size_t maxMessages = 1000);
+	~Logger();
 
 	// Logs a message and its level by adding it to the deque of LogMessages
 	// @param - const std::string& for the message
@@ -29,21 +32,42 @@ public:
 
 	// Gets the number of messages from the logger
 	// @return - size_t for the number of messages
-	size_t GetNumMessages() const { return mMessages.size(); }
+	size_t GetNumMessages() const;
 
 	// Gets the logger messages
 	// @return - const std::deque<LogMessage>& for the messages
 	const std::deque<LogMessage>& GetMessages() const { return mMessages; }
 
-	void Clear() { mMessages.clear(); }
+	// Removes all log messages from the deque
+	void Clear();
 
 private:
-	Logger(size_t maxMessages = 1000);
-	~Logger();
-
 	// Deque of messages
 	std::deque<LogMessage> mMessages;
 
 	// Maximum number of messages
 	size_t mMaxMessages;
+
+	// Mutex to protect deque across threads
+	mutable std::mutex mMutex;
 };
+
+
+// GLOBAL MACRO BRIDGE SYSTEM
+namespace Log
+{
+	inline Logger* ActiveLogger = nullptr;
+}
+
+// LOGGER MACROS
+#ifdef NDEBUG
+// Release build logging
+#define LOG_DEBUG(msg)    ((void)0)
+#else
+// Debug builds logging
+#define LOG_DEBUG(msg)    if(Log::ActiveLogger) Log::ActiveLogger->Log("[DEBUG] " + std::string(msg), LogLevel::Debug)
+#endif
+
+#define LOG_INFO(msg)     if(Log::ActiveLogger) Log::ActiveLogger->Log("[INFO] " + std::string(msg), LogLevel::Info)
+#define LOG_WARNING(msg)     if(Log::ActiveLogger) Log::ActiveLogger->Log("[WARNING] " + std::string(msg), LogLevel::Warning)
+#define LOG_ERROR(msg)    if(Log::ActiveLogger) Log::ActiveLogger->Log("[ERROR] " + std::string(msg), LogLevel::Error)

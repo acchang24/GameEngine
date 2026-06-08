@@ -1,6 +1,6 @@
 #include "Texture.h"
 #include <iostream>
-#include "../Util/LoggerMacros.h"
+#include "../Util/Logger.h"
 #include "stb_image.h"
 
 Texture::Texture(TextureType type) :

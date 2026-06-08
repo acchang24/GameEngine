@@ -3,18 +3,17 @@
 #include "Multithreading/JobManager.h"
 #include "EngineUI/Editor.h"
 #include "Util/Console.h"
-#include "Util/LoggerMacros.h"
 
 Engine::Engine(RendererMode renderMode) :
+	mLogger(),
 	mRenderer(renderMode),
 	mInputSystem(),
 	mPhysics(),
 	mJobManager(),
 	mAssetManager(AssetManager::Get()),
-	mLogger(Logger::Get()),
 	mEngineUI(this),
 	mAudio(),
-	mConsole(new Console(mLogger))
+	mConsole(new Console(&mLogger))
 	//mEditor(new Editor())
 {
 	LOG_DEBUG("Started engine");
@@ -58,11 +57,13 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 	mContext.assetManager = mAssetManager;
 	mContext.engineUI = &mEngineUI;
 	mContext.audio = &mAudio;
+	mContext.logger = &mLogger;
+
+	// Bridge logger macro system to this engine's logger instance
+	Log::ActiveLogger = &mLogger;
 
 	// Center the mouse
 	mInputSystem.CenterMouse();
-
-	//mMouse.CenterMouse(mRenderer.GetWindow());
 
 	return true;
 }

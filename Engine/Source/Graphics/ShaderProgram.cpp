@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include "../MemoryManager/AssetManager.h"
-#include "../Util/LoggerMacros.h"
+#include "../Util/Logger.h"
 
 ShaderProgram::ShaderProgram(const std::string& shaderFile) :
     mType(LoadType(shaderFile)),

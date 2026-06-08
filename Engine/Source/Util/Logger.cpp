@@ -10,22 +10,34 @@ Logger::~Logger()
 {
 	std::cout << "Deleted Logger\n";
 
-	mMessages.clear();
-}
-
-Logger* Logger::Get()
-{
-	static Logger s_Logger;
-
-	return &s_Logger;
+	Clear();
 }
 
 void Logger::Log(const std::string& message, LogLevel level)
 {
+	// Lock the mutex to protect the deque
+	std::lock_guard<std::mutex> lock(mMutex);
+
 	if (mMessages.size() >= mMaxMessages)
 	{
 		// Remove the front (oldest message)
 		mMessages.pop_front();
 	}
 	mMessages.push_back({ message, level });
+}
+
+size_t Logger::GetNumMessages() const
+{
+	// Lock mutex
+	std::lock_guard<std::mutex> lock(mMutex);
+
+	return mMessages.size();
+}
+
+void Logger::Clear()
+{
+	// Lock mutex
+	std::lock_guard<std::mutex> lock(mMutex);
+
+	mMessages.clear();
 }

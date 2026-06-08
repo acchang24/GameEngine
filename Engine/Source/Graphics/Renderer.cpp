@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include "../Animation/BoneData.h"
 #include "../Animation/Skeleton.h"
-#include "../Util/LoggerMacros.h"
+#include "../Util/Logger.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
 #include "FrameBufferMultiSampled.h"
@@ -349,7 +349,6 @@ void Renderer::LoadGLAD() const
 {
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-	Logger* logger = Logger::Get();
 	LOG_INFO("OpenGL loaded");
 	std::string vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
 	LOG_INFO(std::string("Vendor: " + vendor));

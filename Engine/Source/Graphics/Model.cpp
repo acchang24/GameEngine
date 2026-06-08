@@ -12,7 +12,7 @@
 #include "../Animation/Skeleton.h"
 #include "../Graphics/UniformBuffer.h"
 #include "../Components/AnimationComponent.h"
-#include "../Util/LoggerMacros.h"
+#include "../Util/Logger.h"
 
 Model::Model(const std::string& fileName, Entity3D* entity) :
 	mNumMaterials(0),

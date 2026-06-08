@@ -1,7 +1,7 @@
 #include "Sound.h"
 #include <algorithm>
 #include <iostream>
-#include "../Util/LoggerMacros.h"
+#include "../Util/Logger.h"
 
 SFX::SFX(const std::string& fileName):
 	mName(fileName),

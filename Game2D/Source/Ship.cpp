@@ -6,7 +6,7 @@
 #include "Graphics/Texture.h"
 #include "Input/Keyboard.h"
 #include "MemoryManager/AssetManager.h"
-#include "Util/LoggerMacros.h"
+#include "Util/Logger.h"
 #include "Engine.h"
 #include "Game.h"
 #include "Laser.h"

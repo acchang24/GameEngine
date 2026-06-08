@@ -18,7 +18,7 @@
 #include "Multithreading/JobManager.h"
 #include "Physics/Physics.h"
 #include "Util/Console.h"
-#include "Util/LoggerMacros.h"
+#include "Util/Logger.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
 #include "EngineContext.h"

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "../MemoryManager/AssetManager.h"
-#include "../Util/LoggerMacros.h"
+#include "../Util/Logger.h"
 #include "Renderer.h"
 #include "ShaderProgram.h"
 

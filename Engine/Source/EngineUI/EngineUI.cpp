@@ -41,13 +41,13 @@ bool EngineUI::Init()
     
     if (!ImGui_ImplSDL2_InitForOpenGL(window, context))
     {
-        Logger::Get()->Log("ERROR::EditorUI: Failed to initialize ImGui SDL2 backend", LogLevel::Error);
+        LOG_ERROR("ERROR::EditorUI: Failed to initialize ImGui SDL2 backend");
         return false;
     }
     
     if (!ImGui_ImplOpenGL3_Init("#version 450"))
     {
-        Logger::Get()->Log("ERROR::EditorUI: Failed to initialize ImGui OpenGL3 backend", LogLevel::Error);
+        LOG_ERROR("ERROR::EditorUI: Failed to initialize ImGui OpenGL3 backend");
         return false;
     }
 
@@ -57,7 +57,7 @@ bool EngineUI::Init()
 void EngineUI::Shutdown()
 {
     std::cout << "Shutting down EditorUI\n";
-    Logger::Get()->Log("Shutting down EditorUI", LogLevel::Info);
+    LOG_INFO("Shutting down EditorUI");
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
