@@ -2,13 +2,11 @@
 #include "Cache.h"
 #include <string>
 #include "../Animation/Animation.h"
-#include "../Animation/Skeleton.h"
 #include "../Audio/Sound.h"
 #include "../Graphics/Shader.h"
 #include "../Graphics/ShaderProgram.h"
 #include "../Graphics/Texture.h"
 #include "../Graphics/Material.h"
-#include "../Graphics/UniformBuffer.h"
 #include "../Graphics/Mesh.h"
 #include "../Graphics/Model.h"
 
@@ -146,7 +144,7 @@ public:
 	// Call AssetManager::DeleteModel() if you need to delete/remove a model by name
 	// @param - const std::string& for the model's name
 	// @return - Model* for the desired model retrieved from the model cache map
-	Model* LoadModel(const std::string& modelName) { return mModelCache->Get(modelName); }
+	Model* LoadModel(const std::string& modelName);
 
 	// Deletes/clears each element from the model cache map
 	void ClearModels() { mModelCache->Clear(); }
@@ -174,26 +172,6 @@ public:
 	// Deletes an animation in the animation cache map by name
 	// @param - const std::string& for the animation name
 	void DeleteAnimation(const std::string& animationName) { mAnimationCache->Delete(animationName); }
-
-
-	// Saves an skeleton into the skeleton cache's map
-	// @param - const std::string& for the skeleton's name
-	// @param - Skeleton* for the skeleton to save
-	void SaveSkeleton(const std::string& skeletonName, Skeleton* skeleton) { mSkeletonCache->StoreCache(skeletonName, skeleton); }
-	
-	// Loads an skeleton from the skeleton cache's map if it exists, nullptr if not.
-	// Ownership of any Skeleton* returned from this method is handled by the AssetManager. Don't need to free memory manually.
-	// Call AssetManager::DeleteSkeleton() if you need to delete/remove a skeleton by name
-	// @param - const std::string& for the skeleton's name
-	// @return - Skeleton* for the desired skeleton retrieved from the skeleton cache map
-	Skeleton* LoadSkeleton(const std::string& skeletonName) { return mSkeletonCache->Get(skeletonName); }
-	
-	// Deletes/clears each element from the skeleton cache map
-	void ClearSkeletons() { mSkeletonCache->Clear(); }
-
-	// Deletes a skeleton in the skeleton cache map by name
-	// @param - const std::string& for the skeleton name
-	void DeleteSkeleton(const std::string& skeletonName) { mSkeletonCache->Delete(skeletonName); }
 
 
 	// Saves a ShaderProgram into the shader program cache's map
@@ -276,9 +254,6 @@ private:
 
 	// Animation cache
 	Cache<Animation>* mAnimationCache;
-
-	// Skeleton cache
-	Cache<Skeleton>* mSkeletonCache;
 
 	// ShaderProgram cache
 	Cache<ShaderProgram>* mShaderProgramCache;

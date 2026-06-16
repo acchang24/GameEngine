@@ -1,7 +1,7 @@
 #include "AssetManager.h"
 #include <iostream>
-#include "../Graphics/Renderer.h"
 #include "../Util/Logger.h"
+#include "../Graphics/ModelLoader.h"
 
 AssetManager::AssetManager() :
 	mRenderer(nullptr),
@@ -11,7 +11,6 @@ AssetManager::AssetManager() :
 	mMeshCache(new Cache<Mesh>(this)),
 	mModelCache(new Cache<Model>(this)),
 	mAnimationCache(new Cache<Animation>(this)),
-	mSkeletonCache(new Cache<Skeleton>(this)),
 	mShaderProgramCache(new Cache<ShaderProgram>(this)),
 	mSfxCache(new Cache<SFX>(this)),
 	mMusicCache(new Cache<Music>(this))
@@ -33,7 +32,6 @@ void AssetManager::Shutdown()
 	delete mMeshCache;
 	delete mModelCache;
 	delete mAnimationCache;
-	delete mSkeletonCache;
 	delete mShaderProgramCache;
 	delete mSfxCache;
 	delete mMusicCache;
@@ -47,7 +45,6 @@ void AssetManager::Clear()
 	mMeshCache->Clear();
 	mModelCache->Clear();
 	mAnimationCache->Clear();
-	mSkeletonCache->Clear();
 	mShaderProgramCache->Clear();
 	mSfxCache->Clear();
 	mMusicCache->Clear();
@@ -90,6 +87,20 @@ Texture* AssetManager::LoadTexture(const std::string& textureFileName, TextureTy
 	}
 
 	return texture;
+}
+
+Model* AssetManager::LoadModel(const std::string& modelName)
+{
+	Model* model = mModelCache->Get(modelName);
+
+	if (!model)
+	{
+		model = ModelLoader::Load(modelName, this);
+
+		SaveModel(modelName, model);
+	}
+
+	return model;
 }
 
 ShaderProgram* AssetManager::LoadShaderProgram(const std::string& shaderFileName)

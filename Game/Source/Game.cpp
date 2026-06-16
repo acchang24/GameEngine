@@ -249,11 +249,16 @@ void Game::LoadGameData(AssetManager* assetManager)
 		glm::vec3(10.0f, -4.0f, -15.0f)
 	};
 
-
 	float time = 0.1f;
 	for (size_t i = 0; i < 10; ++i)
 	{
-		Entity3D* vampire = new Entity3D("Assets/models/vampire/dancing_vampire.dae");
+		Entity3D* vampire = new Entity3D();
+		Model* vampireModel = assetManager->LoadModel("Assets/models/vampire/dancing_vampire.dae");
+		if (vampireModel->HasAnimations())
+		{
+			AnimationComponent* animComp = new AnimationComponent(vampire, vampireModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+		}
+		vampire->SetModel(vampireModel);
 		vampire->SetScale(0.05f);
 		vampire->SetPosition(vampirePositions[i]);
 		AddGameEntity(vampire);
@@ -261,7 +266,9 @@ void Game::LoadGameData(AssetManager* assetManager)
 		vampires.emplace_back(vampire);
 	}
 
-	Entity3D* sponza = new Entity3D("Assets/models/Sponza/sponza.obj");
+	Entity3D* sponza = new Entity3D();
+	Model* sponzaModel = assetManager->LoadModel("Assets/models/Sponza/sponza.obj");
+	sponza->SetModel(sponzaModel);
 	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.125);
 	sponza->FaceDirection(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -287,12 +294,23 @@ void Game::LoadGameData(AssetManager* assetManager)
 	//mCube->SetYaw(25.0f);
 	//AddGameEntity(mCube);
 
-	Entity3D* squidward = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
+	Entity3D* squidward = new Entity3D();
+	Model* squidwardModel = assetManager->LoadModel("Assets/models/SquidwardDance/Rumba Dancing.dae");
+	if (squidwardModel->HasAnimations())
+	{
+		AnimationComponent* animComp = new AnimationComponent(squidward, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+	}
+	squidward->SetModel(squidwardModel);
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
 	squidward->FaceDirection(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	AddGameEntity(squidward);
 
-	Entity3D* squidward2 = new Entity3D("Assets/models/SquidwardDance/Rumba Dancing.dae");
+	Entity3D* squidward2 = new Entity3D();
+	squidward2->SetModel(squidwardModel);
+	if (squidwardModel->HasAnimations())
+	{
+		AnimationComponent* animComp = new AnimationComponent(squidward2, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+	}
 	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f));
 	squidward2->SetScale(0.35f);
 	AddGameEntity(squidward2);
@@ -321,12 +339,24 @@ void Game::LoadGameData(AssetManager* assetManager)
 	//cube2->SetMaterial(woodMat);
 	//AddGameEntity(cube2);
 
-	Entity3D* fortune2 = new Entity3D("Assets/models/MissFortune/MissFortune.dae");
+	Entity3D* fortune2 = new Entity3D();
+	Model* fortuneModel2 = assetManager->LoadModel("Assets/models/MissFortune/MissFortune.dae");
+	if (fortuneModel2->HasAnimations())
+	{
+		AnimationComponent* animComp = new AnimationComponent(fortune2, fortuneModel2->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+	}
+	fortune2->SetModel(fortuneModel2);
 	fortune2->SetPosition(glm::vec3(-5.0f, -5.0f, -25.0f));
 	fortune2->SetScale(0.25f);
 	AddGameEntity(fortune2);
 
-	Entity3D* fortune = new Entity3D("Assets/models/MissFortune2/MissFortune2.dae");
+	Entity3D* fortune = new Entity3D();
+	Model* fortuneModel = assetManager->LoadModel("Assets/models/MissFortune2/MissFortune2.dae");
+	if (fortuneModel->HasAnimations())
+	{
+		AnimationComponent* animComp = new AnimationComponent(fortune, fortuneModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+	}
+	fortune->SetModel(fortuneModel);
 	fortune->SetPosition(glm::vec3(5.0f, -5.0f, -25.0f));
 	fortune->SetScale(0.25f);
 	AddGameEntity(fortune);

@@ -2,89 +2,37 @@
 #include <iostream>
 #include "../Animation/Skeleton.h"
 #include "../Animation/Animation.h"
-#include "../Graphics/Renderer.h"
 #include "../Graphics/UniformBuffer.h"
-#include "../MemoryManager/AssetManager.h"
 
-AnimationComponent::AnimationComponent(Entity* entity, const aiScene* scene, const std::string& fileName) :
-	Component(entity),
-	mSkeletonConsts({}),
-	mSkeleton(nullptr),
-	mCurrentAnimation(nullptr),
-	mSkeletonBuffer(AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer("SkeletonBuffer")),
-	mJob(this),
-	mCurrentTime(0.0f)
-{
-	// Check to see if skeleton was already loaded
-	mSkeleton = AssetBridge::ActiveManager->LoadSkeleton(fileName);
-
-	if (!mSkeleton)
-	{
-		// Create a new skeleton
-		mSkeleton = new Skeleton(scene, fileName);
-
-		// Save skeleton into AssetManager
-		AssetBridge::ActiveManager->SaveSkeleton(fileName, mSkeleton);
-
-		LoadAnimations(scene, fileName);
-	}
-	else
-	{
-		LoadCachedAnims(mSkeleton);
-	}
-
-	// Set default animation to first anim in map
-	SetDefaultAnim();
-
-	// If there isn't skeleton buffer loaded within renderer
-	if (!mSkeletonBuffer)
-	{
-		// Create a new skeleton buffer within renderer (this component will not have ownership)
-		mSkeletonBuffer = AssetBridge::ActiveManager->GetRenderer()->CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
-	}
-}
-
-AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton) :
+AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton, UniformBuffer* skeletonBuffer) :
 	Component(entity),
 	mSkeletonConsts({}),
 	mSkeleton(skeleton),
 	mCurrentAnimation(nullptr),
-	mSkeletonBuffer(AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer("SkeletonBuffer")),
+	mSkeletonBuffer(skeletonBuffer),
 	mJob(this),
 	mCurrentTime(0.0f)
 {
-	LoadCachedAnims(mSkeleton);
+	if (skeleton)
+	{
+		for (Animation* anim : skeleton->GetAnims())
+		{
+			std::string animName = anim->GetName();
 
-	// Set default animation to first anim in map
-	SetDefaultAnim();
+			if (anim)
+			{
+				mAnimations[animName] = anim;
+			}
+		}
+
+		// Set default animation to first anim in map
+		SetDefaultAnim();
+	}
 }
 
 AnimationComponent::~AnimationComponent()
 {
 	std::cout << "Deleted animation component\n";
-}
-
-void AnimationComponent::LoadAnimations(const aiScene* scene, const std::string& fileName)
-{
-	for (int i = 0; i < scene->mNumAnimations; ++i)
-	{
-		std::string animName = fileName + "/" + scene->mAnimations[i]->mName.C_Str();
-
-		// Check to see if animation was already loaded
-		Animation* anim = AssetBridge::ActiveManager->LoadAnimation(animName);
-
-		if (!anim)
-		{
-			// Create a new animation
-			anim = new Animation(scene->mAnimations[i], mSkeleton, animName);
-
-			// Save the animation into AssetManager
-			AssetBridge::ActiveManager->SaveAnimation(animName, anim);
-		}
-
-		// Add the anim to map
-		mAnimations[animName] = anim;
-	}
 }
 
 void AnimationComponent::Update(float deltaTime, const EngineContext& engineContext)

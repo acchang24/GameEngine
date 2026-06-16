@@ -3,26 +3,20 @@
 #include <string>
 #include <unordered_map>
 #include <glm/glm.hpp>
-#include <assimp/scene.h>
-#include "../Graphics/VertexLayouts.h"
 
-class Mesh;
-class Skeleton;
 class Material;
-class AssetManager;
-class Entity3D;
+class Mesh;
 class Shader;
+class Skeleton;
 
 // Model class represents any 3D object
 class Model
 {
 public:
-	// Model constructor: loads a model using assimp library
-	// @param - const std::string& for the model's file name
-	// @param - Entity3D* for the model's entity
-	Model(const std::string& fileName, Entity3D* entity);
+	Model();
+	
 	// Model destructor:
-	// meshs and materials are owned/deleted by AssetManager.
+	// Meshs and Materials are owned/deleted by AssetManager.
 	// Don't call delete on any meshes and materials here.
 	~Model();
 
@@ -32,42 +26,6 @@ public:
 	// and points them to the data needed per instance.
 	// @param - unsigned int for the number of instances to draw
 	void MakeInstance(unsigned int numInstances);
-
-	// Loads the model's file using Assimp
-	// @param - const std::string& for the file name
-	// @param - Entity3D* for the model's entity
-	bool LoadModel(const std::string& fileName, Entity3D* entity);
-
-	// Recursively goes through the scene's nodes and loads any meshes
-	// @param - aiNode*
-	// @param - const aiScene*
-	// @param - Skeleton* if there is a skeleton for this model
-	void ProcessNodes(aiNode* node, const aiScene* scene, Skeleton* skeleton);
-
-	// Takes an assimp mesh and store it in our own Mesh object.
-	// It then appends that mesh to the entity's vector of meshes.
-	// @param - aiMesh*
-	// @param - const aiScene*
-	// @param - Skeleton* if there is a skeleton for this model
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, Skeleton* skeleton);
-
-	// Extracts vertex data and returns a vertex containing pos, normal, and texture coordinates
-	// @param - const aiMesh* for the mesh being processed
-	// @param - bool for if there are textures
-	// @param - index of the mesh
-	const Vertex GetVertexData(const aiMesh* mesh, bool hasTextures, unsigned int index);
-
-	// Loads a mesh's materials
-	// @param - aiMesh*
-	// @param - const aiScene*
-	// @param - Skeleton* if there is a skeleton for this model
-	Material* LoadMaterial(const aiScene* scene, aiMesh* mesh);
-
-	// Loads the textures of the material
-	// @param - aiMaterial*
-	// @param - aiTextureType
-	// @param - Material* for the material
-	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material);
 
 	// Adds a mesh to the model's vector of meshes
 	// @param - Mesh* for the new mesh
@@ -86,13 +44,9 @@ public:
 	// @return - size_t for num of meshes
 	size_t GetNumMeshes() const { return mMeshes.size(); }
 
-	// Return the number of materials this model has
-	// @return - size_t for num of materials
-	size_t GetNumMaterials() const { return mNumMaterials; }
-
-	// Return the number of textures this model has
-	// @return - size_t for num of textures
-	size_t GetNumTextures() const { return mNumTextures; }
+	// Returns the model name by its file name
+	// @return - const std::string& for the name
+	const std::string& GetName() { return mDirectory; }
 
 	// Loops through each mesh and calls Mesh::Draw()
 	// @param - const glm::mat4& for the model matrix
@@ -107,6 +61,20 @@ public:
 	// @return - bool for animations or no animations
 	bool HasAnimations() const { return mHasAnimations; }
 
+	// Sets the name/directory
+	// @param - const std::string& for the name
+	void SetName(const std::string& name) { mDirectory = name; }
+
+	// Sets the model's skeleton
+	// @param - Skeleton* for the skeleton
+	void SetSkeleton(Skeleton* skeleton) { mSkeleton = skeleton; }
+
+	void SaveMaterial(const std::string& name, Material* material) { mMaterialMap[name] = material; }
+
+	void SetHasAnimations(bool anim) { mHasAnimations = anim; }
+
+	Skeleton* GetSkeleton() { return mSkeleton; }
+
 private:
 	// Model's vector of meshes
 	std::vector<Mesh*> mMeshes;
@@ -117,12 +85,9 @@ private:
 
 	// The model's file directory/name
 	std::string mDirectory;
-	
-	// Number of materials
-	size_t mNumMaterials;
 
-	// Number of textures
-	size_t mNumTextures;
+	// Model's skeleton for animation
+	Skeleton* mSkeleton;
 
 	// Bool for if this model has animations
 	bool mHasAnimations;

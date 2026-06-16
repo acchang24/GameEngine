@@ -2,7 +2,6 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "../Animation/BoneData.h"
-#include "../Animation/Skeleton.h"
 #include "../Util/Logger.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
@@ -87,6 +86,9 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 		// Create a material buffer in 3D mode
 		CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	
+		// Create a skeleton buffer in 3D mode
+		CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
+
 		// Create a camera for 3D
 		mCamera = new Camera(this);
 	}

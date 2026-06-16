@@ -1,6 +1,5 @@
 #pragma once
 #include "Entity.h"
-#include <string>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include "../Multithreading/JobManager.h"
@@ -14,14 +13,6 @@ class Entity3D : public Entity
 {
 public:
 	Entity3D();
-	// Entity3D constructor using a model's file.
-	// This will check to see if the model has been loaded with the asset manager.
-	// It will create a new model object if nullptr. If there is a model, it will
-	// check to see if this model has animations and flag this entity as skinned. It 
-	// will then create a new animation component and copy a skeleton object and add it
-	// to the entity's vector of components.
-	// @param - const std::string& for the model's file name
-	Entity3D(const std::string& fileName);
 	virtual ~Entity3D();
 
 	// Makes this an instanced entity so that multiple instances of the same
@@ -129,6 +120,10 @@ public:
 	// Set the entity's scale (using single float value)
 	// @param - float for the new scale
 	void SetScale(float scale) { mScale = glm::vec3(scale, scale, scale); }
+
+	// Sets the entity's model
+	// @param - Model* for the model
+	void SetModel(Model* model) { mModel = model; }
 
 protected:
 	// Job to update the Entity3D's model matrix on a separate thread

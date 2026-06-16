@@ -2,39 +2,31 @@
 #include "Component.h"
 #include <string>
 #include <unordered_map>
-#include <assimp/scene.h>
 #include "../Animation/BoneData.h"
 #include "../Multithreading/JobManager.h"
+#include "../EngineContext.h"
 
 class Animation;
 class Entity;
 class Skeleton;
 class UniformBuffer;
+class Model;
+
 
 // Component to used by 3D entities that animate
 class AnimationComponent : public Component
 {
 public:
-	// AnimationComponent constructor: Checks the AssetManager to see if a skeleton was created by the model's file
-	// name. If it was loaded, just use the cached skeleton and animatins. Creates a skeleton if it hasn't been loaded, 
-	// and loads and saves all the animations in the animation map.
+	// AnimationComponent constructor: 
+	// Checks to see if the skelton exists, and loads all the saved animations into the map of animations. Sets default animation at the end
 	// @param - Entity* for the component's owner
-	// @param - const aiScene* for the model's scene
-	// @param - const std::string& for the file name to check if it's been loaded already
-	AnimationComponent(Entity* entity, const aiScene* scene, const std::string& fileName);
-	// Overload AnimationComponent constructor:
-	// @param - Entity* for the component's owner
-	// @param - Skeleton* for the cached skeleton to copy data
-	AnimationComponent(Entity* entity, Skeleton* skeleton);
+	// @param - Model* for the 
+	AnimationComponent(Entity* entity, Skeleton* skeleton, UniformBuffer* skeletonBuffer);
+
 	// AnimationComponent destructor:
 	// mSkeletonBuffer, mSkeleton, and mCurrentAnimation are all loaded through AssetManager, with mSkeletonBuffer being
 	// loaded through the Renderer3D. These are all cached/shared objects so do not free/call delete on these here.
 	~AnimationComponent();
-
-	// Loops through the model's scene's animations and creates an Animation* for each one,
-	// saving them into the map of Animations* by name
-	// @param - const aiScene* for the model's scene
-	void LoadAnimations(const aiScene* scene, const std::string& fileName);
 
 	// Override update for animation component specific updates
 	// Updates the animation time and gets the skeletons final pose at that time
@@ -45,17 +37,9 @@ public:
 	// Updates the skeleton buffer with the final bone matrices array
 	void UpdateSkeletonBuffer();
 
-	// Gets the skeleton associated with this component
-	// @return - Skeleton* for the skeleton
-	Skeleton* GetSkeleton() { return mSkeleton; }
-
 	// Gets the skeleton's current animation
 	// @return - Animation* for the skeleton's current animation
 	Animation* GetCurrentAnimation() { return mCurrentAnimation; }
-
-	// Sets the animation component's skeleton
-	// @param - Skeleton* for the new skeleton
-	void SetSkeleton(Skeleton* s) { mSkeleton = s; }
 
 	// Sets the current animation by animation if it exists, and resets timer
 	// @param - Animation* for the new animation
@@ -107,6 +91,7 @@ private:
 	// Uniform buffer to send skelton data to
 	UniformBuffer* mSkeletonBuffer;
 
+	// Job to update bone transformations on separate thread
 	UpdateBoneJob mJob;
 
 	// Current time of the animation

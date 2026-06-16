@@ -1,11 +1,9 @@
 #include "Entity3D.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "../Components/AnimationComponent.h"
 #include "../Graphics/Model.h"
 #include "../Graphics/Shader.h"
-#include "../MemoryManager/AssetManager.h"
 
 Entity3D::Entity3D() :
 	Entity(),
@@ -17,47 +15,6 @@ Entity3D::Entity3D() :
 	mModel(nullptr),
 	mInstanceBuffer(0)
 {
-}
-
-Entity3D::Entity3D(const std::string& fileName):
-	Entity(),
-	mUpdateModelMatrixJob(this),
-	mModelMatrix(glm::mat4(1.0f)),
-	mQuatRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
-	mPosition(glm::vec3(0.0f, 0.0f, 0.0f)),
-	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
-	mModel(nullptr),
-	mInstanceBuffer(0)
-{
-	Model* model = AssetBridge::ActiveManager->LoadModel(fileName);
-
-	if (model)
-	{
-		// Use the cached model
-		mModel = model;
-
-		// Check to see if there are animations
-		if (model->HasAnimations())
-		{
-			// Check to see the skeleton is already loaded
-			Skeleton* skeleton = AssetBridge::ActiveManager->LoadSkeleton(fileName);
-
-			if (skeleton)
-			{
-				// Create an animation component for this entity using the cached skeleton
-				AnimationComponent* animComp = new AnimationComponent(this, skeleton);
-			}
-			else
-			{
-				std::cout << "Model loading error:: duplicated model file: " << fileName << " does not have a matching skeleton loaded.\n";
-			}
-		}
-	}
-	else
-	{
-		// Create a new model
-		mModel = new Model(fileName, this);
-	}
 }
 
 Entity3D::~Entity3D()
