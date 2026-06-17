@@ -116,6 +116,12 @@ void Game::LoadGameData(AssetManager* assetManager)
 	SpriteComponent* backgroundSC = new SpriteComponent(mBackground, renderer2D, 50);
 	backgroundSC->AddSprite(assetManager->LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
+	// Sprite background resize
+	SpriteComponent* bgSprite = mBackground->GetComponent<SpriteComponent>();
+	if (bgSprite)
+	{
+		bgSprite->SetSize(glm::vec2(renderer->GetWidth(), renderer->GetHeight()));
+	}
 	AddGameEntity(mBackground);
 
 	// Set 2d renderer shader
@@ -363,7 +369,11 @@ void Game::ResizeWindow(const SDL_Event& event, const EngineContext& engineConte
 		engineContext.renderer->Resize(width, height);
 
 		// Sprite background resize
-		mBackground->SetSize(glm::vec2(width, height));
+		SpriteComponent* bgSprite = mBackground->GetComponent<SpriteComponent>();
+		if (bgSprite)
+		{
+			bgSprite->SetSize(glm::vec2(width, height));
+		}
 		mBackground->SetPosition(glm::vec2(width / 2, height / 2));
 	}
 }

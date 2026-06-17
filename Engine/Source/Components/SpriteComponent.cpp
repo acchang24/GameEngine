@@ -5,6 +5,7 @@
 
 SpriteComponent::SpriteComponent(Entity* owner, Renderer2D* renderer, int drawOrder) :
 	Component(owner),
+	mSize(),
 	mRenderer(renderer),
 	mCurrentSprite(nullptr),
 	mDrawOrder(drawOrder),

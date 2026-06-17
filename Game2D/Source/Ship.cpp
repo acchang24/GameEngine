@@ -26,9 +26,6 @@ Ship::Ship(Game* game) :
 	mSprite->AddSprite(shipSprite);
 	mSprite->SetSprite(shipSprite);
 
-	// Set the entity size to the ship sprite size
-	mSize = glm::vec2(shipSprite->GetWidth(), shipSprite->GetHeight());
-
 	// Create an oriented bounded box for the ship's collision box
 	OBBComponent2D* box = new OBBComponent2D(this, mEngine->GetPhysics());
 	box->SetBoxSize(glm::vec2(100.0f, 90.0f));

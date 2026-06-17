@@ -41,10 +41,6 @@ public:
 	// @return - const glm::vec2& for the position
 	const glm::vec2& GetPosition() const { return mPosition; }
 
-	// Gets the entity's size (width and height)
-	// @return - const glm::vec2& for width and height vector
-	const glm::vec2& GetSize() const { return mSize; }
-
 	// Gets the entity's rotation as a float value in degrees
 	// @return - float for the rotation
 	float GetRotation() const { return mRotation; }
@@ -57,10 +53,6 @@ public:
 	// @param - const glm::vec2& for new pos
 	void SetPosition(const glm::vec2& pos) { mPosition = pos; }
 
-	// Sets the size
-	// @param - const glm::vec2& for new size
-	void SetSize(const glm::vec2& size) { mSize = size; }
-
 	// Sets the entity's single float value rotation in degrees
 	// @param - float for the new rotation
 	void SetRotation(float rotation) { mRotation = rotation; }
@@ -72,9 +64,6 @@ public:
 protected:
 	// Position for 2D
 	glm::vec2 mPosition;
-
-	// Size for width and height
-	glm::vec2 mSize;
 
 	// Entity's rotation in degrees as a float
 	float mRotation;

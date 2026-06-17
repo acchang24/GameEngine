@@ -25,9 +25,6 @@ Laser::Laser(Game* game) :
 	mLaserSprite->AddSprite(laserSprite);
 	mLaserSprite->SetSprite(laserSprite);
 
-	// Set the entity size to the sprite size
-	mSize = glm::vec2(laserSprite->GetWidth(), laserSprite->GetHeight());
-
 	// Set laser speed
 	mLaserMovement->SetMovementSpeed(1000.0f);
 

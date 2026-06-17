@@ -21,9 +21,6 @@ Asteroid::Asteroid(Game* game) :
 	mSprite->AddSprite(asteroidSprite);
 	mSprite->SetSprite(asteroidSprite);
 	
-	// Set entity size to size of asteroid sprite
-	mSize = glm::vec2(asteroidSprite->GetWidth(), asteroidSprite->GetHeight());
-	
 	// Set a random movement speed between 50 and 150
 	mMovement->SetMovementSpeed(Random::GetFloatRange(50.0f, 150.0f));
 	

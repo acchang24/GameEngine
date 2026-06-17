@@ -58,7 +58,7 @@ void Renderer2D::DrawSprites()
 
 				Texture* tex = sprite->GetCurrentSprite();
 
-				glm::vec2 size = e->GetSize();
+				glm::vec2 size = sprite->GetSize();
 
 				// Translate position
 				model = glm::translate(model, glm::vec3(e->GetPosition(), 0.0f));
