@@ -2,11 +2,14 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "../Animation/BoneData.h"
+#include "../Entity/Entity3D.h"
 #include "../Util/Logger.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
 #include "FrameBufferMultiSampled.h"
 #include "Material.h"
+#include "Mesh.h"
+#include "Model.h"
 #include "Shader.h"
 #include "VertexBuffer.h"
 
@@ -14,6 +17,8 @@ Renderer::Renderer(RendererMode mode) :
 	mCamera(nullptr),
 	mRenderer2D(nullptr),
 	mVertexBuffer(nullptr),
+	mMaterialBuffer(nullptr),
+	mSkeletonBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -84,10 +89,10 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 	if (mMode == RendererMode::MODE_3D)
 	{
 		// Create a material buffer in 3D mode
-		CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
+		mMaterialBuffer = CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	
 		// Create a skeleton buffer in 3D mode
-		CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
+		mSkeletonBuffer = CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 
 		// Create a camera for 3D
 		mCamera = new Camera(this);
@@ -133,6 +138,51 @@ void Renderer::ClearBuffers()
 
 	// Clear the color buffer, depth buffer for default frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::RenderEntity3D(Entity3D* entity)
+{
+	Model* model = entity->GetModel();
+
+	const std::vector<Mesh*>& meshes = model->GetMeshes();
+
+	for (Mesh* mesh : meshes)
+	{
+		Material* material = mesh->GetMaterial();
+
+		material->SetActive();
+
+		// update material unifrom buffer
+		mMaterialBuffer->UpdateBufferData(&material->GetMats());
+
+		material->GetShader()->SetMat4("model", entity->GetModelMatrix());
+
+		VertexBuffer* vb = mesh->GetVertexBuffer();
+		vb->Draw();
+	}
+}
+
+void Renderer::RenderEntity3D(Entity3D* entity, Shader* shader)
+{
+	Model* model = entity->GetModel();
+
+	const std::vector<Mesh*>& meshes = model->GetMeshes();
+
+	for (Mesh* mesh : meshes)
+	{
+		Material* material = mesh->GetMaterial();
+
+		material->SetActive();
+
+		// update material unifrom buffer
+		mMaterialBuffer->UpdateBufferData(&material->GetMats());
+
+		shader->SetActive();
+		shader->SetMat4("model", entity->GetModelMatrix());
+
+		VertexBuffer* vb = mesh->GetVertexBuffer();
+		vb->Draw();
+	}
 }
 
 void Renderer::Draw2D()

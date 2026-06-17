@@ -13,9 +13,11 @@ enum class RendererMode
 };
 
 class Camera;
+class Entity3D;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
+class UniformBuffer;
 class VertexBuffer;
 
 class Renderer
@@ -41,6 +43,15 @@ public:
 
 	// Clears the screen, and clears the color and depth buffer bits
 	void ClearBuffers();
+
+	// Renders a 3D entity
+	// @param - Entity3D* for the entity
+	void RenderEntity3D(Entity3D* entity);
+
+	// Renders a 3D entity using a specific shader
+	// @param - Entity3D* for the entity
+	// @param - Shader* for the shader
+	void RenderEntity3D(Entity3D* entity, Shader* shader);
 
 	// Draws any 2D sprites, UI, and text with the Renderer2D
 	void Draw2D();
@@ -191,6 +202,12 @@ private:
 
 	// Vertex buffer to represent the quad vertices that this frame buffer can draw to
 	VertexBuffer* mVertexBuffer;
+
+	// Uniform buffer to send material data to gpu
+	UniformBuffer* mMaterialBuffer;
+
+	// Uniform buffer to send skeleton data to gpu
+	UniformBuffer* mSkeletonBuffer;
 
 	// SDL window used for the game
 	SDL_Window* mWindow;
