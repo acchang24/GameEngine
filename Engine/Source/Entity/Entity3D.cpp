@@ -1,7 +1,7 @@
 #include "Entity3D.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-#include "../Components/AnimationComponent.h"
+#include "../Components/AnimationComponent3D.h"
 #include "../Graphics/Model.h"
 #include "../Graphics/Shader.h"
 
@@ -79,7 +79,7 @@ void Entity3D::OnDraw()
 {
 	if (mModel->HasAnimations())
 	{
-		GetComponent<AnimationComponent>()->UpdateSkeletonBuffer();
+		GetComponent<AnimationComponent3D>()->UpdateSkeletonBuffer();
 	}
 
 	mModel->Draw(mModelMatrix);
@@ -89,7 +89,7 @@ void Entity3D::OnDraw(Shader* shader)
 {
 	if (mModel->HasAnimations())
 	{
-		GetComponent<AnimationComponent>()->UpdateSkeletonBuffer();
+		GetComponent<AnimationComponent3D>()->UpdateSkeletonBuffer();
 	}
 
 	shader->SetActive();

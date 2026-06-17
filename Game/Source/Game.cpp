@@ -8,7 +8,7 @@
 #include "3dPrimitives/Cube.h"
 #include "3dPrimitives/Plane.h"
 #include "3dPrimitives/Sphere.h"
-#include "Components/AnimationComponent.h"
+#include "Components/AnimationComponent3D.h"
 #include "Entity/Entity3D.h"
 #include "Graphics/Camera.h"
 #include "Graphics/FrameBuffer.h"
@@ -256,7 +256,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 		Model* vampireModel = assetManager->LoadModel("Assets/models/vampire/dancing_vampire.dae");
 		if (vampireModel->HasAnimations())
 		{
-			AnimationComponent* animComp = new AnimationComponent(vampire, vampireModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+			AnimationComponent3D* animComp = new AnimationComponent3D(vampire, vampireModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 		}
 		vampire->SetModel(vampireModel);
 		vampire->SetScale(0.05f);
@@ -298,7 +298,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Model* squidwardModel = assetManager->LoadModel("Assets/models/SquidwardDance/Rumba Dancing.dae");
 	if (squidwardModel->HasAnimations())
 	{
-		AnimationComponent* animComp = new AnimationComponent(squidward, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+		AnimationComponent3D* animComp = new AnimationComponent3D(squidward, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	squidward->SetModel(squidwardModel);
 	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
@@ -309,7 +309,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	squidward2->SetModel(squidwardModel);
 	if (squidwardModel->HasAnimations())
 	{
-		AnimationComponent* animComp = new AnimationComponent(squidward2, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+		AnimationComponent3D* animComp = new AnimationComponent3D(squidward2, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f));
 	squidward2->SetScale(0.35f);
@@ -343,7 +343,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Model* fortuneModel2 = assetManager->LoadModel("Assets/models/MissFortune/MissFortune.dae");
 	if (fortuneModel2->HasAnimations())
 	{
-		AnimationComponent* animComp = new AnimationComponent(fortune2, fortuneModel2->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+		AnimationComponent3D* animComp = new AnimationComponent3D(fortune2, fortuneModel2->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	fortune2->SetModel(fortuneModel2);
 	fortune2->SetPosition(glm::vec3(-5.0f, -5.0f, -25.0f));
@@ -354,7 +354,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Model* fortuneModel = assetManager->LoadModel("Assets/models/MissFortune2/MissFortune2.dae");
 	if (fortuneModel->HasAnimations())
 	{
-		AnimationComponent* animComp = new AnimationComponent(fortune, fortuneModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
+		AnimationComponent3D* animComp = new AnimationComponent3D(fortune, fortuneModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	fortune->SetModel(fortuneModel);
 	fortune->SetPosition(glm::vec3(5.0f, -5.0f, -25.0f));
@@ -709,43 +709,43 @@ void Game::ProcessInput(const EngineContext& engineContext)
 
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_0))
 	{
-		vampires[0]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[0]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_1))
 	{
-		vampires[1]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[1]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_2))
 	{
-		vampires[2]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[2]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_3))
 	{
-		vampires[3]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[3]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_4))
 	{
-		vampires[4]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[4]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_5))
 	{
-		vampires[5]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[5]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_6))
 	{
-		vampires[6]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[6]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_7))
 	{
-		vampires[7]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[7]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_8))
 	{
-		vampires[8]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[8]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_KP_9))
 	{
-		vampires[9]->GetComponent<AnimationComponent>()->SetTime(0.0f);
+		vampires[9]->GetComponent<AnimationComponent3D>()->SetTime(0.0f);
 	}
 
 

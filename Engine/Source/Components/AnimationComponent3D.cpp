@@ -1,10 +1,10 @@
-#include "AnimationComponent.h"
+#include "AnimationComponent3D.h"
 #include <iostream>
 #include "../Animation/Skeleton.h"
 #include "../Animation/Animation.h"
 #include "../Graphics/UniformBuffer.h"
 
-AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton, UniformBuffer* skeletonBuffer) :
+AnimationComponent3D::AnimationComponent3D(Entity* entity, Skeleton* skeleton, UniformBuffer* skeletonBuffer) :
 	Component(entity),
 	mSkeletonConsts({}),
 	mSkeleton(skeleton),
@@ -30,12 +30,12 @@ AnimationComponent::AnimationComponent(Entity* entity, Skeleton* skeleton, Unifo
 	}
 }
 
-AnimationComponent::~AnimationComponent()
+AnimationComponent3D::~AnimationComponent3D()
 {
 	std::cout << "Deleted animation component\n";
 }
 
-void AnimationComponent::Update(float deltaTime, const EngineContext& engineContext)
+void AnimationComponent3D::Update(float deltaTime, const EngineContext& engineContext)
 {
 	if (mCurrentAnimation)
 	{
@@ -51,12 +51,12 @@ void AnimationComponent::Update(float deltaTime, const EngineContext& engineCont
 	engineContext.jobManager->AddJob(&mJob);
 }
 
-void AnimationComponent::UpdateSkeletonBuffer()
+void AnimationComponent3D::UpdateSkeletonBuffer()
 {
 	mSkeletonBuffer->UpdateBufferData(&mSkeletonConsts);
 }
 
-void AnimationComponent::SetCurrentAnimation(Animation* anim)
+void AnimationComponent3D::SetCurrentAnimation(Animation* anim)
 {
 	if (anim)
 	{
@@ -65,7 +65,7 @@ void AnimationComponent::SetCurrentAnimation(Animation* anim)
 	}
 }
 
-void AnimationComponent::SetCurrentAnimation(const std::string& name)
+void AnimationComponent3D::SetCurrentAnimation(const std::string& name)
 {
 	auto iter = mAnimations.find(name);
 	if (iter != mAnimations.end())
@@ -75,7 +75,7 @@ void AnimationComponent::SetCurrentAnimation(const std::string& name)
 	}
 }
 
-void AnimationComponent::UpdateBoneJob::DoJob()
+void AnimationComponent3D::UpdateBoneJob::DoJob()
 {
 	if (mComp->mCurrentAnimation)
 	{
@@ -97,7 +97,7 @@ void AnimationComponent::UpdateBoneJob::DoJob()
 	}
 }
 
-void AnimationComponent::SetDefaultAnim()
+void AnimationComponent3D::SetDefaultAnim()
 {
 	if (!mAnimations.empty())
 	{
@@ -105,7 +105,7 @@ void AnimationComponent::SetDefaultAnim()
 	}
 }
 
-void AnimationComponent::LoadCachedAnims(const Skeleton* skeleton)
+void AnimationComponent3D::LoadCachedAnims(const Skeleton* skeleton)
 {
 	// Get the cached skeleton's anims
 	const std::vector<Animation*>& anims = skeleton->GetAnims();

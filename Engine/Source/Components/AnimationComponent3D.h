@@ -14,19 +14,19 @@ class Model;
 
 
 // Component to used by 3D entities that animate
-class AnimationComponent : public Component
+class AnimationComponent3D : public Component
 {
 public:
 	// AnimationComponent constructor: 
 	// Checks to see if the skelton exists, and loads all the saved animations into the map of animations. Sets default animation at the end
 	// @param - Entity* for the component's owner
 	// @param - Model* for the 
-	AnimationComponent(Entity* entity, Skeleton* skeleton, UniformBuffer* skeletonBuffer);
+	AnimationComponent3D(Entity* entity, Skeleton* skeleton, UniformBuffer* skeletonBuffer);
 
 	// AnimationComponent destructor:
 	// mSkeletonBuffer, mSkeleton, and mCurrentAnimation are all loaded through AssetManager, with mSkeletonBuffer being
 	// loaded through the Renderer3D. These are all cached/shared objects so do not free/call delete on these here.
-	~AnimationComponent();
+	~AnimationComponent3D();
 
 	// Override update for animation component specific updates
 	// Updates the animation time and gets the skeletons final pose at that time
@@ -59,12 +59,12 @@ private:
 	class UpdateBoneJob : public JobManager::Job
 	{
 	public:
-		UpdateBoneJob(AnimationComponent* comp) : mComp(comp)
+		UpdateBoneJob(AnimationComponent3D* comp) : mComp(comp)
 		{
 		}
 		void DoJob() override;
 	private:
-		AnimationComponent* mComp;
+		AnimationComponent3D* mComp;
 	};
 
 	// Sets the default animation (first animation in the map)
