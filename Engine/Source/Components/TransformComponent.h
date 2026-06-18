@@ -78,6 +78,21 @@ public:
 	// @param - float for vertical scale
 	void SetScale(float x, float y) { mScale = glm::vec3(x, y, 1.0f); mIsDirty = true; }
 
+	// Gets the forward facing direction of a 3D entity
+	// @return - glm::vec3 for the forward
+	glm::vec3 GetForward3D() const
+	{
+		return mRotation * glm::vec3(0.0f, 0.0f, -1.0f);
+	}
+
+	// Gets the forward facing direction of a 2D entity
+	// @return - glm::vec2 for the forward
+	glm::vec2 GetForward2D() const
+	{
+		float rot = GetRotation2D();
+		return glm::vec2(glm::cos(rot), glm::sin(rot));
+	}
+
 private:
 	// Model matrix to transform an entity from model space to world space
 	mutable glm::mat4 mModelMatrix;
