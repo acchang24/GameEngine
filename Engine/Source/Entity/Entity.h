@@ -78,6 +78,10 @@ public:
 	// @return - float for rotation in radians
 	float GetRotation2D() const { return 2.0f * std::atan2(mRotation.z, mRotation.w); }
 
+	// Gets the entity's float scale
+	// @return - float for the scale
+	glm::vec2 GetScale2D() const { return glm::vec2(mScale.x, mScale.y); }
+
 	// Gets the entity's rotation as a quaternion
 	// @return - const glm::quat& for the rotation
 	const glm::quat& GetQuatRotation() const { return mRotation; }
@@ -89,6 +93,11 @@ public:
 	// Sets the rotation for a 2D entity
 	// @param - const glm::quat& for the rotation
 	void SetRotation2D(const glm::quat& rot) { mRotation = glm::normalize(rot); }
+
+	// Sets the entity's float scale
+	// @param - float for x scale
+	// @param - float for y scale
+	void SetScale2D(float x, float y) { mScale.x = x; mScale.y = y; }
 
 	// Gets the forward facing direction of a 2D entity
 	// return - const glm::vec2 for the forward direction
@@ -115,6 +124,9 @@ protected:
 
 	// Entity's rotation
 	glm::quat mRotation;
+
+	// Entity's scale
+	glm::vec3 mScale;
 
 	// Entity's state
 	EntityState mState;

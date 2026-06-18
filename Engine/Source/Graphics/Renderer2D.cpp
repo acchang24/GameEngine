@@ -66,7 +66,7 @@ void Renderer2D::DrawSprites()
 				model = model * glm::mat4_cast(e->GetQuatRotation());
 
 				// Scale
-				model = glm::scale(model, glm::vec3(e->GetScale() * size, 1.0f));
+				model = glm::scale(model, glm::vec3(e->GetScale2D() * size, 1.0f));
 
 				// Send model and projection matrix to shader
 				mSpriteShader->SetMat4("model", model);

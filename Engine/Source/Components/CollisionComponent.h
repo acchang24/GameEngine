@@ -211,7 +211,7 @@ public:
 
 	// Gets the radius
 	// @return - float for circle's radius
-	float GetRadius() const { return mCircle.radius * mOwner2D->GetScale(); }
+	float GetRadius() const { return mCircle.radius * mOwner2D->GetScale2D().x; }
 
 	// Sets the circle's radius
 	// @param - float for the new radius
@@ -242,7 +242,7 @@ public:
 
 	// Gets the OBB's half extents scaled by the owner
 	// @return - const glm::vec2& for the half extents
-	const glm::vec2 GetHalfExtents() const { return mOBB.halfExtents * mOwner2D->GetScale(); }
+	const glm::vec2 GetHalfExtents() const { return mOBB.halfExtents * mOwner2D->GetScale2D(); }
 
 	// Gets the rotation of the 2D OBB in radians
 	// @return - float for the single float rotation

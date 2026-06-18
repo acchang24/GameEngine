@@ -2,8 +2,8 @@
 #include <iostream>
 
 Entity2D::Entity2D() :
-	Entity(),
-	mScale(1.0f)
+	Entity()
+	//mScale(glm::vec2(1.0f, 1.0f))
 {
 }
 

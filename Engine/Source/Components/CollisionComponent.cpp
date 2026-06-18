@@ -45,12 +45,12 @@ void AABBComponent2D::Update(float deltaTime, const EngineContext& engineContext
 const glm::vec2 AABBComponent2D::GetMin() const
 {
 	glm::vec2 min = mOwner2D->GetPosition2D();
-	float scale = mOwner2D->GetScale();
+	const glm::vec2& scale = mOwner2D->GetScale2D();
 
 	// Minimum x value
-	min.x -= (mBox.width * scale * 0.5f);
+	min.x -= (mBox.width * scale.x * 0.5f);
 	// Minimum y value
-	min.y -= (mBox.height * scale * 0.5f);
+	min.y -= (mBox.height * scale.y * 0.5f);
 
 	return min;
 }
@@ -58,12 +58,12 @@ const glm::vec2 AABBComponent2D::GetMin() const
 const glm::vec2 AABBComponent2D::GetMax() const
 {
 	glm::vec2 max = mOwner2D->GetPosition2D();
-	float scale = mOwner2D->GetScale();
+	const glm::vec2& scale = mOwner2D->GetScale2D();
 
 	// Maximum x value
-	max.x += (mBox.width * scale * 0.5f);
+	max.x += (mBox.width * scale.x * 0.5f);
 	// Maximum y value
-	max.y += (mBox.height * scale * 0.5f);
+	max.y += (mBox.height * scale.y * 0.5f);
 
 	return max;
 }

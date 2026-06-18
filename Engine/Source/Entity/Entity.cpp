@@ -6,6 +6,7 @@
 Entity::Entity() :
 	mPosition(glm::vec3()),
 	mRotation(glm::quat()),
+	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mState(EntityState::Active)
 {
 
