@@ -58,36 +58,9 @@ public:
 
 	void CalculateWorldTransform();
 
-	void RotateFromInput(float deltaYawDeg, float deltaPitchDeg, float deltaRollDeg);
-
-	// Sets the entity's quaternion orientation to face a certain direction
-	// @param - const glm::vec3& for the forward facing direction
-	// @param - const glm::vec3& for the model's up facing direction
-	void FaceDirection(const glm::vec3& forwardDir, const glm::vec3& up);
-
-	// Sets the entity's quaternion orientation from euler angles(in degrees)
-	// @param - const glm::vec3& for the euler angles in degrees
-	void SetRotationFromEulerDegrees(const glm::vec3& eulerDegrees);
-
-	// Gets the euler angles from the entity's quaternion rotation
-	// @return - const glm::vec3 for the euler angles
-	const glm::vec3 GetEulerAngles() const { return glm::eulerAngles(mQuatRotation); }
-
-	// Get the euler angles from the entity's quaternion rotation in degrees
-	// @return - const glm::vec3 for the euler angles in degrees
-	const glm::vec3 GetEulerAngleDegrees() const { return glm::degrees(glm::eulerAngles(mQuatRotation)); }
-
-	// Gets the entity's forward facing dir based on rotation
-	// @return - const glm::vec3 for the entity's forward facing direction
-	const glm::vec3 GetForward() const { return glm::normalize(mQuatRotation * glm::vec3(0.0f, 0.0f, 1.0f)); }
-
 	// Gets the entity's model matrix
 	// @return - const glm::mat4& for the entity's model matrix
 	const glm::mat4& GetModelMatrix() const { return mModelMatrix; }
-
-	// Gets the Entity's quaternion rotation
-	// @return - const glm::quat& for the rotation as a quaternion
-	const glm::quat& GetQuatRotation() const { return mQuatRotation; }
 
 	// Gets the entity's model
 	// @return - Model* for the entity's 3D model
@@ -96,10 +69,6 @@ public:
 	// Set the entity's model matrix
 	// @param - const glm::mat4& for the new model matrix
 	void SetModelMatrix(const glm::mat4& m) { mModelMatrix = m; }
-
-	// Sets the entity's rotation as a quaternion
-	// @param - const glm::quat& for the new rotation
-	void SetQuatRotation(const glm::quat& rotation) { mQuatRotation = rotation; }
 
 	// Sets the entity's model
 	// @param - Model* for the model
@@ -124,9 +93,6 @@ protected:
 
 	// Model matrix to transform this entity from model space to world space
 	glm::mat4 mModelMatrix;
-
-	// The entity's rotation represented as a quaternion
-	glm::quat mQuatRotation;
 
 	// Entity's 3D model
 	Model* mModel;

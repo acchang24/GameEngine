@@ -74,6 +74,10 @@ public:
 	// @return - const glm::vec3& for the position
 	const glm::vec3& GetPosition3D() const { return mPosition; }
 
+	// Returns the entity's 3D rotation as a quaternion
+	// @return - const glm::quat& for the rotation
+	const glm::quat& GetRotation3D() const { return mRotation; }
+
 	// Returns the entity's 3D scale
 	// @return - const glm::vec3& for the scale
 	const glm::vec3& GetScale3D() const { return mScale; }
@@ -81,6 +85,10 @@ public:
 	// Sets the entity's 3D position
 	// @param - const glm::vec3& for the position
 	void SetPosition3D(const glm::vec3& pos) { mPosition = pos; }
+
+	// Sets the entity's 3D Rotation using a quaternion
+	// @param - const glm::quat& for the rotation
+	void SetRotation3D(const glm::quat& rotation) { mRotation = rotation; }
 
 	// Sets the entity's 3D scale using 3 float values
 	// @param - float for width
@@ -120,6 +128,13 @@ public:
 	// @param - float for x scale
 	// @param - float for y scale
 	void SetScale2D(float x, float y) { mScale.x = x; mScale.y = y; }
+
+	// Gets the forward facing direction of a 3D entity
+	// @return - glm::vec3 for the forward
+	glm::vec3 GetForward3D() const
+	{
+		return mRotation * glm::vec3(0.0f, 0.0f, -1.0f);
+	}
 
 	// Gets the forward facing direction of a 2D entity
 	// return - const glm::vec2 for the forward direction

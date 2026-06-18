@@ -9,7 +9,6 @@ Entity3D::Entity3D() :
 	Entity(),
 	mUpdateModelMatrixJob(this),
 	mModelMatrix(glm::mat4(1.0f)),
-	mQuatRotation(glm::quat()),
 	mModel(nullptr),
 	mInstanceBuffer(0)
 {
@@ -102,52 +101,9 @@ void Entity3D::CalculateWorldTransform()
 
 	model = glm::translate(model, mPosition);
 
-	model = model * glm::mat4_cast(mQuatRotation);
+	model = model * glm::mat4_cast(mRotation);
 
 	mModelMatrix = glm::scale(model, mScale);
-}
-
-void Entity3D::RotateFromInput(float deltaYawDeg, float deltaPitchDeg, float deltaRollDeg)
-{
-	// Convert degrees to radians
-	float deltaYawRad = glm::radians(deltaYawDeg);
-	float deltaPitchRad = glm::radians(deltaPitchDeg);
-	float deltaRollRad = glm::radians(deltaRollDeg);
-
-	// Create incremental quaternions
-	glm::quat qYaw = glm::angleAxis(deltaYawRad, glm::vec3(0.0f, 1.0f, 0.0f)); // Y axis
-	glm::quat qPitch = glm::angleAxis(deltaPitchRad, glm::vec3(1.0f, 0.0f, 0.0f)); // X axis
-	glm::quat qRoll = glm::angleAxis(deltaRollRad, glm::vec3(0.0f, 0.0f, 1.0f)); // Z axis
-
-	// Apply order: yaw (global Y) -> pitch (local X) -> roll (local Z)
-	mQuatRotation = qYaw * mQuatRotation;
-	mQuatRotation = mQuatRotation * qPitch;
-	mQuatRotation = mQuatRotation * qRoll;
-
-	mQuatRotation = glm::normalize(mQuatRotation);
-}
-
-void Entity3D::FaceDirection(const glm::vec3& forwardDir, const glm::vec3& up)
-{
-	// Make sure forward dir is normalized
-	glm::vec3 forward = glm::normalize(forwardDir);
-	// Get the right vector
-	glm::vec3 right = glm::normalize(glm::cross(up, forward));
-	// Update up bector
-	glm::vec3 u = glm::cross(forward, right);
-	// Right, Up, Forward
-	glm::mat3 rotationMatrix(right, u, forward);
-	// Create quaternion orientation
-	mQuatRotation = glm::quat_cast(rotationMatrix);
-}
-
-void Entity3D::SetRotationFromEulerDegrees(const glm::vec3& eulerDegrees)
-{
-	// convert to radians
-	glm::vec3 radians = glm::radians(eulerDegrees);
-
-	// Create the quaternion from radian degrees
-	mQuatRotation = glm::quat(radians);
 }
 
 void Entity3D::UpdateModelMatrixJob::DoJob()

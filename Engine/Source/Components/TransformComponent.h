@@ -33,7 +33,7 @@ public:
 
 	// Sets the entity's 3D Rotation using a quaternion
 	// @param - const glm::quat& for the rotation
-	void SetRotation(const glm::quat& rotation) { mRotation = rotation; mIsDirty = true; }
+	void SetRotation3D(const glm::quat& rotation) { mRotation = rotation; mIsDirty = true; }
 
 	// Sets the entity's 3D scale using vector 3
 	// @param - const glm::vec3& for the scale

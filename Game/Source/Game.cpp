@@ -271,7 +271,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	sponza->SetModel(sponzaModel);
 	sponza->SetPosition3D(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale3D(0.125);
-	sponza->FaceDirection(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	sponza->SetRotation3D(glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	//sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
 
@@ -302,7 +302,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	}
 	squidward->SetModel(squidwardModel);
 	squidward->SetPosition3D(glm::vec3(0.0f, -5.0f, -15.0f));
-	squidward->FaceDirection(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	squidward->SetRotation3D(glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	AddGameEntity(squidward);
 
 	Entity3D* squidward2 = new Entity3D();
