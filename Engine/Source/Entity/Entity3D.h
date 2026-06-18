@@ -89,10 +89,6 @@ public:
 	// @return - const glm::quat& for the rotation as a quaternion
 	const glm::quat& GetQuatRotation() const { return mQuatRotation; }
 
-	// Gets the entity's position
-	// @return - const glm::vec3& for the entity's position
-	const glm::vec3& GetPosition() const { return mPosition; }
-
 	// Gets the entity's scale
 	// @return - const glm::vec3& for the entity's scale
 	const glm::vec3& GetScale() const { return mScale; }
@@ -108,10 +104,6 @@ public:
 	// Sets the entity's rotation as a quaternion
 	// @param - const glm::quat& for the new rotation
 	void SetQuatRotation(const glm::quat& rotation) { mQuatRotation = rotation; }
-
-	// Set the entity's position
-	// @param - const glm::vec3& for the new position
-	void SetPosition(const glm::vec3& pos) { mPosition = pos; }
 
 	// Set the entity's scale (using vector 3)
 	// @param - const glm::vec3& for the new scale
@@ -147,9 +139,6 @@ protected:
 
 	// The entity's rotation represented as a quaternion
 	glm::quat mQuatRotation;
-
-	// Entity's position
-	glm::vec3 mPosition;
 
 	// Entity's scale
 	glm::vec3 mScale;

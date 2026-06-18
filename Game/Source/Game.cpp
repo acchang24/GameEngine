@@ -260,7 +260,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 		}
 		vampire->SetModel(vampireModel);
 		vampire->SetScale(0.05f);
-		vampire->SetPosition(vampirePositions[i]);
+		vampire->SetPosition3D(vampirePositions[i]);
 		AddGameEntity(vampire);
 
 		vampires.emplace_back(vampire);
@@ -269,7 +269,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Entity3D* sponza = new Entity3D();
 	Model* sponzaModel = assetManager->LoadModel("Assets/models/Sponza/sponza.obj");
 	sponza->SetModel(sponzaModel);
-	sponza->SetPosition(glm::vec3(0.0f, -5.0, 0.0f));
+	sponza->SetPosition3D(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale(0.125);
 	sponza->FaceDirection(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//sponza->SetYaw(-90.0f);
@@ -301,7 +301,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 		AnimationComponent3D* animComp = new AnimationComponent3D(squidward, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	squidward->SetModel(squidwardModel);
-	squidward->SetPosition(glm::vec3(0.0f, -5.0f, -15.0f));
+	squidward->SetPosition3D(glm::vec3(0.0f, -5.0f, -15.0f));
 	squidward->FaceDirection(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	AddGameEntity(squidward);
 
@@ -311,7 +311,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	{
 		AnimationComponent3D* animComp = new AnimationComponent3D(squidward2, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
-	squidward2->SetPosition(glm::vec3(10.0f, -5.0f, -15.0f));
+	squidward2->SetPosition3D(glm::vec3(10.0f, -5.0f, -15.0f));
 	squidward2->SetScale(0.35f);
 	AddGameEntity(squidward2);
 
@@ -346,7 +346,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 		AnimationComponent3D* animComp = new AnimationComponent3D(fortune2, fortuneModel2->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	fortune2->SetModel(fortuneModel2);
-	fortune2->SetPosition(glm::vec3(-5.0f, -5.0f, -25.0f));
+	fortune2->SetPosition3D(glm::vec3(-5.0f, -5.0f, -25.0f));
 	fortune2->SetScale(0.25f);
 	AddGameEntity(fortune2);
 
@@ -357,7 +357,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 		AnimationComponent3D* animComp = new AnimationComponent3D(fortune, fortuneModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	fortune->SetModel(fortuneModel);
-	fortune->SetPosition(glm::vec3(5.0f, -5.0f, -25.0f));
+	fortune->SetPosition3D(glm::vec3(5.0f, -5.0f, -25.0f));
 	fortune->SetScale(0.25f);
 	AddGameEntity(fortune);
 
@@ -374,7 +374,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	pointLight->data.specularIntensity = 50.0f;
 	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere->SetMaterial(lightSphereMaterial);
-	lightSphere->SetPosition(glm::vec3(1.0f, 3.0f, 60.0f));
+	lightSphere->SetPosition3D(glm::vec3(1.0f, 3.0f, 60.0f));
 	AddGameEntity(lightSphere);
 
 	//SpotLight* spotLight = mLights.AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
@@ -389,7 +389,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	pointLight2->data.specularIntensity = 900.0f;
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere3->SetMaterial(lightSphereMaterial);
-	lightSphere3->SetPosition(glm::vec3(0.0f, 3.0f, -120.0f));
+	lightSphere3->SetPosition3D(glm::vec3(0.0f, 3.0f, -120.0f));
 	AddGameEntity(lightSphere3);
 
 	// Since all ShaderProgram objects are attached to a Shader object, it's safe to de-allocate them here

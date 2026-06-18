@@ -70,6 +70,15 @@ public:
 		return nullptr;
 	}
 
+	// Returns the entity's 3D position
+	// @return - const glm::vec3& for the position
+	const glm::vec3& GetPosition3D() const { return mPosition; }
+
+	// Sets the entity's 3D position
+	// @param - const glm::vec3& for the position
+	void SetPosition3D(const glm::vec3& pos) { mPosition = pos; }
+
+
 	// Returns the entity's 2D position
 	// @return - glm::vec2 for the position
 	glm::vec2 GetPosition2D() const { return glm::vec2(mPosition.x, mPosition.y); }
