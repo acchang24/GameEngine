@@ -31,11 +31,21 @@ public:
 	// @param - const EngineContext& for the engine context
 	virtual void ProcessInput(const InputSystem* input, const EngineContext& engineContext);
 
+	// Entity specific ProcessInput code (overridable)
+	// @param - const InputSystem* for the input system
+	// @param - const EngineContext& for the engine context
+	virtual void OnProcessInput(const InputSystem* input, const EngineContext& engineContext);
+
 	// Virtual Update function that updates and handles the entity's own unique attributes.
 	// This base/parent class Update function simply loops through the vector of components updates them.
 	// @param - float representing delta time
 	// @param - const EngineContext& for the engine context
 	virtual void Update(float deltaTime, const EngineContext& engineContext);
+
+	// Entity specific update code (overridable)
+	// @param - float for delta time
+	// @param - const EngineContext& for the engine context
+	virtual void OnUpdate(float deltaTime, const EngineContext& engineContext);
 
 	// Virtual Draw function that draws/presents the object to the screen
 	virtual void Draw();

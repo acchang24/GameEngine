@@ -30,6 +30,11 @@ void Entity::ProcessInput(const InputSystem* input, const EngineContext& engineC
 			c->ProcessInput(input, engineContext);
 		}
 	}
+	OnProcessInput(input, engineContext);
+}
+
+void Entity::OnProcessInput(const InputSystem* input, const EngineContext& engineContext)
+{
 }
 
 void Entity::Update(float deltaTime, const EngineContext& engineContext)
@@ -41,6 +46,11 @@ void Entity::Update(float deltaTime, const EngineContext& engineContext)
 			c->Update(deltaTime, engineContext);
 		}
 	}
+	OnUpdate(deltaTime, engineContext);
+}
+
+void Entity::OnUpdate(float deltaTime, const EngineContext& engineContext)
+{
 }
 
 void Entity::Draw()
