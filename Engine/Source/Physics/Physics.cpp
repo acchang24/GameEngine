@@ -462,8 +462,8 @@ CollisionResult Physics::HandleAABB2DvsAABB2D(AABBComponent2D* a, AABBComponent2
 
 	if (IntersectAABB2DvsAABB2D(a, b, offset))
 	{
-		Entity2D* ownerA = a->GetOwner();
-		Entity2D* ownerB = b->GetOwner();
+		Entity* ownerA = a->GetOwner();
+		Entity* ownerB = b->GetOwner();
 
 		if (offset.y < 0.0f)
 		{
@@ -503,8 +503,8 @@ CollisionResult Physics::HandleCircleVsCircle(CircleComponent* a, CircleComponen
 
 	if (IntersectCircleVsCircle(a, b, offset))
 	{
-		Entity2D* ownerA = a->GetOwner();
-		Entity2D* ownerB = b->GetOwner();
+		Entity* ownerA = a->GetOwner();
+		Entity* ownerB = b->GetOwner();
 
 		// Get side for circle
 		glm::vec2 diff = a->GetCenter() - b->GetCenter();
@@ -557,8 +557,8 @@ CollisionResult Physics::HandleOBB2DvsOBB2D(OBBComponent2D* a, OBBComponent2D* b
 
 	if (IntersectOBB2DvsOBB2D(a, b, offset))
 	{
-		Entity2D* ownerA = a->GetOwner();
-		Entity2D* ownerB = b->GetOwner();
+		Entity* ownerA = a->GetOwner();
+		Entity* ownerB = b->GetOwner();
 
 		ApplyOffset2D(ownerA, ownerB, a->GetBodyType(), b->GetBodyType(), offset);
 
@@ -578,8 +578,8 @@ CollisionResult Physics::HandleCircleVsAABB2D(CircleComponent* circle, AABBCompo
 
 	if (IntersectCircleVsAABB2D(circle, aabb, offset))
 	{
-		Entity2D* ownerCircle = circle->GetOwner();
-		Entity2D* ownerAABB = aabb->GetOwner();
+		Entity* ownerCircle = circle->GetOwner();
+		Entity* ownerAABB = aabb->GetOwner();
 
 		ApplyOffset2D(ownerCircle, ownerAABB, circle->GetBodyType(), aabb->GetBodyType(), offset);
 
@@ -631,8 +631,8 @@ CollisionResult Physics::HandleCircleVsOBB2D(CircleComponent* circle, OBBCompone
 
 	if (IntersectCircleVsOBB2D(circle, obb, offset))
 	{
-		Entity2D* circleOwner = circle->GetOwner();
-		Entity2D* obbOwner = obb->GetOwner();
+		Entity* circleOwner = circle->GetOwner();
+		Entity* obbOwner = obb->GetOwner();
 
 		ApplyOffset2D(circleOwner, obbOwner, circle->GetBodyType(), obb->GetBodyType(), offset);
 
@@ -680,8 +680,8 @@ CollisionResult Physics::HandleOBB2DVsAABB2D(OBBComponent2D* obb, AABBComponent2
 
 	if (IntersectOBB2DvsAABB2D(obb, aabb, offset))
 	{
-		Entity2D* obbOwner = obb->GetOwner();
-		Entity2D* aabbOwner = aabb->GetOwner();
+		Entity* obbOwner = obb->GetOwner();
+		Entity* aabbOwner = aabb->GetOwner();
 
 		if (offset.y < 0.0f)
 		{
@@ -709,7 +709,7 @@ CollisionResult Physics::HandleOBB2DVsAABB2D(OBBComponent2D* obb, AABBComponent2
 	return result;
 }
 
-void Physics::ApplyOffset2D(Entity2D* a, Entity2D* b, BodyType bodyA, BodyType bodyB, const glm::vec2& offset)
+void Physics::ApplyOffset2D(Entity* a, Entity* b, BodyType bodyA, BodyType bodyB, const glm::vec2& offset)
 {
 	// Set the offset based on body type
 	if (bodyA == BodyType::Dynamic && bodyB == BodyType::Static)

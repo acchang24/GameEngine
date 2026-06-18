@@ -6,14 +6,13 @@
 #include "Components/SpriteComponent.h"
 #include "Graphics/Texture.h"
 #include "MemoryManager/AssetManager.h"
-#include "Physics/Physics.h"
 #include "Util/Logger.h"
 #include "Asteroid.h"
 #include "Engine.h"
 #include "Game.h"
 
 Laser::Laser(Game* game) :
-	Entity2D(),
+	Entity(),
 	mLaserSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
 	mLaserMovement(new MoveComponent2D(this)),
 	mBox(new OBBComponent2D(this, game->GetEngine()->GetPhysics(), BodyType::Intersect)),
@@ -32,7 +31,7 @@ Laser::Laser(Game* game) :
 	mBox->SetBoxSize(glm::vec2(30.0f, 10.0f));
 
 	// Set on collision callback
-	mBox->SetOnCollision([this](Entity2D* other, const CollisionResult& result) {
+	mBox->SetOnCollision([this](Entity* other, const CollisionResult& result) {
 		// If collided with asteroid, destroy the asteroid and this laser
 		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
 		if (asteroid)

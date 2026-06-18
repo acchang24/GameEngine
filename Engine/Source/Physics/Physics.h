@@ -2,6 +2,8 @@
 #include <vector>
 #include "../Components/CollisionComponent.h"
 
+class Entity;
+
 class Physics
 {
 public:
@@ -125,7 +127,7 @@ private:
 	// @param - BodyType for the first body type
 	// @param - BodyType for the second body type
 	// @param - const glm::vec2& for the offset to apply
-	void ApplyOffset2D(Entity2D* a, Entity2D* b, BodyType bodyA, BodyType bodyB, const glm::vec2& offset);
+	void ApplyOffset2D(Entity* a, Entity* b, BodyType bodyA, BodyType bodyB, const glm::vec2& offset);
 
 	// Array of collision component colliders
 	std::vector<CollisionComponent*> mColliders;

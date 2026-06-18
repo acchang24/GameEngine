@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity/Entity2D.h"
+#include "Entity/Entity.h"
 
 class OBBComponent2D;
 class Engine;
@@ -7,7 +7,7 @@ class Game;
 class MoveComponent2D;
 class SpriteComponent;
 
-class Laser : public Entity2D
+class Laser : public Entity
 {
 public:
 	Laser(Game* game);

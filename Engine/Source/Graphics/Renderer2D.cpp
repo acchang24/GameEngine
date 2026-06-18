@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../Components/SpriteComponent.h"
-#include "../Entity/Entity2D.h"
+#include "../Entity/Entity.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "VertexBuffer.h"
@@ -53,7 +53,7 @@ void Renderer2D::DrawSprites()
 			{
 				glm::mat4 model = glm::mat4(1.0f);
 
-				Entity2D* e = static_cast<Entity2D*>(sprite->GetEntity());
+				Entity* e = sprite->GetEntity();
 
 				Texture* tex = sprite->GetCurrentSprite();
 

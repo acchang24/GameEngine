@@ -9,7 +9,7 @@
 #include "Audio/Sound.h"
 #include "Components/SpriteComponent.h"
 #include "EngineUI/EngineUI.h"
-#include "Entity/Entity2D.h"
+#include "Entity/Entity.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/Renderer2D.h"
 #include "Graphics/Text.h"
@@ -111,7 +111,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Renderer2D* renderer2D = renderer->GetRenderer2D();
 
 	// Background
-	mBackground = new Entity2D();
+	mBackground = new Entity();
 	mBackground->SetPosition2D(glm::vec2(static_cast<float>(renderer->GetWidth() / 2), static_cast<float>(renderer->GetHeight() / 2)));
 	SpriteComponent* backgroundSC = new SpriteComponent(mBackground, renderer2D, 50);
 	backgroundSC->AddSprite(assetManager->LoadTexture("Assets/Stars.png", TextureType::Sprite));

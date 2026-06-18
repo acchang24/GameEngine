@@ -1,12 +1,12 @@
 #pragma once
 #include "Component.h"
 
-class Entity2D;
+class Entity;
 
 class MoveComponent2D : public Component
 {
 public:
-	MoveComponent2D(Entity2D* owner);
+	MoveComponent2D(Entity* owner);
 	~MoveComponent2D();
 
 	// Override of update
@@ -32,7 +32,7 @@ public:
 
 private:
 	// Pointer to the Entity2D owner
-	Entity2D* mOwner2D;
+	Entity* mOwner2D;
 
 	// Rotation speed
 	float mRotationSpeed;

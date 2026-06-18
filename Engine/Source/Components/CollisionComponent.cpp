@@ -22,7 +22,7 @@ void CollisionComponent::Update(float deltaTime, const EngineContext& engineCont
 {
 }
 
-AABBComponent2D::AABBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType) :
+AABBComponent2D::AABBComponent2D(Entity* owner, Physics* physics, BodyType bodyType) :
 	CollisionComponent(owner, physics, CollisionShapeType::AABB2D, bodyType),
 	mOwner2D(owner),
 	mBox()
@@ -69,7 +69,7 @@ const glm::vec2 AABBComponent2D::GetMax() const
 }
 
 
-CircleComponent::CircleComponent(Entity2D* owner, Physics* physics, float radius, BodyType bodyType) :
+CircleComponent::CircleComponent(Entity* owner, Physics* physics, float radius, BodyType bodyType) :
 	CollisionComponent(owner, physics, CollisionShapeType::Circle, bodyType),
 	mOwner2D(owner),
 	mCircle(radius)
@@ -81,7 +81,7 @@ CircleComponent::~CircleComponent()
 	std::cout << "Deleted CircleComponent\n";
 }
 
-OBBComponent2D::OBBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType) :
+OBBComponent2D::OBBComponent2D(Entity* owner, Physics* physics, BodyType bodyType) :
 	CollisionComponent(owner, physics, CollisionShapeType::OBB2D, bodyType),
 	mOwner2D(owner),
 	mOBB()

@@ -6,7 +6,6 @@
 
 class AssetManager;
 class Entity;
-class Entity2D;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
 class Game
@@ -86,7 +85,7 @@ private:
 	// Console for game info/debugging
 	Console mConsole;
 
-	Entity2D* mBackground;
+	Entity* mBackground;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

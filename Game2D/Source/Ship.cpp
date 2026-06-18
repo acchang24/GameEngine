@@ -12,7 +12,7 @@
 #include "Laser.h"
 
 Ship::Ship(Game* game) :
-	Entity2D(),
+	Entity(),
 	mSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
 	mMovement(new MoveComponent2D(this)),
 	mCollisionBox(nullptr),

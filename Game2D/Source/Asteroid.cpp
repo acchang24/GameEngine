@@ -10,7 +10,7 @@
 #include "Game.h"
 
 Asteroid::Asteroid(Game* game) :
-	Entity2D(),
+	Entity(),
 	mSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
 	mMovement(new MoveComponent2D(this)),
 	mCollisionCircle(nullptr),
@@ -34,7 +34,7 @@ Asteroid::Asteroid(Game* game) :
 	mCollisionCircle = new CircleComponent(this, mEngine->GetPhysics(), asteroidSprite->GetWidth() * 0.5f);
 
 	// Set the on collision callback
-	mCollisionCircle->SetOnCollision([this](Entity2D* other, const CollisionResult& result) {
+	mCollisionCircle->SetOnCollision([this](Entity* other, const CollisionResult& result) {
 		// If collided with another asteroid, create a new rotation
 		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
 		if (asteroid)

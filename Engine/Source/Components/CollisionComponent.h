@@ -3,7 +3,7 @@
 #include <array>
 #include <functional>
 #include <glm/glm.hpp>
-#include "../Entity/Entity2D.h"
+#include "../Entity/Entity.h"
 
 // Enum class for collision shape type
 enum class CollisionShapeType
@@ -88,7 +88,7 @@ struct CollisionResult;
 class CollisionComponent : public Component
 {
 public:
-	using CollisionCallback = std::function<void(Entity2D* other, const CollisionResult& result)>;
+	using CollisionCallback = std::function<void(Entity* other, const CollisionResult& result)>;
 
 	// CollisionComponent constructor: adds this collision component to physics
 	// @param - Entity* for the component's owner
@@ -116,7 +116,7 @@ public:
 	void SetOnCollision(const CollisionCallback& callback) { mOnCollision = callback; }
 
 	// Call this during collision
-	void OnCollision(Entity2D* other, const CollisionResult& result)
+	void OnCollision(Entity* other, const CollisionResult& result)
 	{
 		if (mOnCollision)
 		{
@@ -145,7 +145,7 @@ public:
 	// @param - Entity2D* for the owner
 	// @param - Physics* for the physics system
 	// @param - BodyType (optional, defaults to dynamic)
-	AABBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
+	AABBComponent2D(Entity* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
 	~AABBComponent2D();
 
 	// Override Update for collision: 
@@ -163,7 +163,7 @@ public:
 
 	// Gets the Entity2D owner of this collision component
 	// @return - Entity2D* for the owner
-	Entity2D* GetOwner() { return mOwner2D; }
+	Entity* GetOwner() { return mOwner2D; }
 
 	// Gets the the entity's collision box (AABB)
 	// @return - const AABB_2D& for the axis aligned bounding box
@@ -183,7 +183,7 @@ public:
 
 private:
 	// Pointer to entity 2D
-	Entity2D* mOwner2D;
+	Entity* mOwner2D;
 
 	// Collision box
 	AABB_2D mBox;
@@ -198,12 +198,12 @@ public:
 	// @param - Physics* for the physics system
 	// @param - float for the radius
 	// @param - BodyType (optional, defaults to dynamic)
-	CircleComponent(Entity2D* owner, Physics* physics, float radius, BodyType bodyType = BodyType::Dynamic);
+	CircleComponent(Entity* owner, Physics* physics, float radius, BodyType bodyType = BodyType::Dynamic);
 	~CircleComponent();
 
 	// Gets the Entity2D owner
 	// @return - Entity2D* for the owner
-	Entity2D* GetOwner() { return mOwner2D; }
+	Entity* GetOwner() { return mOwner2D; }
 
 	// Gets the center of the circle box
 	// @return - const glm::vec2& for the center position
@@ -219,7 +219,7 @@ public:
 
 private:
 	// Pointer to entity 2D
-	Entity2D* mOwner2D;
+	Entity* mOwner2D;
 
 	// Circle collision
 	Circle2D mCircle;
@@ -229,12 +229,12 @@ private:
 class OBBComponent2D : public CollisionComponent
 {
 public:
-	OBBComponent2D(Entity2D* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
+	OBBComponent2D(Entity* owner, Physics* physics, BodyType bodyType = BodyType::Dynamic);
 	~OBBComponent2D();
 
 	// Gets the Entity2D owner
 	// @return - Entity2D* for the owner
-	Entity2D* GetOwner() { return mOwner2D; }
+	Entity* GetOwner() { return mOwner2D; }
 
 	// Gets the center of the 2D OBB box
 	// @return - const glm::vec2& for the center position
@@ -258,7 +258,7 @@ public:
 
 private:
 	// Pointer to entity 2D
-	Entity2D* mOwner2D;
+	Entity* mOwner2D;
 
 	// OBB collision box
 	OBB_2D mOBB;

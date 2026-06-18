@@ -1,9 +1,9 @@
 #include "MoveComponent2D.h"
 #include <iostream>
-#include "../Entity/Entity2D.h"
+#include "../Entity/Entity.h"
 #include <glm/gtc/quaternion.hpp>
 
-MoveComponent2D::MoveComponent2D(Entity2D* owner) :
+MoveComponent2D::MoveComponent2D(Entity* owner) :
 	Component(owner),
 	mOwner2D(owner),
 	mRotationSpeed(0.0f),
