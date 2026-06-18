@@ -28,7 +28,7 @@ Asteroid::Asteroid(Game* game) :
 	mRotation = glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Get random position
-	mPosition = Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(mEngine->GetRenderer()->GetWidth(), mEngine->GetRenderer()->GetHeight()));
+	SetPosition2D(Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(mEngine->GetRenderer()->GetWidth(), mEngine->GetRenderer()->GetHeight())));
 
 	// Set the collision circle radius
 	mCollisionCircle = new CircleComponent(this, mEngine->GetPhysics(), asteroidSprite->GetWidth() * 0.5f);

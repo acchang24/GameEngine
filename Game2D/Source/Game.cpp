@@ -91,7 +91,7 @@ void Game::LoadAssets(AssetManager* assetManager) const
 void Game::LoadGameData(AssetManager* assetManager)
 {
 	Ship* ship = new Ship(this);
-	ship->SetPosition(glm::vec2(200.0f, 200.0f));
+	ship->SetPosition2D(glm::vec2(200.0f, 200.0f));
 	//ship->SetRotation(45.0f);
 
 	// Load 10 asteroids
@@ -111,8 +111,8 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Renderer2D* renderer2D = renderer->GetRenderer2D();
 
 	// Background
-	mBackground = new Entity2D(static_cast<float>(renderer->GetWidth()), static_cast<float>(renderer->GetHeight()));
-	mBackground->SetPosition(glm::vec2(static_cast<float>(renderer->GetWidth() / 2), static_cast<float>(renderer->GetHeight() / 2)));
+	mBackground = new Entity2D();
+	mBackground->SetPosition2D(glm::vec2(static_cast<float>(renderer->GetWidth() / 2), static_cast<float>(renderer->GetHeight() / 2)));
 	SpriteComponent* backgroundSC = new SpriteComponent(mBackground, renderer2D, 50);
 	backgroundSC->AddSprite(assetManager->LoadTexture("Assets/Stars.png", TextureType::Sprite));
 	backgroundSC->SetSprite(backgroundSC->GetSprite("Assets/Stars.png"));
@@ -374,7 +374,7 @@ void Game::ResizeWindow(const SDL_Event& event, const EngineContext& engineConte
 		{
 			bgSprite->SetSize(glm::vec2(width, height));
 		}
-		mBackground->SetPosition(glm::vec2(width / 2, height / 2));
+		mBackground->SetPosition2D(glm::vec2(width / 2, height / 2));
 	}
 }
 

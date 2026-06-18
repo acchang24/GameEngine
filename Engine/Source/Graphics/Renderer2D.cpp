@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../Components/SpriteComponent.h"
 #include "../Entity/Entity2D.h"
-#include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "VertexBuffer.h"
@@ -61,7 +60,7 @@ void Renderer2D::DrawSprites()
 				glm::vec2 size = sprite->GetSize();
 
 				// Translate position
-				model = glm::translate(model, glm::vec3(e->GetPosition(), 0.0f));
+				model = glm::translate(model, glm::vec3(e->GetPosition2D(), 0.0f));
 
 				// Rotate
 				model = model * glm::mat4_cast(e->GetQuatRotation());

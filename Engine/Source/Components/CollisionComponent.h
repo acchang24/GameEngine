@@ -171,7 +171,7 @@ public:
 
 	// Gets the center of the AABB box
 	// @return - const glm::vec2& for the center position
-	const glm::vec2& GetCenter() const { return mOwner2D->GetPosition(); }
+	glm::vec2 GetCenter() const { return mOwner2D->GetPosition2D(); }
 
 	// Sets the AABB's width and height
 	// @param - const glm::vec2& for the size
@@ -207,7 +207,7 @@ public:
 
 	// Gets the center of the circle box
 	// @return - const glm::vec2& for the center position
-	const glm::vec2& GetCenter() const { return mOwner2D->GetPosition(); }
+	glm::vec2 GetCenter() const { return mOwner2D->GetPosition2D(); }
 
 	// Gets the radius
 	// @return - float for circle's radius
@@ -238,7 +238,7 @@ public:
 
 	// Gets the center of the 2D OBB box
 	// @return - const glm::vec2& for the center position
-	const glm::vec2& GetCenter() const { return mOwner2D->GetPosition(); }
+	glm::vec2 GetCenter() const { return mOwner2D->GetPosition2D(); }
 
 	// Gets the OBB's half extents scaled by the owner
 	// @return - const glm::vec2& for the half extents

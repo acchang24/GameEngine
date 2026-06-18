@@ -20,6 +20,6 @@ void MoveComponent2D::Update(float deltaTime, const EngineContext& engineContext
 {
 	mOwner2D->SetRotation2D(mOwner2D->GetQuatRotation() * glm::angleAxis((mRotationSpeed * deltaTime) , glm::vec3(0.0f, 0.0f, 1.0f)));
 
-	mOwner2D->SetPosition(mOwner2D->GetPosition() + mOwner2D->GetForward2D() * mMoveSpeed * deltaTime);
+	mOwner2D->SetPosition2D(mOwner2D->GetPosition2D() + mOwner2D->GetForward2D() * mMoveSpeed * deltaTime);
 }
 

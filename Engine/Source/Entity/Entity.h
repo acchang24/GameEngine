@@ -70,6 +70,10 @@ public:
 		return nullptr;
 	}
 
+	// Returns the entity's 2D position
+	// @return - glm::vec2 for the position
+	glm::vec2 GetPosition2D() const { return glm::vec2(mPosition.x, mPosition.y); }
+
 	// Returns the entity's 2D rotation angle in radians
 	// @return - float for rotation in radians
 	float GetRotation2D() const { return 2.0f * std::atan2(mRotation.z, mRotation.w); }
@@ -77,6 +81,10 @@ public:
 	// Gets the entity's rotation as a quaternion
 	// @return - const glm::quat& for the rotation
 	const glm::quat& GetQuatRotation() const { return mRotation; }
+
+	// Sets the entity's 2D position
+	// @param - const glm::vec2& for the position
+	void SetPosition2D(const glm::vec2& pos) { mPosition = glm::vec3(pos, 0.0f); }
 
 	// Sets the rotation for a 2D entity
 	// @param - const glm::quat& for the rotation
@@ -101,6 +109,9 @@ public:
 protected:
 	// Vector of components the entity uses
 	std::vector<Component*> mComponents;
+
+	// Entity's position
+	glm::vec3 mPosition;
 
 	// Entity's rotation
 	glm::quat mRotation;

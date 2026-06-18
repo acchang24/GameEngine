@@ -1,5 +1,4 @@
 #pragma once
-#include <SDL2/SDL_stdinc.h>
 #include "../EngineContext.h"
 
 class Entity;

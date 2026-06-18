@@ -89,7 +89,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 		engineContext.audio->PlaySFX("Assets/Sounds/Shoot.wav");
 
 		Laser* laser = new Laser(mGame);
-		laser->SetPosition(mPosition);
+		laser->SetPosition2D(mPosition);
 		laser->SetRotation2D(mRotation);
 
 		mLaserCooldown = 0.0f;

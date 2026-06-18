@@ -715,24 +715,24 @@ void Physics::ApplyOffset2D(Entity2D* a, Entity2D* b, BodyType bodyA, BodyType b
 	if (bodyA == BodyType::Dynamic && bodyB == BodyType::Static)
 	{
 		// Apply offset to owner (a) that initiated collision
-		a->SetPosition(a->GetPosition() + offset);
+		a->SetPosition2D(a->GetPosition2D() + offset);
 	}
 	else if (bodyA == BodyType::Static && bodyB == BodyType::Dynamic)
 	{
 		// Apply offset to owner (b) that initiated collision
-		b->SetPosition(b->GetPosition() - offset);
+		b->SetPosition2D(b->GetPosition2D() - offset);
 	}
 	else if (bodyA == BodyType::Dynamic && bodyB == BodyType::Dynamic)
 	{
 		// Split offset to both if they are both dynamic
-		a->SetPosition(a->GetPosition() + offset * 0.5f);
-		b->SetPosition(b->GetPosition() - offset * 0.5f);
+		a->SetPosition2D(a->GetPosition2D() + offset * 0.5f);
+		b->SetPosition2D(b->GetPosition2D() - offset * 0.5f);
 	}
 	else if (bodyA == BodyType::Static && bodyB == BodyType::Static)
 	{
 		// Split offset to both if they are both dynamic
-		a->SetPosition(a->GetPosition() + offset * 0.5f);
-		b->SetPosition(b->GetPosition() - offset * 0.5f);
+		a->SetPosition2D(a->GetPosition2D() + offset * 0.5f);
+		b->SetPosition2D(b->GetPosition2D() - offset * 0.5f);
 	}
 }
 

@@ -1,6 +1,4 @@
 #include "CollisionComponent.h"
-#include <algorithm>
-#include <cstdlib>
 #include <iostream>
 #include "../Physics/Physics.h"
 
@@ -46,7 +44,7 @@ void AABBComponent2D::Update(float deltaTime, const EngineContext& engineContext
 
 const glm::vec2 AABBComponent2D::GetMin() const
 {
-	glm::vec2 min = mOwner2D->GetPosition();
+	glm::vec2 min = mOwner2D->GetPosition2D();
 	float scale = mOwner2D->GetScale();
 
 	// Minimum x value
@@ -59,7 +57,7 @@ const glm::vec2 AABBComponent2D::GetMin() const
 
 const glm::vec2 AABBComponent2D::GetMax() const
 {
-	glm::vec2 max = mOwner2D->GetPosition();
+	glm::vec2 max = mOwner2D->GetPosition2D();
 	float scale = mOwner2D->GetScale();
 
 	// Maximum x value
@@ -110,7 +108,7 @@ std::array<glm::vec2, 4> OBBComponent2D::GetCorners() const
 	// Scale axis by half of box height
 	glm::vec2 hy = yAxis * halfExtents.y;
 
-	const glm::vec2& center = mOwner2D->GetPosition();
+	const glm::vec2& center = mOwner2D->GetPosition2D();
 	std::array<glm::vec2, 4> corners = {
 		center - hx - hy, // Bottom-left
 		center + hx - hy, // Bottom-right
