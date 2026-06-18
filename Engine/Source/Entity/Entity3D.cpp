@@ -102,13 +102,11 @@ void Entity3D::CalculateWorldTransform()
 {
 	glm::mat4 model = glm::mat4(1.0f);
 
-	glm::mat4 translate = glm::translate(model, mPosition);
+	model = glm::translate(model, mPosition);
 
-	glm::mat4 rotation = glm::toMat4(mQuatRotation);
+	model = model * glm::mat4_cast(mQuatRotation);
 
-	glm::mat4 scale = glm::scale(model, mScale);
-
-	mModelMatrix = translate * rotation * scale;
+	mModelMatrix = glm::scale(model, mScale);
 }
 
 void Entity3D::RotateFromInput(float deltaYawDeg, float deltaPitchDeg, float deltaRollDeg)
