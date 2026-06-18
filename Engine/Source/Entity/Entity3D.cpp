@@ -10,7 +10,6 @@ Entity3D::Entity3D() :
 	mUpdateModelMatrixJob(this),
 	mModelMatrix(glm::mat4(1.0f)),
 	mQuatRotation(glm::quat()),
-	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
 	mModel(nullptr),
 	mInstanceBuffer(0)
 {

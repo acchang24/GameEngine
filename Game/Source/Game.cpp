@@ -259,7 +259,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 			AnimationComponent3D* animComp = new AnimationComponent3D(vampire, vampireModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 		}
 		vampire->SetModel(vampireModel);
-		vampire->SetScale(0.05f);
+		vampire->SetScale3D(0.05f);
 		vampire->SetPosition3D(vampirePositions[i]);
 		AddGameEntity(vampire);
 
@@ -270,7 +270,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Model* sponzaModel = assetManager->LoadModel("Assets/models/Sponza/sponza.obj");
 	sponza->SetModel(sponzaModel);
 	sponza->SetPosition3D(glm::vec3(0.0f, -5.0, 0.0f));
-	sponza->SetScale(0.125);
+	sponza->SetScale3D(0.125);
 	sponza->FaceDirection(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//sponza->SetYaw(-90.0f);
 	AddGameEntity(sponza);
@@ -312,7 +312,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 		AnimationComponent3D* animComp = new AnimationComponent3D(squidward2, squidwardModel->GetSkeleton(), mEngine.GetContext().renderer->GetUniformBuffer("SkeletonBuffer"));
 	}
 	squidward2->SetPosition3D(glm::vec3(10.0f, -5.0f, -15.0f));
-	squidward2->SetScale(0.35f);
+	squidward2->SetScale3D(0.35f);
 	AddGameEntity(squidward2);
 
 
@@ -347,7 +347,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	}
 	fortune2->SetModel(fortuneModel2);
 	fortune2->SetPosition3D(glm::vec3(-5.0f, -5.0f, -25.0f));
-	fortune2->SetScale(0.25f);
+	fortune2->SetScale3D(0.25f);
 	AddGameEntity(fortune2);
 
 	Entity3D* fortune = new Entity3D();
@@ -358,7 +358,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	}
 	fortune->SetModel(fortuneModel);
 	fortune->SetPosition3D(glm::vec3(5.0f, -5.0f, -25.0f));
-	fortune->SetScale(0.25f);
+	fortune->SetScale3D(0.25f);
 	AddGameEntity(fortune);
 
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);

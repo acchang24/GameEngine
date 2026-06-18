@@ -74,10 +74,23 @@ public:
 	// @return - const glm::vec3& for the position
 	const glm::vec3& GetPosition3D() const { return mPosition; }
 
+	// Returns the entity's 3D scale
+	// @return - const glm::vec3& for the scale
+	const glm::vec3& GetScale3D() const { return mScale; }
+
 	// Sets the entity's 3D position
 	// @param - const glm::vec3& for the position
 	void SetPosition3D(const glm::vec3& pos) { mPosition = pos; }
 
+	// Sets the entity's 3D scale using 3 float values
+	// @param - float for width
+	// @param - float for height
+	// @param - float for depth
+	void SetScale3D(float w, float h, float d) { mScale = glm::vec3(w, h, d); }
+
+	// Sets the entity's 3D scale using one float value
+	// @param - float scale
+	void SetScale3D(float scale) { mScale = glm::vec3(scale, scale, scale); }
 
 	// Returns the entity's 2D position
 	// @return - glm::vec2 for the position
