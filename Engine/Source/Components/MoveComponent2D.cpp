@@ -1,6 +1,7 @@
 #include "MoveComponent2D.h"
 #include <iostream>
 #include "../Entity/Entity2D.h"
+#include <glm/gtc/quaternion.hpp>
 
 MoveComponent2D::MoveComponent2D(Entity2D* owner) :
 	Component(owner),
@@ -17,8 +18,8 @@ MoveComponent2D::~MoveComponent2D()
 
 void MoveComponent2D::Update(float deltaTime, const EngineContext& engineContext)
 {
-	mOwner2D->SetRotation(mOwner2D->GetRotation() + mRotationSpeed * deltaTime);
+	mOwner2D->SetRotation2D(mOwner2D->GetQuatRotation() * glm::angleAxis((mRotationSpeed * deltaTime) , glm::vec3(0.0f, 0.0f, 1.0f)));
 
-	mOwner2D->SetPosition(mOwner2D->GetPosition() + mOwner2D->GetForward() * mMoveSpeed * deltaTime);
+	mOwner2D->SetPosition(mOwner2D->GetPosition() + mOwner2D->GetForward2D() * mMoveSpeed * deltaTime);
 }
 

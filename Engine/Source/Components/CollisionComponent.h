@@ -246,7 +246,7 @@ public:
 
 	// Gets the rotation of the 2D OBB in radians
 	// @return - float for the single float rotation
-	float GetRotation() const { return mOwner2D->GetRotation(); }
+	float GetRotation() const { return mOwner2D->GetRotation2D(); }
 
 	// Sets the OBB half extents (stores half width and half height)
 	// @param - const glm::vec2& for the width and height of the box

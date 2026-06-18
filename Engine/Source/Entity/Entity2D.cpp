@@ -4,7 +4,6 @@
 Entity2D::Entity2D() :
 	Entity(),
 	mPosition(glm::vec2(0.0f, 0.0f)),
-	mRotation(0.0f),
 	mScale(1.0f)
 {
 }
@@ -12,7 +11,6 @@ Entity2D::Entity2D() :
 Entity2D::Entity2D(float width, float height) :
 	Entity(),
 	mPosition(glm::vec2(0.0f, 0.0f)),
-	mRotation(0.0f),
 	mScale(1.0f)
 {
 }

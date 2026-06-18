@@ -77,11 +77,11 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 	float rotationSpeed = 0.0f;
 	if (input->IsKeyPressed(SDL_SCANCODE_A))
 	{
-		rotationSpeed -= 100.0f;
+		rotationSpeed -= glm::pi<float>();
 	}
 	if (input->IsKeyPressed(SDL_SCANCODE_D))
 	{
-		rotationSpeed += 100.0f;
+		rotationSpeed += glm::pi<float>();
 	}
 
 	if (input->IsKeyPressed(SDL_SCANCODE_SPACE) && mLaserCooldown > 1.0f)
@@ -90,7 +90,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 
 		Laser* laser = new Laser(mGame);
 		laser->SetPosition(mPosition);
-		laser->SetRotation(mRotation);
+		laser->SetRotation2D(mRotation);
 
 		mLaserCooldown = 0.0f;
 	}
@@ -100,8 +100,6 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 		mMovement->SetMovementSpeed(moveSpeed);
 		mMovement->SetRotationSpeed(rotationSpeed);
 	}
-
-	//keyboard->SavePrevKeyState(keyState, SDL_SCANCODE_W);
 }
 
 void Ship::OnUpdate(float deltaTime, const EngineContext& engineContext)

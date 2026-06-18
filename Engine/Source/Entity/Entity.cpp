@@ -4,6 +4,7 @@
 #include "../Input/InputSystem.h"
 
 Entity::Entity() :
+	mRotation(glm::quat()),
 	mState(EntityState::Active)
 {
 

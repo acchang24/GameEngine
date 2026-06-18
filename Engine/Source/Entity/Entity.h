@@ -1,7 +1,8 @@
 #pragma once
+#include <cmath>
 #include <vector>
-#include <SDL2/SDL_stdinc.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include "../EngineContext.h"
 
 enum class EntityState
@@ -59,6 +60,26 @@ public:
 		return nullptr;
 	}
 
+	// Returns the entity's 2D rotation angle in radians
+	// @return - float for rotation in radians
+	float GetRotation2D() const { return 2.0f * std::atan2(mRotation.z, mRotation.w); }
+
+	// Gets the entity's rotation as a quaternion
+	// @return - const glm::quat& for the rotation
+	const glm::quat& GetQuatRotation() const { return mRotation; }
+
+	// Sets the rotation for a 2D entity
+	// @param - const glm::quat& for the rotation
+	void SetRotation2D(const glm::quat& rot) { mRotation = glm::normalize(rot); }
+
+	// Gets the forward facing direction of a 2D entity
+	// return - const glm::vec2 for the forward direction
+	const glm::vec2 GetForward2D() const
+	{
+		float rot = GetRotation2D();
+		return glm::vec2(glm::cos(rot), glm::sin(rot));
+	}
+
 	// Gets the entity's state
 	// @return - EntityState for the entity's state
 	EntityState GetEntityState() const { return mState; }
@@ -70,6 +91,9 @@ public:
 protected:
 	// Vector of components the entity uses
 	std::vector<Component*> mComponents;
+
+	// Entity's rotation
+	glm::quat mRotation;
 
 	// Entity's state
 	EntityState mState;

@@ -97,7 +97,7 @@ OBBComponent2D::~OBBComponent2D()
 
 std::array<glm::vec2, 4> OBBComponent2D::GetCorners() const
 {
-	float rotation = glm::radians(mOwner2D->GetRotation());
+	float rotation = mOwner2D->GetRotation2D();
 
 	// Get the box's local x axis (positive width direction)
 	glm::vec2 xAxis = glm::vec2(cos(rotation), sin(rotation));

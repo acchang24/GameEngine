@@ -64,7 +64,7 @@ void Renderer2D::DrawSprites()
 				model = glm::translate(model, glm::vec3(e->GetPosition(), 0.0f));
 
 				// Rotate
-				model = glm::rotate(model, glm::radians(e->GetRotation()), glm::vec3(0.0f, 0.0f, 1.0f));
+				model = model * glm::mat4_cast(e->GetQuatRotation());
 
 				// Scale
 				model = glm::scale(model, glm::vec3(e->GetScale() * size, 1.0f));

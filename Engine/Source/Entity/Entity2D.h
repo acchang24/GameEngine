@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include <GLM/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 class Entity2D : public Entity
 {
@@ -33,17 +34,9 @@ public:
 	// @param - const EngineContext& for the engine context
 	virtual void OnUpdate(float deltaTime, const EngineContext& engineContext);
 
-	// Gets the entity's forward facing direction based on its rotation
-	// @return - const glm::vec2 for the forward facing direction
-	const glm::vec2 GetForward() const { return glm::vec2(cos(glm::radians(mRotation)), sin(glm::radians(mRotation))); }
-
 	// Gets the entity's 2d position
 	// @return - const glm::vec2& for the position
 	const glm::vec2& GetPosition() const { return mPosition; }
-
-	// Gets the entity's rotation as a float value in degrees
-	// @return - float for the rotation
-	float GetRotation() const { return mRotation; }
 
 	// Gets the entity's float scale
 	// @return - float for the scale
@@ -53,10 +46,6 @@ public:
 	// @param - const glm::vec2& for new pos
 	void SetPosition(const glm::vec2& pos) { mPosition = pos; }
 
-	// Sets the entity's single float value rotation in degrees
-	// @param - float for the new rotation
-	void SetRotation(float rotation) { mRotation = rotation; }
-
 	// Sets the entity's float scale
 	// @param - float for the new scale
 	void SetScale(float scale) { mScale = scale; }
@@ -64,9 +53,6 @@ public:
 protected:
 	// Position for 2D
 	glm::vec2 mPosition;
-
-	// Entity's rotation in degrees as a float
-	float mRotation;
 
 	// Entity's scale in float
 	float mScale;

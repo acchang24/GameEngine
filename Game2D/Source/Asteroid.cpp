@@ -25,7 +25,7 @@ Asteroid::Asteroid(Game* game) :
 	mMovement->SetMovementSpeed(Random::GetFloatRange(50.0f, 150.0f));
 	
 	// Get random rotation degree
-	mRotation = Random::GetFloatRange(0.0f, 360.0f);
+	mRotation = glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Get random position
 	mPosition = Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(mEngine->GetRenderer()->GetWidth(), mEngine->GetRenderer()->GetHeight()));
@@ -39,7 +39,7 @@ Asteroid::Asteroid(Game* game) :
 		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
 		if (asteroid)
 		{
-			SetRotation(GetRotation() + Random::GetFloatRange(75.0f, 90.0f));
+			SetRotation2D(GetQuatRotation() + glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f)));
 		}
 	});
 
