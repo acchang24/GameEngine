@@ -8,6 +8,7 @@ struct ShadowMapConsts
 	glm::mat4 lightSpace; // matrix for transforming world-space vectors into space that's visible from the light's point of view (light-space)
 };
 
+class Renderer;
 class Shader;
 class UniformBuffer;
 class VertexBuffer;
@@ -22,7 +23,7 @@ class ShadowMap
 public:
 	// ShadowMap constructor:
 	// Creates a frame buffer 
-	ShadowMap();
+	ShadowMap(Renderer* renderer);
 	~ShadowMap();
 
 	// Sets the viewport to fit the depth map's size and binds the framebuffer to

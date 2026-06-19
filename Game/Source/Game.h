@@ -10,7 +10,6 @@ class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
-class ShadowMap;
 class Skybox;
 
 // Game class handles all of the game logic. Game specific code should be added to this class
@@ -94,9 +93,6 @@ private:
 	// Game's lighting
 	Lights mLights;
 
-	// ShadowMap for shadows
-	ShadowMap* mShadowMap;
-
 	// Skybox
 	Skybox* mSkybox;
 
@@ -112,6 +108,8 @@ private:
 	FrameBuffer* mBloomBlendFrameBuffer;
 
 	std::vector<class Entity3D*> vampires;
+
+	size_t mShadowIndex;
 
 	// Bool to check if the game is running.
 	bool mIsRunning;

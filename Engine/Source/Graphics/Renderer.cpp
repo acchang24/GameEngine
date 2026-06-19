@@ -12,6 +12,7 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "Shader.h"
+#include "ShadowMap.h"
 #include "VertexBuffer.h"
 
 Renderer::Renderer(RendererMode mode) :
@@ -19,7 +20,6 @@ Renderer::Renderer(RendererMode mode) :
 	mRenderer2D(nullptr),
 	mVertexBuffer(nullptr),
 	mMaterialBuffer(nullptr),
-	mSkeletonBuffer(nullptr),
 	mWindow(nullptr),
 	mContext(nullptr),
 	mWindowTitle(),
@@ -89,11 +89,11 @@ bool Renderer::Init(int width, int height, int subsamples, int vsync, bool fulls
 
 	if (mMode == RendererMode::MODE_3D)
 	{
-		// Create a material buffer in 3D mode
+		// Create a material buffer in 3D mode and save the pointer
 		mMaterialBuffer = CreateUniformBuffer(sizeof(MaterialColors), BufferBindingPoint::Material, "MaterialBuffer");
 	
 		// Create a skeleton buffer in 3D mode
-		mSkeletonBuffer = CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
+		CreateUniformBuffer(sizeof(SkeletonConsts), BufferBindingPoint::Skeleton, "SkeletonBuffer");
 
 		// Create a camera for 3D
 		mCamera = new Camera(this);
@@ -118,6 +118,12 @@ void Renderer::Shutdown()
 		delete fb;
 	}
 	mFrameBuffers.clear();
+
+	for (auto sm : mShadowMaps)
+	{
+		delete sm;
+	}
+	mShadowMaps.clear();
 
 	delete mCamera;
 
@@ -260,6 +266,16 @@ FrameBufferMultiSampled* Renderer::CreateMultiSampledFrameBuffer(int width, int 
 	mFrameBuffers.emplace_back(framebuffer);
 
 	return framebuffer;
+}
+
+size_t  Renderer::CreateShadowMap(Shader* shader)
+{
+	ShadowMap* shadowMap = new ShadowMap(this);
+	shadowMap->SetShader(shader);
+
+	mShadowMaps.emplace_back(shadowMap);
+
+	return (mShadowMaps.size() - 1);
 }
 
 void Renderer::CreateBlend(Shader* shader, unsigned int texture1, unsigned int texture2, int textureUnit)

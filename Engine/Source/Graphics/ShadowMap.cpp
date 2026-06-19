@@ -2,8 +2,6 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include "../MemoryManager/AssetManager.h"
 #include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -15,11 +13,11 @@ const unsigned int SHADOW_HEIGHT = 8560;
 float shadowNearPlane = 1.0f;
 float shadowFarPlane = 1000.0f;
 
-ShadowMap::ShadowMap() :
+ShadowMap::ShadowMap(Renderer* renderer) :
 	mShadowConsts({}),
 	mShader(nullptr),
-	mVertexBuffer(AssetBridge::ActiveManager->GetRenderer()->GetVertexBuffer()),
-	mShadowBuffer(AssetBridge::ActiveManager->GetRenderer()->CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
+	mVertexBuffer(renderer->GetVertexBuffer()),
+	mShadowBuffer(renderer->CreateUniformBuffer(sizeof(glm::mat4), BufferBindingPoint::Shadow, "ShadowBuffer")),
 	mShadowMapFrameBuffer(0),
 	mShadowMap(0),
 	mTextureUnit(static_cast<int>(TextureType::Shadow))

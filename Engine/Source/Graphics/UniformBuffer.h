@@ -6,12 +6,12 @@ class Shader;
 // Enum class for the different buffer binding points
 enum class BufferBindingPoint
 {
-	Camera,
-	Lights,
-	Material,
-	Skeleton,
-	Shadow,
-	PointShadow,
+	Camera = 0,
+	Lights = 1,
+	Material = 2,
+	Skeleton = 3,
+	Shadow = 4,
+	PointShadow = 5,
 };
 
 // UniformBuffer class helps abstract an OpenGL uniform buffer object. Use

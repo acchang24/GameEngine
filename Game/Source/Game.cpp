@@ -53,13 +53,13 @@ Game::Game() :
 	mEngine(RendererMode::MODE_3D),
 	mConsole(),
 	mLights(),
-	mShadowMap(nullptr),
 	mSkybox(nullptr),
 	mMainFrameBuffer(nullptr),
 	mBloomMaskFrameBuffer(nullptr),
 	mBloomBlurHorizontalFrameBuffer(nullptr),
 	mBloomBlurVerticalFrameBuffer(nullptr),
 	mBloomBlendFrameBuffer(nullptr),
+	mShadowIndex(0),
 	mIsRunning(true),
 	hdr(false),
 	bloom(false)
@@ -90,8 +90,6 @@ bool Game::Init()
 
 	mLights.CreateBuffer(engineContext.renderer);
 
-	mShadowMap = new ShadowMap();
-
 	PROFILE_SCOPE(LOAD_DATA);
 
 	LoadShaders(assetManager);
@@ -116,8 +114,6 @@ bool Game::Init()
 void Game::Shutdown()
 {
 	UnloadGameData();
-
-	delete mShadowMap;
 
 	delete mSkybox;
 
@@ -363,7 +359,6 @@ void Game::LoadGameData(AssetManager* assetManager)
 
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 	glm::vec3 lightPosition = lightDir * -dist;
-	mShadowMap->SetShader(assetManager->LoadShader("shadowDepth"));
 	pos = lightPosition;
 
 	DirectionalLight* dirLight = mLights.AllocateDirectionalLight(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -391,6 +386,8 @@ void Game::LoadGameData(AssetManager* assetManager)
 	lightSphere3->SetMaterial(lightSphereMaterial);
 	lightSphere3->SetPosition3D(glm::vec3(0.0f, 3.0f, -120.0f));
 	AddGameEntity(lightSphere3);
+
+	mShadowIndex = mEngine.GetContext().renderer->CreateShadowMap((assetManager->LoadShader("shadowDepth")));
 
 	// Since all ShaderProgram objects are attached to a Shader object, it's safe to de-allocate them here
 	assetManager->ClearShaderPrograms();
@@ -790,19 +787,21 @@ void Game::Render(const EngineContext& engineContext)
 
 	renderer->ClearBuffers();
 
+	ShadowMap* shadowMap = renderer->GetShadowMap(mShadowIndex);
+
 	{
 		PROFILE_SCOPE(RENDER_SHADOW_MAP);
 
 		//std::cout << size << " " << near << " " << far << " " << pos.x << " " << pos.y << " " << pos.z << "\n";
 
 		// Render to shadow map
-		mShadowMap->SetActive(size, near, far, pos, glm::vec3(0.0f, 0.0f, 0.0f));
-		RenderScene(engineContext, mShadowMap->GetShader());
+		shadowMap->SetActive(size, near, far, pos, glm::vec3(0.0f, 0.0f, 0.0f));
+		RenderScene(engineContext, shadowMap->GetShader());
 
 		// End shadow render pass
-		mShadowMap->End(renderer->GetWidth(), renderer->GetHeight());
-		mShadowMap->BindShadowMapToShader(engineContext.assetManager->LoadShader("phong"), "textureSamplers.shadow");
-		mShadowMap->BindShadowMapToShader(engineContext.assetManager->LoadShader("skinned"), "textureSamplers.shadow");
+		shadowMap->End(renderer->GetWidth(), renderer->GetHeight());
+		shadowMap->BindShadowMapToShader(engineContext.assetManager->LoadShader("phong"), "textureSamplers.shadow");
+		shadowMap->BindShadowMapToShader(engineContext.assetManager->LoadShader("skinned"), "textureSamplers.shadow");
 	}
 
 	// Draw to main multisampled frame buffer
@@ -834,7 +833,7 @@ void Game::Render(const EngineContext& engineContext)
 	mMainFrameBuffer->Draw(mBloomBlendFrameBuffer->GetTexture());
 
 
-	mShadowMap->DrawDebug(engineContext.assetManager->LoadShader("shadowDebug"));
+	shadowMap->DrawDebug(engineContext.assetManager->LoadShader("shadowDebug"));
 	glViewport(0, 0, renderer->GetWidth(), renderer->GetHeight());
 
 	engineContext.engineUI->Render();

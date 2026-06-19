@@ -17,6 +17,7 @@ class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
+class ShadowMap;
 class UniformBuffer;
 class VertexBuffer;
 
@@ -86,6 +87,21 @@ public:
 	// @param - int for the number of subsamples used for anti-aliasing
 	// @param - Shader* for the framebuffer's shader
 	FrameBufferMultiSampled* CreateMultiSampledFrameBuffer(int width, int height, int subsamples, Shader* shader);
+
+	// Creates a shadow map and returns it
+	// @param - Shader* for the shader used to draw the shadow map
+	// @return - size_t for the index to the shadow map
+	size_t CreateShadowMap(Shader* shader);
+
+	ShadowMap* GetShadowMap(size_t index)
+	{
+		ShadowMap* shadowMap = nullptr;
+		if (index >= 0 && index < mShadowMaps.size())
+		{
+			shadowMap = mShadowMaps[index];
+		}
+		return shadowMap;
+	}
 
 	// Sets up a shader so that two textures can be additively blended together
 	// @param - Shader* to set active
@@ -194,6 +210,9 @@ private:
 	// Vector of frame buffers used by the renderer
 	std::vector<FrameBuffer*> mFrameBuffers;
 
+	// Vector of shadow maps used by the renderer
+	std::vector<ShadowMap*> mShadowMaps;
+
 	// Camera for different camera modes and view/projection matrix for 3D
 	Camera* mCamera;
 
@@ -205,9 +224,6 @@ private:
 
 	// Uniform buffer to send material data to gpu
 	UniformBuffer* mMaterialBuffer;
-
-	// Uniform buffer to send skeleton data to gpu
-	UniformBuffer* mSkeletonBuffer;
 
 	// SDL window used for the game
 	SDL_Window* mWindow;
