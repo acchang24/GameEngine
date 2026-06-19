@@ -848,7 +848,7 @@ void Game::RenderScene(const EngineContext& engineContext)
 
 	for (auto e : mEntities)
 	{
-		e->Draw();
+		engineContext.renderer->RenderEntity3D(e);
 	}
 
 	Camera* camera = engineContext.renderer->GetCamera();
@@ -860,7 +860,7 @@ void Game::RenderScene(const EngineContext& engineContext, Shader* shader)
 {
 	for (auto e : mEntities)
 	{
-		static_cast<Entity3D*>(e)->Draw(shader);
+		engineContext.renderer->RenderEntity3D(e, shader);
 	}
 
 	Camera* camera = engineContext.renderer->GetCamera();

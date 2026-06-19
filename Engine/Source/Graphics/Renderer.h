@@ -13,7 +13,7 @@ enum class RendererMode
 };
 
 class Camera;
-class Entity3D;
+class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
 class Shader;
@@ -46,12 +46,12 @@ public:
 
 	// Renders a 3D entity
 	// @param - Entity3D* for the entity
-	void RenderEntity3D(Entity3D* entity);
+	void RenderEntity3D(Entity* entity);
 
 	// Renders a 3D entity using a specific shader
 	// @param - Entity3D* for the entity
 	// @param - Shader* for the shader
-	void RenderEntity3D(Entity3D* entity, Shader* shader);
+	void RenderEntity3D(Entity* entity, Shader* shader);
 
 	// Draws any 2D sprites, UI, and text with the Renderer2D
 	void Draw2D();

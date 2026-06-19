@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include "../Animation/BoneData.h"
 #include "../Components/AnimationComponent3D.h"
-#include "../Entity/Entity3D.h"
+#include "../Entity/Entity.h"
 #include "../Util/Logger.h"
 #include "Camera.h"
 #include "FrameBuffer.h"
@@ -141,7 +141,7 @@ void Renderer::ClearBuffers()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::RenderEntity3D(Entity3D* entity)
+void Renderer::RenderEntity3D(Entity* entity)
 {
 	Model* model = entity->GetModel();
 
@@ -171,7 +171,7 @@ void Renderer::RenderEntity3D(Entity3D* entity)
 	}
 }
 
-void Renderer::RenderEntity3D(Entity3D* entity, Shader* shader)
+void Renderer::RenderEntity3D(Entity* entity, Shader* shader)
 {
 	Model* model = entity->GetModel();
 
@@ -188,12 +188,11 @@ void Renderer::RenderEntity3D(Entity3D* entity, Shader* shader)
 		{
 			Material* material = mesh->GetMaterial();
 
-			material->SetActive();
-
 			// update material unifrom buffer
 			mMaterialBuffer->UpdateBufferData(&material->GetMats());
 
 			shader->SetActive();
+			shader->SetBool("isSkinned", model->HasAnimations());
 			shader->SetMat4("model", entity->GetModelMatrix());
 
 			VertexBuffer* vb = mesh->GetVertexBuffer();
