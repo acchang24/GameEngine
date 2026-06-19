@@ -70,6 +70,10 @@ public:
 		return nullptr;
 	}
 
+	// Calculates and returns the model matrix
+	// @return - const glm::mat4& for the model matrix
+	const glm::mat4& GetModelMatrix();
+
 	// Returns the entity's 3D position
 	// @return - const glm::vec3& for the position
 	const glm::vec3& GetPosition3D() const { return mPosition; }
@@ -155,6 +159,9 @@ public:
 protected:
 	// Vector of components the entity uses
 	std::vector<Component*> mComponents;
+
+	// Model matrix to transform this entity from model space to world space
+	glm::mat4 mModelMatrix;
 
 	// Entity's position
 	glm::vec3 mPosition;

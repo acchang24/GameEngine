@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include "../Animation/BoneData.h"
+#include "../Components/AnimationComponent3D.h"
 #include "../Entity/Entity3D.h"
 #include "../Util/Logger.h"
 #include "Camera.h"
@@ -144,21 +145,29 @@ void Renderer::RenderEntity3D(Entity3D* entity)
 {
 	Model* model = entity->GetModel();
 
-	const std::vector<Mesh*>& meshes = model->GetMeshes();
-
-	for (Mesh* mesh : meshes)
+	if (model)
 	{
-		Material* material = mesh->GetMaterial();
+		if (model->HasAnimations())
+		{
+			entity->GetComponent<AnimationComponent3D>()->UpdateSkeletonBuffer();
+		}
 
-		material->SetActive();
+		const std::vector<Mesh*>& meshes = model->GetMeshes();
 
-		// update material unifrom buffer
-		mMaterialBuffer->UpdateBufferData(&material->GetMats());
+		for (Mesh* mesh : meshes)
+		{
+			Material* material = mesh->GetMaterial();
 
-		material->GetShader()->SetMat4("model", entity->GetModelMatrix());
+			material->SetActive();
 
-		VertexBuffer* vb = mesh->GetVertexBuffer();
-		vb->Draw();
+			// update material unifrom buffer
+			mMaterialBuffer->UpdateBufferData(&material->GetMats());
+
+			material->GetShader()->SetMat4("model", entity->GetModelMatrix());
+
+			VertexBuffer* vb = mesh->GetVertexBuffer();
+			vb->Draw();
+		}
 	}
 }
 
@@ -166,22 +175,30 @@ void Renderer::RenderEntity3D(Entity3D* entity, Shader* shader)
 {
 	Model* model = entity->GetModel();
 
-	const std::vector<Mesh*>& meshes = model->GetMeshes();
-
-	for (Mesh* mesh : meshes)
+	if (model)
 	{
-		Material* material = mesh->GetMaterial();
+		if (model->HasAnimations())
+		{
+			entity->GetComponent<AnimationComponent3D>()->UpdateSkeletonBuffer();
+		}
 
-		material->SetActive();
+		const std::vector<Mesh*>& meshes = model->GetMeshes();
 
-		// update material unifrom buffer
-		mMaterialBuffer->UpdateBufferData(&material->GetMats());
+		for (Mesh* mesh : meshes)
+		{
+			Material* material = mesh->GetMaterial();
 
-		shader->SetActive();
-		shader->SetMat4("model", entity->GetModelMatrix());
+			material->SetActive();
 
-		VertexBuffer* vb = mesh->GetVertexBuffer();
-		vb->Draw();
+			// update material unifrom buffer
+			mMaterialBuffer->UpdateBufferData(&material->GetMats());
+
+			shader->SetActive();
+			shader->SetMat4("model", entity->GetModelMatrix());
+
+			VertexBuffer* vb = mesh->GetVertexBuffer();
+			vb->Draw();
+		}
 	}
 }
 

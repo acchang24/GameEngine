@@ -1,7 +1,6 @@
 #pragma once
 #include "Entity.h"
 #include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include "../Multithreading/JobManager.h"
 
 class Model;
@@ -58,17 +57,9 @@ public:
 
 	void CalculateWorldTransform();
 
-	// Gets the entity's model matrix
-	// @return - const glm::mat4& for the entity's model matrix
-	const glm::mat4& GetModelMatrix() const { return mModelMatrix; }
-
 	// Gets the entity's model
 	// @return - Model* for the entity's 3D model
 	Model* GetModel() { return mModel; }
-	
-	// Set the entity's model matrix
-	// @param - const glm::mat4& for the new model matrix
-	void SetModelMatrix(const glm::mat4& m) { mModelMatrix = m; }
 
 	// Sets the entity's model
 	// @param - Model* for the model
@@ -90,9 +81,6 @@ protected:
 
 	// Job to update model matrix on seprate thread
 	UpdateModelMatrixJob mUpdateModelMatrixJob;
-
-	// Model matrix to transform this entity from model space to world space
-	glm::mat4 mModelMatrix;
 
 	// Entity's 3D model
 	Model* mModel;

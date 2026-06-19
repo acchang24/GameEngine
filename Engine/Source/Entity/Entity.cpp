@@ -4,6 +4,7 @@
 #include "../Input/InputSystem.h"
 
 Entity::Entity() :
+	mModelMatrix(glm::mat4(1.0f)),
 	mPosition(glm::vec3()),
 	mRotation(glm::quat()),
 	mScale(glm::vec3(1.0f, 1.0f, 1.0f)),
@@ -58,4 +59,14 @@ void Entity::OnUpdate(float deltaTime, const EngineContext& engineContext)
 void Entity::Draw()
 {
 
+}
+
+const glm::mat4& Entity::GetModelMatrix()
+{
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, mPosition);
+	model = model * glm::mat4_cast(mRotation);
+	mModelMatrix = glm::scale(model, mScale);
+
+	return mModelMatrix;
 }
