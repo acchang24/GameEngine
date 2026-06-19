@@ -36,7 +36,7 @@ Laser::Laser(Game* game) :
 		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
 		if (asteroid)
 		{
-			mEngine->GetAudio()->PlaySFX("Assets/Sounds/AsteroidExplode.wav");
+			mEngine->GetAudio()->PlaySFX(AssetBridge::ActiveManager->LoadSFX("Assets/Sounds/AsteroidExplode.wav"));
 			asteroid->SetEntityState(EntityState::Destroy);
 			mState = EntityState::Destroy;
 

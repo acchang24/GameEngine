@@ -34,7 +34,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 	{
 		if (input->IsKeyLeadingEdge(SDL_SCANCODE_W))
 		{
-			engineContext.audio->ResumeSFX("Assets/Sounds/ShipThrust.wav");
+			engineContext.audio->ResumeSFX(engineContext.assetManager->LoadSFX("Assets/Sounds/ShipThrust.wav"));
 		}
 		moveSpeed += 200.0f;
 	}
@@ -50,7 +50,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 	else
 	{
 		mSprite->SetSprite(mSprite->GetSprite("Assets/Ship.png"));
-		engineContext.audio->PauseSFX("Assets/Sounds/ShipThrust.wav");
+		engineContext.audio->PauseSFX(engineContext.assetManager->LoadSFX("Assets/Sounds/ShipThrust.wav"));
 	}
 
 	float rotationSpeed = 0.0f;
@@ -65,7 +65,7 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 
 	if (input->IsKeyPressed(SDL_SCANCODE_SPACE) && mLaserCooldown > 1.0f)
 	{
-		engineContext.audio->PlaySFX("Assets/Sounds/Shoot.wav");
+		engineContext.audio->PlaySFX(engineContext.assetManager->LoadSFX("Assets/Sounds/Shoot.wav"));
 
 		Laser* laser = new Laser(mGame);
 		laser->SetPosition2D(mPosition);

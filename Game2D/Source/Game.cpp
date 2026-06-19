@@ -122,9 +122,9 @@ void Game::LoadGameData(const EngineContext& engineContext)
 	ship->SetCollisionComp(shipHitBox);
 
 	// Fire off loop sfx so this sound chunk can pause/resume later
-	engineContext.audio->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
+	engineContext.audio->PlaySFX(assetManager->LoadSFX("Assets/Sounds/ShipThrust.wav"), -1, -1);
 	// Pause sound immediately
-	engineContext.audio->PauseSFX("Assets/Sounds/ShipThrust.wav");
+	engineContext.audio->PauseSFX(assetManager->LoadSFX("Assets/Sounds/ShipThrust.wav"));
 
 
 	// Load 10 asteroids

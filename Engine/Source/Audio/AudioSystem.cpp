@@ -1,7 +1,6 @@
 #include "AudioSystem.h"
 #include <iostream>
 #include <SDL2/SDL_mixer.h>
-#include "../MemoryManager/AssetManager.h"
 #include "Sound.h"
 
 AudioSystem::AudioSystem()
@@ -33,10 +32,8 @@ void AudioSystem::Shutdown()
 	Mix_CloseAudio();
 }
 
-int AudioSystem::PlaySFX(const std::string& sfxName, int channel, int loops)
+int AudioSystem::PlaySFX(SFX* sfx, int channel, int loops)
 {
-	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
-
 	if (!sfx)
 	{
 		return -1;
@@ -45,70 +42,56 @@ int AudioSystem::PlaySFX(const std::string& sfxName, int channel, int loops)
 	return sfx->Play(channel, loops);
 }
 
-void AudioSystem::StopSFX(const std::string& sfxName)
+void AudioSystem::StopSFX(SFX* sfx)
 {
-	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
-
 	if (sfx)
 	{
 		sfx->Stop();
 	}
 }
 
-void AudioSystem::PauseSFX(const std::string& sfxName)
+void AudioSystem::PauseSFX(SFX* sfx)
 {
-	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
-
 	if (sfx)
 	{
 		sfx->Pause();
 	}
 }
 
-void AudioSystem::ResumeSFX(const std::string& sfxName)
+void AudioSystem::ResumeSFX(SFX* sfx)
 {
-	SFX* sfx = AssetBridge::ActiveManager->LoadSFX(sfxName);
-
 	if (sfx)
 	{
 		sfx->Resume();
 	}
 }
 
-void AudioSystem::PlayMusic(const std::string& musicName, int loops)
+void AudioSystem::PlayMusic(Music* music, int loops)
 {
-	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
-
 	if (music)
 	{
 		music->Play(loops);
 	}
 }
 
-void AudioSystem::StopMusic(const std::string& musicName)
+void AudioSystem::StopMusic(Music* music)
 {
-	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
-
 	if (music)
 	{
 		music->Stop();
 	}
 }
 
-void AudioSystem::PauseMusic(const std::string& musicName)
+void AudioSystem::PauseMusic(Music* music)
 {
-	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
-
 	if (music)
 	{
 		music->Pause();
 	}
 }
 
-void AudioSystem::ResumeMusic(const std::string& musicName)
+void AudioSystem::ResumeMusic(Music* music)
 {
-	Music* music = AssetBridge::ActiveManager->LoadMusic(musicName);
-
 	if (music)
 	{
 		music->Resume();

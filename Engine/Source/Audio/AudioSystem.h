@@ -1,5 +1,7 @@
 #pragma once
-#include <string>
+
+class Music;
+class SFX;
 
 class AudioSystem
 {
@@ -14,40 +16,40 @@ public:
 	void Shutdown();
 
 	// Plays a SFX
-	// @param - const std::string& for the SFX file name
+	// @param - SFX* for the sound
 	// @param - int for channel: -1 = use first free channel (defaults to -1)
 	// @param - int for loops: -1 = infinite loop, 0 = play once, > 0 = loop however many times (defaults to 0)
 	// @return - int for the channel playing this SFX
-	int PlaySFX(const std::string& sfxName, int channel = -1, int loops = 0);
+	int PlaySFX(SFX* sound, int channel = -1, int loops = 0);
 
 	// Stops a sfx
-	// @param - const std::string& for sfx file name
-	void StopSFX(const std::string& sfxName);
+	// @param - SFX* for the sound
+	void StopSFX(SFX* sound);
 
 	// Pauses a sfx
-	// @param - const std::string& for sfx file name
-	void PauseSFX(const std::string& sfxName);
+	// @param - SFX* for the sound
+	void PauseSFX(SFX* sound);
 
 	// Resumes playing a sfx
-	// @param - const std::string& for sfx file name
-	void ResumeSFX(const std::string& sfxName);
+	// @param - SFX* for the sound
+	void ResumeSFX(SFX* sound);
 
 	// Plays a music soundtrack
-	// @param - const std::string& for music soundtrack file name
+	// @param - Music* for the music soundtrack
 	// @param - int for loops: -1 = infinite loop, 0 = play once, > 0 = loop however many times (defaults to -1)
-	void PlayMusic(const std::string& musicName, int loops = -1);
+	void PlayMusic(Music* music, int loops = -1);
 
 	// Stops a music soundtrack
-	// @param - const std::string& for music soundtrack file name
-	void StopMusic(const std::string& musicName);
+	// @param - Music* for the music soundtrack
+	void StopMusic(Music* music);
 
 	// Pauses a music soundtrack
-	// @param - const std::string& for music soundtrack file name
-	void PauseMusic(const std::string& musicName);
+	// @param - Music* for the music soundtrack
+	void PauseMusic(Music* music);
 
 	// Resumes playing a music soundtrack
-	// @param - const std::string& for music soundtrack file name
-	void ResumeMusic(const std::string& musicName);
+	// @param - Music* for the music soundtrack
+	void ResumeMusic(Music* music);
 
 private:
 };
