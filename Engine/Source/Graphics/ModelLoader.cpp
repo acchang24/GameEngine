@@ -247,13 +247,13 @@ Material* ModelLoader::LoadMaterial(const aiScene* scene, aiMesh* mesh, Model* t
 
 			targetModel->SaveMaterial(name, mat);
 			// Diffuse textures
-			ModelLoader::LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat, targetModel);
+			ModelLoader::LoadMaterialTextures(material, aiTextureType_DIFFUSE, mat, targetModel, am);
 			// Specular textures
-			ModelLoader::LoadMaterialTextures(material, aiTextureType_SPECULAR, mat, targetModel);
+			ModelLoader::LoadMaterialTextures(material, aiTextureType_SPECULAR, mat, targetModel, am);
 			// Emissive textures
-			ModelLoader::LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat, targetModel);
+			ModelLoader::LoadMaterialTextures(material, aiTextureType_EMISSIVE, mat, targetModel, am);
 			// Normal textures
-			ModelLoader::LoadMaterialTextures(material, aiTextureType_NORMALS, mat, targetModel);
+			ModelLoader::LoadMaterialTextures(material, aiTextureType_NORMALS, mat, targetModel, am);
 
 			am->SaveMaterial(name, mat);
 		}
@@ -264,7 +264,7 @@ Material* ModelLoader::LoadMaterial(const aiScene* scene, aiMesh* mesh, Model* t
 	return nullptr;
 }
 
-void ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, Model* targetModel)
+void ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, Model* targetModel, AssetManager* am)
 {
 	const std::string& directory = targetModel->GetName();
 
@@ -295,7 +295,7 @@ void ModelLoader::LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureT
 				break;
 			}
 			// Load the texture
-			Texture* t = AssetBridge::ActiveManager->LoadTexture(path, type);
+			Texture* t = am->LoadTexture(path, type);
 
 			// Add the texture to the material
 			material->AddTexture(t);

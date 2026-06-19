@@ -67,7 +67,7 @@ Shader* AssetManager::LoadShader(const std::string& name, const char* vertexFile
 
 	if (!shader)
 	{
-		shader = new Shader(name, vertexFile, fragmentFile, geometryFile);
+		shader = new Shader(this, name, vertexFile, fragmentFile, geometryFile);
 
 		SaveShader(name, shader);
 	}

@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+class AssetManager;
+
 // Shader class contains a OpenGL program that attaches a vertex,
 // fragment, geometry, shaders etc to a program. This shader class manages
 // when a particular shader program is being set as active, as well as
@@ -17,11 +19,12 @@ public:
     // a shader id that is used to attach to a program. After attaching all the 
     // shaders, this class will link the program and check if the program was
     // created successfully, saving the reference into the mShaderID variable.
+    // @param - AssetManager* for the engine's asset manager
     // @param - const std::string& for the name of the shader (used to acces through AssetManager)
 	// @param - const char* for the vertex shader name/file path
 	// @param - const char* for the fragment shader name/file path
     // @param - const char* for the geometry shader name/file path if it exists (defaults to nullptr)
-	Shader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
+	Shader(AssetManager* am, const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile = nullptr);
 	~Shader();
 
     // Finds all the uniform buffers used by this shader and calls glUniformBlockBinding on each one with this shader

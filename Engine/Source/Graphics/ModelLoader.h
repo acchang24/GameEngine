@@ -54,5 +54,6 @@ namespace ModelLoader
 	// @param - aiTextureType
 	// @param - Material* for the material
 	// @param - Model* for the target model to save all vertex and skelteon data
-	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, Model* targetModel);
+	// @param - AssetManager* for the engine's asset manager
+	void LoadMaterialTextures(aiMaterial* mat, aiTextureType aiTextureType, Material* material, Model* targetModel, AssetManager* am);
 }

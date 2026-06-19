@@ -1,13 +1,12 @@
 ﻿#include "Shader.h"
 #include <iostream>
-#include <fstream>
 #include "../MemoryManager/AssetManager.h"
 #include "../Util/Logger.h"
 #include "Renderer.h"
 #include "ShaderUniforms.h"
 #include "ShaderProgram.h"
 
-Shader::Shader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile) :
+Shader::Shader(AssetManager* am, const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile) :
     mName(name),
 	mShaderID(0)
 {
@@ -15,17 +14,17 @@ Shader::Shader(const std::string& name, const char* vertexFile, const char* frag
     mShaderID = glCreateProgram();
 
     // Load and attach vertex shader
-    ShaderProgram* vertexProgram = AssetBridge::ActiveManager->LoadShaderProgram(vertexFile);
+    ShaderProgram* vertexProgram = am->LoadShaderProgram(vertexFile);
     glAttachShader(mShaderID, vertexProgram->GetShaderID());
 
     // Load and attach fragment shader
-    ShaderProgram* fragmentProgram = AssetBridge::ActiveManager->LoadShaderProgram(fragmentFile);
+    ShaderProgram* fragmentProgram = am->LoadShaderProgram(fragmentFile);
     glAttachShader(mShaderID, fragmentProgram->GetShaderID());
 
     // Load and attach geometry shader if it exists
     if (geometryFile != nullptr)
     {
-        ShaderProgram* geometryProgram = AssetBridge::ActiveManager->LoadShaderProgram(geometryFile);
+        ShaderProgram* geometryProgram = am->LoadShaderProgram(geometryFile);
         glAttachShader(mShaderID, geometryProgram->GetShaderID());
     }
 
