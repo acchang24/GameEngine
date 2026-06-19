@@ -12,8 +12,6 @@ Engine::Engine(RendererMode renderMode) :
 	mEditor()
 {
 	LOG_DEBUG("Started engine");
-
-	mAssetManager.SetRenderer(&mRenderer);
 }
 
 Engine::~Engine()

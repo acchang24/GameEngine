@@ -28,6 +28,11 @@ public:
     // to assign a binding point to the active uniform blocks
     void LinkShadersToUniformBlocks() const;
 
+    // Returns the buffer binding point from a uniform block name
+    // @param - const std::string& for the block name
+    // @return - int for the binding point
+    int GetBindingPointFromName(const std::string& blockName) const;
+
 	// Sets this shader program as the active one with glUseProgram
 	// Every shader/rendering call will use this program object and its shaders
 	void SetActive() const { glUseProgram(mShaderID); }

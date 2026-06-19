@@ -4,6 +4,7 @@
 #include "../MemoryManager/AssetManager.h"
 #include "../Util/Logger.h"
 #include "Renderer.h"
+#include "ShaderUniforms.h"
 #include "ShaderProgram.h"
 
 Shader::Shader(const std::string& name, const char* vertexFile, const char* fragmentFile, const char* geometryFile) :
@@ -79,12 +80,43 @@ void Shader::LinkShadersToUniformBlocks() const
         // Get the index of the uniform block
         int uniformBlockindex = glGetUniformBlockIndex(mShaderID, nameString.c_str());
 
-        UniformBuffer* ub = AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer(nameString);
+        // Match the string block name to fixed layout slots
+        int targetBindingPoint = GetBindingPointFromName(nameString);
 
-        if (ub)
+        if (targetBindingPoint != -1)
         {
             // Assign a binding point to the active uniform block
-            glUniformBlockBinding(mShaderID, uniformBlockindex, ub->GetBindingPoint());
+            glUniformBlockBinding(mShaderID, uniformBlockindex, targetBindingPoint);
         }
     }
+}
+
+int Shader::GetBindingPointFromName(const std::string& blockName) const
+{
+    if (blockName == ShaderUniforms::CameraBuffer)
+    {
+        return static_cast<int>(BufferBindingPoint::Camera);
+    }
+    if (blockName == ShaderUniforms::LightBuffer)
+    {
+        return static_cast<int>(BufferBindingPoint::Lights);
+    }
+    if (blockName == ShaderUniforms::MaterialBuffer)
+    {
+        return static_cast<int>(BufferBindingPoint::Material);
+    }
+    if (blockName == ShaderUniforms::SkeletonBuffer)
+    {
+        return static_cast<int>(BufferBindingPoint::Skeleton);
+    }
+    if (blockName == ShaderUniforms::ShadowBuffer)  
+    {
+        return static_cast<int>(BufferBindingPoint::Shadow);
+    }
+    if (blockName == ShaderUniforms::PointShadowBuffer)
+    {
+        return static_cast<int>(BufferBindingPoint::PointShadow);
+    }
+
+    return -1;
 }

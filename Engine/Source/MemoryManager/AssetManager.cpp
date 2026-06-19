@@ -4,7 +4,6 @@
 #include "../Graphics/ModelLoader.h"
 
 AssetManager::AssetManager() :
-	mRenderer(nullptr),
 	mShaderCache(new Cache<Shader>(this)),
 	mTextureCache(new Cache<Texture>(this)),
 	mMaterialCache(new Cache<Material>(this)),

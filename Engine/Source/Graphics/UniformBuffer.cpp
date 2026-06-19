@@ -1,5 +1,6 @@
 #include "UniformBuffer.h"
 #include <iostream>
+#include <glad/glad.h>
 #include "Shader.h"
 
 UniformBuffer::UniformBuffer(size_t bufferSize, BufferBindingPoint bindingPoint, const char* bufferName) :

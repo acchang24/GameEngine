@@ -158,7 +158,12 @@ void Renderer::RenderEntity3D(Entity* entity)
 			entity->GetComponent<AnimationComponent3D>()->UpdateSkeletonBuffer();
 		}
 
+		const glm::mat4& modelMatrix = entity->GetModelMatrix();
+
 		const std::vector<Mesh*>& meshes = model->GetMeshes();
+		
+		// Keep track of the shader program currently running to prevent redundant calls
+		unsigned int lastBoundShaderID = 0;
 
 		for (Mesh* mesh : meshes)
 		{
@@ -169,7 +174,15 @@ void Renderer::RenderEntity3D(Entity* entity)
 			// update material unifrom buffer
 			mMaterialBuffer->UpdateBufferData(&material->GetMats());
 
-			material->GetShader()->SetMat4("model", entity->GetModelMatrix());
+			// Upload model matrix if the shader program changed
+			unsigned int currentShaderID = material->GetShader()->GetID();
+
+			// Check if shader id changed. If so, update model matrix
+			if (currentShaderID != lastBoundShaderID)
+			{
+				material->GetShader()->SetMat4("model", modelMatrix);
+				lastBoundShaderID = currentShaderID;
+			}
 
 			VertexBuffer* vb = mesh->GetVertexBuffer();
 			vb->Draw();
@@ -190,16 +203,16 @@ void Renderer::RenderEntity3D(Entity* entity, Shader* shader)
 
 		const std::vector<Mesh*>& meshes = model->GetMeshes();
 
+		shader->SetActive();
+		shader->SetBool("isSkinned", model->HasAnimations());
+		shader->SetMat4("model", entity->GetModelMatrix());
+
 		for (Mesh* mesh : meshes)
 		{
 			Material* material = mesh->GetMaterial();
 
 			// update material unifrom buffer
 			mMaterialBuffer->UpdateBufferData(&material->GetMats());
-
-			shader->SetActive();
-			shader->SetBool("isSkinned", model->HasAnimations());
-			shader->SetMat4("model", entity->GetModelMatrix());
 
 			VertexBuffer* vb = mesh->GetVertexBuffer();
 			vb->Draw();

@@ -27,14 +27,6 @@ public:
 
 	// Deletes the shader caches
 	void Shutdown();
-
-	// Sets a pointer to the renderer
-	void SetRenderer(Renderer* renderer) { mRenderer = renderer; }
-
-	// Gets a pointer to the game's renderer
-	// @return - Renderer3D* for the renderer
-	Renderer* GetRenderer() { return mRenderer; }
-
 	
 	// Saves a shader into the shader cache's map
 	// @param - const std::string& for the shader's name.
@@ -234,9 +226,6 @@ public:
 	void DeleteMusic(const std::string& fileName) { mMusicCache->Delete(fileName); }
 
 private:
-	// Pointer to the game's renderer (does not own the renderer, Game will take care of deleting this pointer)
-	Renderer* mRenderer;
-
 	// Shader cache
 	Cache<Shader>* mShaderCache;
 
