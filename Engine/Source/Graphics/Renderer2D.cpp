@@ -51,22 +51,17 @@ void Renderer2D::DrawSprites()
 		{
 			if (sprite->IsVisible())
 			{
-				glm::mat4 model = glm::mat4(1.0f);
-
 				Entity* e = sprite->GetEntity();
 
 				Texture* tex = sprite->GetCurrentSprite();
 
 				glm::vec2 size = sprite->GetSize();
 
-				// Translate position
-				model = glm::translate(model, glm::vec3(e->GetPosition2D(), 0.0f));
+				// Calculate model matrix
+				glm::mat4 model = e->GetModelMatrix();
 
-				// Rotate
-				model = model * glm::mat4_cast(e->GetQuatRotation());
-
-				// Scale
-				model = glm::scale(model, glm::vec3(e->GetScale2D() * size, 1.0f));
+				// Apply sprite size to scale
+				model = glm::scale(model, glm::vec3(size, 1.0f));
 
 				// Send model and projection matrix to shader
 				mSpriteShader->SetMat4("model", model);

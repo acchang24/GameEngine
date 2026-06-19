@@ -1,6 +1,5 @@
 #pragma once
 #include "Entity.h"
-#include "../Multithreading/JobManager.h"
 
 class Shader;
 
@@ -53,25 +52,7 @@ public:
 	// OnDraw function using a shader set explicitly
 	virtual void OnDraw(Shader* shader);
 
-	void CalculateWorldTransform();
-
 protected:
-	// Job to update the Entity3D's model matrix on a separate thread
-	class UpdateModelMatrixJob : public JobManager::Job
-	{
-	public:
-		UpdateModelMatrixJob(Entity3D* e) : mEntity(e)
-		{}
-		// Override Job::DoIt() to update this entity's model matrix
-		void DoJob() override;
-
-	private:
-		Entity3D* mEntity;
-	};
-
-	// Job to update model matrix on seprate thread
-	UpdateModelMatrixJob mUpdateModelMatrixJob;
-
 	// Buffer for if this entity is drawn as an instance
 	unsigned int mInstanceBuffer;
 };

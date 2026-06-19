@@ -77,7 +77,7 @@ void Cube::OnDraw()
 {
     mMaterial->SetActive();
 
-    mMaterial->GetShader()->SetMat4("model", mModelMatrix);
+    mMaterial->GetShader()->SetMat4("model", GetModelMatrix());
 
     mVertexBuffer->Draw();
 }
@@ -87,7 +87,7 @@ void Cube::OnDraw(Shader* s)
     mMaterial->SetActive();
     s->SetActive();
 
-    s->SetMat4("model", mModelMatrix);
+    s->SetMat4("model", GetModelMatrix());
 
     mVertexBuffer->Draw();
 }

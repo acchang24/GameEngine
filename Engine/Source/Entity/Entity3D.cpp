@@ -1,13 +1,11 @@
 #include "Entity3D.h"
 #include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
 #include "../Components/AnimationComponent3D.h"
 #include "../Graphics/Model.h"
 #include "../Graphics/Shader.h"
 
 Entity3D::Entity3D() :
 	Entity(),
-	mUpdateModelMatrixJob(this),
 	mInstanceBuffer(0)
 {
 }
@@ -64,10 +62,6 @@ void Entity3D::OnProcessInput(const InputSystem* input, const EngineContext& eng
 
 void Entity3D::OnUpdate(float deltaTime, const EngineContext& engineContext)
 {
-	// Update model matrix on seprate thread		
-	engineContext.jobManager->AddJob(&mUpdateModelMatrixJob);
-	
-	//CalculateWorldTransform();
 }
 
 void Entity3D::OnDraw()
@@ -77,7 +71,7 @@ void Entity3D::OnDraw()
 		GetComponent<AnimationComponent3D>()->UpdateSkeletonBuffer();
 	}
 
-	mModel->Draw(mModelMatrix);
+	mModel->Draw(GetModelMatrix());
 }
 
 void Entity3D::OnDraw(Shader* shader)
@@ -90,21 +84,5 @@ void Entity3D::OnDraw(Shader* shader)
 	shader->SetActive();
 	shader->SetBool("isSkinned", mModel->HasAnimations());
 
-	mModel->Draw(shader, mModelMatrix);
-}
-
-void Entity3D::CalculateWorldTransform()
-{
-	glm::mat4 model = glm::mat4(1.0f);
-
-	model = glm::translate(model, mPosition);
-
-	model = model * glm::mat4_cast(mRotation);
-
-	mModelMatrix = glm::scale(model, mScale);
-}
-
-void Entity3D::UpdateModelMatrixJob::DoJob()
-{
-	mEntity->CalculateWorldTransform();
+	mModel->Draw(shader, GetModelMatrix());
 }
