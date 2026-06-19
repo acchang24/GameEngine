@@ -13,30 +13,13 @@
 
 Ship::Ship(Game* game) :
 	Entity(),
-	mSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
-	mMovement(new MoveComponent2D(this)),
+	mSprite(nullptr),
+	mMovement(nullptr),
 	mCollisionBox(nullptr),
 	mEngine(game->GetEngine()),
 	mGame(game),
 	mLaserCooldown(1.0f)
 {
-	// Load and set ship sprites
-	Texture* shipSprite = AssetBridge::ActiveManager->LoadTexture("Assets/Ship.png", TextureType::Sprite);
-	mSprite->AddSprite(AssetBridge::ActiveManager->LoadTexture("Assets/ShipThrust.png", TextureType::Sprite));
-	mSprite->AddSprite(shipSprite);
-	mSprite->SetSprite(shipSprite);
-
-	// Create an oriented bounded box for the ship's collision box
-	OBBComponent2D* box = new OBBComponent2D(this, mEngine->GetPhysics());
-	box->SetBoxSize(glm::vec2(100.0f, 90.0f));
-
-	mCollisionBox = box;
-
-	// Fire off loop sfx so this sound chunk can pause/resume later
-	mEngine->GetAudio()->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
-	// Pause sound immediately
-	mEngine->GetAudio()->PauseSFX("Assets/Sounds/ShipThrust.wav");
-
 	// Add to game
 	game->AddGameEntity(this);
 }

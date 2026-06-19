@@ -30,8 +30,8 @@ public:
 	void LoadAssets(AssetManager* assetManager) const;
 
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
-	// @param - AssetManager* for the asset manager
-	void LoadGameData(AssetManager* assetManager);
+	// @param - const EngineContext& for the engine context
+	void LoadGameData(const EngineContext& engineContext);
 
 	// Deletes all entities, sounds, levels, etc
 	void UnloadGameData();

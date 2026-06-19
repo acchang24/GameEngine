@@ -23,6 +23,10 @@ public:
 	// @param - const EngineContext& for the engine context
 	void OnUpdate(float deltaTime, const EngineContext& engineContext) override;
 
+	void SetSpriteComp(SpriteComponent* comp) { mSprite = comp; }
+	void SetMoveComp(MoveComponent2D* comp) { mMovement = comp; }
+	void SetCollisionComp(CollisionComponent* comp) { mCollisionBox = comp; }
+
 private:
 	SpriteComponent* mSprite;
 	

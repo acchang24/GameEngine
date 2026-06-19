@@ -1,12 +1,10 @@
 #include "Game.h"
 #include <algorithm>
 #include <chrono>
-#include <iostream>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include "Audio/Sound.h"
+#include "Components/CollisionComponent.h"
+#include "Components/MoveComponent2D.h"
 #include "Components/SpriteComponent.h"
 #include "EngineUI/EngineUI.h"
 #include "Entity/Entity.h"
@@ -64,7 +62,7 @@ bool Game::Init()
 
 	LoadAssets(assetManager);
 
-	LoadGameData(assetManager);
+	LoadGameData(engineContext);
 
 	return true;
 }
@@ -85,14 +83,49 @@ void Game::LoadShaders(AssetManager* assetManager) const
 
 void Game::LoadAssets(AssetManager* assetManager) const
 {
-	
+	assetManager->LoadTexture("Assets/Ship.png", TextureType::Sprite);
+	assetManager->LoadTexture("Assets/ShipThrust.png", TextureType::Sprite);
+	assetManager->LoadTexture("Assets/Laser.png", TextureType::Sprite);
+	assetManager->LoadTexture("Assets/Asteroid.png", TextureType::Sprite);
+	assetManager->LoadTexture("Assets/Stars.png", TextureType::Sprite);
+	assetManager->LoadSFX("Assets/Sounds/ShipThrust.wav");
+	assetManager->LoadSFX("Assets/Sounds/Shoot.wav");
+	assetManager->LoadSFX("Assets/Sounds/AsteroidExplode.wav");
+	assetManager->LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
 }
 
-void Game::LoadGameData(AssetManager* assetManager)
+void Game::LoadGameData(const EngineContext& engineContext)
 {
+	AssetManager* assetManager = engineContext.assetManager;
+
 	Ship* ship = new Ship(this);
 	ship->SetPosition2D(glm::vec2(200.0f, 200.0f));
-	//ship->SetRotation(45.0f);
+
+	// Set ship sprite component
+	SpriteComponent* shipSpriteComp = new SpriteComponent(ship, engineContext.renderer->GetRenderer2D());
+	// Load texture from cache
+	Texture* shipSprite = assetManager->LoadTexture("Assets/Ship.png");
+	shipSpriteComp->AddSprite(shipSprite);
+	// Load second texture from cache
+	shipSpriteComp->AddSprite(assetManager->LoadTexture("Assets/ShipThrust.png"));
+	// Set the sprite
+	shipSpriteComp->SetSprite(shipSprite);
+	ship->SetSpriteComp(shipSpriteComp);
+
+	// Ship movement component
+	MoveComponent2D* shipMove = new MoveComponent2D(ship);
+	ship->SetMoveComp(shipMove);
+
+	// Ship hit collision component
+	OBBComponent2D* shipHitBox = new OBBComponent2D(ship, engineContext.physics);
+	shipHitBox->SetBoxSize(glm::vec2(100.0f, 90.0f));
+	ship->SetCollisionComp(shipHitBox);
+
+	// Fire off loop sfx so this sound chunk can pause/resume later
+	engineContext.audio->PlaySFX("Assets/Sounds/ShipThrust.wav", -1, -1);
+	// Pause sound immediately
+	engineContext.audio->PauseSFX("Assets/Sounds/ShipThrust.wav");
+
 
 	// Load 10 asteroids
 	for (int i = 0; i < 10; ++i)
@@ -103,8 +136,6 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Music* music = assetManager->LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
 	music->SetVolume(90);
 	music->Play(-1);
-
-	const EngineContext& engineContext = mEngine.GetContext();
 
 	Renderer* renderer = engineContext.renderer;
 
