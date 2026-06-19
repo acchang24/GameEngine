@@ -8,7 +8,6 @@
 Entity3D::Entity3D() :
 	Entity(),
 	mUpdateModelMatrixJob(this),
-	mModel(nullptr),
 	mInstanceBuffer(0)
 {
 }

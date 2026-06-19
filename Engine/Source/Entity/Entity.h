@@ -14,6 +14,7 @@ enum class EntityState
 
 class Component;
 class InputSystem;
+class Model;
 
 // Entity class represents a general object within a game.
 // Each entity contains functions to help update and render on each frame.
@@ -156,6 +157,14 @@ public:
 	// @param - EntityState for the entity's new state
 	void SetEntityState(EntityState state) { mState = state; }
 
+	// Gets the entity's model
+	// @return - Model* for the entity's 3D model
+	Model* GetModel() { return mModel; }
+
+	// Sets the entity's model
+	// @param - Model* for the model
+	void SetModel(Model* model) { mModel = model; }
+
 protected:
 	// Vector of components the entity uses
 	std::vector<Component*> mComponents;
@@ -171,6 +180,8 @@ protected:
 
 	// Entity's scale
 	glm::vec3 mScale;
+
+	Model* mModel;
 
 	// Entity's state
 	EntityState mState;

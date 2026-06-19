@@ -1,9 +1,7 @@
 #pragma once
 #include "Entity.h"
-#include <glm/glm.hpp>
 #include "../Multithreading/JobManager.h"
 
-class Model;
 class Shader;
 
 // Entity3D inherits from the Entity class, and is used for any 3D game
@@ -57,14 +55,6 @@ public:
 
 	void CalculateWorldTransform();
 
-	// Gets the entity's model
-	// @return - Model* for the entity's 3D model
-	Model* GetModel() { return mModel; }
-
-	// Sets the entity's model
-	// @param - Model* for the model
-	void SetModel(Model* model) { mModel = model; }
-
 protected:
 	// Job to update the Entity3D's model matrix on a separate thread
 	class UpdateModelMatrixJob : public JobManager::Job
@@ -81,9 +71,6 @@ protected:
 
 	// Job to update model matrix on seprate thread
 	UpdateModelMatrixJob mUpdateModelMatrixJob;
-
-	// Entity's 3D model
-	Model* mModel;
 
 	// Buffer for if this entity is drawn as an instance
 	unsigned int mInstanceBuffer;
