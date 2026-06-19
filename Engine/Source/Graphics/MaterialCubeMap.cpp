@@ -26,8 +26,6 @@ void MaterialCubeMap::SetActive()
 {
 	mShader->SetActive();
 
-	mMaterialBuffer->UpdateBufferData(&mMats);
-
 	// Set the proper cubemap sampler uniform in the shader
 	mShader->SetInt("cubeMap", mCubeMap->GetTextureUnit());
 

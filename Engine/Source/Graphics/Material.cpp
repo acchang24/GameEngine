@@ -2,11 +2,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include "../MemoryManager/AssetManager.h"
-#include "Renderer.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "UniformBuffer.h"
 
 static std::unordered_map<TextureType, std::string> s_TextureSamplerNames = 
 {
@@ -18,15 +15,13 @@ static std::unordered_map<TextureType, std::string> s_TextureSamplerNames =
 
 Material::Material() : 
 	mMats({ glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f, 16.0f, false, false, false, false }),
-	mShader(nullptr),
-    mMaterialBuffer(AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer("MaterialBuffer"))
+	mShader(nullptr)
 {
 }
 
 Material::Material(const MaterialColors& mats) :
     mMats(mats),
-    mShader(nullptr),
-    mMaterialBuffer(AssetBridge::ActiveManager->GetRenderer()->GetUniformBuffer("MaterialBuffer"))
+    mShader(nullptr)
 {
 }
 
@@ -40,8 +35,6 @@ Material::~Material()
 void Material::SetActive()
 {
 	mShader->SetActive();
- 
-    mMaterialBuffer->UpdateBufferData(&mMats);
 
     std::string samplerName;
 

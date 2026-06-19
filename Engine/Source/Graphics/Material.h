@@ -4,7 +4,6 @@
 
 class Shader;
 class Texture;
-class UniformBuffer;
 
 // Struct to define the material's ambient, diffuse, specular colors, shininess, and specular intensity.
 struct MaterialColors
@@ -83,9 +82,6 @@ public:
 	// Set the material's shader
 	// @param - Shader* for the new shader
 	void SetShader(Shader* shader) { mShader = shader; }
-	// Sets the material's material buffer
-	// @param - UniformBuffer* for the buffer
-	void SetMaterialBuffer(UniformBuffer* buffer) { mMaterialBuffer = buffer; }
 
 	// Changes texture based on its index
 	void ChangeTexture(size_t index, Texture* texture) { mTextures[index] = texture; }
@@ -96,9 +92,6 @@ protected:
 
 	// Shader used for this material
 	Shader* mShader;
-
-	// Material buffer to send in the MaterialColors struct to shaders
-	UniformBuffer* mMaterialBuffer;
 
 private:
 	// Vector of textures used by this material
