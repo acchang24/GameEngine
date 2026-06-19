@@ -19,11 +19,4 @@ public:
 	void OnUpdate(float deltaTime, const EngineContext& engineContext) override;
 
 private:
-	SpriteComponent* mSprite;
-
-	MoveComponent2D* mMovement;
-
-	CollisionComponent* mCollisionCircle;
-
-	Engine* mEngine;
 };

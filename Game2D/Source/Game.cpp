@@ -130,7 +130,36 @@ void Game::LoadGameData(const EngineContext& engineContext)
 	// Load 10 asteroids
 	for (int i = 0; i < 10; ++i)
 	{
-		Asteroid* a = new Asteroid(this);
+		Asteroid* asteroid = new Asteroid(this);
+		
+		// Set random position
+		asteroid->SetPosition2D(Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(engineContext.renderer->GetWidth(), engineContext.renderer->GetHeight())));
+		
+		// Set random rotation
+		asteroid->SetRotation2D(glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f)));
+
+		// Asteroid sprite component
+		SpriteComponent* asteroidSpriteComp = new SpriteComponent(asteroid, engineContext.renderer->GetRenderer2D());
+		Texture* asteroidSprite = assetManager->LoadTexture("Assets/Asteroid.png");
+		asteroidSpriteComp->AddSprite(asteroidSprite);
+		asteroidSpriteComp->SetSprite(asteroidSprite);
+
+		// Asteroid move component
+		MoveComponent2D* asteroidMove = new MoveComponent2D(asteroid);
+		// Set random move speed in range
+		asteroidMove->SetMovementSpeed(Random::GetFloatRange(50.0f, 150.0f));
+
+		// Asteroid collision component
+		CircleComponent* asteroidColl = new CircleComponent(asteroid, engineContext.physics, asteroidSprite->GetWidth() * 0.5f);
+		// Set on collide
+		asteroidColl->SetOnCollision([asteroid](Entity* other, const CollisionResult& result) {
+			// If collided with another asteroid, create a new rotation
+			Asteroid* otherAsteroid = dynamic_cast<Asteroid*>(other);
+			if (otherAsteroid)
+			{
+				asteroid->SetRotation2D(asteroid->GetQuatRotation() + glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f)));
+			}
+		});
 	}
 
 	Music* music = assetManager->LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");

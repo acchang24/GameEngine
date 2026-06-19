@@ -1,11 +1,8 @@
 #include "Ship.h"
 #include "Audio/AudioSystem.h"
-#include "Components/CollisionComponent.h"
 #include "Components/MoveComponent2D.h"
 #include "Components/SpriteComponent.h"
-#include "Graphics/Texture.h"
 #include "Input/Keyboard.h"
-#include "MemoryManager/AssetManager.h"
 #include "Util/Logger.h"
 #include "Engine.h"
 #include "Game.h"
@@ -20,7 +17,6 @@ Ship::Ship(Game* game) :
 	mGame(game),
 	mLaserCooldown(1.0f)
 {
-	// Add to game
 	game->AddGameEntity(this);
 }
 

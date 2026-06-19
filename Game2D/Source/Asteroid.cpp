@@ -1,49 +1,11 @@
 #include "Asteroid.h"
-#include "Components/MoveComponent2D.h"
-#include "Components/CollisionComponent.h"
-#include "Components/SpriteComponent.h"
-#include "Graphics/Texture.h"
-#include "MemoryManager/AssetManager.h"
 #include "Util/Logger.h"
-#include "Util/Random.h"
 #include "Engine.h"
 #include "Game.h"
 
 Asteroid::Asteroid(Game* game) :
-	Entity(),
-	mSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
-	mMovement(new MoveComponent2D(this)),
-	mCollisionCircle(nullptr),
-	mEngine(game->GetEngine())
+	Entity()
 {
-	// Add and set asteroid sprite texture
-	Texture* asteroidSprite = AssetBridge::ActiveManager->LoadTexture("Assets/Asteroid.png", TextureType::Sprite);
-	mSprite->AddSprite(asteroidSprite);
-	mSprite->SetSprite(asteroidSprite);
-	
-	// Set a random movement speed between 50 and 150
-	mMovement->SetMovementSpeed(Random::GetFloatRange(50.0f, 150.0f));
-	
-	// Get random rotation degree
-	mRotation = glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	// Get random position
-	SetPosition2D(Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(mEngine->GetRenderer()->GetWidth(), mEngine->GetRenderer()->GetHeight())));
-
-	// Set the collision circle radius
-	mCollisionCircle = new CircleComponent(this, mEngine->GetPhysics(), asteroidSprite->GetWidth() * 0.5f);
-
-	// Set the on collision callback
-	mCollisionCircle->SetOnCollision([this](Entity* other, const CollisionResult& result) {
-		// If collided with another asteroid, create a new rotation
-		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
-		if (asteroid)
-		{
-			SetRotation2D(GetQuatRotation() + glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f)));
-		}
-	});
-
-	// Add to game
 	game->AddGameEntity(this);
 }
 
