@@ -3,14 +3,13 @@
 
 class CollisionComponent;
 class Engine;
-class Game;
 class MoveComponent2D;
 class SpriteComponent;
 
 class Asteroid :public Entity
 {
 public:
-	Asteroid(Game* game);
+	Asteroid();
 	~Asteroid();
 
 	// Override for asteroid's update

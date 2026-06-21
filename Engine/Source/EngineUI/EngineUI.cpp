@@ -1,10 +1,8 @@
 #include "EngineUI.h"
 #include <iostream>
 #include <SDL2/SDL_video.h>
-#include "../Util/Console.h"
 #include "../Util/Logger.h"
 #include "../Engine.h"
-#include "Editor.h"
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl2.h"
@@ -17,6 +15,7 @@ EngineUI::EngineUI(Engine* engine) :
 
 EngineUI::~EngineUI()
 {
+    std::cout << "Deleted Engine UI\n";
 }
 
 bool EngineUI::Init(Renderer* renderer)

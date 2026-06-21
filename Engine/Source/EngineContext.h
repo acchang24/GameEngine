@@ -5,6 +5,7 @@ class InputSystem;
 class Physics;
 class JobManager;
 class AssetManager;
+class SceneManager;
 class EngineUI;
 class AudioSystem;
 class Logger;
@@ -17,6 +18,7 @@ struct EngineContext
 	Physics* physics = nullptr;
 	JobManager* jobManager = nullptr;
 	AssetManager* assetManager = nullptr;
+	SceneManager* sceneManager = nullptr;
 	EngineUI* engineUI = nullptr;
 	AudioSystem* audio = nullptr;
 	Logger* logger = nullptr;

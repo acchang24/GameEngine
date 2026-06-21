@@ -5,19 +5,15 @@
 #include "Input/Keyboard.h"
 #include "Util/Logger.h"
 #include "Engine.h"
-#include "Game.h"
 #include "Laser.h"
 
-Ship::Ship(Game* game) :
+Ship::Ship() :
 	Entity(),
 	mSprite(nullptr),
 	mMovement(nullptr),
 	mCollisionBox(nullptr),
-	mEngine(game->GetEngine()),
-	mGame(game),
 	mLaserCooldown(1.0f)
 {
-	game->AddGameEntity(this);
 }
 
 Ship::~Ship()
@@ -67,9 +63,10 @@ void Ship::OnProcessInput(const InputSystem* input, const EngineContext& engineC
 	{
 		engineContext.audio->PlaySFX(engineContext.assetManager->LoadSFX("Assets/Sounds/Shoot.wav"));
 
-		Laser* laser = new Laser(mGame);
+		Laser* laser = new Laser(engineContext);
 		laser->SetPosition2D(mPosition);
 		laser->SetRotation2D(mRotation);
+		engineContext.sceneManager->AddEntity(laser);
 
 		mLaserCooldown = 0.0f;
 	}

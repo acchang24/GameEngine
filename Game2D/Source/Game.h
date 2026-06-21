@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <SDL2/SDL.h>
 #include "Engine.h"
 #include "Util/Console.h"
 
@@ -33,9 +31,6 @@ public:
 	// @param - const EngineContext& for the engine context
 	void LoadGameData(const EngineContext& engineContext);
 
-	// Deletes all entities, sounds, levels, etc
-	void UnloadGameData();
-
 	// Runs the main game loop. This will process any user inputs, 
 	// updates the game, and renders an output to the screen
 	void Run();
@@ -63,22 +58,7 @@ public:
 	// @param - const EngineContext& for the engine context
 	void ResizeWindow(const SDL_Event& event, const EngineContext& engineContext);
 
-	// Adds an entity to the game's vector of entities
-	// @param - Entity* for the new entity
-	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
-
-	// Removes an entity from the game's vector of entities, and deletes that entity from memory
-	// @param - Entity* for the entity to remove
-	void RemoveGameEntity(Entity* e);
-
-	// Gets the game engine
-	// @return - Engine* for the engine
-	Engine* GetEngine() { return &mEngine; }
-
 private:
-	// std::vector of game entities
-	std::vector<Entity*> mEntities;
-
 	// Game Engine systems
 	Engine mEngine;
 

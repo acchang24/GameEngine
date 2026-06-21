@@ -7,6 +7,7 @@ Engine::Engine(RendererMode renderMode) :
 	mPhysics(),
 	mJobManager(),
 	mAssetManager(),
+	mSceneManager(),
 	mEngineUI(this),
 	mAudio(),
 	mEditor()
@@ -49,6 +50,7 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 	mContext.physics = &mPhysics;
 	mContext.jobManager = &mJobManager;
 	mContext.assetManager = &mAssetManager;
+	mContext.sceneManager = &mSceneManager;
 	mContext.engineUI = &mEngineUI;
 	mContext.audio = &mAudio;
 	mContext.logger = &mLogger;
@@ -68,6 +70,8 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 void Engine::Shutdown()
 {
 	LOG_DEBUG("Shutting down engine");
+
+	mSceneManager.UnloadScene();
 
 	mAudio.Shutdown();
 

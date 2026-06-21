@@ -3,10 +3,9 @@
 #include "Engine.h"
 #include "Game.h"
 
-Asteroid::Asteroid(Game* game) :
+Asteroid::Asteroid() :
 	Entity()
 {
-	game->AddGameEntity(this);
 }
 
 Asteroid::~Asteroid()

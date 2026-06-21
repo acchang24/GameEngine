@@ -10,22 +10,27 @@ SceneManager::SceneManager() :
 SceneManager::~SceneManager()
 {
 	std::cout << "Deleted Scene Manager\n";
-
-	delete mCurrentScene;
 }
 
 void SceneManager::LoadNewScene(const std::string& levelName)
 {
 	if (mCurrentScene)
 	{
-		// Clear old level and create a new one
-		delete mCurrentScene;
+		UnloadScene();
 
 		mCurrentScene = new Scene();
 
 		// Parse level file data
 		std::cout << "Loading level: " << levelName << "\n";
 	}
+}
+
+void SceneManager::UnloadScene()
+{
+	std::cout << "Unloading Scene\n";
+
+	delete mCurrentScene;
+	mCurrentScene = nullptr;
 }
 
 Entity* SceneManager::InstantiateEntity()
@@ -37,4 +42,3 @@ Entity* SceneManager::InstantiateEntity()
 	}
 	return e;
 }
-

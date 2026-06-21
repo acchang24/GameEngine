@@ -3,14 +3,13 @@
 
 class CollisionComponent;
 class Engine;
-class Game;
 class MoveComponent2D;
 class SpriteComponent;
 
 class Ship : public Entity
 {
 public:
-	Ship(Game* game);
+	Ship();
 	~Ship();
 
 	// Override for ship's process input
@@ -33,10 +32,6 @@ private:
 	MoveComponent2D* mMovement;
 
 	CollisionComponent* mCollisionBox;
-
-	Engine* mEngine;
-
-	Game* mGame;
 
 	float mLaserCooldown;
 };

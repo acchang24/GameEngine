@@ -1,6 +1,6 @@
 #include "Game.h"
-#include <algorithm>
 #include <chrono>
+#include <vector>
 #include <glm/glm.hpp>
 #include "Audio/Sound.h"
 #include "Components/CollisionComponent.h"
@@ -15,6 +15,7 @@
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
 #include "Physics/Physics.h"
+#include "Scene/SceneManager.h"
 #include "Util/Logger.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
@@ -69,8 +70,6 @@ bool Game::Init()
 
 void Game::Shutdown()
 {
-	UnloadGameData();
-
 	mEngine.Shutdown();
 }
 
@@ -98,7 +97,9 @@ void Game::LoadGameData(const EngineContext& engineContext)
 {
 	AssetManager* assetManager = engineContext.assetManager;
 
-	Ship* ship = new Ship(this);
+	SceneManager* sceneManager = engineContext.sceneManager;
+
+	Ship* ship = new Ship();
 	ship->SetPosition2D(glm::vec2(200.0f, 200.0f));
 
 	// Set ship sprite component
@@ -111,6 +112,7 @@ void Game::LoadGameData(const EngineContext& engineContext)
 	// Set the sprite
 	shipSpriteComp->SetSprite(shipSprite);
 	ship->SetSpriteComp(shipSpriteComp);
+	sceneManager->AddEntity(ship);
 
 	// Ship movement component
 	MoveComponent2D* shipMove = new MoveComponent2D(ship);
@@ -130,7 +132,7 @@ void Game::LoadGameData(const EngineContext& engineContext)
 	// Load 10 asteroids
 	for (int i = 0; i < 10; ++i)
 	{
-		Asteroid* asteroid = new Asteroid(this);
+		Asteroid* asteroid = new Asteroid();
 		
 		// Set random position
 		asteroid->SetPosition2D(Random::GetVector2(glm::vec2(0.0f, 0.0f), glm::vec2(engineContext.renderer->GetWidth(), engineContext.renderer->GetHeight())));
@@ -160,6 +162,8 @@ void Game::LoadGameData(const EngineContext& engineContext)
 				asteroid->SetRotation2D(asteroid->GetQuatRotation() + glm::angleAxis(glm::radians(Random::GetFloatRange(0.0f, 360.0f)), glm::vec3(0.0f, 0.0f, 1.0f)));
 			}
 		});
+
+		sceneManager->AddEntity(asteroid);
 	}
 
 	Music* music = assetManager->LoadMusic("Assets/Sounds/AllTheThingsYouAre.mp3");
@@ -171,7 +175,7 @@ void Game::LoadGameData(const EngineContext& engineContext)
 	Renderer2D* renderer2D = renderer->GetRenderer2D();
 
 	// Background
-	mBackground = new Entity();
+	mBackground = sceneManager->InstantiateEntity();
 	mBackground->SetPosition2D(glm::vec2(static_cast<float>(renderer->GetWidth() / 2), static_cast<float>(renderer->GetHeight() / 2)));
 	SpriteComponent* backgroundSC = new SpriteComponent(mBackground, renderer2D, 50);
 	backgroundSC->AddSprite(assetManager->LoadTexture("Assets/Stars.png", TextureType::Sprite));
@@ -182,7 +186,6 @@ void Game::LoadGameData(const EngineContext& engineContext)
 	{
 		bgSprite->SetSize(glm::vec2(renderer->GetWidth(), renderer->GetHeight()));
 	}
-	AddGameEntity(mBackground);
 
 	// Set 2d renderer shader
 	renderer2D->SetSpriteShader(assetManager->LoadShader("sprite"));
@@ -191,15 +194,6 @@ void Game::LoadGameData(const EngineContext& engineContext)
 
 	// Set font
 	renderer2D->GetTextRenderer()->LoadFont("Assets/Fonts/arial.ttf", 16);
-}
-
-void Game::UnloadGameData()
-{
-	for (auto e : mEntities)
-	{
-		delete e;
-	}
-	mEntities.clear();
 }
 
 void Game::Run()
@@ -265,9 +259,11 @@ void Game::ProcessInput(const EngineContext& engineContext)
 		mIsRunning = false;
 	}
 
-	for (size_t i =0; i<mEntities.size(); ++i)
+	const std::vector<Entity*>& entities = engineContext.sceneManager->GetCurrentScene()->GetEntities();
+
+	for (auto e : entities)
 	{
-		mEntities[i]->ProcessInput(input, engineContext);
+		e->ProcessInput(input, engineContext);
 	}
 
 	mConsole.ProcessInput(input);
@@ -372,22 +368,18 @@ void Game::Update(float deltaTime, const EngineContext& engineContext)
 {
 	PROFILE_SCOPE(UPDATE);
 
-	std::vector<Entity*> destroy;
+	const std::vector<Entity*>& entities = engineContext.sceneManager->GetCurrentScene()->GetEntities();
 
-	for (size_t i = 0; i < mEntities.size(); ++i)
+	for (auto e : entities)
 	{
-		Entity* e = mEntities[i];
 		e->Update(deltaTime, engineContext);
 		if (e->GetEntityState() == EntityState::Destroy)
 		{
-			destroy.emplace_back(e);
+			engineContext.sceneManager->RemoveEntity(e);
 		}
 	}
 
-	for (auto d : destroy)
-	{
-		RemoveGameEntity(d);
-	}
+	engineContext.sceneManager->ClearDestoyedEntities();
 
 	engineContext.physics->Update(deltaTime);
 
@@ -435,18 +427,5 @@ void Game::ResizeWindow(const SDL_Event& event, const EngineContext& engineConte
 			bgSprite->SetSize(glm::vec2(width, height));
 		}
 		mBackground->SetPosition2D(glm::vec2(width / 2, height / 2));
-	}
-}
-
-void Game::RemoveGameEntity(Entity* e)
-{
-	auto iter = std::find(mEntities.begin(), mEntities.end(), e);
-	if (iter != mEntities.end())
-	{
-		// Swap to end of vector and pop off
-		auto iter2 = mEntities.end() - 1;
-		std::iter_swap(iter, iter2);
-		delete e;
-		mEntities.pop_back();
 	}
 }

@@ -9,25 +9,22 @@
 #include "3dPrimitives/Plane.h"
 #include "3dPrimitives/Sphere.h"
 #include "Components/AnimationComponent3D.h"
-#include "Entity/Entity3D.h"
+#include "Entity/Entity.h"
 #include "Graphics/Camera.h"
 #include "Graphics/FrameBuffer.h"
 #include "Graphics/FrameBufferMultiSampled.h"
 #include "Graphics/Material.h"
 #include "Graphics/MaterialCubeMap.h"
-#include "Graphics/Mesh.h"
 #include "Graphics/Model.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/Shader.h"
 #include "Graphics/ShadowMap.h"
 #include "Graphics/Skybox.h"
 #include "Graphics/Texture.h"
-#include "Graphics/UniformBuffer.h"
-#include "Graphics/VertexBuffer.h"
-#include "Graphics/VertexLayouts.h"
 #include "Input/InputSystem.h"
 #include "MemoryManager/AssetManager.h"
 #include "Multithreading/JobManager.h"
+#include "Scene/SceneManager.h"
 #include "Util/Logger.h"
 #include "Util/Profiler.h"
 #include "Util/Random.h"
@@ -106,15 +103,13 @@ bool Game::Init()
 	mBloomBlurVerticalFrameBuffer = renderer->CreateFrameBuffer(width / 4, height / 4, assetManager->LoadShader("bloomBlurVertical"));
 	mBloomBlendFrameBuffer = renderer->CreateFrameBuffer(width, height, assetManager->LoadShader("bloomBlend"));
 
-	LoadGameData(assetManager);
+	LoadGameData(engineContext.sceneManager, assetManager);
 
 	return true;
 }
 
 void Game::Shutdown()
 {
-	UnloadGameData();
-
 	delete mSkybox;
 
 	mEngine.Shutdown();
@@ -154,7 +149,7 @@ void Game::LoadAssets(AssetManager* assetManager) const
 
 }
 
-void Game::LoadGameData(AssetManager* assetManager)
+void Game::LoadGameData(SceneManager* sceneManager, AssetManager* assetManager)
 {
 	Texture* texture = assetManager->LoadTexture("Assets/matrix.jpg", TextureType::Emission);
 	Texture* texture3 = assetManager->LoadTexture("Assets/container2.png", TextureType::Diffuse);
@@ -248,7 +243,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	float time = 0.1f;
 	for (size_t i = 0; i < 10; ++i)
 	{
-		Entity3D* vampire = new Entity3D();
+		Entity* vampire = sceneManager->InstantiateEntity();
 		Model* vampireModel = assetManager->LoadModel("Assets/models/vampire/dancing_vampire.dae");
 		if (vampireModel->HasAnimations())
 		{
@@ -257,19 +252,17 @@ void Game::LoadGameData(AssetManager* assetManager)
 		vampire->SetModel(vampireModel);
 		vampire->SetScale3D(0.05f);
 		vampire->SetPosition3D(vampirePositions[i]);
-		AddGameEntity(vampire);
 
 		vampires.emplace_back(vampire);
 	}
 
-	Entity3D* sponza = new Entity3D();
+	Entity* sponza = sceneManager->InstantiateEntity();
 	Model* sponzaModel = assetManager->LoadModel("Assets/models/Sponza/sponza.obj");
 	sponza->SetModel(sponzaModel);
 	sponza->SetPosition3D(glm::vec3(0.0f, -5.0, 0.0f));
 	sponza->SetScale3D(0.125);
 	sponza->SetRotation3D(glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	//sponza->SetYaw(-90.0f);
-	AddGameEntity(sponza);
 
 	//Material* wallMaterial = new Material();
 	//wallMaterial->SetShader(phongShader);
@@ -290,7 +283,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	//mCube->SetYaw(25.0f);
 	//AddGameEntity(mCube);
 
-	Entity3D* squidward = new Entity3D();
+	Entity* squidward = sceneManager->InstantiateEntity();
 	Model* squidwardModel = assetManager->LoadModel("Assets/models/SquidwardDance/Rumba Dancing.dae");
 	if (squidwardModel->HasAnimations())
 	{
@@ -299,9 +292,8 @@ void Game::LoadGameData(AssetManager* assetManager)
 	squidward->SetModel(squidwardModel);
 	squidward->SetPosition3D(glm::vec3(0.0f, -5.0f, -15.0f));
 	squidward->SetRotation3D(glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	AddGameEntity(squidward);
 
-	Entity3D* squidward2 = new Entity3D();
+	Entity* squidward2 = sceneManager->InstantiateEntity();
 	squidward2->SetModel(squidwardModel);
 	if (squidwardModel->HasAnimations())
 	{
@@ -309,7 +301,6 @@ void Game::LoadGameData(AssetManager* assetManager)
 	}
 	squidward2->SetPosition3D(glm::vec3(10.0f, -5.0f, -15.0f));
 	squidward2->SetScale3D(0.35f);
-	AddGameEntity(squidward2);
 
 
 	//squidward->SetMaterialShader("tt", refractiveShader);
@@ -335,7 +326,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	//cube2->SetMaterial(woodMat);
 	//AddGameEntity(cube2);
 
-	Entity3D* fortune2 = new Entity3D();
+	Entity* fortune2 = sceneManager->InstantiateEntity();
 	Model* fortuneModel2 = assetManager->LoadModel("Assets/models/MissFortune/MissFortune.dae");
 	if (fortuneModel2->HasAnimations())
 	{
@@ -344,9 +335,8 @@ void Game::LoadGameData(AssetManager* assetManager)
 	fortune2->SetModel(fortuneModel2);
 	fortune2->SetPosition3D(glm::vec3(-5.0f, -5.0f, -25.0f));
 	fortune2->SetScale3D(0.25f);
-	AddGameEntity(fortune2);
 
-	Entity3D* fortune = new Entity3D();
+	Entity* fortune = sceneManager->InstantiateEntity();
 	Model* fortuneModel = assetManager->LoadModel("Assets/models/MissFortune2/MissFortune2.dae");
 	if (fortuneModel->HasAnimations())
 	{
@@ -355,7 +345,6 @@ void Game::LoadGameData(AssetManager* assetManager)
 	fortune->SetModel(fortuneModel);
 	fortune->SetPosition3D(glm::vec3(5.0f, -5.0f, -25.0f));
 	fortune->SetScale3D(0.25f);
-	AddGameEntity(fortune);
 
 	//glm::vec3 lightPosition(1.0f, 10.0f, 3.0f);
 	glm::vec3 lightPosition = lightDir * -dist;
@@ -370,7 +359,7 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Sphere* lightSphere = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere->SetMaterial(lightSphereMaterial);
 	lightSphere->SetPosition3D(glm::vec3(1.0f, 3.0f, 60.0f));
-	AddGameEntity(lightSphere);
+	sceneManager->AddEntity(lightSphere);
 
 	//SpotLight* spotLight = mLights.AllocateSpotLight(glm::vec4(0.25f, 0.61f, 1.0f, 1.0f), glm::vec3(-0.7f, 3.0, 0.0f), glm::vec3(0.0, -1.0f, 0.0f),
 	//	glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(16.0f)), 1.0f, 0.09f, 0.032f);
@@ -385,21 +374,12 @@ void Game::LoadGameData(AssetManager* assetManager)
 	Sphere* lightSphere3 = new Sphere(0.5f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	lightSphere3->SetMaterial(lightSphereMaterial);
 	lightSphere3->SetPosition3D(glm::vec3(0.0f, 3.0f, -120.0f));
-	AddGameEntity(lightSphere3);
+	sceneManager->AddEntity(lightSphere3);
 
 	mShadowIndex = mEngine.GetContext().renderer->CreateShadowMap((assetManager->LoadShader("shadowDepth")));
 
 	// Since all ShaderProgram objects are attached to a Shader object, it's safe to de-allocate them here
 	assetManager->ClearShaderPrograms();
-}
-
-void Game::UnloadGameData()
-{
-	for (auto e : mEntities)
-	{
-		delete e;
-	}
-	mEntities.clear();
 }
 
 void Game::Run()
@@ -746,7 +726,9 @@ void Game::ProcessInput(const EngineContext& engineContext)
 	}
 
 
-	for (auto e : mEntities)
+	const std::vector<Entity*>& entities = engineContext.sceneManager->GetCurrentScene()->GetEntities();
+
+	for (auto e : entities)
 	{
 		e->ProcessInput(input, engineContext);
 	}
@@ -758,10 +740,18 @@ void Game::Update(float deltaTime, const EngineContext& engineContext)
 {
 	PROFILE_SCOPE(UPDATE);
 
-	for (auto e : mEntities)
+	const std::vector<Entity*>& entities = engineContext.sceneManager->GetCurrentScene()->GetEntities();
+
+	for (auto e : entities)
 	{
 		e->Update(deltaTime, engineContext);
+		if (e->GetEntityState() == EntityState::Destroy)
+		{
+			engineContext.sceneManager->RemoveEntity(e);
+		}
 	}
+
+	engineContext.sceneManager->ClearDestoyedEntities();
 
 	engineContext.renderer->GetCamera()->Update(deltaTime, engineContext.input);
 
@@ -845,7 +835,10 @@ void Game::RenderScene(const EngineContext& engineContext)
 {
 	PROFILE_SCOPE(RENDER_SCENE_NORMAL);
 
-	for (auto e : mEntities)
+
+	const std::vector<Entity*>& entities = engineContext.sceneManager->GetCurrentScene()->GetEntities();
+
+	for (auto e : entities)
 	{
 		engineContext.renderer->RenderEntity3D(e);
 	}
@@ -857,7 +850,9 @@ void Game::RenderScene(const EngineContext& engineContext)
 
 void Game::RenderScene(const EngineContext& engineContext, Shader* shader)
 {
-	for (auto e : mEntities)
+	const std::vector<Entity*>& entities = engineContext.sceneManager->GetCurrentScene()->GetEntities();
+
+	for (auto e : entities)
 	{
 		engineContext.renderer->RenderEntity3D(e, shader);
 	}
@@ -879,15 +874,15 @@ void Game::ResizeWindow(const SDL_Event& event, const EngineContext& engineConte
 	}
 }
 
-void Game::RemoveGameEntity(Entity* e)
-{
-	auto iter = std::find(mEntities.begin(), mEntities.end(), e);
-	if (iter != mEntities.end())
-	{
-		// Swap to end of vector and pop off
-		auto iter2 = mEntities.end() - 1;
-		std::iter_swap(iter, iter2);
-		delete e;
-		mEntities.pop_back();
-	}
-}
+//void Game::RemoveGameEntity(Entity* e)
+//{
+//	auto iter = std::find(mEntities.begin(), mEntities.end(), e);
+//	if (iter != mEntities.end())
+//	{
+//		// Swap to end of vector and pop off
+//		auto iter2 = mEntities.end() - 1;
+//		std::iter_swap(iter, iter2);
+//		delete e;
+//		mEntities.pop_back();
+//	}
+//}

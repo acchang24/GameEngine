@@ -17,6 +17,10 @@ public:
 	// Deletes all entities that are marked EntityState::Destroy
 	void ClearDestoyedEntities();
 
+	// Adds entity to the entity vector
+	// @param - Entity* for the entity
+	void AddEntity(Entity* e) { mEntities.emplace_back(e); }
+
 	// Adds an entity to the destroy vector: mEntitiesToDelete
 	void AddEntityToDestroy(Entity* e) { mEntitiesToDelete.emplace_back(e); }
 

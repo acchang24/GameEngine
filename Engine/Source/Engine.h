@@ -5,6 +5,7 @@
 #include "Multithreading/JobManager.h"
 #include "Input/InputSystem.h"
 #include "Physics/Physics.h"
+#include "Scene/SceneManager.h"
 #include "Util/Logger.h"
 #include "EngineContext.h"
 #include "EngineUI/Editor.h"
@@ -71,6 +72,9 @@ private:
 
 	// AssetManager to load/cache assets on demand
 	AssetManager mAssetManager;
+
+	// Scene manager to manage levels and entities
+	SceneManager mSceneManager;
 
 	// Engine UI system
 	EngineUI mEngineUI;

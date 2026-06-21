@@ -9,18 +9,17 @@
 #include "Util/Logger.h"
 #include "Asteroid.h"
 #include "Engine.h"
-#include "Game.h"
 
-Laser::Laser(Game* game) :
+Laser::Laser(const EngineContext& engineContext) :
 	Entity(),
-	mLaserSprite(new SpriteComponent(this, game->GetEngine()->GetRenderer()->GetRenderer2D())),
+	mLaserSprite(new SpriteComponent(this, engineContext.renderer->GetRenderer2D())),
 	mLaserMovement(new MoveComponent2D(this)),
-	mBox(new OBBComponent2D(this, game->GetEngine()->GetPhysics(), BodyType::Intersect)),
-	mEngine(game->GetEngine()),
+	mBox(new OBBComponent2D(this, engineContext.physics, BodyType::Intersect)),
+	//mEngine(&engineContext),
 	mLaserDecay(0.0f)
 {
 	// Add and set laser sprite texture
-	Texture* laserSprite = AssetBridge::ActiveManager->LoadTexture("Assets/Laser.png", TextureType::Sprite);
+	Texture* laserSprite = engineContext.assetManager->LoadTexture("Assets/Laser.png", TextureType::Sprite);
 	mLaserSprite->AddSprite(laserSprite);
 	mLaserSprite->SetSprite(laserSprite);
 
@@ -31,21 +30,18 @@ Laser::Laser(Game* game) :
 	mBox->SetBoxSize(glm::vec2(30.0f, 10.0f));
 
 	// Set on collision callback
-	mBox->SetOnCollision([this](Entity* other, const CollisionResult& result) {
+	mBox->SetOnCollision([this, engineContext](Entity* other, const CollisionResult& result) {
 		// If collided with asteroid, destroy the asteroid and this laser
 		Asteroid* asteroid = dynamic_cast<Asteroid*>(other);
 		if (asteroid)
 		{
-			mEngine->GetAudio()->PlaySFX(AssetBridge::ActiveManager->LoadSFX("Assets/Sounds/AsteroidExplode.wav"));
+			engineContext.audio->PlaySFX(engineContext.assetManager->LoadSFX("Assets/Sounds/AsteroidExplode.wav"));
 			asteroid->SetEntityState(EntityState::Destroy);
 			mState = EntityState::Destroy;
 
 			LOG_DEBUG("Laser hit Asteroid");
 		}
 	});
-
-	// Add to game
-	game->AddGameEntity(this);
 }
 
 Laser::~Laser()

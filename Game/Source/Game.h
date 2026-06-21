@@ -9,6 +9,7 @@ class AssetManager;
 class Entity;
 class FrameBuffer;
 class FrameBufferMultiSampled;
+class SceneManager;
 class Shader;
 class Skybox;
 
@@ -35,11 +36,9 @@ public:
 	void LoadAssets(AssetManager* assetManager) const;
 
 	// Loads game models, textures, animations, levels, etc that are specific to this particular game.
+	// @param - SceneManager to load entities
 	// @param - AssetManager* for the asset manager
-	void LoadGameData(AssetManager* assetManager);
-
-	// Deletes all entities, sounds, levels, etc
-	void UnloadGameData();
+	void LoadGameData(SceneManager* sceneManager, AssetManager* assetManager);
 
 	// Runs the main game loop. This will process any user inputs, 
 	// updates the game, and renders an output to the screen
@@ -68,22 +67,7 @@ public:
 	// @param - const EngineContext& for the engine context
 	void ResizeWindow(const SDL_Event& event, const EngineContext& engineContext);
 
-	// Adds an entity to the game's vector of entities
-	// @param - Entity* for the new entity
-	void AddGameEntity(Entity* e) { mEntities.emplace_back(e); }
-
-	// Removes an entity from the game's vector of entities, and deletes that entity from memory
-	// @param - Entity* for the entity to remove
-	void RemoveGameEntity(Entity* e);
-
-	// Gets the game engine
-	// @return - Engine* for the engine
-	Engine* GetEngine() { return &mEngine; }
-
 private:
-	// std::vector of game entities
-	std::vector<Entity*> mEntities;
-
 	// Engine used by game
 	Engine mEngine;
 
@@ -107,7 +91,7 @@ private:
 	// Frame buffer for bloom blending
 	FrameBuffer* mBloomBlendFrameBuffer;
 
-	std::vector<class Entity3D*> vampires;
+	std::vector<class Entity*> vampires;
 
 	size_t mShadowIndex;
 
