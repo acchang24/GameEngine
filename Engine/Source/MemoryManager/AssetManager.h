@@ -22,11 +22,11 @@ public:
 	AssetManager();
 	~AssetManager();
 
-	// Goes to each of the asset caches and calls the cache's Clear()
-	void Clear();
-
 	// Deletes the shader caches
 	void Shutdown();
+
+	// Goes to each of the asset caches and calls the cache's Clear()
+	void Clear();
 	
 	// Saves a shader into the shader cache's map
 	// @param - const std::string& for the shader's name.
@@ -253,14 +253,3 @@ private:
 	// Music sound track cache
 	Cache<Music>* mMusicCache;
 };
-
-
-// ============================================================================
-// TEMPORARY COMPILATION BRIDGE SYSTEM
-// ============================================================================
-namespace AssetBridge
-{
-	// C++17 inline pointer allows your entire engine to compile instantly 
-	// while you migrate your entity classes step-by-step
-	inline AssetManager* ActiveManager = nullptr;
-}

@@ -59,8 +59,6 @@ bool Engine::Init(int windowWidth, int windowHeight, int subSamples, int v_sync,
 	// Bridge logger macro system to this engine's logger instance
 	Log::ActiveLogger = &mLogger;
 
-	AssetBridge::ActiveManager = &mAssetManager;
-
 	// Center the mouse
 	mInputSystem.CenterMouse();
 
